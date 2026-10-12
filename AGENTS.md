@@ -23,3 +23,17 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - 当成熟且维护良好的库能够降低整体复杂度或提高可靠性时，应优先使用它们。没有明确理由时，不要重新实现常见功能。
 - 在自行实现或新增软件包之前，优先利用项目中已有的依赖。没有检查库的文档和类型定义之前，不要假设它不具备某项能力。
 - 从长期角度做架构决策。不要接受只解决眼前问题、以后还计划替换的临时方案。
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs live as GitHub issues. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Five canonical labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
