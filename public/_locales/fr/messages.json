@@ -1,0 +1,8 @@
+{
+  "extDescription": {
+    "message": "Enregistre localement les visites et le temps de navigation active, avec les sites les plus visités et la chronologie du jour."
+  },
+  "actionTitle": {
+    "message": "Ouvrir PageTime"
+  }
+}

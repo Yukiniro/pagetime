@@ -1,0 +1,92 @@
+{
+  "appTitle": "PageTime · Dein Surf-Verlauf",
+  "nav": { "label": "Hauptnavigation", "overview": "Übersicht", "records": "Besuche", "settings": "Einstellungen" },
+  "localNote": "Daten bleiben auf diesem Gerät",
+  "status": { "recording": "Surfaktivität wird aufgezeichnet", "paused": "Aufzeichnung pausiert", "since": "Seit {{date}}" },
+  "actions": { "pause": "Pausieren", "resume": "Fortsetzen", "enable": "Aufzeichnung starten" },
+  "pages": {
+    "overview": { "title": "Surf-Übersicht", "subtitle": "Sieh, wie du deine Zeit im Web verbringst" },
+    "records": { "title": "Besuchsverlauf", "subtitle": "Jeder Besuch nachvollziehbar" },
+    "settings": { "title": "Einstellungen", "subtitle": "Behalte die Kontrolle über deine Daten und die Aufzeichnung" }
+  },
+  "range": { "today": "Heute", "lastDays_one": "Letzter Tag", "lastDays_other": "Letzte {{count}} Tage", "label": "Zeitraum: {{range}}" },
+  "error": {
+    "title": "Daten konnten nicht geladen oder gespeichert werden",
+    "retry": "Erneut versuchen",
+    "connect": "Der Aufzeichnungsdienst ist nicht erreichbar. Bitte lade die Erweiterung neu.",
+    "save": "Daten konnten nicht gespeichert werden. Prüfe den Speicherplatz des Browsers."
+  },
+  "loading": "Lokale Daten werden geladen…",
+  "active": "Aktiv {{duration}}",
+  "summary": {
+    "label": "Zusammenfassung",
+    "totalTime": "Aktive Surfzeit gesamt",
+    "visits_one": "<b>{{count}}</b> Besuch",
+    "visits_other": "<b>{{count}}</b> Besuche",
+    "sites_one": "<b>{{count}}</b> Website",
+    "sites_other": "<b>{{count}}</b> Websites"
+  },
+  "trend": { "label": "Aktive Surfzeit pro Tag. {{days}}", "separator": "; ", "hours_one": "{{count}} Std.", "hours_other": "{{count}} Std." },
+  "timeline": {
+    "title": "Heutige Zeitleiste",
+    "idle": "Leerlauf",
+    "label_one": "Heutige Zeitleiste der aktiven Nutzung, {{count}} Sitzung; leere Bereiche enthalten keine aufgezeichnete Aktivität.",
+    "label_other": "Heutige Zeitleiste der aktiven Nutzung, {{count}} Sitzungen; leere Bereiche enthalten keine aufgezeichnete Aktivität.",
+    "empty": "Heute wurde noch keine aktive Nutzung aufgezeichnet",
+    "item": "{{domain}}, {{from}} bis {{to}}"
+  },
+  "ranking": {
+    "title": "Top-Websites",
+    "site": "Website",
+    "activeTime": "Aktive Zeit",
+    "visits": "Besuche",
+    "emptyTitle": "Hier beginnt dein Surf-Verlauf",
+    "emptyDescription": "Besuche eine Webseite und sie erscheint hier automatisch.",
+    "collapse": "Weniger anzeigen",
+    "showAll_one": "{{count}} Website anzeigen",
+    "showAll_other": "Alle {{count}} Websites anzeigen",
+    "details": "Website-Details"
+  },
+  "records": {
+    "search": "Websites suchen",
+    "placeholder": "Websites suchen, z. B. github.com",
+    "clearSearch": "Suche löschen",
+    "count_one": "{{count}} Besuch",
+    "count_other": "{{count}} Besuche",
+    "limited": " · Die neuesten 200 werden angezeigt",
+    "visitedAt": "Besucht am",
+    "details": "Details",
+    "view": "Anzeigen",
+    "empty": "Keine passenden Besuche"
+  },
+  "settings": {
+    "language": { "title": "Sprache", "description": "Wähle die Anzeigesprache von PageTime.", "label": "Anzeigesprache: {{language}}" },
+    "recording": { "title": "Aufzeichnung", "description": "Zählt Seitenbesuche und misst nur die Zeit im aktiven Tab des fokussierten Fensters." },
+    "privacy": { "title": "Lokal und privat", "description": "Speichert nur Domains, Zeiten und Besuchszahlen – niemals Seiteninhalte, Titel oder vollständige URLs.<br/>Inkognito-Fenster und interne Browserseiten werden ignoriert, und es werden keine Daten an einen Server gesendet." },
+    "method": { "title": "So wird gemessen", "description": "Jedes Laden oder Neuladen einer Seite zählt als ein Besuch; Tab-Wechsel und Navigation innerhalb von Single-Page-Apps zählen nicht.<br/>60 Sekunden ohne Systemeingabe gelten als Leerlauf; der Fortschritt wird alle 30 Sekunden gespeichert.<br/>Speichert Daten bis zu 90 Tage, höchstens 20.000 Besuche und 20.000 aktive Sitzungen." },
+    "clear": { "title": "Alle Daten löschen", "description": "Löscht die von PageTime auf diesem Gerät gespeicherten Daten. Dies kann nicht rückgängig gemacht werden.", "button": "Daten löschen" }
+  },
+  "detail": {
+    "title": "Website-Details",
+    "description": "{{range}} · Website-Statistik und heutige aktive Sitzungen",
+    "close": "Details schließen",
+    "visits_one": "{{count}}",
+    "visits_other": "{{count}}",
+    "todaySessions": "Heutige aktive Sitzungen",
+    "noSessions": "Heute keine aktiven Sitzungen",
+    "viewVisits": "Besuche anzeigen"
+  },
+  "confirm": {
+    "title": "Alle Surfdaten löschen?",
+    "description": "Es werden nur die lokalen Daten von PageTime gelöscht. Dies kann nicht rückgängig gemacht werden.",
+    "cancel": "Abbrechen",
+    "clearing": "Wird gelöscht…",
+    "confirm": "Löschen"
+  },
+  "duration": {
+    "underMinute": "Unter 1 Min.",
+    "minutes_one": "{{count}} Min.",
+    "minutes_other": "{{count}} Min.",
+    "hours": "{{hours}} Std. {{minutes}} Min."
+  }
+}

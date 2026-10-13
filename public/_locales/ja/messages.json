@@ -1,0 +1,8 @@
+{
+  "extDescription": {
+    "message": "ページの訪問とアクティブな閲覧時間をローカルに記録し、サイトランキングと今日のタイムラインを表示します。"
+  },
+  "actionTitle": {
+    "message": "PageTime を開く"
+  }
+}

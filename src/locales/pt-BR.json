@@ -1,0 +1,99 @@
+{
+  "appTitle": "PageTime · Sua pegada de navegação",
+  "nav": { "label": "Navegação principal", "overview": "Visão geral", "records": "Visitas", "settings": "Configurações" },
+  "localNote": "Os dados ficam neste dispositivo",
+  "status": { "recording": "Registrando a navegação", "paused": "Registro pausado", "since": "Desde {{date}}" },
+  "actions": { "pause": "Pausar registro", "resume": "Retomar registro", "enable": "Ativar registro" },
+  "pages": {
+    "overview": { "title": "Visão geral da navegação", "subtitle": "Veja como você passa seu tempo na web" },
+    "records": { "title": "Histórico de visitas", "subtitle": "Cada visita, registrada" },
+    "settings": { "title": "Configurações", "subtitle": "Controle seus dados e a forma de registro" }
+  },
+  "range": { "today": "Hoje", "lastDays_one": "Último dia", "lastDays_many": "Últimos {{count}} dias", "lastDays_other": "Últimos {{count}} dias", "label": "Período: {{range}}" },
+  "error": {
+    "title": "Não foi possível carregar ou salvar os dados",
+    "retry": "Tentar novamente",
+    "connect": "Não foi possível conectar ao serviço de registro. Recarregue a extensão.",
+    "save": "Não foi possível salvar os registros. Verifique o espaço de armazenamento do navegador."
+  },
+  "loading": "Carregando registros locais…",
+  "active": "Ativo {{duration}}",
+  "summary": {
+    "label": "Resumo",
+    "totalTime": "Tempo total de navegação ativa",
+    "visits_one": "<b>{{count}}</b> visita",
+    "visits_many": "<b>{{count}}</b> visitas",
+    "visits_other": "<b>{{count}}</b> visitas",
+    "sites_one": "<b>{{count}}</b> site",
+    "sites_many": "<b>{{count}}</b> sites",
+    "sites_other": "<b>{{count}}</b> sites"
+  },
+  "trend": { "label": "Tempo diário de navegação ativa. {{days}}", "separator": "; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },
+  "timeline": {
+    "title": "Linha do tempo de hoje",
+    "idle": "Tempo ocioso",
+    "label_one": "Linha do tempo da navegação ativa de hoje, {{count}} sessão; áreas em branco não têm atividade registrada.",
+    "label_many": "Linha do tempo da navegação ativa de hoje, {{count}} sessões; áreas em branco não têm atividade registrada.",
+    "label_other": "Linha do tempo da navegação ativa de hoje, {{count}} sessões; áreas em branco não têm atividade registrada.",
+    "empty": "Nenhuma navegação ativa registrada hoje",
+    "item": "{{domain}}, das {{from}} às {{to}}"
+  },
+  "ranking": {
+    "title": "Sites mais acessados",
+    "site": "Site",
+    "activeTime": "Tempo ativo",
+    "visits": "Visitas",
+    "emptyTitle": "Sua pegada de navegação começa aqui",
+    "emptyDescription": "Visite uma página e ela aparecerá aqui automaticamente.",
+    "collapse": "Mostrar menos",
+    "showAll_one": "Ver {{count}} site",
+    "showAll_many": "Ver todos os {{count}} sites",
+    "showAll_other": "Ver todos os {{count}} sites",
+    "details": "Ver detalhes do site"
+  },
+  "records": {
+    "search": "Pesquisar sites",
+    "placeholder": "Pesquisar sites, ex.: github.com",
+    "clearSearch": "Limpar pesquisa",
+    "count_one": "{{count}} visita",
+    "count_many": "{{count}} visitas",
+    "count_other": "{{count}} visitas",
+    "limited": " · Mostrando as 200 mais recentes",
+    "visitedAt": "Data da visita",
+    "details": "Detalhes",
+    "view": "Ver",
+    "empty": "Nenhuma visita encontrada"
+  },
+  "settings": {
+    "language": { "title": "Idioma", "description": "Escolha o idioma de exibição do PageTime.", "label": "Idioma de exibição: {{language}}" },
+    "recording": { "title": "Registro de navegação", "description": "Conta as visitas às páginas e mede apenas o tempo na guia ativa da janela em foco." },
+    "privacy": { "title": "Local e privado", "description": "Armazena apenas domínios, horários e número de visitas — nunca o conteúdo, os títulos ou os URLs completos.<br/>Ignora janelas anônimas e páginas internas do navegador, e nunca envia dados para um servidor." },
+    "method": { "title": "Como é medido", "description": "Cada carregamento ou recarga de página conta como uma visita; trocar de guia ou navegar dentro de aplicativos de página única não adiciona visitas.<br/>60 segundos sem atividade no sistema contam como ociosidade; o progresso é salvo a cada 30 segundos.<br/>Mantém até 90 dias de dados, com no máximo 20.000 visitas e 20.000 sessões ativas." },
+    "clear": { "title": "Limpar todos os registros", "description": "Exclui os registros que o PageTime salvou neste dispositivo. Não é possível desfazer.", "button": "Limpar dados" }
+  },
+  "detail": {
+    "title": "Detalhes do site",
+    "description": "{{range}} · estatísticas do site e sessões ativas de hoje",
+    "close": "Fechar detalhes",
+    "visits_one": "{{count}}",
+    "visits_many": "{{count}}",
+    "visits_other": "{{count}}",
+    "todaySessions": "Sessões ativas de hoje",
+    "noSessions": "Nenhuma sessão ativa hoje",
+    "viewVisits": "Ver visitas"
+  },
+  "confirm": {
+    "title": "Limpar todos os registros de navegação?",
+    "description": "Apenas os dados locais do PageTime serão excluídos. Não é possível desfazer.",
+    "cancel": "Cancelar",
+    "clearing": "Limpando…",
+    "confirm": "Limpar"
+  },
+  "duration": {
+    "underMinute": "Menos de 1 min",
+    "minutes_one": "{{count}} min",
+    "minutes_many": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours": "{{hours}} h {{minutes}} min"
+  }
+}
