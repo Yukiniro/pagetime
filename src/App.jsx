@@ -60,7 +60,7 @@ export function App() {
           {[['overview', ChartBar], ['records', Clock], ['settings', GearSix]].map(([key, Icon]) =>
             <SidebarMenuItem key={key}><SidebarMenuButton className="nav-item" size="lg" isActive={page === key} aria-current={page === key ? 'page' : undefined} onClick={() => setPage(key)}><Icon /><span>{t(`nav.${key}`)}</span></SidebarMenuButton></SidebarMenuItem>)}
         </SidebarMenu></nav></SidebarContent>
-        <SidebarFooter className="local-note"><ShieldCheck size={21} /><span>{t('localNote')}</span></SidebarFooter>
+        <SidebarFooter className="local-note"><ShieldCheck size={21} className="shrink-0" /><span>{t('localNote')}</span></SidebarFooter>
       </Sidebar>
       <div className="workspace">
         <header className="topbar">
@@ -102,7 +102,7 @@ export function App() {
           </section> : <section className="settings">
             <div className="setting-row"><div><h2>{t('settings.language.title')}</h2><p>{t('settings.language.description')}</p></div><DropdownMenu>
               <DropdownMenuTrigger render={<Button variant="outline" className="action-button" />} aria-label={t('settings.language.label', { language: languageName })}><Translate />{languageName}<CaretDown /></DropdownMenuTrigger>
-              <DropdownMenuContent align="end"><DropdownMenuRadioGroup value={i18n.resolvedLanguage} onValueChange={value => i18n.changeLanguage(value)}>
+              <DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={i18n.resolvedLanguage} onValueChange={value => i18n.changeLanguage(value)}>
                 {languages.map(([code, name]) => <DropdownMenuRadioItem closeOnClick key={code} value={code} lang={code}>{name}</DropdownMenuRadioItem>)}
               </DropdownMenuRadioGroup></DropdownMenuContent>
             </DropdownMenu></div>
