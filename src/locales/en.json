@@ -1,0 +1,92 @@
+{
+  "appTitle": "PageTime · Browsing footprint",
+  "nav": { "label": "Main navigation", "overview": "Overview", "records": "Visits", "settings": "Settings" },
+  "localNote": "Data stays on this device",
+  "status": { "recording": "Recording browsing activity", "paused": "Recording paused", "since": "Since {{date}}" },
+  "actions": { "pause": "Pause recording", "resume": "Resume recording", "enable": "Turn on recording" },
+  "pages": {
+    "overview": { "title": "Browsing overview", "subtitle": "See how your time on the web is spent" },
+    "records": { "title": "Visit history", "subtitle": "Every visit, accounted for" },
+    "settings": { "title": "Settings", "subtitle": "Control your data and how it is recorded" }
+  },
+  "range": { "today": "Today", "lastDays_one": "Last {{count}} day", "lastDays_other": "Last {{count}} days", "label": "Date range: {{range}}" },
+  "error": {
+    "title": "Couldn't load or save data",
+    "retry": "Retry",
+    "connect": "Can't reach the recording service. Please reload the extension.",
+    "save": "Couldn't save records. Check your browser's storage space."
+  },
+  "loading": "Loading local records…",
+  "active": "Active {{duration}}",
+  "summary": {
+    "label": "Summary",
+    "totalTime": "Total active browsing time",
+    "visits_one": "<b>{{count}}</b> visit",
+    "visits_other": "<b>{{count}}</b> visits",
+    "sites_one": "<b>{{count}}</b> site",
+    "sites_other": "<b>{{count}}</b> sites"
+  },
+  "trend": { "label": "Daily active browsing time. {{days}}", "separator": "; ", "hours_one": "{{count}} hr", "hours_other": "{{count}} hrs" },
+  "timeline": {
+    "title": "Today's timeline",
+    "idle": "Idle time",
+    "label_one": "Today's active browsing timeline, {{count}} session; blank areas have no recorded activity.",
+    "label_other": "Today's active browsing timeline, {{count}} sessions; blank areas have no recorded activity.",
+    "empty": "No active browsing recorded today yet",
+    "item": "{{domain}}, {{from}} to {{to}}"
+  },
+  "ranking": {
+    "title": "Top sites",
+    "site": "Site",
+    "activeTime": "Active time",
+    "visits": "Visits",
+    "emptyTitle": "Your browsing footprint starts here",
+    "emptyDescription": "Visit a web page and it will appear here automatically.",
+    "collapse": "Show less",
+    "showAll_one": "View all {{count}} site",
+    "showAll_other": "View all {{count}} sites",
+    "details": "View site details"
+  },
+  "records": {
+    "search": "Search sites",
+    "placeholder": "Search sites, e.g. github.com",
+    "clearSearch": "Clear search",
+    "count_one": "{{count}} visit",
+    "count_other": "{{count}} visits",
+    "limited": " · Showing the latest 200",
+    "visitedAt": "Visited at",
+    "details": "Details",
+    "view": "View",
+    "empty": "No matching visits"
+  },
+  "settings": {
+    "language": { "title": "Language", "description": "Choose the display language for PageTime.", "label": "Display language: {{language}}" },
+    "recording": { "title": "Browsing records", "description": "Counts page visits and only tracks time on the active tab of the focused window." },
+    "privacy": { "title": "Local and private", "description": "Stores only site domains, times, and visit counts — never page content, titles, or full URLs.<br/>Ignores incognito windows and internal browser pages, and never sends data to a server." },
+    "method": { "title": "How it's measured", "description": "Each page load or reload counts as one visit; switching tabs or in-app navigation in single-page apps doesn't add visits.<br/>60 seconds without system input counts as idle; progress is saved every 30 seconds.<br/>Keeps up to 90 days of data, with at most 20,000 visits and 20,000 active sessions." },
+    "clear": { "title": "Clear all records", "description": "Deletes the records PageTime has saved on this device. This can't be undone.", "button": "Clear data" }
+  },
+  "detail": {
+    "title": "Site details",
+    "description": "{{range}} · site stats and today's active sessions",
+    "close": "Close details",
+    "visits_one": "{{count}}",
+    "visits_other": "{{count}}",
+    "todaySessions": "Today's active sessions",
+    "noSessions": "No active sessions today",
+    "viewVisits": "View visits"
+  },
+  "confirm": {
+    "title": "Clear all browsing records?",
+    "description": "This deletes only PageTime's local data and can't be undone.",
+    "cancel": "Cancel",
+    "clearing": "Clearing…",
+    "confirm": "Clear"
+  },
+  "duration": {
+    "underMinute": "Under 1 min",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours": "{{hours}} hr {{minutes}} min"
+  }
+}

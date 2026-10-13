@@ -8,7 +8,7 @@ export async function command(type='snapshot') {
   if(isExtension){
     const {browser}=await import('wxt/browser');
     const response=await browser.runtime.sendMessage({type});
-    if(!response?.data||response.error) throw new Error(response?.error||'无法连接记录服务，请重新加载插件。');
+    if(!response?.data||response.error) throw new Error(response?.error||'connect');
     return response.data;
   }
   localStorage.removeItem('jilan-demo-v1');

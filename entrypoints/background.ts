@@ -9,7 +9,7 @@ export default defineBackground(() => {
   let queue = Promise.resolve();
   const run = <T>(task: () => Promise<T>) => {
     const result = queue.then(task);
-    queue = result.then(() => {}, error => console.error('PageTime记录失败', error));
+    queue = result.then(() => {}, error => console.error('PageTime recording failed', error));
     return result;
   };
   const read = async (): Promise<Data> => ((await browser.storage.local.get('data')).data as Data | undefined) ?? blankData();
@@ -84,7 +84,7 @@ export default defineBackground(() => {
       }
       await update();
       return { data: await read() };
-    }).then(sendResponse, () => sendResponse({ error: '记录保存失败，请检查浏览器存储空间。' }));
+    }).then(sendResponse, () => sendResponse({ error: 'save' }));
     return true;
   });
   browser.idle.setDetectionInterval(60);

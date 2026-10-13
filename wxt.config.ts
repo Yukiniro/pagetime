@@ -10,9 +10,10 @@ export default defineConfig({
   webExt: { disabled: true },
   manifest: {
     name: 'PageTime',
-    description: '本地记录网页访问、活跃浏览时长，查看站点排行与今日时间线。',
+    description: '__MSG_extDescription__',
+    default_locale: 'en',
     permissions: ['storage', 'tabs', 'webNavigation', 'idle', 'alarms'],
     incognito: 'not_allowed',
-    action: { default_title: '打开PageTime' },
+    action: { default_title: '__MSG_actionTitle__' },
   },
 });

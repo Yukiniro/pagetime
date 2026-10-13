@@ -53,12 +53,6 @@ export function daily(data, start, end) {
   return days;
 }
 
-export function duration(ms) {
-  if (ms < 60_000) return ms ? '不足 1 分钟' : '0 分钟';
-  const mins = Math.floor(ms / 60_000);
-  return mins >= 60 ? `${Math.floor(mins/60)} 小时 ${mins%60} 分钟` : `${mins} 分钟`;
-}
-
 // shortcut: 超过90秒无检查点的区间不计时；需要连续后台硬件采样时再增加休眠检测。
 export function creditUntil(cursor, now) {
   return cursor && now >= cursor.since && now - cursor.since <= 90_000 ? now : cursor?.since;
