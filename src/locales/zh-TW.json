@@ -1,0 +1,85 @@
+{
+  "appTitle": "PageTime · 瀏覽足跡",
+  "nav": { "label": "主要導覽", "overview": "概覽", "records": "造訪紀錄", "settings": "設定" },
+  "localNote": "資料僅儲存在此裝置",
+  "status": { "recording": "正在記錄瀏覽資料", "paused": "已暫停記錄", "since": "自 {{date}} 開始" },
+  "actions": { "pause": "暫停記錄", "resume": "繼續記錄", "enable": "開啟記錄" },
+  "pages": {
+    "overview": { "title": "瀏覽概覽", "subtitle": "了解你在網頁上的時間分布與造訪情況" },
+    "records": { "title": "造訪紀錄", "subtitle": "每一次造訪，都有跡可循" },
+    "settings": { "title": "設定", "subtitle": "掌握自己的資料與記錄方式" }
+  },
+  "range": { "today": "今天", "lastDays_other": "最近 {{count}} 天", "label": "統計時間範圍：{{range}}" },
+  "error": {
+    "title": "讀取或儲存失敗",
+    "retry": "重試",
+    "connect": "無法連線記錄服務，請重新載入擴充功能。",
+    "save": "紀錄儲存失敗，請檢查瀏覽器儲存空間。"
+  },
+  "loading": "正在讀取本機紀錄…",
+  "active": "活躍 {{duration}}",
+  "summary": {
+    "label": "摘要",
+    "totalTime": "總活躍瀏覽時間",
+    "visits_other": "造訪 <b>{{count}}</b> 次",
+    "sites_other": "<b>{{count}}</b> 個網站"
+  },
+  "trend": { "label": "每日活躍瀏覽時長。{{days}}", "separator": "；", "hours_other": "{{count}} 小時" },
+  "timeline": {
+    "title": "今日時間軸",
+    "idle": "閒置時間",
+    "label_other": "今日活躍時間軸，{{count}} 個時段；空白區域未記錄活躍瀏覽。",
+    "empty": "今天還沒有活躍瀏覽紀錄",
+    "item": "{{domain}}，{{from}} 至 {{to}}"
+  },
+  "ranking": {
+    "title": "網站排行",
+    "site": "網站",
+    "activeTime": "活躍時間",
+    "visits": "造訪次數",
+    "emptyTitle": "你的瀏覽足跡，從這裡開始",
+    "emptyDescription": "造訪一個網頁後，紀錄會自動出現在這裡。",
+    "collapse": "收合清單",
+    "showAll_other": "查看全部 {{count}} 個網站",
+    "details": "查看網站詳情"
+  },
+  "records": {
+    "search": "搜尋網站",
+    "placeholder": "搜尋網站，例如 github.com",
+    "clearSearch": "清除搜尋",
+    "count_other": "{{count}} 次造訪",
+    "limited": " · 顯示最近 200 筆",
+    "visitedAt": "造訪時間",
+    "details": "詳情",
+    "view": "查看",
+    "empty": "沒有符合條件的造訪紀錄"
+  },
+  "settings": {
+    "language": { "title": "語言", "description": "選擇 PageTime 介面的顯示語言。", "label": "介面語言：{{language}}" },
+    "recording": { "title": "瀏覽紀錄", "description": "記錄網頁造訪次數，僅累計前景視窗中作用中分頁的瀏覽時間。" },
+    "privacy": { "title": "本機與隱私", "description": "只儲存網站網域、時間和造訪次數，不儲存頁面內文、標題或完整網址。<br/>忽略無痕視窗和瀏覽器內部頁面，不傳送資料到伺服器。" },
+    "method": { "title": "統計方式", "description": "頁面載入與重新整理各計一次造訪；切換分頁不增加次數，單頁應用程式內部跳轉不重複計數。<br/>連續 60 秒無系統操作視為閒置，每 30 秒儲存一次。<br/>最多保留 90 天資料，造訪紀錄與活躍時段各最多保留 20,000 筆。" },
+    "clear": { "title": "清除所有紀錄", "description": "刪除此裝置上 PageTime 已儲存的紀錄，刪除後無法復原。", "button": "清除資料" }
+  },
+  "detail": {
+    "title": "網站詳情",
+    "description": "{{range}}的網站統計與今日活躍時段",
+    "close": "關閉詳情",
+    "visits_other": "{{count}} 次",
+    "todaySessions": "今日活躍時段",
+    "noSessions": "今天暫無活躍時段",
+    "viewVisits": "查看造訪紀錄"
+  },
+  "confirm": {
+    "title": "清除所有瀏覽紀錄？",
+    "description": "此操作只刪除 PageTime 的本機資料，刪除後無法復原。",
+    "cancel": "取消",
+    "clearing": "正在清除…",
+    "confirm": "確認清除"
+  },
+  "duration": {
+    "underMinute": "不到 1 分鐘",
+    "minutes_other": "{{count}} 分鐘",
+    "hours": "{{hours}} 小時 {{minutes}} 分鐘"
+  }
+}

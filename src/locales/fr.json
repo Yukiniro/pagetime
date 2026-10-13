@@ -1,0 +1,99 @@
+{
+  "appTitle": "PageTime · Votre empreinte de navigation",
+  "nav": { "label": "Navigation principale", "overview": "Aperçu", "records": "Visites", "settings": "Paramètres" },
+  "localNote": "Les données restent sur cet appareil",
+  "status": { "recording": "Enregistrement de la navigation", "paused": "Enregistrement en pause", "since": "Depuis le {{date}}" },
+  "actions": { "pause": "Suspendre", "resume": "Reprendre", "enable": "Activer l’enregistrement" },
+  "pages": {
+    "overview": { "title": "Aperçu de la navigation", "subtitle": "Découvrez comment vous passez votre temps sur le web" },
+    "records": { "title": "Historique des visites", "subtitle": "Chaque visite, retracée" },
+    "settings": { "title": "Paramètres", "subtitle": "Gérez vos données et leur mode d’enregistrement" }
+  },
+  "range": { "today": "Aujourd’hui", "lastDays_one": "Dernier jour", "lastDays_many": "{{count}} derniers jours", "lastDays_other": "{{count}} derniers jours", "label": "Période : {{range}}" },
+  "error": {
+    "title": "Impossible de charger ou d’enregistrer les données",
+    "retry": "Réessayer",
+    "connect": "Impossible de joindre le service d’enregistrement. Rechargez l’extension.",
+    "save": "Impossible d’enregistrer les données. Vérifiez l’espace de stockage du navigateur."
+  },
+  "loading": "Chargement des données locales…",
+  "active": "Actif {{duration}}",
+  "summary": {
+    "label": "Résumé",
+    "totalTime": "Temps de navigation active total",
+    "visits_one": "<b>{{count}}</b> visite",
+    "visits_many": "<b>{{count}}</b> visites",
+    "visits_other": "<b>{{count}}</b> visites",
+    "sites_one": "<b>{{count}}</b> site",
+    "sites_many": "<b>{{count}}</b> sites",
+    "sites_other": "<b>{{count}}</b> sites"
+  },
+  "trend": { "label": "Temps de navigation active par jour. {{days}}", "separator": " ; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },
+  "timeline": {
+    "title": "Chronologie du jour",
+    "idle": "Temps d’inactivité",
+    "label_one": "Chronologie de la navigation active du jour, {{count}} session ; les zones vides n’ont aucune activité enregistrée.",
+    "label_many": "Chronologie de la navigation active du jour, {{count}} sessions ; les zones vides n’ont aucune activité enregistrée.",
+    "label_other": "Chronologie de la navigation active du jour, {{count}} sessions ; les zones vides n’ont aucune activité enregistrée.",
+    "empty": "Aucune navigation active enregistrée aujourd’hui",
+    "item": "{{domain}}, de {{from}} à {{to}}"
+  },
+  "ranking": {
+    "title": "Sites les plus visités",
+    "site": "Site",
+    "activeTime": "Temps actif",
+    "visits": "Visites",
+    "emptyTitle": "Votre empreinte de navigation commence ici",
+    "emptyDescription": "Visitez une page web et elle apparaîtra ici automatiquement.",
+    "collapse": "Afficher moins",
+    "showAll_one": "Voir {{count}} site",
+    "showAll_many": "Voir les {{count}} sites",
+    "showAll_other": "Voir les {{count}} sites",
+    "details": "Voir les détails du site"
+  },
+  "records": {
+    "search": "Rechercher des sites",
+    "placeholder": "Rechercher des sites, ex. github.com",
+    "clearSearch": "Effacer la recherche",
+    "count_one": "{{count}} visite",
+    "count_many": "{{count}} visites",
+    "count_other": "{{count}} visites",
+    "limited": " · 200 plus récentes affichées",
+    "visitedAt": "Date de visite",
+    "details": "Détails",
+    "view": "Voir",
+    "empty": "Aucune visite correspondante"
+  },
+  "settings": {
+    "language": { "title": "Langue", "description": "Choisissez la langue d’affichage de PageTime.", "label": "Langue d’affichage : {{language}}" },
+    "recording": { "title": "Enregistrement", "description": "Compte les visites de pages et ne mesure que le temps passé sur l’onglet actif de la fenêtre au premier plan." },
+    "privacy": { "title": "Local et privé", "description": "Seuls les domaines, horaires et nombres de visites sont enregistrés — jamais le contenu, les titres ni les URL complètes.<br/>Les fenêtres de navigation privée et les pages internes du navigateur sont ignorées, et aucune donnée n’est envoyée à un serveur." },
+    "method": { "title": "Mode de calcul", "description": "Chaque chargement ou rechargement de page compte comme une visite ; changer d’onglet ou naviguer dans une application monopage n’ajoute pas de visite.<br/>60 secondes sans activité système sont considérées comme de l’inactivité ; la progression est enregistrée toutes les 30 secondes.<br/>Conserve jusqu’à 90 jours de données, avec au plus 20 000 visites et 20 000 sessions actives." },
+    "clear": { "title": "Effacer tous les enregistrements", "description": "Supprime les données enregistrées par PageTime sur cet appareil. Action irréversible.", "button": "Effacer les données" }
+  },
+  "detail": {
+    "title": "Détails du site",
+    "description": "{{range}} · statistiques du site et sessions actives du jour",
+    "close": "Fermer les détails",
+    "visits_one": "{{count}}",
+    "visits_many": "{{count}}",
+    "visits_other": "{{count}}",
+    "todaySessions": "Sessions actives du jour",
+    "noSessions": "Aucune session active aujourd’hui",
+    "viewVisits": "Voir les visites"
+  },
+  "confirm": {
+    "title": "Effacer tous les enregistrements de navigation ?",
+    "description": "Seules les données locales de PageTime seront supprimées. Action irréversible.",
+    "cancel": "Annuler",
+    "clearing": "Suppression…",
+    "confirm": "Effacer"
+  },
+  "duration": {
+    "underMinute": "Moins d’1 min",
+    "minutes_one": "{{count}} min",
+    "minutes_many": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours": "{{hours}} h {{minutes}} min"
+  }
+}

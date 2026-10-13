@@ -1,0 +1,8 @@
+{
+  "extDescription": {
+    "message": "페이지 방문과 활성 브라우징 시간을 로컬에 기록하고 사이트 순위와 오늘의 타임라인을 보여줍니다."
+  },
+  "actionTitle": {
+    "message": "PageTime 열기"
+  }
+}

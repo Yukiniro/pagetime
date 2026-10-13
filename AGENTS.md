@@ -2,6 +2,8 @@
 
 Product name: PageTime. Preserve existing storage keys and record formats when changing branding.
 
+The UI is localized with react-i18next in Simplified Chinese, Traditional Chinese, English, Japanese, Korean, German, Spanish, French, Brazilian Portuguese, and Russian. Never hardcode user-facing text: add every string to every file in `src/locales/` (with all plural forms the language needs), format dates/times/durations through `src/i18n.js`, and keep manifest text in `public/_locales`. `npm test` enforces key, placeholder, and plural parity.
+
 Use the official shadcn Base UI components for available primitives. Prefer DropdownMenu for dropdown choices; avoid Select and native select. Keep the WXT extension and local preview on the same component and theme foundation.
 
 The user selected the light blue analytics design and added today's browsing timeline. Preserve this design. Deliver a real WXT Chrome/Edge extension as well as a local preview using the same React components. The preview starts empty: do not seed sample browsing records, and do not add demo-mode labels or a control that restores sample data. `npm run build` builds WXT; `npm run build:preview` builds the Sites-ready preview. Keep the starter's preview runtime intact.

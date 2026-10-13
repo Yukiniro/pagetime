@@ -1,0 +1,85 @@
+{
+  "appTitle": "PageTime · 閲覧の足跡",
+  "nav": { "label": "メインナビゲーション", "overview": "概要", "records": "訪問履歴", "settings": "設定" },
+  "localNote": "データはこのデバイスにのみ保存されます",
+  "status": { "recording": "閲覧データを記録中", "paused": "記録を一時停止中", "since": "{{date}} から記録" },
+  "actions": { "pause": "記録を一時停止", "resume": "記録を再開", "enable": "記録をオン" },
+  "pages": {
+    "overview": { "title": "閲覧の概要", "subtitle": "ウェブ上での時間の使い方と訪問状況を確認できます" },
+    "records": { "title": "訪問履歴", "subtitle": "すべての訪問をたどれます" },
+    "settings": { "title": "設定", "subtitle": "データと記録方法を管理します" }
+  },
+  "range": { "today": "今日", "lastDays_other": "過去 {{count}} 日間", "label": "集計期間：{{range}}" },
+  "error": {
+    "title": "読み込みまたは保存に失敗しました",
+    "retry": "再試行",
+    "connect": "記録サービスに接続できません。拡張機能を再読み込みしてください。",
+    "save": "記録を保存できませんでした。ブラウザのストレージ容量を確認してください。"
+  },
+  "loading": "ローカルの記録を読み込み中…",
+  "active": "アクティブ {{duration}}",
+  "summary": {
+    "label": "サマリー",
+    "totalTime": "アクティブな閲覧時間の合計",
+    "visits_other": "<b>{{count}}</b> 回訪問",
+    "sites_other": "<b>{{count}}</b> サイト"
+  },
+  "trend": { "label": "日別のアクティブな閲覧時間。{{days}}", "separator": "、", "hours_other": "{{count}} 時間" },
+  "timeline": {
+    "title": "今日のタイムライン",
+    "idle": "アイドル時間",
+    "label_other": "今日のアクティブな閲覧タイムライン、{{count}} 件の時間帯。空白部分はアクティブな閲覧が記録されていません。",
+    "empty": "今日のアクティブな閲覧記録はまだありません",
+    "item": "{{domain}}、{{from}}〜{{to}}"
+  },
+  "ranking": {
+    "title": "サイトランキング",
+    "site": "サイト",
+    "activeTime": "アクティブ時間",
+    "visits": "訪問回数",
+    "emptyTitle": "閲覧の足跡はここから始まります",
+    "emptyDescription": "ウェブページを訪問すると、ここに自動的に記録が表示されます。",
+    "collapse": "一覧を閉じる",
+    "showAll_other": "全 {{count}} サイトを表示",
+    "details": "サイトの詳細を表示"
+  },
+  "records": {
+    "search": "サイトを検索",
+    "placeholder": "サイトを検索（例：github.com）",
+    "clearSearch": "検索をクリア",
+    "count_other": "{{count}} 回の訪問",
+    "limited": " · 最新 200 件を表示",
+    "visitedAt": "訪問日時",
+    "details": "詳細",
+    "view": "表示",
+    "empty": "条件に一致する訪問履歴はありません"
+  },
+  "settings": {
+    "language": { "title": "言語", "description": "PageTime の表示言語を選択します。", "label": "表示言語：{{language}}" },
+    "recording": { "title": "閲覧の記録", "description": "ページの訪問回数を記録し、フォーカスされたウィンドウのアクティブなタブでの閲覧時間のみを集計します。" },
+    "privacy": { "title": "ローカルでプライベート", "description": "保存するのはサイトのドメイン、時刻、訪問回数のみで、ページ本文、タイトル、完全な URL は保存しません。<br/>シークレットウィンドウとブラウザの内部ページは無視し、データをサーバーに送信しません。" },
+    "method": { "title": "集計方法", "description": "ページの読み込みと再読み込みはそれぞれ 1 回の訪問として数えます。タブの切り替えやシングルページアプリ内の移動では増えません。<br/>60 秒間システム操作がない場合はアイドルとみなし、30 秒ごとに保存します。<br/>データは最大 90 日間保持し、訪問履歴とアクティブな時間帯はそれぞれ最大 20,000 件です。" },
+    "clear": { "title": "すべての記録を削除", "description": "このデバイスに PageTime が保存した記録を削除します。削除後は元に戻せません。", "button": "データを削除" }
+  },
+  "detail": {
+    "title": "サイトの詳細",
+    "description": "{{range}}のサイト統計と今日のアクティブな時間帯",
+    "close": "詳細を閉じる",
+    "visits_other": "{{count}} 回",
+    "todaySessions": "今日のアクティブな時間帯",
+    "noSessions": "今日のアクティブな時間帯はありません",
+    "viewVisits": "訪問履歴を表示"
+  },
+  "confirm": {
+    "title": "すべての閲覧記録を削除しますか？",
+    "description": "PageTime のローカルデータのみが削除されます。削除後は元に戻せません。",
+    "cancel": "キャンセル",
+    "clearing": "削除中…",
+    "confirm": "削除する"
+  },
+  "duration": {
+    "underMinute": "1 分未満",
+    "minutes_other": "{{count}} 分",
+    "hours": "{{hours}} 時間 {{minutes}} 分"
+  }
+}

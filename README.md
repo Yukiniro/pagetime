@@ -22,6 +22,7 @@
 - 超过 90 秒没有检查点的时间区间不累计，避免长时间休眠或挂起造成虚增。这是近似的活跃时长统计，短暂休眠和异常退出可能造成几十秒偏差，异常退出可能丢失最后一个检查点后的数据。
 - 最多保留 90 天；访问记录和活跃时段各最多 20,000 条，达到数量上限时删除最旧记录。时长与访问次数分别来自保留下来的各自记录，不保证二者都覆盖完整 90 天。
 - 支持暂停 / 恢复，以及二次确认清空本地数据。清空和卸载后无法恢复；当前版本不含备份、同步和导入导出。
+- 界面支持简体中文、繁體中文、English、日本語、한국어、Deutsch、Español、Français、Português (Brasil)、Русский：首次打开按浏览器语言选择（香港、澳门及 zh-Hant 使用繁體中文，无匹配时使用英文），可在“设置 → 语言”中切换，选择保存在本地。扩展名称说明与工具栏提示通过 `_locales` 随浏览器语言显示。
 
 ## 隐私与权限
 
@@ -42,6 +43,8 @@
 使用 shadcn `base-nova` 样式与 `@base-ui/react`，插件和预览共用 Tailwind CSS 4 主题。Button、Sidebar、Dialog、AlertDialog、InputGroup、Table、Alert、Empty、Avatar、ScrollArea 等均来自 shadcn 官方组件。
 
 时间范围使用 DropdownMenu + RadioGroup，当前不使用 Select 或原生 select。优先复用 `src/components/ui`，已有组件不另写交互实现；`src/styles.css` 仅保留产品布局、排版与图表样式。ECharts 继续负责统计图和今日时间线。
+
+界面文案使用 i18next + react-i18next，资源位于 `src/locales/<语言>.json`，日期、时间和时长格式在 `src/i18n.js` 中按当前语言输出；manifest 文案位于 `public/_locales`。新增文案需补齐所有语言及其所需的复数形式，`npm test` 会校验键、插值和复数形式是否齐全。新增语言时添加 `src/locales/<代码>.json`、在 `src/i18n.js` 注册，并补充 `public/_locales/<代码>/messages.json`。
 
 `components.json` 已配置，新增组件用 `npx shadcn@latest add <组件名>`。源码使用 `@app/*` 指向 `src/*`，避开 WXT 内置的 `@/*` 根目录别名。CLI 生成的 `cn` 合并工具保持官方依赖。
 
