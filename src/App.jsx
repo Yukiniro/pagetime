@@ -13,7 +13,7 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@a
 import { Avatar, AvatarImage, AvatarFallback } from '@app/components/ui/avatar';
 import { ScrollArea } from '@app/components/ui/scroll-area';
 import { blankData, duration, midnight, summarize } from './model.mjs';
-import { command, isExtension, knownSites, colorOf } from './data.js';
+import { command, knownSites, colorOf } from './data.js';
 import { Trend, Timeline, timeLabel } from './Charts.jsx';
 
 const dateLabel = at => new Date(at).toLocaleDateString('zh-CN', { month: 'long', day: 'numeric', weekday: 'long' });
@@ -62,7 +62,7 @@ export function App() {
       </Sidebar>
       <div className="workspace">
         <header className="topbar">
-          <div className="record-status"><span className={`status-dot ${data.enabled ? '' : 'paused'}`} /><div><strong>{data.enabled ? '正在记录浏览数据' : '已暂停记录'}</strong><small>{!isExtension ? '演示数据 · 不采集浏览行为' : `自 ${new Date(data.since).toLocaleDateString('zh-CN')} 开始`}</small></div></div>
+          <div className="record-status"><span className={`status-dot ${data.enabled ? '' : 'paused'}`} /><div><strong>{data.enabled ? '正在记录浏览数据' : '已暂停记录'}</strong><small>{`自 ${new Date(data.since).toLocaleDateString('zh-CN')} 开始`}</small></div></div>
           <Button variant="outline" className="action-button" disabled={busy || !ready} onClick={() => act('toggle')}>{data.enabled ? <Pause weight="fill" /> : <Play weight="fill" />}{data.enabled ? '暂停记录' : '继续记录'}</Button>
         </header>
         <main>
@@ -87,7 +87,7 @@ export function App() {
               <Table><TableHeader><TableRow><TableHead className="rank-col">#</TableHead><TableHead>站点</TableHead><TableHead>活跃时间</TableHead><TableHead>访问次数</TableHead></TableRow></TableHeader><TableBody>
                 {stats.rows.slice(0, expanded ? undefined : 5).map((site, i) => <TableRow key={site.domain}><TableCell>{i + 1}</TableCell><TableCell><Button variant="ghost" className="site-link" onClick={event => openSite(site.domain, event)}><SiteIcon domain={site.domain} /><span>{site.domain}</span></Button></TableCell><TableCell>{duration(site.ms)}</TableCell><TableCell>{site.visits}</TableCell></TableRow>)}
               </TableBody></Table>
-              {!stats.rows.length && <Empty><EmptyHeader><EmptyMedia><GlobeHemisphereWest size={32} /></EmptyMedia><EmptyTitle>你的浏览足迹，从这里开始</EmptyTitle><EmptyDescription>{isExtension ? '访问一个网页后，记录会自动出现在这里。' : '演示记录已清空，可在设置中恢复。'}</EmptyDescription></EmptyHeader></Empty>}
+              {!stats.rows.length && <Empty><EmptyHeader><EmptyMedia><GlobeHemisphereWest size={32} /></EmptyMedia><EmptyTitle>你的浏览足迹，从这里开始</EmptyTitle><EmptyDescription>访问一个网页后，记录会自动出现在这里。</EmptyDescription></EmptyHeader></Empty>}
               {!!stats.rows.length && <div className="table-footer"><Button variant="link" className="px-0" onClick={() => setExpanded(!expanded)}>{expanded ? '收起列表' : `查看全部 ${stats.rows.length} 个站点`}<ArrowRight /></Button><Button className="action-button" onClick={event => openSite(stats.rows[0].domain, event)}>查看站点详情<ArrowRight /></Button></div>}
             </section>
           </> : page === 'records' ? <section className="records">
@@ -101,7 +101,6 @@ export function App() {
             <div className="setting-row"><div><h2>浏览记录</h2><p>记录网页访问次数，仅累计前台窗口中活跃标签页的浏览时间。</p></div><Button variant="outline" className="action-button" disabled={busy} onClick={() => act('toggle')}>{data.enabled ? '暂停记录' : '开启记录'}</Button></div>
             <div className="setting-row"><div><h2>本地与私密</h2><p>只保存站点域名、时间和访问次数，不保存页面正文、标题或完整网址。<br />忽略无痕窗口和浏览器内部页面，不发送数据到服务器。</p></div><ShieldCheck size={28} className="privacy-icon" /></div>
             <div className="setting-row"><div><h2>统计方式</h2><p>页面加载与刷新各计一次访问；切换标签不增加次数，单页应用内部跳转不重复计数。<br />连续 60 秒无系统操作视为空闲，每 30 秒保存一次。<br />最多保留 90 天数据，访问记录与活跃时段各最多保留 20,000 条。</p></div></div>
-            {!isExtension && <div className="setting-row"><div><h2>演示模式</h2><p>当前是界面预览，数据与真实插件独立，浏览网站不会产生新记录。</p></div><Button variant="outline" className="action-button" onClick={() => { localStorage.removeItem('jilan-demo-v1'); act(); }}>恢复演示数据</Button></div>}
             <div className="setting-row"><div><h2>清空所有记录</h2><p>删除此设备上 PageTime 已保存的记录，删除后无法恢复。</p></div><AlertDialogTrigger render={<Button variant="destructive" className="action-button" disabled={busy} />}><Trash />清空数据</AlertDialogTrigger></div>
           </section>}
         </main>
