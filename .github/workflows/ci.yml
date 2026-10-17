@@ -54,3 +54,34 @@ jobs:
         env:
           BASE_BRANCH: ${{ github.base_ref }}
         run: npm run changeset:status -- --since="origin/$BASE_BRANCH"
+
+  e2e:
+    name: browser e2e
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chromium and xvfb
+        run: npx playwright install --with-deps chromium && sudo apt-get install -y xvfb openbox xdotool x11-utils
+
+      - name: Build extension
+        run: npm run build
+
+      - name: End-to-end tests
+        run: xvfb-run -a npm run test:e2e
