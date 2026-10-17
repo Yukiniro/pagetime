@@ -29,6 +29,14 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 ## Agent skills
 
+### Release policy
+
+用户可见变更附 changeset：修复为 patch，完整新功能为 minor，major 需维护者确认；免发布改动附空 changeset。修改版本发布、产物校验或恢复流程时，先读 `docs/releasing.md`。使用 npm，保留现有 CI；发版由维护者手动创建版本 PR，合并后发布 GitHub ZIP。
+
+### 浏览器插件
+
+评估扩展基础设施或发布能力时，使用 browser-extension-best-practices，并以本仓库的数据契约、十语言资源及共享预览为准。
+
 ### Issue tracker
 
 Issues and specs live as GitHub issues. See `docs/agents/issue-tracker.md`.

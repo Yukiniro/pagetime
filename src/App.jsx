@@ -81,7 +81,7 @@ export function App() {
             </DropdownMenu>}
           </div>
           {error && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => act()}>{t('error.retry')}</Button></AlertDescription></Alert>}
-          {!ready && !error ? <p className="py-8 text-center text-muted-foreground">{t('loading')}</p> : page === 'overview' ? <>
+          {!ready ? (!error && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'overview' ? <>
             <section className="summary" aria-label={t('summary.label')}><div className="total-time">{duration(stats.ms)}</div><p className="flex items-center gap-1"><span>{t('summary.totalTime')}</span><Button variant="ghost" size="icon-sm" aria-label={t('howItWorks.infoButton')} onClick={openHow}><Info /></Button></p><div className="totals"><Trans i18nKey="summary.visits" count={stats.visits} components={{ b: <strong /> }} /><span>·</span><Trans i18nKey="summary.sites" count={stats.rows.length} components={{ b: <strong /> }} /></div></section>
             <Trend data={data} start={start} end={end} />
             <section className="timeline-section"><h2>{t('timeline.title')}</h2><p>{formatDate(now, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(todayStats.ms) })}</p><Timeline spans={data.spans} />

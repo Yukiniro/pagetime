@@ -1,6 +1,7 @@
 import { browser } from 'wxt/browser';
 import { defineBackground } from 'wxt/utils/define-background';
 import { addSpan, blankData, CHECKPOINT_SECONDS, creditUntil, domainOf, IDLE_SECONDS, prune } from '../src/model.mjs';
+import { validateData } from '../src/validate-data.mjs';
 
 type Data = { visits: {domain: string; at: number}[]; spans: {domain: string; start: number; end: number}[]; enabled: boolean; since: number };
 type Cursor = { tabId: number; domain: string; since: number };
@@ -12,7 +13,10 @@ export default defineBackground(() => {
     queue = result.then(() => {}, error => console.error('PageTime recording failed', error));
     return result;
   };
-  const read = async (): Promise<Data> => ((await browser.storage.local.get('data')).data as Data | undefined) ?? blankData();
+  const read = async (): Promise<Data> => {
+    const stored = (await browser.storage.local.get('data')).data;
+    return stored === undefined ? blankData() : validateData(stored);
+  };
   const cursor = async (): Promise<Cursor | undefined> => (await browser.storage.session.get('cursor')).cursor as Cursor | undefined;
 
   async function active(): Promise<{id: number; domain: string} | null> {
@@ -84,7 +88,7 @@ export default defineBackground(() => {
       }
       await update();
       return { data: await read() };
-    }).then(sendResponse, () => sendResponse({ error: 'save' }));
+    }).then(sendResponse, error => sendResponse({ error: error?.message === 'data' ? 'data' : 'save' }));
     return true;
   });
   browser.idle.setDetectionInterval(IDLE_SECONDS);
