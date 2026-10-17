@@ -5,6 +5,7 @@ import { mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSyn
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { syncLockVersion } from '../scripts/version.mjs';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 
@@ -16,6 +17,8 @@ test('actual Changesets CLI aggregates patch/minor, updates changelog and consum
   const run = (...args) => execFileSync(process.execPath, [join(root, 'node_modules/@changesets/cli/bin.js'), ...args], { cwd: directory, encoding: 'utf8' });
   symlinkSync(join(root, 'node_modules'), join(directory, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir');
   put('package.json', '{"name":"pagetime","version":"1.0.0","private":true}');
+  const lock = { name: 'pagetime', version: '1.0.0', lockfileVersion: 3, packages: { '': { name: 'pagetime', version: '1.0.0' }, 'node_modules/example': { version: '2.0.0', optional: true } } };
+  put('package-lock.json', JSON.stringify(lock));
   put('.changeset/config.json', readFileSync(join(root, '.changeset/config.json')));
   put('.gitignore', 'node_modules/\n');
   execFileSync('git', ['init', '--quiet', '--initial-branch=main'], { cwd: directory });
@@ -33,6 +36,13 @@ test('actual Changesets CLI aggregates patch/minor, updates changelog and consum
   plan = JSON.parse(readFileSync(join(directory, 'plan.json')));
   assert.equal(plan.releases[0].newVersion, '1.1.0');
   run('version');
+  syncLockVersion(directory);
+  const updatedLock = JSON.parse(readFileSync(join(directory, 'package-lock.json')));
+  assert.equal(updatedLock.version, '1.1.0');
+  assert.equal(updatedLock.packages[''].version, '1.1.0');
+  updatedLock.version = '1.0.0';
+  updatedLock.packages[''].version = '1.0.0';
+  assert.deepEqual(updatedLock, lock, 'Version preparation must preserve the dependency graph');
   assert.equal(JSON.parse(readFileSync(join(directory, 'package.json'))).version, '1.1.0');
   const changelog = readFileSync(join(directory, 'CHANGELOG.md'), 'utf8');
   assert.match(changelog, /## 1\.1\.0/);

@@ -8,6 +8,8 @@
 
 普通 PR 的现有 CI 增加 changeset 检查和扩展产物验证。空 changeset 表达免发布意图，不产生版本升级；维护者仍需审核改动是否应发版。
 
+版本 PR 只同步 lockfile 的版本元数据，保持已审核的依赖图。依赖变更在业务 PR 中通过 npm 更新，并以 `npm ci` 验证完整锁文件。
+
 ## 创建版本 PR
 
 1. 将业务 PR 和 changeset 合入 main。
