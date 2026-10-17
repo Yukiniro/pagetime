@@ -145,7 +145,7 @@ test('S7 minimizing or focusing nothing stops timing until focus returns', async
   assert.equal(total(data), 12_000);
 });
 
-test('S7 a restored window resumes after getAll() catches up, without another navigation', async () => {
+test('S7 a bounds event resumes a restored window even if getAll() still says minimized', async () => {
   const h = await createHarness({ url: 'https://a.com/' });
   await h.advance(4_000);
   h.setFocus(false);
@@ -158,9 +158,7 @@ test('S7 a restored window resumes after getAll() catches up, without another na
   h.browser.windows.onFocusChanged.fire(win.id);
   await h.settle();
   assert.equal(h.cursor(), null);
-  h.patchWindow(win.id, { focused: true, state: 'normal' });
-  await new Promise(resolve => setTimeout(resolve, 800));
-  await h.settle();
+  await h.restoreWindow(win.id);
   assert.equal(h.cursor()?.domain, 'a.com');
   await h.advance(3_000);
   await h.fireAlarm();

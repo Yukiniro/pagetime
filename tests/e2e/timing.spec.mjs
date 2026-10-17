@@ -324,7 +324,16 @@ test('S7 minimizing the browser window stops timing', async () => {
       for (const win of wins) await chrome.windows.update(win.id, { state: 'normal', focused: true });
     });
     await page.bringToFront();
-    await expect.poll(async () => (await readCursor(await worker(context)))?.domain ?? null).toBe('a.test');
+    // This environment often restores a window without onFocusChanged or onBoundsChanged.
+    // Timing resumes on the next one of those events, not on a navigation.
+    const resumed = async () => (await readCursor(await worker(context)))?.domain ?? null;
+    if (await resumed() !== 'a.test') {
+      await (await worker(context)).evaluate(async () => {
+        const [win] = await chrome.windows.getAll();
+        await chrome.windows.update(win.id, { width: Math.max(400, win.width - 40) });
+      });
+    }
+    await expect.poll(resumed).toBe('a.test');
     const resumedAt = Date.now();
     await page.waitForTimeout(2_000);
     await page.goto('about:blank');

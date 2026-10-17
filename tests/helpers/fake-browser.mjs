@@ -67,6 +67,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
         // Chrome's default getAll() omits devtools windows.
         getAll: async () => [...windows.values()].filter(win => win.type !== 'devtools').map(win => structuredClone(win)),
         onFocusChanged: event(),
+        onBoundsChanged: event(),
       },
       tabs: {
         query: async query => [...tabs.values()].filter(tab => {
@@ -97,12 +98,12 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
       exports: {},
       console: { ...console, error: (...args) => { errors.push(args); } },
       Date: ClockDate,
-      setInterval(...args) {
-        const timer = setInterval(...args);
+      setTimeout(...args) {
+        const timer = setTimeout(...args);
         timer.unref();
         return timer;
       },
-      clearInterval,
+      clearTimeout,
       require: name => name === 'wxt/browser' ? { browser }
         : name === 'wxt/utils/define-background' ? { defineBackground: fn => fn() }
         : name.endsWith('validate-data.mjs') ? validation
@@ -248,10 +249,14 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
       if (win) { win.focused = focused; win.state = focused ? 'normal' : 'minimized'; }
       browser.windows.onFocusChanged.fire(focused ? 1 : WINDOW_ID_NONE);
     },
-    patchWindow(windowId, patch) {
+    async restoreWindow(windowId) {
       const win = windows.get(windowId);
       if (!win) throw new Error('no window');
-      Object.assign(win, patch);
+      // getAll() stays minimized while the bounds listener runs, matching a stale restore event.
+      browser.windows.onBoundsChanged.fire({ ...win, focused: true, state: 'normal' });
+      await settle();
+      for (const other of windows.values()) other.focused = other.id === windowId;
+      win.state = 'normal';
     },
     setTab(patch) {
       Object.assign(tabs.get(1), patch);
