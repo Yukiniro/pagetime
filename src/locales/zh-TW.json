@@ -58,7 +58,7 @@
     "language": { "title": "語言", "description": "選擇 PageTime 介面的顯示語言。", "label": "介面語言：{{language}}" },
     "recording": { "title": "瀏覽紀錄", "description": "記錄網頁造訪次數，僅累計前景視窗中作用中分頁的瀏覽時間。" },
     "privacy": { "title": "本機與隱私", "description": "只儲存網站網域、時間和造訪次數，不儲存頁面內文、標題或完整網址。<br/>忽略無痕視窗和瀏覽器內部頁面，不傳送資料到伺服器。" },
-    "method": { "title": "統計方式", "description": "頁面載入與重新整理各計一次造訪；切換分頁不增加次數，單頁應用程式內部跳轉不重複計數。<br/>連續 60 秒無系統操作視為閒置，每 30 秒儲存一次。<br/>最多保留 90 天資料，造訪紀錄與活躍時段各最多保留 20,000 筆。" },
+    "method": { "title": "統計方式", "description": "頁面載入與重新整理各計一次造訪；切換分頁不增加次數，單頁應用程式內部跳轉不重複計數。<br/>連續 {{idle}} 秒無系統操作視為閒置，每 {{checkpoint}} 秒儲存一次。<br/>最多保留 {{days}} 天資料，造訪紀錄最多 {{limit}} 筆，活躍時段最多 {{limit}} 筆。" },
     "clear": { "title": "清除所有紀錄", "description": "刪除此裝置上 PageTime 已儲存的紀錄，刪除後無法復原。", "button": "清除資料" }
   },
   "detail": {
@@ -81,5 +81,39 @@
     "underMinute": "不到 1 分鐘",
     "minutes_other": "{{count}} 分鐘",
     "hours": "{{hours}} 小時 {{minutes}} 分鐘"
+  },
+  "howItWorks": {
+    "open": "了解計時規則",
+    "infoButton": "這段時間是怎麼算的？",
+    "title": "PageTime 如何計時",
+    "intro": "PageTime 只統計你真正在看網頁的時間，規則如下。",
+    "counted": {
+      "title": "會計入",
+      "focus": "前景視窗中目前選取的分頁",
+      "web": "僅 http/https 網頁，依網域累計",
+      "navigation": "在同一分頁內跳到其他網站時，從跳轉時刻起計入新網站"
+    },
+    "notCounted": {
+      "title": "不計入",
+      "idle_other": "連續 {{count}} 秒沒有鍵盤或滑鼠操作（包括只看影片、聽音訊）",
+      "locked": "鎖定螢幕、電腦休眠或瀏覽器關閉期間",
+      "unfocused": "視窗最小化、切換到其他應用程式或開發者工具",
+      "internal": "瀏覽器內部頁面、擴充功能頁面和本機檔案",
+      "incognito": "無痕視窗",
+      "paused": "暫停記錄期間",
+      "gap_other": "兩次檢查間隔超過 {{count}} 秒時，超出的部分不計入，這段最多計入 {{count}} 秒（例如系統暫停）"
+    },
+    "visits": {
+      "title": "造訪次數",
+      "description": "頁面載入或重新整理計 1 次；切換分頁與單頁應用程式內部跳轉不計。"
+    },
+    "privacy": {
+      "title": "隱私與儲存",
+      "fields": "只儲存網域、時間和造訪次數，不儲存標題、內文或完整網址。",
+      "local": "資料只保存在這台裝置的瀏覽器中，不會上傳到任何伺服器。",
+      "retention_other": "保留最近 {{count}} 天，時段最多 {{limit}} 筆，造訪紀錄最多 {{limit}} 筆。",
+      "save_other": "每 {{count}} 秒儲存一次；意外關閉時最多遺失最近這段時間。"
+    },
+    "close": "關閉"
   }
 }

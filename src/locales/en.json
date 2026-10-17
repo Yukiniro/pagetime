@@ -63,7 +63,7 @@
     "language": { "title": "Language", "description": "Choose the display language for PageTime.", "label": "Display language: {{language}}" },
     "recording": { "title": "Browsing records", "description": "Counts page visits and only tracks time on the active tab of the focused window." },
     "privacy": { "title": "Local and private", "description": "Stores only site domains, times, and visit counts — never page content, titles, or full URLs.<br/>Ignores incognito windows and internal browser pages, and never sends data to a server." },
-    "method": { "title": "How it's measured", "description": "Each page load or reload counts as one visit; switching tabs or in-app navigation in single-page apps doesn't add visits.<br/>60 seconds without system input counts as idle; progress is saved every 30 seconds.<br/>Keeps up to 90 days of data, with at most 20,000 visits and 20,000 active sessions." },
+    "method": { "title": "How it's measured", "description": "Each page load or reload counts as one visit; switching tabs or in-app navigation in single-page apps doesn't add visits.<br/>{{idle}} seconds without system input counts as idle; progress is saved every {{checkpoint}} seconds.<br/>Keeps up to {{days}} days of data, with at most {{limit}} visits and {{limit}} active sessions." },
     "clear": { "title": "Clear all records", "description": "Deletes the records PageTime has saved on this device. This can't be undone.", "button": "Clear data" }
   },
   "detail": {
@@ -88,5 +88,43 @@
     "minutes_one": "{{count}} min",
     "minutes_other": "{{count}} min",
     "hours": "{{hours}} hr {{minutes}} min"
+  },
+  "howItWorks": {
+    "open": "How time is counted",
+    "infoButton": "How is this time counted?",
+    "title": "How PageTime counts time",
+    "intro": "PageTime only counts time you actually spend looking at a page. The rules are below.",
+    "counted": {
+      "title": "What counts",
+      "focus": "The selected tab in a focused foreground window",
+      "web": "Only http and https pages, totaled by domain",
+      "navigation": "When the same tab navigates to another site, time on the new site starts at that navigation"
+    },
+    "notCounted": {
+      "title": "What doesn't count",
+      "idle_one": "{{count}} second in a row without keyboard or mouse input (including watching video or listening to audio)",
+      "idle_other": "{{count}} seconds in a row without keyboard or mouse input (including watching video or listening to audio)",
+      "locked": "While the screen is locked, the computer is asleep, or the browser is closed",
+      "unfocused": "A minimized window, another app in front, or focused DevTools",
+      "internal": "Browser internal pages, extension pages, and local files",
+      "incognito": "Incognito windows",
+      "paused": "While recording is paused",
+      "gap_one": "When checks are more than {{count}} second apart, at most {{count}} second of that gap is counted (for example, while the system is suspended)",
+      "gap_other": "When checks are more than {{count}} seconds apart, at most {{count}} seconds of that gap are counted (for example, while the system is suspended)"
+    },
+    "visits": {
+      "title": "How visits are counted",
+      "description": "A page load or reload counts as 1 visit. Switching tabs and in-app navigation in single-page apps do not."
+    },
+    "privacy": {
+      "title": "Privacy and storage",
+      "fields": "Only the domain, times, and visit counts are saved — never the title, page text, or full URL.",
+      "local": "Data stays in this browser on this device and is never uploaded to a server.",
+      "retention_one": "Keeps the last {{count}} day, with at most {{limit}} time spans and {{limit}} visit records.",
+      "retention_other": "Keeps the last {{count}} days, with at most {{limit}} time spans and {{limit}} visit records.",
+      "save_one": "Saves every {{count}} second. If the browser closes unexpectedly, at most that recent interval can be lost.",
+      "save_other": "Saves every {{count}} seconds. If the browser closes unexpectedly, at most that recent interval can be lost."
+    },
+    "close": "Close"
   }
 }

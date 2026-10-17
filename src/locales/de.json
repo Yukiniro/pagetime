@@ -63,7 +63,7 @@
     "language": { "title": "Sprache", "description": "Wähle die Anzeigesprache von PageTime.", "label": "Anzeigesprache: {{language}}" },
     "recording": { "title": "Aufzeichnung", "description": "Zählt Seitenbesuche und misst nur die Zeit im aktiven Tab des fokussierten Fensters." },
     "privacy": { "title": "Lokal und privat", "description": "Speichert nur Domains, Zeiten und Besuchszahlen – niemals Seiteninhalte, Titel oder vollständige URLs.<br/>Inkognito-Fenster und interne Browserseiten werden ignoriert, und es werden keine Daten an einen Server gesendet." },
-    "method": { "title": "So wird gemessen", "description": "Jedes Laden oder Neuladen einer Seite zählt als ein Besuch; Tab-Wechsel und Navigation innerhalb von Single-Page-Apps zählen nicht.<br/>60 Sekunden ohne Systemeingabe gelten als Leerlauf; der Fortschritt wird alle 30 Sekunden gespeichert.<br/>Speichert Daten bis zu 90 Tage, höchstens 20.000 Besuche und 20.000 aktive Sitzungen." },
+    "method": { "title": "So wird gemessen", "description": "Jedes Laden oder Neuladen einer Seite zählt als ein Besuch; Tab-Wechsel und Navigation innerhalb von Single-Page-Apps zählen nicht.<br/>{{idle}} Sekunden ohne Systemeingabe gelten als Leerlauf; der Fortschritt wird alle {{checkpoint}} Sekunden gespeichert.<br/>Speichert Daten bis zu {{days}} Tage, höchstens {{limit}} Besuche und {{limit}} aktive Sitzungen." },
     "clear": { "title": "Alle Daten löschen", "description": "Löscht die von PageTime auf diesem Gerät gespeicherten Daten. Dies kann nicht rückgängig gemacht werden.", "button": "Daten löschen" }
   },
   "detail": {
@@ -88,5 +88,43 @@
     "minutes_one": "{{count}} Min.",
     "minutes_other": "{{count}} Min.",
     "hours": "{{hours}} Std. {{minutes}} Min."
+  },
+  "howItWorks": {
+    "open": "So wird die Zeit gezählt",
+    "infoButton": "Wie wird diese Zeit gezählt?",
+    "title": "Wie PageTime Zeit zählt",
+    "intro": "PageTime zählt nur die Zeit, in der du eine Seite wirklich ansiehst. Die Regeln stehen unten.",
+    "counted": {
+      "title": "Was zählt",
+      "focus": "Der ausgewählte Tab in einem fokussierten Vordergrundfenster",
+      "web": "Nur http- und https-Seiten, summiert nach Domain",
+      "navigation": "Wechselt derselbe Tab zu einer anderen Website, beginnt die neue Website zum Zeitpunkt des Wechsels"
+    },
+    "notCounted": {
+      "title": "Was nicht zählt",
+      "idle_one": "{{count}} Sekunde am Stück ohne Tastatur oder Maus (auch beim Ansehen von Videos oder Hören von Audio)",
+      "idle_other": "{{count}} Sekunden am Stück ohne Tastatur oder Maus (auch beim Ansehen von Videos oder Hören von Audio)",
+      "locked": "Während der Bildschirm gesperrt ist, der Computer schläft oder der Browser geschlossen ist",
+      "unfocused": "Minimiertes Fenster, eine andere App im Vordergrund oder fokussierte Entwicklertools",
+      "internal": "Interne Browserseiten, Erweiterungsseiten und lokale Dateien",
+      "incognito": "Inkognito-Fenster",
+      "paused": "Während die Aufzeichnung pausiert ist",
+      "gap_one": "Liegen Prüfungen mehr als {{count}} Sekunde auseinander, zählt diese Lücke höchstens {{count}} Sekunde (zum Beispiel bei Systemruhe)",
+      "gap_other": "Liegen Prüfungen mehr als {{count}} Sekunden auseinander, zählt diese Lücke höchstens {{count}} Sekunden (zum Beispiel bei Systemruhe)"
+    },
+    "visits": {
+      "title": "Wie Besuche gezählt werden",
+      "description": "Jedes Laden oder Neuladen zählt als 1 Besuch. Tab-Wechsel und Navigation in Single-Page-Apps zählen nicht."
+    },
+    "privacy": {
+      "title": "Privatsphäre und Speicherung",
+      "fields": "Gespeichert werden nur Domain, Zeiten und Besuchszahlen — nie Titel, Seitentext oder die vollständige URL.",
+      "local": "Die Daten bleiben im Browser auf diesem Gerät und werden nie hochgeladen.",
+      "retention_one": "Aufbewahrt wird der letzte {{count}} Tag, höchstens {{limit}} Zeitspannen und {{limit}} Besuche.",
+      "retention_other": "Aufbewahrt werden die letzten {{count}} Tage, höchstens {{limit}} Zeitspannen und {{limit}} Besuche.",
+      "save_one": "Speichert alle {{count}} Sekunde. Beim unerwarteten Schließen kann höchstens dieses Intervall verloren gehen.",
+      "save_other": "Speichert alle {{count}} Sekunden. Beim unerwarteten Schließen kann höchstens dieses Intervall verloren gehen."
+    },
+    "close": "Schließen"
   }
 }

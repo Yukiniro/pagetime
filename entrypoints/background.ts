@@ -1,6 +1,6 @@
 import { browser } from 'wxt/browser';
 import { defineBackground } from 'wxt/utils/define-background';
-import { addSpan, blankData, creditUntil, domainOf, prune } from '../src/model.mjs';
+import { addSpan, blankData, CHECKPOINT_SECONDS, creditUntil, domainOf, IDLE_SECONDS, prune } from '../src/model.mjs';
 
 type Data = { visits: {domain: string; at: number}[]; spans: {domain: string; start: number; end: number}[]; enabled: boolean; since: number };
 type Cursor = { tabId: number; domain: string; since: number };
@@ -16,7 +16,7 @@ export default defineBackground(() => {
   const cursor = async (): Promise<Cursor | undefined> => (await browser.storage.session.get('cursor')).cursor as Cursor | undefined;
 
   async function active(): Promise<{id: number; domain: string} | null> {
-    if (await browser.idle.queryState(60) !== 'active') return null;
+    if (await browser.idle.queryState(IDLE_SECONDS) !== 'active') return null;
     const windows = await browser.windows.getAll();
     const focused = windows.find(w => w.focused && !w.incognito);
     if (focused?.id === undefined) return null;
@@ -87,7 +87,7 @@ export default defineBackground(() => {
     }).then(sendResponse, () => sendResponse({ error: 'save' }));
     return true;
   });
-  browser.idle.setDetectionInterval(60);
-  void browser.alarms.create('checkpoint', { periodInMinutes: 0.5 });
+  browser.idle.setDetectionInterval(IDLE_SECONDS);
+  void browser.alarms.create('checkpoint', { periodInMinutes: CHECKPOINT_SECONDS / 60 });
   void run(() => update());
 });

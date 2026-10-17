@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { blankData, domainOf, addSpan, summarize, midnight, daily, prune, creditUntil, DAY, LIMIT, GAP_LIMIT_MS } from '../src/model.mjs';
+import { blankData, domainOf, addSpan, summarize, midnight, daily, prune, creditUntil, DAY, LIMIT, GAP_LIMIT_MS, RETENTION_DAYS } from '../src/model.mjs';
 
 test('only http(s) domains are recorded; sensitive query/path omitted', () => {
   assert.equal(domainOf('https://example.com/private?token=secret#x'), 'example.com');
@@ -25,5 +25,5 @@ test('suspension, clock reversal and retention do not inflate data', () => {
   assert.equal(creditUntil({since:10},0),10);
   assert.equal(creditUntil(undefined,100_000),undefined);
   const data=blankData();data.visits=Array.from({length:LIMIT+4},(_,at)=>({domain:'a',at}));prune(data,LIMIT+5);assert.equal(data.visits.length,LIMIT);
-  data.visits.push({domain:'old',at:0});prune(data,91*DAY);assert.equal(data.visits.length,0);
+  data.visits.push({domain:'old',at:0});prune(data,(RETENTION_DAYS+1)*DAY);assert.equal(data.visits.length,0);
 });

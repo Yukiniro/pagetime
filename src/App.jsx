@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ChartBar, Clock, GearSix, ShieldCheck, Pause, Play, ArrowRight, GlobeHemisphereWest, MagnifyingGlass, X, Trash, CaretDown, CalendarBlank, Translate } from '@phosphor-icons/react';
+import { ChartBar, Clock, GearSix, ShieldCheck, Pause, Play, ArrowRight, GlobeHemisphereWest, MagnifyingGlass, X, Trash, CaretDown, CalendarBlank, Translate, Info } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from '@app/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@app/components/ui/dialog';
@@ -13,7 +13,8 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@a
 import { Avatar, AvatarImage, AvatarFallback } from '@app/components/ui/avatar';
 import { ScrollArea } from '@app/components/ui/scroll-area';
 import { Trans, useTranslation } from 'react-i18next';
-import { blankData, midnight, summarize } from './model.mjs';
+import { blankData, midnight, summarize, timingCopy } from './model.mjs';
+import { HowItWorksDialog } from './HowItWorksDialog.jsx';
 import { command, knownSites, colorOf } from './data.js';
 import { Trend, Timeline } from './Charts.jsx';
 import { duration, formatDate, languages, timeLabel } from './i18n.js';
@@ -30,8 +31,9 @@ export function App() {
   const rangeLabel = range => range === 1 ? t('range.today') : t('range.lastDays', { count: range });
   const [data, setData] = useState(blankData), [ready, setReady] = useState(false), [error, setError] = useState(''), [busy, setBusy] = useState(false);
   const [page, setPage] = useState('overview'), [range, setRange] = useState(7), [search, setSearch] = useState(''), [expanded, setExpanded] = useState(false), [selected, setSelected] = useState(null);
-  const [confirmClear, setConfirmClear] = useState(false);
-  const detailTrigger = useRef(null);
+  const [confirmClear, setConfirmClear] = useState(false), [howOpen, setHowOpen] = useState(false);
+  const detailTrigger = useRef(null), howTrigger = useRef(null);
+  const openHow = event => { howTrigger.current = event.currentTarget; setHowOpen(true); };
   async function act(type = 'snapshot') {
     setBusy(true);
     try { setData(await command(type)); setError(''); setReady(true); return true; }
@@ -80,7 +82,7 @@ export function App() {
           </div>
           {error && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => act()}>{t('error.retry')}</Button></AlertDescription></Alert>}
           {!ready && !error ? <p className="py-8 text-center text-muted-foreground">{t('loading')}</p> : page === 'overview' ? <>
-            <section className="summary" aria-label={t('summary.label')}><div className="total-time">{duration(stats.ms)}</div><p>{t('summary.totalTime')}</p><div className="totals"><Trans i18nKey="summary.visits" count={stats.visits} components={{ b: <strong /> }} /><span>·</span><Trans i18nKey="summary.sites" count={stats.rows.length} components={{ b: <strong /> }} /></div></section>
+            <section className="summary" aria-label={t('summary.label')}><div className="total-time">{duration(stats.ms)}</div><p className="flex items-center gap-1"><span>{t('summary.totalTime')}</span><Button variant="ghost" size="icon-sm" aria-label={t('howItWorks.infoButton')} onClick={openHow}><Info /></Button></p><div className="totals"><Trans i18nKey="summary.visits" count={stats.visits} components={{ b: <strong /> }} /><span>·</span><Trans i18nKey="summary.sites" count={stats.rows.length} components={{ b: <strong /> }} /></div></section>
             <Trend data={data} start={start} end={end} />
             <section className="timeline-section"><h2>{t('timeline.title')}</h2><p>{formatDate(now, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(todayStats.ms) })}</p><Timeline spans={data.spans} />
               <div className="legend">{todayStats.rows.filter(r => r.ms).slice(0, 5).map(r => r.domain).map(domain => <Button variant="ghost" size="xs" key={domain} onClick={event => openSite(domain, event)}><i style={{ background: colorOf(domain) }} />{domain}</Button>)}<span className="idle-legend"><i />{t('timeline.idle')}</span></div>
@@ -108,7 +110,7 @@ export function App() {
             </DropdownMenu></div>
             <div className="setting-row"><div><h2>{t('settings.recording.title')}</h2><p>{t('settings.recording.description')}</p></div><Button variant="outline" className="action-button" disabled={busy} onClick={() => act('toggle')}>{data.enabled ? t('actions.pause') : t('actions.enable')}</Button></div>
             <div className="setting-row"><div><h2>{t('settings.privacy.title')}</h2><p><Trans i18nKey="settings.privacy.description" /></p></div><ShieldCheck size={28} className="privacy-icon" /></div>
-            <div className="setting-row"><div><h2>{t('settings.method.title')}</h2><p><Trans i18nKey="settings.method.description" /></p></div></div>
+            <div className="setting-row"><div><h2>{t('settings.method.title')}</h2><p><Trans i18nKey="settings.method.description" values={timingCopy} /></p><Button variant="outline" className="action-button mt-3" onClick={openHow}>{t('howItWorks.open')}</Button></div></div>
             <div className="setting-row"><div><h2>{t('settings.clear.title')}</h2><p>{t('settings.clear.description')}</p></div><AlertDialogTrigger render={<Button variant="destructive" className="action-button" disabled={busy} />}><Trash />{t('settings.clear.button')}</AlertDialogTrigger></div>
           </section>}
         </main>
@@ -126,6 +128,7 @@ export function App() {
         </>}
       </DialogContent>
     </Dialog>
+    <HowItWorksDialog open={howOpen} onOpenChange={setHowOpen} finalFocus={howTrigger} />
     <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>{t('confirm.title')}</AlertDialogTitle><AlertDialogDescription>{t('confirm.description')}</AlertDialogDescription></AlertDialogHeader>
       {error && <Alert variant="destructive"><AlertDescription>{errorText}</AlertDescription></Alert>}
       <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction variant="destructive" disabled={busy} onClick={async () => { if (await act('clear')) setConfirmClear(false); }}>{busy ? t('confirm.clearing') : t('confirm.confirm')}</AlertDialogAction></AlertDialogFooter>
