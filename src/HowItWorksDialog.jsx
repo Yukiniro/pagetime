@@ -1,0 +1,53 @@
+import { X } from '@phosphor-icons/react';
+import { Button } from '@app/components/ui/button';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@app/components/ui/dialog';
+import { useTranslation } from 'react-i18next';
+import { timingCopy } from './model.mjs';
+
+const counted = ['focus', 'web', 'navigation'];
+const notCounted = ['idle', 'locked', 'unfocused', 'internal', 'incognito', 'paused', 'gap'];
+
+export function HowItWorksDialog({ open, onOpenChange, finalFocus }) {
+  const { t } = useTranslation();
+  const notCountedText = key => {
+    if (key === 'idle') return t('howItWorks.notCounted.idle', { count: timingCopy.idle });
+    if (key === 'gap') return t('howItWorks.notCounted.gap', { count: timingCopy.gap });
+    return t(`howItWorks.notCounted.${key}`);
+  };
+  return <Dialog open={open} onOpenChange={onOpenChange}>
+    <DialogContent className="flex max-h-[85vh] flex-col gap-4 overflow-hidden break-words p-7 sm:max-w-[520px]" finalFocus={finalFocus} showCloseButton={false}>
+      <DialogHeader className="pr-8">
+        <DialogTitle className="text-xl">{t('howItWorks.title')}</DialogTitle>
+        <DialogDescription>{t('howItWorks.intro')}</DialogDescription>
+      </DialogHeader>
+      <DialogClose render={<Button variant="ghost" size="icon-sm" className="absolute top-4 right-4" />} aria-label={t('howItWorks.close')}><X /></DialogClose>
+      <div className="flex min-h-0 flex-col gap-4 overflow-y-auto">
+      <section className="flex flex-col gap-1">
+        <h3>{t('howItWorks.counted.title')}</h3>
+        <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-muted-foreground">
+          {counted.map(key => <li key={key}>{t(`howItWorks.counted.${key}`)}</li>)}
+        </ul>
+      </section>
+      <section className="flex flex-col gap-1">
+        <h3>{t('howItWorks.notCounted.title')}</h3>
+        <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-muted-foreground">
+          {notCounted.map(key => <li key={key}>{notCountedText(key)}</li>)}
+        </ul>
+      </section>
+      <section className="flex flex-col gap-1">
+        <h3>{t('howItWorks.visits.title')}</h3>
+        <p>{t('howItWorks.visits.description')}</p>
+      </section>
+      <section className="flex flex-col gap-1">
+        <h3>{t('howItWorks.privacy.title')}</h3>
+        <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-muted-foreground">
+          <li>{t('howItWorks.privacy.fields')}</li>
+          <li>{t('howItWorks.privacy.local')}</li>
+          <li>{t('howItWorks.privacy.retention', { count: timingCopy.days, limit: timingCopy.limit })}</li>
+          <li>{t('howItWorks.privacy.save', { count: timingCopy.checkpoint })}</li>
+        </ul>
+      </section>
+      </div>
+    </DialogContent>
+  </Dialog>;
+}

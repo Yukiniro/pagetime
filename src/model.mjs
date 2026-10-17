@@ -1,6 +1,16 @@
 export const DAY = 86_400_000;
 export const LIMIT = 20_000;
 export const GAP_LIMIT_MS = 90_000;
+export const IDLE_SECONDS = 60;
+export const CHECKPOINT_SECONDS = 30;
+export const RETENTION_DAYS = 90;
+export const timingCopy = {
+  idle: IDLE_SECONDS,
+  checkpoint: CHECKPOINT_SECONDS,
+  gap: GAP_LIMIT_MS / 1000,
+  days: RETENTION_DAYS,
+  limit: LIMIT,
+};
 export const blankData = () => ({ visits: [], spans: [], enabled: true, since: Date.now() });
 
 export function domainOf(url) {
@@ -24,7 +34,7 @@ export function addSpan(data, domain, start, end) {
 }
 
 export function prune(data, now) {
-  const cutoff = now - 90 * DAY;
+  const cutoff = now - RETENTION_DAYS * DAY;
   data.visits = data.visits.filter(v => v.at >= cutoff).slice(-LIMIT);
   data.spans = data.spans.filter(s => s.end > cutoff).slice(-LIMIT).map(s => ({...s, start: Math.max(s.start,cutoff)}));
 }

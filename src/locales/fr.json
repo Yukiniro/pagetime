@@ -68,7 +68,7 @@
     "language": { "title": "Langue", "description": "Choisissez la langue d’affichage de PageTime.", "label": "Langue d’affichage : {{language}}" },
     "recording": { "title": "Enregistrement", "description": "Compte les visites de pages et ne mesure que le temps passé sur l’onglet actif de la fenêtre au premier plan." },
     "privacy": { "title": "Local et privé", "description": "Seuls les domaines, horaires et nombres de visites sont enregistrés — jamais le contenu, les titres ni les URL complètes.<br/>Les fenêtres de navigation privée et les pages internes du navigateur sont ignorées, et aucune donnée n’est envoyée à un serveur." },
-    "method": { "title": "Mode de calcul", "description": "Chaque chargement ou rechargement de page compte comme une visite ; changer d’onglet ou naviguer dans une application monopage n’ajoute pas de visite.<br/>60 secondes sans activité système sont considérées comme de l’inactivité ; la progression est enregistrée toutes les 30 secondes.<br/>Conserve jusqu’à 90 jours de données, avec au plus 20 000 visites et 20 000 sessions actives." },
+    "method": { "title": "Mode de calcul", "description": "Chaque chargement ou rechargement de page compte comme une visite ; changer d’onglet ou naviguer dans une application monopage n’ajoute pas de visite.<br/>{{idle}} secondes sans activité système sont considérées comme de l’inactivité ; la progression est enregistrée toutes les {{checkpoint}} secondes.<br/>Conserve jusqu’à {{days}} jours de données, avec au plus {{limit}} visites et {{limit}} sessions actives." },
     "clear": { "title": "Effacer tous les enregistrements", "description": "Supprime les données enregistrées par PageTime sur cet appareil. Action irréversible.", "button": "Effacer les données" }
   },
   "detail": {
@@ -95,5 +95,47 @@
     "minutes_many": "{{count}} min",
     "minutes_other": "{{count}} min",
     "hours": "{{hours}} h {{minutes}} min"
+  },
+  "howItWorks": {
+    "open": "Comment le temps est compté",
+    "infoButton": "Comment ce temps est-il compté ?",
+    "title": "Comment PageTime compte le temps",
+    "intro": "PageTime ne compte que le temps où vous regardez vraiment une page. Les règles sont ci-dessous.",
+    "counted": {
+      "title": "Ce qui compte",
+      "focus": "L’onglet sélectionné dans une fenêtre au premier plan et active",
+      "web": "Uniquement les pages http et https, totalisées par domaine",
+      "navigation": "Quand le même onglet passe sur un autre site, le nouveau site commence au moment de la navigation"
+    },
+    "notCounted": {
+      "title": "Ce qui ne compte pas",
+      "idle_one": "{{count}} seconde d’affilée sans clavier ni souris (y compris en regardant une vidéo ou en écoutant de l’audio)",
+      "idle_many": "{{count}} secondes d’affilée sans clavier ni souris (y compris en regardant une vidéo ou en écoutant de l’audio)",
+      "idle_other": "{{count}} secondes d’affilée sans clavier ni souris (y compris en regardant une vidéo ou en écoutant de l’audio)",
+      "locked": "Écran verrouillé, ordinateur en veille ou navigateur fermé",
+      "unfocused": "Fenêtre réduite, une autre application au premier plan, ou les outils de développement actifs",
+      "internal": "Pages internes du navigateur, pages d’extensions et fichiers locaux",
+      "incognito": "Fenêtres de navigation privée",
+      "paused": "Pendant que l’enregistrement est en pause",
+      "gap_one": "Si plus de {{count}} seconde sépare deux vérifications, cet intervalle compte au plus {{count}} seconde (par exemple si le système est suspendu)",
+      "gap_many": "Si plus de {{count}} secondes séparent deux vérifications, cet intervalle compte au plus {{count}} secondes (par exemple si le système est suspendu)",
+      "gap_other": "Si plus de {{count}} secondes séparent deux vérifications, cet intervalle compte au plus {{count}} secondes (par exemple si le système est suspendu)"
+    },
+    "visits": {
+      "title": "Comment les visites sont comptées",
+      "description": "Un chargement ou un rechargement compte pour 1 visite. Changer d’onglet et la navigation interne d’une application monopage ne comptent pas."
+    },
+    "privacy": {
+      "title": "Confidentialité et stockage",
+      "fields": "Seuls le domaine, les horaires et le nombre de visites sont enregistrés — jamais le titre, le texte de la page ni l’URL complète.",
+      "local": "Les données restent dans le navigateur de cet appareil et ne sont jamais envoyées à un serveur.",
+      "retention_one": "Conserve le dernier {{count}} jour, avec au plus {{limit}} intervalles et {{limit}} visites.",
+      "retention_many": "Conserve les {{count}} derniers jours, avec au plus {{limit}} intervalles et {{limit}} visites.",
+      "retention_other": "Conserve les {{count}} derniers jours, avec au plus {{limit}} intervalles et {{limit}} visites.",
+      "save_one": "Enregistre toutes les {{count}} seconde. En cas de fermeture inattendue, seule cette période récente peut être perdue.",
+      "save_many": "Enregistre toutes les {{count}} secondes. En cas de fermeture inattendue, seule cette période récente peut être perdue.",
+      "save_other": "Enregistre toutes les {{count}} secondes. En cas de fermeture inattendue, seule cette période récente peut être perdue."
+    },
+    "close": "Fermer"
   }
 }

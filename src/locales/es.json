@@ -68,7 +68,7 @@
     "language": { "title": "Idioma", "description": "Elige el idioma de la interfaz de PageTime.", "label": "Idioma de la interfaz: {{language}}" },
     "recording": { "title": "Registro de navegación", "description": "Cuenta las visitas a páginas y solo mide el tiempo en la pestaña activa de la ventana enfocada." },
     "privacy": { "title": "Local y privado", "description": "Solo guarda dominios, horas y número de visitas; nunca el contenido, los títulos ni las URL completas.<br/>Ignora las ventanas de incógnito y las páginas internas del navegador, y nunca envía datos a un servidor." },
-    "method": { "title": "Cómo se mide", "description": "Cada carga o recarga de página cuenta como una visita; cambiar de pestaña o navegar dentro de una aplicación de una sola página no suma visitas.<br/>60 segundos sin actividad del sistema se consideran inactividad; el progreso se guarda cada 30 segundos.<br/>Conserva hasta 90 días de datos, con un máximo de 20.000 visitas y 20.000 sesiones activas." },
+    "method": { "title": "Cómo se mide", "description": "Cada carga o recarga de página cuenta como una visita; cambiar de pestaña o navegar dentro de una aplicación de una sola página no suma visitas.<br/>{{idle}} segundos sin actividad del sistema se consideran inactividad; el progreso se guarda cada {{checkpoint}} segundos.<br/>Conserva hasta {{days}} días de datos, con un máximo de {{limit}} visitas y {{limit}} sesiones activas." },
     "clear": { "title": "Borrar todos los registros", "description": "Elimina los registros que PageTime ha guardado en este dispositivo. No se puede deshacer.", "button": "Borrar datos" }
   },
   "detail": {
@@ -95,5 +95,47 @@
     "minutes_many": "{{count}} min",
     "minutes_other": "{{count}} min",
     "hours": "{{hours}} h {{minutes}} min"
+  },
+  "howItWorks": {
+    "open": "Cómo se cuenta el tiempo",
+    "infoButton": "¿Cómo se calcula este tiempo?",
+    "title": "Cómo cuenta el tiempo PageTime",
+    "intro": "PageTime solo cuenta el tiempo que realmente pasas mirando una página. Las reglas están abajo.",
+    "counted": {
+      "title": "Qué cuenta",
+      "focus": "La pestaña seleccionada en una ventana en primer plano y enfocada",
+      "web": "Solo páginas http y https, sumadas por dominio",
+      "navigation": "Si la misma pestaña pasa a otro sitio, el sitio nuevo empieza en el momento del cambio"
+    },
+    "notCounted": {
+      "title": "Qué no cuenta",
+      "idle_one": "{{count}} segundo seguido sin teclado ni ratón (incluso al ver un vídeo o escuchar audio)",
+      "idle_many": "{{count}} segundos seguidos sin teclado ni ratón (incluso al ver un vídeo o escuchar audio)",
+      "idle_other": "{{count}} segundos seguidos sin teclado ni ratón (incluso al ver un vídeo o escuchar audio)",
+      "locked": "Con la pantalla bloqueada, el equipo en suspensión o el navegador cerrado",
+      "unfocused": "Ventana minimizada, otra aplicación delante o las herramientas de desarrollo enfocadas",
+      "internal": "Páginas internas del navegador, páginas de extensiones y archivos locales",
+      "incognito": "Ventanas de incógnito",
+      "paused": "Mientras la grabación está en pausa",
+      "gap_one": "Si entre comprobaciones pasa más de {{count}} segundo, ese intervalo cuenta como máximo {{count}} segundo (por ejemplo, si el sistema está suspendido)",
+      "gap_many": "Si entre comprobaciones pasan más de {{count}} segundos, ese intervalo cuenta como máximo {{count}} segundos (por ejemplo, si el sistema está suspendido)",
+      "gap_other": "Si entre comprobaciones pasan más de {{count}} segundos, ese intervalo cuenta como máximo {{count}} segundos (por ejemplo, si el sistema está suspendido)"
+    },
+    "visits": {
+      "title": "Cómo se cuentan las visitas",
+      "description": "Una carga o recarga cuenta como 1 visita. Cambiar de pestaña y la navegación interna de una aplicación de una sola página no cuentan."
+    },
+    "privacy": {
+      "title": "Privacidad y almacenamiento",
+      "fields": "Solo se guardan el dominio, los tiempos y el número de visitas; nunca el título, el texto de la página ni la URL completa.",
+      "local": "Los datos permanecen en el navegador de este dispositivo y no se suben a ningún servidor.",
+      "retention_one": "Se conserva el último {{count}} día, con un máximo de {{limit}} intervalos y {{limit}} visitas.",
+      "retention_many": "Se conservan los últimos {{count}} días, con un máximo de {{limit}} intervalos y {{limit}} visitas.",
+      "retention_other": "Se conservan los últimos {{count}} días, con un máximo de {{limit}} intervalos y {{limit}} visitas.",
+      "save_one": "Se guarda cada {{count}} segundo. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente.",
+      "save_many": "Se guarda cada {{count}} segundos. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente.",
+      "save_other": "Se guarda cada {{count}} segundos. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente."
+    },
+    "close": "Cerrar"
   }
 }
