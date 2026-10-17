@@ -18,11 +18,24 @@ export default defineBackground(() => {
     return stored === undefined ? blankData() : validateData(stored);
   };
   const cursor = async (): Promise<Cursor | undefined> => (await browser.storage.session.get('cursor')).cursor as Cursor | undefined;
+  let rechecks: ReturnType<typeof setTimeout>[] = [];
+  // getAll() can lag a focus or bounds event. A few reads cover that lag, then the worker may sleep.
+  const clearRechecks = () => { for (const timer of rechecks) clearTimeout(timer); rechecks = []; };
+  const recheckSoon = (windowId: number) => {
+    clearRechecks();
+    rechecks = [200, 700, 1_500].map(delay => setTimeout(() => {
+      void run(async () => { if (!(await cursor())) await update(windowId); });
+    }, delay));
+  };
 
-  async function active(): Promise<{id: number; domain: string} | null> {
+  async function active(focusedId?: number, trustId = false): Promise<{id: number; domain: string} | null> {
     if (await browser.idle.queryState(IDLE_SECONDS) !== 'active') return null;
     const windows = await browser.windows.getAll();
-    const focused = windows.find(w => w.focused && !w.incognito);
+    const reported = windows.find(w => w.focused && !w.incognito && w.state !== 'minimized');
+    const hinted = focusedId !== undefined && focusedId !== browser.windows.WINDOW_ID_NONE
+      ? windows.find(w => w.id === focusedId && !w.incognito && (trustId || w.state !== 'minimized'))
+      : undefined;
+    const focused = reported ?? hinted;
     if (focused?.id === undefined) return null;
     const [tab] = await browser.tabs.query({ active: true, windowId: focused.id });
     const domain = !tab?.incognito && domainOf(tab?.url);
@@ -33,24 +46,43 @@ export default defineBackground(() => {
     const previous = await cursor();
     if (!previous) return;
     const end = creditUntil(previous, now);
-    if (data.enabled) addSpan(data, previous.domain, previous.since, end);
+    const lastEnd = data.spans.at(-1)?.end;
+    const start = lastEnd !== undefined && lastEnd > previous.since ? lastEnd : previous.since;
+    if (data.enabled) addSpan(data, previous.domain, start, end);
   }
 
-  async function update() {
+  async function update(focusedId?: number, trustId = false) {
     const now = Date.now();
     const data = await read();
+    const previous = await cursor();
     await flush(data, now);
-    const next = data.enabled ? await active() : null;
+    const next = data.enabled ? await active(focusedId, trustId) : null;
     prune(data, now);
     await browser.storage.local.set({ data });
-    if (next) await browser.storage.session.set({ cursor: { tabId: next.id, domain: next.domain, since: now } });
-    else await browser.storage.session.remove('cursor');
+    if (next) {
+      clearRechecks();
+      // A backward clock must not move the cursor into the past, or the catch-up span overlaps stored time.
+      const since = previous && now < previous.since ? previous.since : now;
+      await browser.storage.session.set({ cursor: { tabId: next.id, domain: next.domain, since } });
+    } else await browser.storage.session.remove('cursor');
   }
 
-  browser.tabs.onActivated.addListener(() => { void run(() => update()); });
+  browser.tabs.onActivated.addListener(({ windowId }) => { void run(() => update(windowId)); });
   browser.tabs.onRemoved.addListener(() => { void run(() => update()); });
   browser.tabs.onUpdated.addListener((_id, changes) => { if (changes.url) void run(() => update()); });
-  browser.windows.onFocusChanged.addListener(() => { void run(() => update()); });
+  browser.windows.onFocusChanged.addListener(windowId => {
+    void run(async () => {
+      await update(windowId);
+      if (windowId !== browser.windows.WINDOW_ID_NONE && !(await cursor())) recheckSoon(windowId);
+    });
+  });
+  browser.windows.onBoundsChanged.addListener(win => {
+    const restored = win.id !== undefined && win.focused && !win.incognito && win.state !== 'minimized';
+    void run(async () => {
+      await update(restored ? win.id : undefined, restored);
+      if (restored && win.id !== undefined && !(await cursor())) recheckSoon(win.id);
+    });
+  });
   browser.idle.onStateChanged.addListener(() => { void run(() => update()); });
   browser.webNavigation.onCommitted.addListener(details => {
     if (details.frameId !== 0) return;

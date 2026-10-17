@@ -145,6 +145,26 @@ test('S7 minimizing or focusing nothing stops timing until focus returns', async
   assert.equal(total(data), 12_000);
 });
 
+test('S7 a bounds event resumes a restored window even if getAll() still says minimized', async () => {
+  const h = await createHarness({ url: 'https://a.com/' });
+  await h.advance(4_000);
+  h.setFocus(false);
+  await h.settle();
+  await h.advance(6_000);
+  assert.equal(h.cursor(), null);
+  const [win] = await h.browser.windows.getAll();
+  assert.equal(win.focused, false);
+  assert.equal(win.state, 'minimized');
+  h.browser.windows.onFocusChanged.fire(win.id);
+  await h.settle();
+  assert.equal(h.cursor(), null);
+  await h.restoreWindow(win.id);
+  assert.equal(h.cursor()?.domain, 'a.com');
+  await h.advance(3_000);
+  await h.fireAlarm();
+  assert.equal(ms(h.read(), 'a.com'), 7_000);
+});
+
 test('S8 known behavior: a focused devtools window stops timing (issue #6 risk 3)', async () => {
   // windows.getAll() omits devtools, so a focused inspector looks like no focused window.
   const h = await createHarness({ url: 'https://a.com/' });
@@ -287,14 +307,13 @@ test('S18 rollback creates no negative span; a span crossing midnight splits in 
   assert.equal(total(rolled), 10_000);
   for (const span of rolled.spans) assert.ok(span.end >= span.start && span.end - span.start < GAP_LIMIT_MS + 1);
 
-  // Known bug: the rollback rewrites the cursor into the past. When the clock
-  // catches up, the new span overlaps time already stored, and summarize counts it twice.
   h.setNow(10_010_000);
   await h.fireAlarm();
-  const caughtUp = h.read();
-  assert.equal(caughtUp.spans.length, 2);
-  assert.ok(caughtUp.spans[1].start < caughtUp.spans[0].end);
-  assert.equal(total(caughtUp), 25_000);
+  assert.equal(ms(h.read(), 'a.com'), 10_000);
+
+  h.setNow(10_013_000);
+  await h.fireAlarm();
+  assert.equal(ms(h.read(), 'a.com'), 13_000);
 
   const midnight = new Date(2026, 5, 15, 0, 0, 0, 0).getTime();
   const crossed = await createHarness({ url: 'https://a.com/', now: midnight - 10_000 });
