@@ -9,12 +9,13 @@
     "records": { "title": "Historial de visitas", "subtitle": "Cada visita, registrada" },
     "settings": { "title": "Ajustes", "subtitle": "Controla tus datos y cómo se registran" }
   },
-  "range": { "today": "Hoy", "lastDays_one": "Último día", "lastDays_many": "Últimos {{count}} días", "lastDays_other": "Últimos {{count}} días", "label": "Periodo: {{range}}" },
+  "range": { "today": "Hoy", "lastDays_one": "Último {{count}} día", "lastDays_many": "Últimos {{count}} días", "lastDays_other": "Últimos {{count}} días", "label": "Periodo: {{range}}" },
   "error": {
     "title": "No se pudieron cargar o guardar los datos",
     "retry": "Reintentar",
     "connect": "No se puede conectar con el servicio de registro. Vuelve a cargar la extensión.",
-    "save": "No se pudieron guardar los registros. Comprueba el espacio de almacenamiento del navegador."
+    "save": "No se pudieron guardar los registros. Comprueba el espacio de almacenamiento del navegador.",
+    "data": "Los registros guardados tienen un formato no válido. Los datos originales no se han modificado. Restaura datos válidos y vuelve a intentarlo."
   },
   "loading": "Cargando registros locales…",
   "active": "Activo {{duration}}",

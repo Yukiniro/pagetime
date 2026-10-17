@@ -9,12 +9,13 @@
     "records": { "title": "Historique des visites", "subtitle": "Chaque visite, retracée" },
     "settings": { "title": "Paramètres", "subtitle": "Gérez vos données et leur mode d’enregistrement" }
   },
-  "range": { "today": "Aujourd’hui", "lastDays_one": "Dernier jour", "lastDays_many": "{{count}} derniers jours", "lastDays_other": "{{count}} derniers jours", "label": "Période : {{range}}" },
+  "range": { "today": "Aujourd’hui", "lastDays_one": "{{count}} dernier jour", "lastDays_many": "{{count}} derniers jours", "lastDays_other": "{{count}} derniers jours", "label": "Période : {{range}}" },
   "error": {
     "title": "Impossible de charger ou d’enregistrer les données",
     "retry": "Réessayer",
     "connect": "Impossible de joindre le service d’enregistrement. Rechargez l’extension.",
-    "save": "Impossible d’enregistrer les données. Vérifiez l’espace de stockage du navigateur."
+    "save": "Impossible d’enregistrer les données. Vérifiez l’espace de stockage du navigateur.",
+    "data": "Le format des données enregistrées est invalide. Les données originales restent inchangées. Restaurez des données valides, puis réessayez."
   },
   "loading": "Chargement des données locales…",
   "active": "Actif {{duration}}",

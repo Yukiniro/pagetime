@@ -9,12 +9,13 @@
     "records": { "title": "Histórico de visitas", "subtitle": "Cada visita, registrada" },
     "settings": { "title": "Configurações", "subtitle": "Controle seus dados e a forma de registro" }
   },
-  "range": { "today": "Hoje", "lastDays_one": "Último dia", "lastDays_many": "Últimos {{count}} dias", "lastDays_other": "Últimos {{count}} dias", "label": "Período: {{range}}" },
+  "range": { "today": "Hoje", "lastDays_one": "Último {{count}} dia", "lastDays_many": "Últimos {{count}} dias", "lastDays_other": "Últimos {{count}} dias", "label": "Período: {{range}}" },
   "error": {
     "title": "Não foi possível carregar ou salvar os dados",
     "retry": "Tentar novamente",
     "connect": "Não foi possível conectar ao serviço de registro. Recarregue a extensão.",
-    "save": "Não foi possível salvar os registros. Verifique o espaço de armazenamento do navegador."
+    "save": "Não foi possível salvar os registros. Verifique o espaço de armazenamento do navegador.",
+    "data": "Os registros salvos têm um formato inválido. Os dados originais não foram alterados. Restaure dados válidos e tente novamente."
   },
   "loading": "Carregando registros locais…",
   "active": "Ativo {{duration}}",

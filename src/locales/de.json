@@ -9,12 +9,13 @@
     "records": { "title": "Besuchsverlauf", "subtitle": "Jeder Besuch nachvollziehbar" },
     "settings": { "title": "Einstellungen", "subtitle": "Behalte die Kontrolle über deine Daten und die Aufzeichnung" }
   },
-  "range": { "today": "Heute", "lastDays_one": "Letzter Tag", "lastDays_other": "Letzte {{count}} Tage", "label": "Zeitraum: {{range}}" },
+  "range": { "today": "Heute", "lastDays_one": "{{count}} vergangener Tag", "lastDays_other": "Letzte {{count}} Tage", "label": "Zeitraum: {{range}}" },
   "error": {
     "title": "Daten konnten nicht geladen oder gespeichert werden",
     "retry": "Erneut versuchen",
     "connect": "Der Aufzeichnungsdienst ist nicht erreichbar. Bitte lade die Erweiterung neu.",
-    "save": "Daten konnten nicht gespeichert werden. Prüfe den Speicherplatz des Browsers."
+    "save": "Daten konnten nicht gespeichert werden. Prüfe den Speicherplatz des Browsers.",
+    "data": "Die gespeicherten Aufzeichnungen haben ein ungültiges Format. Die Originaldaten bleiben unverändert. Stelle gültige Daten wieder her und versuche es erneut."
   },
   "loading": "Lokale Daten werden geladen…",
   "active": "Aktiv {{duration}}",

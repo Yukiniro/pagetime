@@ -14,7 +14,8 @@
     "title": "Couldn't load or save data",
     "retry": "Retry",
     "connect": "Can't reach the recording service. Please reload the extension.",
-    "save": "Couldn't save records. Check your browser's storage space."
+    "save": "Couldn't save records. Check your browser's storage space.",
+    "data": "Saved records have an invalid format. They have been kept unchanged. Retry after restoring valid data."
   },
   "loading": "Loading local records…",
   "active": "Active {{duration}}",

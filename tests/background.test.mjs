@@ -4,8 +4,10 @@ import fs from 'node:fs/promises';
 import vm from 'node:vm';
 import ts from 'typescript';
 import * as model from '../src/model.mjs';
+import * as validation from '../src/validate-data.mjs';
 
 async function harness() {
+  const errors = [];
   let now=1_000_000;let idle='active';let focused=true;let tab={id:1,url:'https://example.com/private?key=secret',incognito:false};
   const event=()=>({listeners:[],addListener(fn){this.listeners.push(fn);},fire(...args){for(const fn of this.listeners)fn(...args);}});
   const area=()=>{const values={};return{async get(key){return structuredClone({[key]:values[key]});},async set(patch){Object.assign(values,structuredClone(patch));},async remove(key){delete values[key];}};};
@@ -18,11 +20,11 @@ async function harness() {
   const source=await fs.readFile(new URL('../entrypoints/background.ts',import.meta.url),'utf8');
   const code=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
   class ClockDate extends Date { static now(){return now;} }
-  const context={exports:{},console,Date:ClockDate,require:name=>name==='wxt/browser'?{browser}:name==='wxt/utils/define-background'?{defineBackground:fn=>fn()}:model};
+  const context={exports:{},console:{...console,error:(...args)=>errors.push(args)},Date:ClockDate,require:name=>name==='wxt/browser'?{browser}:name==='wxt/utils/define-background'?{defineBackground:fn=>fn()}:name.endsWith('validate-data.mjs')?validation:model};
   vm.runInNewContext(code,context);
   const message=type=>new Promise(resolve=>browser.runtime.onMessage.listeners[0]({type},{id:'jilan',url:'chrome-extension://jilan/dashboard.html'},resolve));
   await message('snapshot');
-  return {browser,message,advance:ms=>now+=ms,setIdle:v=>{idle=v;browser.idle.onStateChanged.fire(v);},setFocus:v=>{focused=v;browser.windows.onFocusChanged.fire(1);},setTab:v=>{tab={...tab,...v};browser.tabs.onActivated.fire({tabId:tab.id});},get now(){return now;}};
+  return {browser,message,errors,advance:ms=>now+=ms,setIdle:v=>{idle=v;browser.idle.onStateChanged.fire(v);},setFocus:v=>{focused=v;browser.windows.onFocusChanged.fire(1);},setTab:v=>{tab={...tab,...v};browser.tabs.onActivated.fire({tabId:tab.id});},get now(){return now;}};
 }
 test('background counts main-frame visits, ignores private/internal pages, and stores only domains',async()=>{
   const h=await harness();const commit=(url,frameId=0)=>h.browser.webNavigation.onCommitted.fire({url,frameId,tabId:1,timeStamp:h.now});
@@ -60,4 +62,20 @@ test('a 2h gap credits at most 90,000ms',async()=>{
 test('a clock moved backwards credits 0',async()=>{
   const h=await harness();h.advance(-15_000);
   assert.equal(credited(await checkpoint(h)),0);
+});
+
+
+test('invalid stored records are rejected by every command without overwriting them; retry recovers', async () => {
+  const h = await harness();
+  for (const raw of [null, { enabled: true, since: 1 }, { visits: [{ domain: 'example.com/path', at: 1 }], spans: [], enabled: true, since: 1 }]) {
+    await h.browser.storage.local.set({ data: raw });
+    for (const type of ['snapshot', 'toggle', 'clear']) {
+      assert.equal((await h.message(type)).error, 'data');
+      assert.deepEqual((await h.browser.storage.local.get('data')).data, raw);
+    }
+  }
+  const valid = model.blankData();
+  assert.equal(h.errors.length, 9);
+  await h.browser.storage.local.set({ data: valid });
+  assert.equal((await h.message('snapshot')).data.enabled, true);
 });

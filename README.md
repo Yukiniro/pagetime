@@ -61,7 +61,9 @@ npm ci
 npm run dev:extension  # WXT 开发模式，随后手动加载 .output/chrome-mv3
 npm run typecheck
 npm run build          # .output/chrome-mv3
+npm run verify-build   # 校验实际扩展产物、权限、版本、图标和语言资源
 npm run zip            # .output/pagetime-1.0.0-chrome.zip
+npm run verify:zip     # 校验当前版本 ZIP 内的实际文件
 ```
 
 本地界面预览与真实扩展使用同一套 React 组件。预览不采集浏览活动，打开时也没有预置浏览记录：
@@ -75,6 +77,12 @@ npm test
 `npm test` 包含预览构建产物检查，需先运行 `npm run build:preview`。WXT 和预览各自独立打包；已有 Sites 运行脚本保留，但未发布到 Sites。
 
 图标来源：Phosphor Icons（MIT）、Simple Icons（CC0）。文档参考：[WXT 入口](https://wxt.dev/guide/essentials/entrypoints.html)、[Chrome webNavigation](https://developer.chrome.com/docs/extensions/reference/api/webNavigation)、[Chrome idle](https://developer.chrome.com/docs/extensions/reference/api/idle)。
+
+## 版本发布
+
+用户可见变更附带 Changesets 记录。维护者手动运行 GitHub Actions 的 Release 创建版本 PR；核对版本号、CHANGELOG 和 CI 后合并，自动完成检查、打包和 GitHub ZIP Release。发布先上传草稿附件再公开，支持失败重跑，拒绝冲突标签和不同内容的已有附件。完整流程与仓库设置见 [版本发布说明](docs/releasing.md)。本流程不提交浏览器商店。
+
+读取本地记录时会校验结构、域名和时间字段。格式异常会显示当前语言的错误提示，原始数据保留；重试不会覆盖或重置异常记录。
 
 ## 验证状态
 
