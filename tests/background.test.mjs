@@ -43,3 +43,21 @@ test('background stops at loss of focus, idle and pause; resumes and clears with
   const cleared=(await h.message('clear')).data;assert.equal(cleared.spans.length,0);assert.equal(cleared.visits.length,0);
   h.advance(3_000);assert.equal((await h.message('snapshot')).data.spans[0].end-(await h.message('snapshot')).data.spans[0].start,3_000);
 });
+const credited=data=>data.spans.reduce((n,s)=>n+s.end-s.start,0);
+async function checkpoint(h){h.browser.alarms.onAlarm.fire({name:'checkpoint'});return (await h.message('snapshot')).data;}
+test('a normal 30s checkpoint credits the full 30s',async()=>{
+  const h=await harness();h.advance(30_000);
+  assert.equal(credited(await checkpoint(h)),30_000);
+});
+test('a checkpoint delayed to 95s credits 90,000ms',async()=>{
+  const h=await harness();h.advance(95_000);
+  assert.equal(credited(await checkpoint(h)),90_000);
+});
+test('a 2h gap credits at most 90,000ms',async()=>{
+  const h=await harness();h.advance(2*60*60*1_000);
+  assert.equal(credited(await checkpoint(h)),90_000);
+});
+test('a clock moved backwards credits 0',async()=>{
+  const h=await harness();h.advance(-15_000);
+  assert.equal(credited(await checkpoint(h)),0);
+});

@@ -1,5 +1,6 @@
 export const DAY = 86_400_000;
 export const LIMIT = 20_000;
+export const GAP_LIMIT_MS = 90_000;
 export const blankData = () => ({ visits: [], spans: [], enabled: true, since: Date.now() });
 
 export function domainOf(url) {
@@ -53,7 +54,9 @@ export function daily(data, start, end) {
   return days;
 }
 
-// shortcut: 超过90秒无检查点的区间不计时；需要连续后台硬件采样时再增加休眠检测。
+// shortcut: 无游标不计；时钟回拨停在游标时刻；否则最多计入 90 秒，检查点推迟时不再整段丢弃。需要连续后台硬件采样时再增加休眠检测。
 export function creditUntil(cursor, now) {
-  return cursor && now >= cursor.since && now - cursor.since <= 90_000 ? now : cursor?.since;
+  if (!cursor) return undefined;
+  if (now < cursor.since) return cursor.since;
+  return Math.min(now, cursor.since + GAP_LIMIT_MS);
 }
