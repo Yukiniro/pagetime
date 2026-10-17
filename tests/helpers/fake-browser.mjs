@@ -63,6 +63,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
       storage: { local: area(local, true), session: area(session, false) },
       idle: { queryState: async () => idle, setDetectionInterval() {}, onStateChanged: event() },
       windows: {
+        WINDOW_ID_NONE,
         // Chrome's default getAll() omits devtools windows.
         getAll: async () => [...windows.values()].filter(win => win.type !== 'devtools').map(win => structuredClone(win)),
         onFocusChanged: event(),
@@ -96,6 +97,12 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
       exports: {},
       console: { ...console, error: (...args) => { errors.push(args); } },
       Date: ClockDate,
+      setInterval(...args) {
+        const timer = setInterval(...args);
+        timer.unref();
+        return timer;
+      },
+      clearInterval,
       require: name => name === 'wxt/browser' ? { browser }
         : name === 'wxt/utils/define-background' ? { defineBackground: fn => fn() }
         : name.endsWith('validate-data.mjs') ? validation
@@ -240,6 +247,11 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
       const win = windows.get(1);
       if (win) { win.focused = focused; win.state = focused ? 'normal' : 'minimized'; }
       browser.windows.onFocusChanged.fire(focused ? 1 : WINDOW_ID_NONE);
+    },
+    patchWindow(windowId, patch) {
+      const win = windows.get(windowId);
+      if (!win) throw new Error('no window');
+      Object.assign(win, patch);
     },
     setTab(patch) {
       Object.assign(tabs.get(1), patch);

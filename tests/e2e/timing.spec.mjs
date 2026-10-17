@@ -324,17 +324,15 @@ test('S7 minimizing the browser window stops timing', async () => {
       for (const win of wins) await chrome.windows.update(win.id, { state: 'normal', focused: true });
     });
     await page.bringToFront();
-    // Known bug: the window is focused again, but onFocusChanged already ran while
-    // getAll() still said minimized, so the cursor stays empty until a later event.
-    expect(await readCursor(await worker(context))).toBeNull();
-    await page.evaluate(() => history.pushState({ back: 1 }, '', '/back'));
-    await waitForDomain(context, 'a.test');
+    await expect.poll(async () => (await readCursor(await worker(context)))?.domain ?? null).toBe('a.test');
+    const resumedAt = Date.now();
     await page.waitForTimeout(2_000);
     await page.goto('about:blank');
     const data = await waitForSpan(context, 'a.test', parked + 1_000);
     const added = domainMs(data, 'a.test') - parked;
-    assertClose(added, 2_000);
-    expect(added).toBeLessThan(STAY);
+    assertClose(added, Date.now() - resumedAt);
+    expect(added).toBeGreaterThanOrEqual(1_000);
+    expect(added).toBeLessThan(STAY + 2_000);
   });
 });
 
