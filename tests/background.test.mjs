@@ -110,6 +110,21 @@ test('a failed ledger write is reported, logged and marked; the next successful 
   assert.equal(total(await h.read()), 5_000);
 });
 
+test('a failed prune is logged without marking the ledger, and the tick is still recorded', async () => {
+  const h = await createHarness();
+  h.failPrune(Object.assign(new Error('prune broke'), { name: 'UnknownError' }));
+  h.advance(10_000);
+  await h.restartWorker();
+  assert.equal(total(await h.read()), 10_000);
+  assert.equal(LEDGER_ERROR_KEY in h.local, false);
+  assert.ok(h.errors.some(([label, error]) => label === 'PageTime prune failed' && error.name === 'UnknownError'));
+  assert.equal(h.errors.some(([label]) => label === 'PageTime recording failed'), false);
+  h.advance(5_000);
+  assert.deepEqual({ ...await h.message('snapshot') }, { ok: true });
+  assert.equal(total(await h.read()), 15_000);
+  assert.equal(LEDGER_ERROR_KEY in h.local, false);
+});
+
 test('after the database closes, the worker reopens it and the checkpoint still lands', async () => {
   const h = await createHarness();
   h.advance(10_000);

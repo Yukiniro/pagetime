@@ -76,7 +76,7 @@ export default defineBackground(() => {
 
   let prunedOn: string | undefined;
   // Everything a tick needs (tabs, idle, the time it credits) is settled here; commitTick only writes it.
-  const update = (focusedId?: number, trustId = false, visit?: { domain: string; at: number }) => write(async () => {
+  const tick = (focusedId?: number, trustId = false, visit?: { domain: string; at: number }) => write(async () => {
     const now = Date.now();
     const { state, cursor, lastEnd, id, enabled, live } = await head();
     const next = enabled ? await active(focusedId, trustId) : null;
@@ -91,11 +91,19 @@ export default defineBackground(() => {
       cursor: next ? { tabId: next.id, domain: next.domain, since, session: id } : null,
     });
     if (next) clearRechecks();
-    if (prunedOn !== dateKey(now)) {
+    return now;
+  });
+  const update = async (focusedId?: number, trustId = false, visit?: { domain: string; at: number }) => {
+    const now = await tick(focusedId, trustId, visit);
+    if (prunedOn === dateKey(now)) return;
+    // Pruning only removes old detail, so a failure is logged and retried on the next write instead of marking the ledger.
+    try {
       await pruneDetail(db, detailCutoff(now));
       prunedOn = dateKey(now);
+    } catch (error) {
+      console.error('PageTime prune failed', error);
     }
-  });
+  };
 
   browser.tabs.onActivated.addListener(({ windowId }) => { void run(() => update(windowId)); });
   browser.tabs.onRemoved.addListener(() => { void run(() => update()); });

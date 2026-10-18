@@ -42,6 +42,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
   let nextAlarm = start + ALARM_PERIOD;
   let ticks = 0;
   let pending = 0;
+  let pruneError = null;
   const errors = [];
   const windows = new Map();
   const tabs = new Map();
@@ -53,7 +54,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
   const factory = new IDBFactory();
   const reader = ledger.openLedger({ indexedDB: factory, IDBKeyRange });
   const workerDbs = [];
-  // Every ledger call from the worker goes through reopening(), so counting those calls tells when it is idle.
+  // Every ledger call from the worker goes through reopening() or pruneDetail(), so counting those calls tells when it is idle.
   const workerLedger = {
     ...ledger,
     openLedger() {
@@ -62,6 +63,13 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
       return db;
     },
     commitTick(...args) { ticks += 1; return ledger.commitTick(...args); },
+    async pruneDetail(...args) {
+      pending += 1;
+      try {
+        if (pruneError) throw pruneError;
+        return await ledger.pruneDetail(...args);
+      } finally { pending -= 1; }
+    },
     async reopening(...args) {
       pending += 1;
       try { return await ledger.reopening(...args); }
@@ -292,6 +300,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
       return rest;
     },
     resetTicks() { ticks = 0; },
+    failPrune(error) { pruneError = error; },
     killWorker() { browser = null; },
     async restartWorker() { browser = null; await boot(); },
     async reloadExtension() {
