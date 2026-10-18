@@ -16,7 +16,7 @@
 
 ## `storage`
 
-用来把账本放进 `chrome.storage.local` 的 `data`，并把服务工作线程的检查点放进 `chrome.storage.session` 的 `cursor`。
+用来把账本放进 `chrome.storage.local` 的 `data`，把计时偏好放进同一处的 `settings`，并把服务工作线程的检查点放进 `chrome.storage.session` 的 `cursor`。
 
 能够读写本扩展自己的存储区。代码只用 local 和 session，不用 sync。不能读其他扩展的存储、网站 Cookie 或磁盘上的任意文件。不触发安装警告。
 
@@ -24,7 +24,7 @@
 
 用来读取当前焦点窗口里活动标签的网址，再取出主机名，并跳过无痕标签。没有这项权限时，`tab.url` 不会交给扩展。
 
-能够读取标签的网址、标题、图标和待提交网址，也能按网址查询标签。不能读取页面 DOM，不能注入脚本，不能调用 `chrome.history`。当前代码只使用标签的 `url`、`id` 和 `incognito`，不读取标题。安装警告是 “Read your browsing history”。
+能够读取标签的网址、标题、图标和待提交网址，也能按网址查询标签。不能读取页面 DOM，不能注入脚本，不能调用 `chrome.history`。当前代码使用标签的 `url`、`id`、`incognito`、`audible` 和 `mutedInfo`，不读取标题，也不保存 `audible` 或 `mutedInfo`。安装警告是 “Read your browsing history”。
 
 ## `webNavigation`
 
@@ -34,9 +34,9 @@
 
 ## `idle`
 
-用来在连续 `IDLE_SECONDS`（60）秒没有键盘或鼠标操作时停止计时，包括锁屏。后台调用 `idle.setDetectionInterval(60)`，并在状态变化时结算当前时段。
+用来在连续 `settings.idleSeconds` 秒没有键盘或鼠标操作时停止计时。默认是 `IDLE_SECONDS`（60）；已保存的值也可以是 60、120、300 或 600。后台用这个值调用 `idle.setDetectionInterval`，并把它传给 `idle.queryState`。锁屏永远不计。`countAudible` 开着时（默认开），前台窗口的当前标签正在播放且未静音，空闲也继续计入。这用的是原有的 `idle` 和 `tabs` 权限，没有新增权限。
 
-能够查询 `active`、`idle` 或 `locked`。不能知道按下了哪个键，也不看标签是否在播放媒体。不触发安装警告。
+能够查询 `active`、`idle` 或 `locked`。不能知道按下了哪个键。不触发安装警告。
 
 ## `alarms`
 
