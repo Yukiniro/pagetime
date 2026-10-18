@@ -28,7 +28,7 @@
 
 ## 隐私与权限
 
-仅保存域名、访问时间和活跃时段，不保存网址路径、查询参数、标题、页面正文、Cookie 或输入内容。扩展无远程请求、账号、数据上传或外部字体。图标随安装包本地分发。
+仅保存域名、访问时间和活跃时段，不保存网址路径、查询参数、标题、页面正文、Cookie 或输入内容。扩展无远程请求、账号、数据上传或外部字体。图标随安装包本地分发。保存字段、存放位置、`RETENTION_DAYS` / `LIMIT` 和删除方式见 [隐私说明（中文）](PRIVACY.zh-CN.md) 与 [Privacy](PRIVACY.md)。
 
 | 权限 | 用途 |
 | --- | --- |
@@ -38,7 +38,7 @@
 | `alarms` | 定期保存活跃时段 |
 | `storage` | 在本地保存记录，session 保存工作线程检查点 |
 
-不申请 `history`、网页正文访问或 content script 权限。浏览器安装时可能显示浏览活动相关权限提示，这是本地统计需要。
+不申请 `history`、网页正文访问或 content script 权限，也没有 host permission。`tabs` 和 `webNavigation` 会让 Chrome / Edge 在安装时显示 “Read your browsing history”；`storage`、`idle`、`alarms` 不触发安装警告。每一项能做什么、不能做什么见 [权限说明（中文）](docs/permissions.zh-CN.md) 与 [Permissions](docs/permissions.md)。
 
 ## 组件基础
 
@@ -80,7 +80,20 @@ npm test
 
 ## 版本发布
 
-用户可见变更附带 Changesets 记录。维护者手动运行 GitHub Actions 的 Release 创建版本 PR；核对版本号、CHANGELOG 和 CI 后合并，自动完成检查、打包和 GitHub ZIP Release。发布先上传草稿附件再公开，支持失败重跑，拒绝冲突标签和不同内容的已有附件。完整流程与仓库设置见 [版本发布说明](docs/releasing.md)。本流程不提交浏览器商店。
+用户可见变更附带 Changesets 记录。维护者手动运行 GitHub Actions 的 Release 创建版本 PR；核对版本号、CHANGELOG 和 CI 后合并，自动完成检查、打包和 GitHub ZIP Release。每个 Release 同时上传 `SHA256SUMS`。发布先上传草稿附件再公开，支持失败重跑，拒绝冲突标签、不同内容的已有 ZIP，以及与已发布 ZIP 不一致的校验和。完整流程与仓库设置见 [版本发布说明](docs/releasing.md)。本流程不提交浏览器商店。
+
+把 ZIP 和 `SHA256SUMS` 放在同一目录后核对。文件是一行小写 SHA-256、两个空格和 ZIP 文件名：
+
+```text
+sha256sum -c SHA256SUMS
+shasum -a 256 -c SHA256SUMS
+```
+
+```powershell
+(Get-Content .\SHA256SUMS -Raw).Split(' ')[0] -eq (Get-FileHash .\pagetime-1.0.0-chrome.zip -Algorithm SHA256).Hash
+```
+
+`Get-FileHash` 输出大写十六进制，和文件里的小写比较时 PowerShell 的 `-eq` 不区分大小写。把示例里的文件名换成该版本的 ZIP。
 
 读取本地记录时会校验结构、域名和时间字段。格式异常会显示当前语言的错误提示，原始数据保留；重试不会覆盖或重置异常记录。
 
@@ -91,3 +104,7 @@ npm test
 本地浏览器验证了 DropdownMenu 鼠标选择和方向键 / Enter 操作、Dialog 的 Escape 关闭和焦点恢复、详情跳转、搜索与无结果状态、AlertDialog 取消及焦点恢复、暂停与恢复，以及桌面和窄屏布局。清空数据操作通过后台与预览存储自动测试验证，浏览器交互只验证确认与取消，不删除现有数据。设计对比见 `design-qa.md`。
 
 **尚未完成真实 Chrome / Edge 安装后的端到端采集与长期休眠测试。** Chrome 验证通道连接失败，内置浏览器用于界面验证；后台采集通过模拟浏览器 API 的实现测试。交付安装包可用于本地试用，不代表已通过商店审核。
+
+## 许可证
+
+Copyright 2026 Yukiniro。本项目以 Apache License 2.0 授权。`LICENSE` 是 Apache 许可证 2.0 的原文，版权声明在 `NOTICE`。`package.json` 的 `license` 为 `Apache-2.0`。
