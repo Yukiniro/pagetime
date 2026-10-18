@@ -19,7 +19,9 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 
 改用 IndexedDB 之前的版本把记录放在 `chrome.storage.local` 的 `data` 键。这一版不读、不写、也不删除这个键，旧版本存下的记录原样留在那里，但不会显示。新账本从空开始。
 
-账本写入失败时，后台在 `chrome.storage.local` 写入 `ledgerError`：`{ at, name }`，即失败时间和错误名。它存在期间统计页显示保存错误，下一次写入成功后删除。
+账本写入失败时，后台在 `chrome.storage.local` 写入 `ledgerError`：`{ at, name }`，即失败时间和错误名。它存在期间统计页显示保存错误，下一次写入成功后删除。清理旧明细失败只记日志，不会写入它。
+
+除了账本和 `settings`，扩展只另存两个小键：`chrome.storage.session` 的 `session` 只保存一个随机会话编号，`chrome.storage.local` 的 `ledgerError` 只保存失败时间和错误名。两者都不含域名、网址或任何其他浏览数据。
 
 计时偏好是 `chrome.storage.local` 里单独的 `settings` 键，不属于账本：
 

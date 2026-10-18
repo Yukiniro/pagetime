@@ -19,7 +19,9 @@ Each timing event updates `days`, `hours`, `spans`, `visits`, and `cursor` in on
 
 Versions before the IndexedDB ledger kept their records in the `data` key of `chrome.storage.local`. This version never reads, writes, or deletes that key, so records saved by an older version stay there unchanged and are not shown. The new ledger starts empty.
 
-If a ledger write fails, the background stores `ledgerError` in `chrome.storage.local`: `{ at, name }`, the time and the error name. The dashboard shows a save error while it is present. The next successful write removes it.
+If a ledger write fails, the background stores `ledgerError` in `chrome.storage.local`: `{ at, name }`, the time and the error name. The dashboard shows a save error while it is present. The next successful write removes it. A failed cleanup of old detail is only logged and does not set it.
+
+Besides the ledger and `settings`, the extension keeps two small keys: `session` in `chrome.storage.session` holds only a random session id, and `ledgerError` in `chrome.storage.local` holds only the error time and name. Neither contains a domain, URL, or any other browsing data.
 
 Timing preferences are a separate `settings` key in `chrome.storage.local`. They are not part of the ledger:
 
