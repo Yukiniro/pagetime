@@ -15,6 +15,7 @@
     "retry": "Erneut versuchen",
     "connect": "Der Aufzeichnungsdienst ist nicht erreichbar. Bitte lade die Erweiterung neu.",
     "save": "Daten konnten nicht gespeichert werden. Prüfe den Speicherplatz des Browsers.",
+    "read": "Lokale Daten konnten nicht gelesen werden. Lade diese Seite neu; wenn es weiter passiert, lade die Erweiterung neu.",
     "data": "Die gespeicherten Aufzeichnungen haben ein ungültiges Format. Die Originaldaten bleiben unverändert. Stelle gültige Daten wieder her und versuche es erneut."
   },
   "loading": "Lokale Daten werden geladen…",
@@ -64,7 +65,7 @@
     "language": { "title": "Sprache", "description": "Wähle die Anzeigesprache von PageTime.", "label": "Anzeigesprache: {{language}}" },
     "recording": { "title": "Aufzeichnung", "description": "Zählt Seitenbesuche und misst nur die Zeit im aktiven Tab des fokussierten Fensters." },
     "privacy": { "title": "Lokal und privat", "description": "Speichert nur Domains, Zeiten und Besuchszahlen – niemals Seiteninhalte, Titel oder vollständige URLs.<br/>Inkognito-Fenster und interne Browserseiten werden ignoriert, und es werden keine Daten an einen Server gesendet." },
-    "method": { "title": "So wird gemessen", "description": "Jedes Laden oder Neuladen einer Seite zählt als ein Besuch; Tab-Wechsel und Navigation innerhalb von Single-Page-Apps zählen nicht.<br/>{{idle}} Sekunden ohne Systemeingabe gelten als Leerlauf; der Fortschritt wird alle {{checkpoint}} Sekunden gespeichert.<br/>Speichert Daten bis zu {{days}} Tage, höchstens {{limit}} Besuche und {{limit}} aktive Sitzungen.", "audible": "Ein Tab mit nicht stummgeschaltetem Ton zählt nicht als Leerlauf." },
+    "method": { "title": "So wird gemessen", "description": "Jedes Laden oder Neuladen einer Seite zählt als ein Besuch; Tab-Wechsel und Navigation innerhalb von Single-Page-Apps zählen nicht.<br/>{{idle}} Sekunden ohne Systemeingabe gelten als Leerlauf; der Fortschritt wird alle {{checkpoint}} Sekunden gespeichert.<br/>Besuche und aktive Sitzungen werden {{days}} Tage aufbewahrt; Tages- und Stundensummen bleiben, bis du sie löschst.", "audible": "Ein Tab mit nicht stummgeschaltetem Ton zählt nicht als Leerlauf." },
     "audible": { "title": "Bei Audiowiedergabe weiterzählen", "description": "Wenn der aktive Tab im fokussierten Fenster nicht stummgeschalteten Ton abspielt, zählt auch Leerlaufzeit. Die Zählung stoppt, sobald der Ton endet oder der Tab stummgeschaltet wird." },
     "idle": { "title": "Leerlaufschwelle", "description": "Wie lange ohne Tastatur- oder Mauseingabe dieser Browser als im Leerlauf gilt.", "label": "Leerlaufschwelle: {{duration}}", "option_one": "{{count}} Minute", "option_other": "{{count}} Minuten" },
     "clear": { "title": "Alle Daten löschen", "description": "Löscht die von PageTime auf diesem Gerät gespeicherten Daten. Dies kann nicht rückgängig gemacht werden.", "button": "Daten löschen" }
@@ -123,8 +124,8 @@
       "title": "Privatsphäre und Speicherung",
       "fields": "Gespeichert werden nur Domain, Zeiten und Besuchszahlen — nie Titel, Seitentext oder die vollständige URL.",
       "local": "Die Daten bleiben im Browser auf diesem Gerät und werden nie hochgeladen.",
-      "retention_one": "Aufbewahrt wird der letzte {{count}} Tag, höchstens {{limit}} Zeitspannen und {{limit}} Besuche.",
-      "retention_other": "Aufbewahrt werden die letzten {{count}} Tage, höchstens {{limit}} Zeitspannen und {{limit}} Besuche.",
+      "retention_one": "Besuche und Zeitspannen werden für den letzten {{count}} Tag aufbewahrt. Tages- und Stundensummen bleiben, bis du sie löschst.",
+      "retention_other": "Besuche und Zeitspannen werden für die letzten {{count}} Tage aufbewahrt. Tages- und Stundensummen bleiben, bis du sie löschst.",
       "save_one": "Speichert alle {{count}} Sekunde. Beim unerwarteten Schließen kann höchstens dieses Intervall verloren gehen.",
       "save_other": "Speichert alle {{count}} Sekunden. Beim unerwarteten Schließen kann höchstens dieses Intervall verloren gehen."
     },

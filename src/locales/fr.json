@@ -15,6 +15,7 @@
     "retry": "Réessayer",
     "connect": "Impossible de joindre le service d’enregistrement. Rechargez l’extension.",
     "save": "Impossible d’enregistrer les données. Vérifiez l’espace de stockage du navigateur.",
+    "read": "Impossible de lire les données locales. Rechargez cette page ; si le problème persiste, rechargez l’extension.",
     "data": "Le format des données enregistrées est invalide. Les données originales restent inchangées. Restaurez des données valides, puis réessayez."
   },
   "loading": "Chargement des données locales…",
@@ -69,7 +70,7 @@
     "language": { "title": "Langue", "description": "Choisissez la langue d’affichage de PageTime.", "label": "Langue d’affichage : {{language}}" },
     "recording": { "title": "Enregistrement", "description": "Compte les visites de pages et ne mesure que le temps passé sur l’onglet actif de la fenêtre au premier plan." },
     "privacy": { "title": "Local et privé", "description": "Seuls les domaines, horaires et nombres de visites sont enregistrés — jamais le contenu, les titres ni les URL complètes.<br/>Les fenêtres de navigation privée et les pages internes du navigateur sont ignorées, et aucune donnée n’est envoyée à un serveur." },
-    "method": { "title": "Mode de calcul", "description": "Chaque chargement ou rechargement de page compte comme une visite ; changer d’onglet ou naviguer dans une application monopage n’ajoute pas de visite.<br/>{{idle}} secondes sans activité système sont considérées comme de l’inactivité ; la progression est enregistrée toutes les {{checkpoint}} secondes.<br/>Conserve jusqu’à {{days}} jours de données, avec au plus {{limit}} visites et {{limit}} sessions actives.", "audible": "Un onglet qui lit un son non coupé n’est pas compté comme inactif." },
+    "method": { "title": "Mode de calcul", "description": "Chaque chargement ou rechargement de page compte comme une visite ; changer d’onglet ou naviguer dans une application monopage n’ajoute pas de visite.<br/>{{idle}} secondes sans activité système sont considérées comme de l’inactivité ; la progression est enregistrée toutes les {{checkpoint}} secondes.<br/>Conserve les visites et sessions actives pendant {{days}} jours ; les totaux par jour et par heure restent jusqu’à ce que vous les effaciez.", "audible": "Un onglet qui lit un son non coupé n’est pas compté comme inactif." },
     "audible": { "title": "Continuer à compter pendant la lecture audio", "description": "Si l’onglet actif de la fenêtre au premier plan lit un son non coupé, le temps d’inactivité compte aussi. Le décompte s’arrête dès que le son s’arrête ou que l’onglet est coupé." },
     "idle": { "title": "Seuil d’inactivité", "description": "Durée sans clavier ni souris avant que ce navigateur soit considéré comme inactif.", "label": "Seuil d’inactivité : {{duration}}", "option_one": "{{count}} minute", "option_many": "{{count}} minutes", "option_other": "{{count}} minutes" },
     "clear": { "title": "Effacer tous les enregistrements", "description": "Supprime les données enregistrées par PageTime sur cet appareil. Action irréversible.", "button": "Effacer les données" }
@@ -132,9 +133,9 @@
       "title": "Confidentialité et stockage",
       "fields": "Seuls le domaine, les horaires et le nombre de visites sont enregistrés — jamais le titre, le texte de la page ni l’URL complète.",
       "local": "Les données restent dans le navigateur de cet appareil et ne sont jamais envoyées à un serveur.",
-      "retention_one": "Conserve le dernier {{count}} jour, avec au plus {{limit}} intervalles et {{limit}} visites.",
-      "retention_many": "Conserve les {{count}} derniers jours, avec au plus {{limit}} intervalles et {{limit}} visites.",
-      "retention_other": "Conserve les {{count}} derniers jours, avec au plus {{limit}} intervalles et {{limit}} visites.",
+      "retention_one": "Conserve les visites et intervalles du dernier {{count}} jour. Les totaux par jour et par heure restent jusqu’à ce que vous les effaciez.",
+      "retention_many": "Conserve les visites et intervalles des {{count}} derniers jours. Les totaux par jour et par heure restent jusqu’à ce que vous les effaciez.",
+      "retention_other": "Conserve les visites et intervalles des {{count}} derniers jours. Les totaux par jour et par heure restent jusqu’à ce que vous les effaciez.",
       "save_one": "Enregistre toutes les {{count}} seconde. En cas de fermeture inattendue, seule cette période récente peut être perdue.",
       "save_many": "Enregistre toutes les {{count}} secondes. En cas de fermeture inattendue, seule cette période récente peut être perdue.",
       "save_other": "Enregistre toutes les {{count}} secondes. En cas de fermeture inattendue, seule cette période récente peut être perdue."

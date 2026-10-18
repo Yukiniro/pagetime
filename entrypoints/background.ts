@@ -1,33 +1,56 @@
 import { browser } from 'wxt/browser';
 import { defineBackground } from 'wxt/utils/define-background';
-import { addSpan, blankData, CHECKPOINT_SECONDS, creditUntil, domainOf, prune } from '../src/model.mjs';
+import { CHECKPOINT_SECONDS, creditUntil, dateKey, detailCutoff, domainOf } from '../src/model.mjs';
+import { clearLedger, commitTick, LEDGER_ERROR_KEY, openLedger, pruneDetail, readHead, reopening, toggleRecording } from '../src/ledger.mjs';
 import { validateSettings } from '../src/settings.mjs';
-import { validateData } from '../src/validate-data.mjs';
 
-type Data = { visits: {domain: string; at: number}[]; spans: {domain: string; start: number; end: number}[]; enabled: boolean; since: number };
-type Cursor = { tabId: number; domain: string; since: number };
+// `session` ties the cursor to one storage.session lifetime, so a browser restart or extension reload starts without it.
+type Cursor = { tabId: number; domain: string; since: number; session: string };
 
 export default defineBackground(() => {
+  const db = openLedger();
   let queue = Promise.resolve();
   const run = <T>(task: () => Promise<T>) => {
     const result = queue.then(task);
     queue = result.then(() => {}, error => console.error('PageTime recording failed', error));
     return result;
   };
-  const read = async (): Promise<Data> => {
-    const stored = (await browser.storage.local.get('data')).data;
-    return stored === undefined ? blankData() : validateData(stored);
-  };
   const readSettings = async () => validateSettings((await browser.storage.local.get('settings')).settings);
   const applyIdle = (settings: { idleSeconds: number }) => { browser.idle.setDetectionInterval(settings.idleSeconds); };
-  const cursor = async (): Promise<Cursor | undefined> => (await browser.storage.session.get('cursor')).cursor as Cursor | undefined;
+  let session: string | undefined;
+  async function sessionId() {
+    if (session) return session;
+    const stored = (await browser.storage.session.get('session')).session;
+    session = typeof stored === 'string' ? stored : crypto.randomUUID();
+    if (stored !== session) await browser.storage.session.set({ session });
+    return session;
+  }
+  async function head() {
+    const [ledger, id] = await Promise.all([reopening(db, () => readHead(db)), sessionId()]);
+    const cursor = ledger.cursor as Cursor | undefined;
+    return { ...ledger, id, enabled: ledger.state?.enabled ?? true, live: cursor?.session === id ? cursor : undefined };
+  }
+  // The marker stays in storage.local until a later write succeeds, so the dashboard can show the failure.
+  let marked: boolean | undefined;
+  async function write<T>(op: () => Promise<T>) {
+    try {
+      const result = await reopening(db, op);
+      if (marked !== false) { await browser.storage.local.remove(LEDGER_ERROR_KEY); marked = false; }
+      return result;
+    } catch (error) {
+      marked = true;
+      await browser.storage.local.set({ [LEDGER_ERROR_KEY]: { at: Date.now(), name: (error as Error | undefined)?.name ?? 'Error' } })
+        .catch(markError => console.error('PageTime could not store the write failure', markError));
+      throw error;
+    }
+  }
   let rechecks: ReturnType<typeof setTimeout>[] = [];
   // getAll() can lag a focus or bounds event. A few reads cover that lag, then the worker may sleep.
   const clearRechecks = () => { for (const timer of rechecks) clearTimeout(timer); rechecks = []; };
   const recheckSoon = (windowId: number) => {
     clearRechecks();
     rechecks = [200, 700, 1_500].map(delay => setTimeout(() => {
-      void run(async () => { if (!(await cursor())) await update(windowId); });
+      void run(async () => { if (!(await head()).live) await update(windowId); });
     }, delay));
   };
 
@@ -51,30 +74,28 @@ export default defineBackground(() => {
     return { id: tab.id, domain };
   }
 
-  async function flush(data: Data, now: number) {
-    const previous = await cursor();
-    if (!previous) return;
-    const end = creditUntil(previous, now);
-    const lastEnd = data.spans.at(-1)?.end;
-    const start = lastEnd !== undefined && lastEnd > previous.since ? lastEnd : previous.since;
-    if (data.enabled) addSpan(data, previous.domain, start, end);
-  }
-
-  async function update(focusedId?: number, trustId = false) {
+  let prunedOn: string | undefined;
+  // Everything a tick needs (tabs, idle, the time it credits) is settled here; commitTick only writes it.
+  const update = (focusedId?: number, trustId = false, visit?: { domain: string; at: number }) => write(async () => {
     const now = Date.now();
-    const data = await read();
-    const previous = await cursor();
-    await flush(data, now);
-    const next = data.enabled ? await active(focusedId, trustId) : null;
-    prune(data, now);
-    await browser.storage.local.set({ data });
-    if (next) {
-      clearRechecks();
-      // A backward clock must not move the cursor into the past, or the catch-up span overlaps stored time.
-      const since = previous && now < previous.since ? previous.since : now;
-      await browser.storage.session.set({ cursor: { tabId: next.id, domain: next.domain, since } });
-    } else await browser.storage.session.remove('cursor');
-  }
+    const { state, cursor, lastEnd, id, enabled, live } = await head();
+    const next = enabled ? await active(focusedId, trustId) : null;
+    const start = live && lastEnd !== undefined && lastEnd > live.since ? lastEnd : live?.since;
+    // A backward clock must not move the cursor into the past, or the catch-up span overlaps stored time.
+    const since = live && now < live.since ? live.since : now;
+    await commitTick(db, {
+      expect: { state, cursor, lastEnd },
+      now,
+      span: enabled && live && start !== undefined ? { domain: live.domain, start, end: creditUntil(live, now) } : null,
+      visit: enabled ? visit : null,
+      cursor: next ? { tabId: next.id, domain: next.domain, since, session: id } : null,
+    });
+    if (next) clearRechecks();
+    if (prunedOn !== dateKey(now)) {
+      await pruneDetail(db, detailCutoff(now));
+      prunedOn = dateKey(now);
+    }
+  });
 
   browser.tabs.onActivated.addListener(({ windowId }) => { void run(() => update(windowId)); });
   browser.tabs.onRemoved.addListener(() => { void run(() => update()); });
@@ -84,14 +105,14 @@ export default defineBackground(() => {
   browser.windows.onFocusChanged.addListener(windowId => {
     void run(async () => {
       await update(windowId);
-      if (windowId !== browser.windows.WINDOW_ID_NONE && !(await cursor())) recheckSoon(windowId);
+      if (windowId !== browser.windows.WINDOW_ID_NONE && !(await head()).live) recheckSoon(windowId);
     });
   });
   browser.windows.onBoundsChanged.addListener(win => {
     const restored = win.id !== undefined && win.focused && !win.incognito && win.state !== 'minimized';
     void run(async () => {
       await update(restored ? win.id : undefined, restored);
-      if (restored && win.id !== undefined && !(await cursor())) recheckSoon(win.id);
+      if (restored && win.id !== undefined && !(await head()).live) recheckSoon(win.id);
     });
   });
   browser.idle.onStateChanged.addListener(() => { void run(() => update()); });
@@ -100,34 +121,24 @@ export default defineBackground(() => {
     void run(async () => {
       const tab = await browser.tabs.get(details.tabId).catch(() => null);
       const domain = domainOf(details.url);
-      const data = await read();
-      if (data.enabled && domain && tab && !tab.incognito) {
-        data.visits.push({ domain, at: details.timeStamp });
-        prune(data, Date.now());
-        await browser.storage.local.set({data});
-      }
-      await update();
+      await update(undefined, false, domain && tab && !tab.incognito ? { domain, at: details.timeStamp } : undefined);
     });
   });
   browser.webNavigation.onHistoryStateUpdated.addListener(details => {
     if (details.frameId === 0) void run(() => update());
   });
   browser.alarms.onAlarm.addListener(alarm => { if (alarm.name === 'checkpoint') void run(() => update()); });
-  browser.runtime.onStartup.addListener(() => { void run(async () => { await browser.storage.session.remove('cursor'); applyIdle(await readSettings()); await update(); }); });
+  browser.runtime.onStartup.addListener(() => { void run(async () => { applyIdle(await readSettings()); await update(); }); });
   browser.action.onClicked.addListener(() => { void browser.tabs.create({ url: browser.runtime.getURL('/dashboard.html') }); });
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (sender.id !== browser.runtime.id || !sender.url?.startsWith(browser.runtime.getURL('/dashboard.html'))) return;
     if (!['snapshot', 'toggle', 'clear', 'settings'].includes(message?.type)) return;
     void run(async () => {
       if (message.type === 'clear') {
-        const data = await read();
-        await browser.storage.session.remove('cursor');
-        await browser.storage.local.set({ data: { ...blankData(), enabled: data.enabled } });
+        await write(() => clearLedger(db, Date.now()));
       } else if (message.type === 'toggle') {
         await update();
-        const data = await read(); data.enabled = !data.enabled;
-        await browser.storage.local.set({ data });
-        await browser.storage.session.remove('cursor');
+        await write(() => toggleRecording(db, Date.now()));
       } else if (message.type === 'settings' && message.settings !== undefined) {
         const next = validateSettings(message.settings);
         await browser.storage.local.set({ settings: next });
@@ -136,8 +147,8 @@ export default defineBackground(() => {
       }
       if (message.type === 'settings') return { settings: await readSettings() };
       await update();
-      return { data: await read() };
-    }).then(sendResponse, error => sendResponse({ error: error?.message === 'data' ? 'data' : 'save' }));
+      return { ok: true };
+    }).then(sendResponse, () => sendResponse({ error: 'save' }));
     return true;
   });
   void browser.alarms.create('checkpoint', { periodInMinutes: CHECKPOINT_SECONDS / 60 });

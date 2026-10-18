@@ -1,3 +1,4 @@
+import { LEDGER_ERROR_KEY } from './ledger.mjs';
 import { blankData } from './model.mjs';
 import { DEFAULT_SETTINGS, validateSettings } from './settings.mjs';
 import { validateData } from './validate-data.mjs';
@@ -15,6 +16,7 @@ function readPreviewSettings() {
   try { return validateSettings(JSON.parse(raw)); }
   catch { return { ...DEFAULT_SETTINGS }; }
 }
+// In the extension, snapshot/toggle/clear resolve to nothing: the dashboard reads the ledger with useLiveQuery.
 export async function command(type='snapshot', body) {
   if(isExtension){
     const {browser}=await import('wxt/browser');
@@ -24,8 +26,8 @@ export async function command(type='snapshot', body) {
       if(!response?.settings) throw new Error('connect');
       return validateSettings(response.settings);
     }
-    if(!response?.data) throw new Error('connect');
-    return validateData(response.data);
+    if(!response?.ok) throw new Error('connect');
+    return undefined;
   }
   if(type==='settings'){
     const settings=body?.settings===undefined?readPreviewSettings():validateSettings(body.settings);
@@ -48,4 +50,16 @@ export async function command(type='snapshot', body) {
     catch { throw new Error('save'); }
   }
   return data;
+}
+// Calls back with the background's write-failure marker now and on every change. Returns an unsubscribe function.
+export function watchLedgerError(callback) {
+  let stop=()=>{}, live=true;
+  import('wxt/browser').then(({browser})=>{
+    if(!live) return;
+    const listener=(changes,area)=>{ if(area==='local'&&LEDGER_ERROR_KEY in changes) callback(changes[LEDGER_ERROR_KEY].newValue); };
+    browser.storage.onChanged.addListener(listener);
+    stop=()=>browser.storage.onChanged.removeListener(listener);
+    browser.storage.local.get(LEDGER_ERROR_KEY).then(stored=>{ if(live) callback(stored[LEDGER_ERROR_KEY]); });
+  });
+  return ()=>{ live=false; stop(); };
 }

@@ -1,19 +1,18 @@
 import { validateSettings } from './settings.mjs';
 
+export const HOUR = 3_600_000;
 export const DAY = 86_400_000;
-export const LIMIT = 20_000;
 export const GAP_LIMIT_MS = 90_000;
 export const IDLE_SECONDS = 60;
 export const CHECKPOINT_SECONDS = 30;
-export const RETENTION_DAYS = 90;
+export const DETAIL_DAYS = 31;
 export function timingCopy(settings) {
   const valid = validateSettings(settings);
   return {
     idle: valid.idleSeconds,
     checkpoint: CHECKPOINT_SECONDS,
     gap: GAP_LIMIT_MS / 1000,
-    days: RETENTION_DAYS,
-    limit: LIMIT,
+    days: DETAIL_DAYS,
     countAudible: valid.countAudible,
   };
 }
@@ -32,18 +31,32 @@ export function midnight(at) {
   return date.getTime();
 }
 
-export function addSpan(data, domain, start, end) {
-  if (!domain || !Number.isFinite(start) || !Number.isFinite(end) || end <= start) return;
-  const last = data.spans.at(-1);
-  if (last?.domain === domain && last.end === start) last.end = end;
-  else data.spans.push({ domain, start, end });
+export function addDays(at, days) {
+  const date = new Date(midnight(at));
+  date.setDate(date.getDate() + days);
+  return date.getTime();
 }
 
-export function prune(data, now) {
-  const cutoff = now - RETENTION_DAYS * DAY;
-  data.visits = data.visits.filter(v => v.at >= cutoff).slice(-LIMIT);
-  data.spans = data.spans.filter(s => s.end > cutoff).slice(-LIMIT).map(s => ({...s, start: Math.max(s.start,cutoff)}));
+export function dateKey(at) {
+  const date = new Date(at);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
+
+// Local-time pieces of [start, end): one per clock hour, so a piece never crosses an hour or a day.
+export function splitByHour(start, end) {
+  const pieces = [];
+  for (let at = start; at < end;) {
+    const date = new Date(at);
+    date.setMinutes(0, 0, 0);
+    const next = Math.min(end, date.getTime() + HOUR);
+    pieces.push({ date: dateKey(at), hour: new Date(at).getHours(), start: at, end: next });
+    at = next;
+  }
+  return pieces;
+}
+
+// Detail rows (spans, visits) that start before this local midnight are removed. Today counts as one of DETAIL_DAYS.
+export const detailCutoff = now => addDays(now, 1 - DETAIL_DAYS);
 
 export function summarize(data, start, end) {
   const sites = new Map();
@@ -56,16 +69,20 @@ export function summarize(data, start, end) {
     const ms = Math.max(0, Math.min(span.end, end) - Math.max(span.start, start));
     if (ms) get(span.domain).ms += ms;
   }
-  const rows = [...sites.values()].sort((a,b) => b.ms - a.ms || b.visits - a.visits || a.domain.localeCompare(b.domain));
+  return rank([...sites.values()]);
+}
+
+export function rank(rows) {
+  rows.sort((a,b) => b.ms - a.ms || b.visits - a.visits || a.domain.localeCompare(b.domain));
   return { rows, ms: rows.reduce((a,b) => a+b.ms, 0), visits: rows.reduce((a,b) => a+b.visits, 0) };
 }
 
 export function daily(data, start, end) {
   const days = [];
   for (let at = midnight(start); at < end;) {
-    const next = new Date(at); next.setDate(next.getDate()+1);
-    days.push({ at, ...summarize(data, Math.max(at,start), Math.min(next.getTime(),end)) });
-    at = next.getTime();
+    const next = addDays(at, 1);
+    days.push({ at, ...summarize(data, Math.max(at,start), Math.min(next,end)) });
+    at = next;
   }
   return days;
 }

@@ -1,11 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import { CHECKPOINT_SECONDS, GAP_LIMIT_MS, IDLE_SECONDS, LIMIT, RETENTION_DAYS, timingCopy } from '../src/model.mjs';
+import { CHECKPOINT_SECONDS, GAP_LIMIT_MS, DETAIL_DAYS, IDLE_SECONDS, timingCopy } from '../src/model.mjs';
 
 const root = new URL('../', import.meta.url);
 const fill = (template, values) => template.replace(/{{(\w+)}}/g, (_, key) => values[key]);
-const literalNumbers = [IDLE_SECONDS, CHECKPOINT_SECONDS, GAP_LIMIT_MS / 1000, RETENTION_DAYS, LIMIT]
+const literalNumbers = [IDLE_SECONDS, CHECKPOINT_SECONDS, GAP_LIMIT_MS / 1000, DETAIL_DAYS]
   .flatMap(value => [String(value), value.toLocaleString('en-US')]);
 
 test('timing copy interpolates model constants and does not hardcode them', async () => {
@@ -13,8 +13,7 @@ test('timing copy interpolates model constants and does not hardcode them', asyn
     idle: IDLE_SECONDS,
     checkpoint: CHECKPOINT_SECONDS,
     gap: GAP_LIMIT_MS / 1000,
-    days: RETENTION_DAYS,
-    limit: LIMIT,
+    days: DETAIL_DAYS,
     countAudible: true,
   });
   const custom = timingCopy({ schema: 1, idleSeconds: 300, countAudible: false });
@@ -37,12 +36,12 @@ test('timing copy interpolates model constants and does not hardcode them', asyn
     const defaults = timingCopy();
     assert.match(fill(json.howItWorks.notCounted.idle_other, { count: defaults.idle }), new RegExp(String(defaults.idle)));
     assert.match(fill(json.howItWorks.notCounted.gap_other, { count: defaults.gap }), new RegExp(String(defaults.gap)));
-    const retention = fill(json.howItWorks.privacy.retention_other, { count: defaults.days, limit: defaults.limit });
+    const retention = fill(json.howItWorks.privacy.retention_other, { count: defaults.days });
     assert.match(retention, new RegExp(String(defaults.days)));
-    assert.match(retention, new RegExp(String(defaults.limit)));
+    assert.equal(retention.includes('{{'), false);
     assert.match(fill(json.howItWorks.privacy.save_other, { count: defaults.checkpoint }), new RegExp(String(defaults.checkpoint)));
     const method = fill(json.settings.method.description, defaults);
-    for (const value of [defaults.idle, defaults.checkpoint, defaults.days, defaults.limit]) {
+    for (const value of [defaults.idle, defaults.checkpoint, defaults.days]) {
       assert.match(method, new RegExp(String(value)));
     }
     const changed = timingCopy({ schema: 1, idleSeconds: 600, countAudible: true });
@@ -61,8 +60,8 @@ test('timing copy interpolates model constants and does not hardcode them', asyn
   assert.match(background, /CHECKPOINT_SECONDS \/ 60/);
   assert.match(dialog, /timingCopy\(settings\)/);
   assert.match(dialog, /copy\.countAudible/);
-  for (const key of ['idle', 'gap', 'days', 'limit', 'checkpoint']) assert.match(dialog, new RegExp(`copy\\.${key}`));
+  for (const key of ['idle', 'gap', 'days', 'checkpoint']) assert.match(dialog, new RegExp(`copy\\.${key}`));
   assert.match(app, /timingCopy\(settings\)/);
-  assert.doesNotMatch(dialog, /\b(60|30|90_000|20_000)\b/);
+  assert.doesNotMatch(dialog, /\b(60|30|31|90_000)\b/);
   assert.doesNotMatch(background, /queryState\(\d|setDetectionInterval\(\d|periodInMinutes:\s*0\.5/);
 });
