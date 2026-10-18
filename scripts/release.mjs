@@ -1,12 +1,19 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { root, readArchive, verifyBuild, zipName } from './verify-build.mjs';
 
 const repository = 'Yukiniro/pagetime';
+export const sumsName = 'SHA256SUMS';
+
+export function checksumFile(filename, bytes) {
+  const hash = createHash('sha256').update(bytes).digest('hex');
+  return `${hash}  ${filename}\n`;
+}
 
 export function changelogEntry(markdown, version) {
   const lines = markdown.split('\n');
@@ -73,17 +80,34 @@ export function release({ directory = root, expectedSha = process.env.RELEASE_SH
     if (!existing) {
       gh('release', 'create', tag, '--repo', repository, '--verify-tag', '--draft', '--title', tag, '--notes-file', notesPath);
     }
-    const uploaded = existing?.assets?.find(item => item.name === asset);
-    if (uploaded) {
-      assert.equal(uploaded.state, 'uploaded', 'Existing ZIP upload is incomplete');
+    const assetOf = name => existing?.assets?.find(item => item.name === name);
+    const zipAsset = assetOf(asset);
+    let publishedZip = zipPath;
+    if (zipAsset) {
+      assert.equal(zipAsset.state, 'uploaded', 'Existing ZIP upload is incomplete');
       gh('release', 'download', tag, '--repo', repository, '--pattern', asset, '--dir', temporary);
-      verifyBuild({ directory, zipPath: join(temporary, asset) });
-      sameArchive(zipPath, join(temporary, asset));
-    } else {
-      gh('release', 'upload', tag, zipPath, '--repo', repository);
+      publishedZip = join(temporary, asset);
+      verifyBuild({ directory, zipPath: publishedZip });
+      sameArchive(zipPath, publishedZip);
     }
+    // Hash the bytes users download. An existing ZIP is hashed from that download; a rebuild can change timestamps.
+    const sumsBody = checksumFile(asset, readFileSync(publishedZip));
+    const sumsPath = join(temporary, sumsName);
+    writeFileSync(sumsPath, sumsBody);
+    const sumsAsset = assetOf(sumsName);
+    if (sumsAsset) {
+      assert.equal(sumsAsset.state, 'uploaded', 'Existing SHA256SUMS upload is incomplete');
+      const sumsDir = join(temporary, 'published-sums');
+      mkdirSync(sumsDir);
+      gh('release', 'download', tag, '--repo', repository, '--pattern', sumsName, '--dir', sumsDir);
+      assert.equal(readFileSync(join(sumsDir, sumsName), 'utf8'), sumsBody, 'Existing SHA256SUMS does not match the published ZIP; refusing to replace it');
+    }
+    if (!zipAsset) gh('release', 'upload', tag, zipPath, '--repo', repository);
+    if (!sumsAsset) gh('release', 'upload', tag, sumsPath, '--repo', repository);
     const complete = JSON.parse(gh('api', `repos/${repository}/releases/tags/${tag}`));
-    assert.ok(complete.assets.some(item => item.name === asset && item.state === 'uploaded' && item.size > 0), 'ZIP must be uploaded before publication');
+    for (const name of [asset, sumsName]) {
+      assert.ok(complete.assets.some(item => item.name === name && item.state === 'uploaded' && item.size > 0), `${name} must be uploaded before publication`);
+    }
     assert.equal(checkTag(), expectedSha, 'Tag changed during release');
     if (!existing || existing.draft) gh('release', 'edit', tag, '--repo', repository, '--draft=false', '--latest');
     console.log(`Verified release: https://github.com/${repository}/releases/tag/${tag}`);

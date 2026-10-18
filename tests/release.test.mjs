@@ -1,16 +1,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join } from 'node:path';
 import { zipSync } from 'fflate';
-import { release, changelogEntry } from '../scripts/release.mjs';
+import { release, changelogEntry, checksumFile, sumsName } from '../scripts/release.mjs';
 import { artifact } from './helpers/artifact-fixture.mjs';
 
 const sha = 'a'.repeat(40);
 const name = 'pagetime-1.0.1-chrome.zip';
 
-function harness(t, { tag, existing = null, buildFails = false, uploadFails = false, wrongArchive = false, apiFails = false } = {}) {
+function harness(t, { tag, existing = null, buildFails = false, uploadFails = false, failSums = false, wrongArchive = false, apiFails = false, badSums = null } = {}) {
   t.mock.method(console, 'log', () => {});
   const directory = mkdtempSync(join(tmpdir(), 'pagetime-release-test-'));
   t.after(() => rmSync(directory, { recursive: true, force: true }));
@@ -24,7 +25,16 @@ function harness(t, { tag, existing = null, buildFails = false, uploadFails = fa
   }
   put(`.output/${name}`, zipSync(fixture.files));
   const calls = [];
-  const state = { tag, existing, buildFails, uploadFails, wrongArchive, apiFails };
+  const state = { tag, existing, buildFails, uploadFails, failSums, wrongArchive, apiFails, badSums, blobs: {} };
+  let served;
+  const servedZip = () => {
+    if (state.blobs[name]) return state.blobs[name];
+    if (served) return served;
+    const files = { ...fixture.files };
+    if (state.wrongArchive) files['background.js'] = Buffer.from('different source');
+    served = zipSync(files, { level: 0 });
+    return served;
+  };
   const run = (command, args) => {
     calls.push([command, ...args]);
     if (command === 'git') {
@@ -45,14 +55,24 @@ function harness(t, { tag, existing = null, buildFails = false, uploadFails = fa
       }
       if (args[1] === 'create') state.existing = { draft: true, assets: [] };
       if (args[1] === 'upload') {
-        if (state.uploadFails) throw Error('upload failed');
-        state.existing.assets.push({ name, state: 'uploaded', size: 100 });
+        const assetName = basename(args[3]);
+        if (state.uploadFails || (state.failSums && assetName === sumsName)) throw Error('upload failed');
+        const bytes = readFileSync(args[3]);
+        state.blobs[assetName] = bytes;
+        state.existing.assets.push({ name: assetName, state: 'uploaded', size: bytes.length });
       }
       if (args[1] === 'edit') state.existing.draft = false;
       if (args[1] === 'download') {
-        const files = { ...fixture.files };
-        if (state.wrongArchive) files['background.js'] = Buffer.from('different source');
-        writeFileSync(join(args[args.indexOf('--dir') + 1], name), zipSync(files, { level: 0 }));
+        const dir = args[args.indexOf('--dir') + 1];
+        const pattern = args[args.indexOf('--pattern') + 1];
+        mkdirSync(dir, { recursive: true });
+        if (pattern === sumsName) writeFileSync(join(dir, sumsName), state.badSums ?? state.blobs[sumsName] ?? checksumFile(name, servedZip()));
+        else if (pattern === name) {
+          const bytes = servedZip();
+          state.served = bytes;
+          writeFileSync(join(dir, name), bytes);
+        }
+        else throw Error(`Unexpected download ${pattern}`);
       }
       return '';
     }
@@ -68,14 +88,17 @@ test('notes select exactly the requested version', () => {
   assert.throws(() => changelogEntry('## 1.0.0', '1.0.1'), /Missing changelog/);
 });
 
-test('all checks run before tag push; ZIP uploads to a draft before publication', t => {
+test('all checks run before tag push; ZIP and SHA256SUMS upload to a draft before publication', t => {
   const h = harness(t);
   h.publish();
   const checks = h.calls.filter(([cmd]) => cmd === 'npm' || cmd === 'npm.cmd').map(([, , script]) => script);
   assert.deepEqual(checks, ['typecheck', 'build:preview', 'test', 'zip']);
   const operations = mutations(h.calls);
-  assert.deepEqual(operations.map(([cmd, action, operation]) => cmd === 'git' ? action : operation), ['push', 'create', 'upload', 'edit']);
+  assert.deepEqual(operations.map(([cmd, action, operation]) => cmd === 'git' ? action : operation), ['push', 'create', 'upload', 'upload', 'edit']);
   assert.ok(operations[1].includes('--draft'));
+  assert.equal(h.state.blobs[sumsName].toString('utf8'), checksumFile(name, h.state.blobs[name]));
+  const editAt = h.calls.findIndex(([, , operation]) => operation === 'edit');
+  assert.ok(h.calls.findLastIndex(call => call[0] === 'gh' && call[2] === 'upload') < editAt);
   assert.equal(h.state.existing.draft, false);
 });
 
@@ -98,17 +121,41 @@ test('failed upload leaves a draft and rerun completes it without creating anoth
   h.state.uploadFails = false;
   h.calls.length = 0;
   h.publish();
-  assert.deepEqual(mutations(h.calls).map(([, , action]) => action), ['upload', 'edit']);
+  assert.deepEqual(mutations(h.calls).map(([, , action]) => action), ['upload', 'upload', 'edit']);
   assert.equal(h.state.existing.draft, false);
 });
 
-test('complete releases are verified without mutations; incomplete public releases recover missing ZIP', t => {
-  const h = harness(t, { tag: sha, existing: { draft: false, assets: [{ name, state: 'uploaded', size: 100 }] } });
+test('complete releases are verified without mutations; incomplete public releases recover the ZIP and checksum', t => {
+  const h = harness(t, { tag: sha, existing: { draft: false, assets: [{ name, state: 'uploaded', size: 100 }, { name: sumsName, state: 'uploaded', size: 100 }] } });
   h.publish();
   assert.deepEqual(mutations(h.calls), []);
   const incomplete = harness(t, { tag: sha, existing: { draft: false, assets: [] } });
   incomplete.publish();
-  assert.deepEqual(mutations(incomplete.calls).map(([, , action]) => action), ['upload']);
+  assert.deepEqual(mutations(incomplete.calls).map(([, , action]) => action), ['upload', 'upload']);
+  assert.equal(incomplete.state.blobs[sumsName].toString('utf8'), checksumFile(name, incomplete.state.blobs[name]));
+});
+
+test('a published ZIP gains SHA256SUMS of those bytes; a mismatch is not replaced', t => {
+  const missing = harness(t, { tag: sha, existing: { draft: false, assets: [{ name, state: 'uploaded', size: 100 }] } });
+  missing.publish();
+  assert.deepEqual(mutations(missing.calls).map(call => basename(call[4])), [sumsName]);
+  assert.equal(missing.state.blobs[sumsName].toString('utf8'), checksumFile(name, missing.state.served));
+  const mismatch = harness(t, { tag: sha, badSums: 'deadbeef\n', existing: { draft: false, assets: [{ name, state: 'uploaded', size: 100 }, { name: sumsName, state: 'uploaded', size: 8 }] } });
+  assert.throws(mismatch.publish, /refusing to replace/);
+  assert.deepEqual(mutations(mismatch.calls), []);
+});
+
+test('SHA256SUMS is accepted by sha256sum -c', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'pagetime-sums-'));
+  try {
+    const filename = 'pagetime-1.0.0-chrome.zip';
+    const bytes = Buffer.from('pagetime-zip');
+    writeFileSync(join(directory, filename), bytes);
+    writeFileSync(join(directory, sumsName), checksumFile(filename, bytes));
+    execFileSync('sha256sum', ['-c', sumsName], { cwd: directory });
+    try { execFileSync('shasum', ['-a', '256', '-c', sumsName], { cwd: directory }); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+  } finally { rmSync(directory, { recursive: true, force: true }); }
 });
 
 test('an existing ZIP from different source is never overwritten', t => {
