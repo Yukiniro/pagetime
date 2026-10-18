@@ -192,16 +192,98 @@ test('S9 idle and locked stop timing from the idle event', async () => {
   assert.equal(ms(data, 'a.com'), 14_000);
 });
 
-test('S10 known behavior: audible media still stops when idle reports idle (issue #6 risk 2)', async () => {
-  // chrome.idle does not see audio or video. tab.audible is not read.
+test('S10 audible playback keeps counting through idle, then stops when the sound stops', async () => {
   const h = await createHarness({ url: 'https://a.com/watch' });
-  h.setAudible(1, true);
-  await h.advance(60_000);
+  await h.setAudible(1, true);
+  await h.advance(10_000);
+  await h.setIdle('idle');
+  await h.advance(20_000);
+  const playing = (await h.snapshot()).data;
+  assert.equal(h.cursor()?.domain, 'a.com');
+  assert.equal(ms(playing, 'a.com'), 30_000);
+  await h.setAudible(1, false);
+  assert.equal(h.cursor(), null);
+  await h.advance(15_000);
+  assert.equal(ms((await h.snapshot()).data, 'a.com'), 30_000);
+});
+
+test('S21 turning audio counting off stops timing while idle', async () => {
+  const h = await createHarness({ url: 'https://a.com/watch' });
+  await h.message('settings', { settings: { schema: 1, idleSeconds: 60, countAudible: false } });
+  await h.setAudible(1, true);
+  await h.advance(9_000);
   await h.setIdle('idle');
   await h.advance(30_000);
+  assert.equal(h.cursor(), null);
+  assert.equal(ms((await h.snapshot()).data, 'a.com'), 9_000);
+});
+
+test('S22 a muted tab does not count, and muting stops timing immediately', async () => {
+  const h = await createHarness({ url: 'https://a.com/watch' });
+  await h.setAudible(1, true);
+  await h.setMuted(1, true);
+  await h.advance(7_000);
+  await h.setIdle('idle');
+  await h.advance(18_000);
+  assert.equal(h.cursor(), null);
+  assert.equal(ms((await h.snapshot()).data, 'a.com'), 7_000);
+  await h.setIdle('active');
+  await h.setMuted(1, false);
+  await h.advance(4_000);
+  await h.setIdle('idle');
+  await h.advance(9_000);
+  assert.equal(h.cursor()?.domain, 'a.com');
+  await h.setMuted(1, true);
+  assert.equal(h.cursor(), null);
+  const stopped = ms(h.read(), 'a.com');
+  await h.advance(15_000);
+  assert.equal(ms((await h.snapshot()).data, 'a.com'), stopped);
+});
+
+test('S23 locked does not count even while audio is playing', async () => {
+  const h = await createHarness({ url: 'https://a.com/watch' });
+  await h.setAudible(1, true);
+  await h.advance(6_000);
+  await h.setIdle('locked');
+  await h.advance(25_000);
+  assert.equal(h.cursor(), null);
+  assert.equal(ms((await h.snapshot()).data, 'a.com'), 6_000);
+});
+
+test('S24 audio in a background tab or an unfocused window does not count', async () => {
+  const h = await createHarness({ url: 'https://a.com/' });
+  h.openTab(1, 'https://video.test/watch', { audible: true });
+  h.openWindow({ url: 'https://other.test/watch', audible: true });
+  await h.advance(5_000);
+  await h.setIdle('idle');
+  await h.advance(20_000);
   const data = (await h.snapshot()).data;
   assert.equal(h.cursor(), null);
-  assert.equal(ms(data, 'a.com'), 60_000);
+  assert.equal(ms(data, 'a.com'), 5_000);
+  assert.equal(ms(data, 'video.test'), 0);
+  assert.equal(ms(data, 'other.test'), 0);
+});
+
+test('S25 idleSeconds is passed to setDetectionInterval and queryState; invalid settings fall back', async () => {
+  const h = await createHarness({ url: 'https://a.com/' });
+  assert.equal(h.detectionIntervals.at(-1), 60);
+  const saved = await h.message('settings', { settings: { schema: 1, idleSeconds: 300, countAudible: true } });
+  assert.deepEqual(saved.settings, { schema: 1, idleSeconds: 300, countAudible: true });
+  assert.equal(h.detectionIntervals.at(-1), 300);
+  assert.equal(h.idleQueries.at(-1), 300);
+  const fallback = await h.message('settings', { settings: { schema: 9, idleSeconds: 90, countAudible: 'yes' } });
+  assert.deepEqual(fallback.settings, { schema: 1, idleSeconds: 60, countAudible: true });
+  assert.deepEqual((await h.browser.storage.local.get('settings')).settings, fallback.settings);
+  assert.equal(h.detectionIntervals.includes(90), false);
+  assert.equal(h.idleQueries.includes(90), false);
+  const ignored = h.browser.runtime.onMessage.listeners[0](
+    { type: 'settings', settings: { schema: 1, idleSeconds: 600, countAudible: false } },
+    { id: 'other', url: 'https://evil.test/dashboard.html' },
+    () => { throw new Error('responded'); },
+  );
+  assert.equal(ignored, undefined);
+  await h.settle();
+  assert.deepEqual((await h.browser.storage.local.get('settings')).settings, fallback.settings);
 });
 
 test('S11 a service worker restarted within 30s continues the session cursor', async () => {

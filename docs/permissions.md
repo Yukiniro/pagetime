@@ -16,7 +16,7 @@ The warning describes what those APIs are able to do, not what PageTime writes i
 
 ## `storage`
 
-Stores the ledger in the `data` key of `chrome.storage.local`, and the service-worker checkpoint in the `cursor` key of `chrome.storage.session`.
+Stores the ledger in the `data` key and the timing preferences in the `settings` key of `chrome.storage.local`, and the service-worker checkpoint in the `cursor` key of `chrome.storage.session`.
 
 It can read and write this extension's own storage area. The code uses local and session only, not sync. It cannot read another extension's storage, site cookies, or arbitrary files on disk. No install warning.
 
@@ -24,7 +24,7 @@ It can read and write this extension's own storage area. The code uses local and
 
 Reads the URL of the active tab in the focused window, reduces it to a hostname, and skips incognito tabs. Without this permission the extension does not receive `tab.url`.
 
-It can read a tab's URL, title, favicon, and pending URL, and it can query tabs by URL. It cannot read the page DOM, inject scripts, or call `chrome.history`. The current code uses only `url`, `id`, and `incognito`. It does not read the title. Install warning: “Read your browsing history”.
+It can read a tab's URL, title, favicon, and pending URL, and it can query tabs by URL. It cannot read the page DOM, inject scripts, or call `chrome.history`. The current code uses `url`, `id`, `incognito`, `audible`, and `mutedInfo`. It does not read the title, and it does not store `audible` or `mutedInfo`. Install warning: “Read your browsing history”.
 
 ## `webNavigation`
 
@@ -34,9 +34,9 @@ It can observe the full URL, frame id, transition type, and time on navigation e
 
 ## `idle`
 
-Stops counting after `IDLE_SECONDS` (60) seconds without keyboard or mouse input, including when the screen is locked. The background calls `idle.setDetectionInterval(60)` and settles the open span when the state changes.
+Stops counting after `settings.idleSeconds` seconds without keyboard or mouse input. The default is `IDLE_SECONDS` (60); the stored value may be 60, 120, 300, or 600. The background calls `idle.setDetectionInterval` with that value and passes the same value to `idle.queryState`. A locked state never counts. When `countAudible` is on (the default), idle time still counts if the active tab of the focused window is audible and not muted. This uses the existing `idle` and `tabs` permissions. No new permission was added.
 
-It can query `active`, `idle`, or `locked`. It cannot see which key was pressed, and it does not look at whether a tab is playing media. No install warning.
+It can query `active`, `idle`, or `locked`. It cannot see which key was pressed. No install warning.
 
 ## `alarms`
 

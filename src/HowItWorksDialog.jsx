@@ -7,11 +7,12 @@ import { timingCopy } from './model.mjs';
 const counted = ['focus', 'web', 'navigation'];
 const notCounted = ['idle', 'locked', 'unfocused', 'internal', 'incognito', 'paused', 'gap'];
 
-export function HowItWorksDialog({ open, onOpenChange, finalFocus }) {
+export function HowItWorksDialog({ open, onOpenChange, finalFocus, settings }) {
   const { t } = useTranslation();
+  const copy = timingCopy(settings);
   const notCountedText = key => {
-    if (key === 'idle') return t('howItWorks.notCounted.idle', { count: timingCopy.idle });
-    if (key === 'gap') return t('howItWorks.notCounted.gap', { count: timingCopy.gap });
+    if (key === 'idle') return t('howItWorks.notCounted.idle', { count: copy.idle });
+    if (key === 'gap') return t('howItWorks.notCounted.gap', { count: copy.gap });
     return t(`howItWorks.notCounted.${key}`);
   };
   return <Dialog open={open} onOpenChange={onOpenChange}>
@@ -32,6 +33,14 @@ export function HowItWorksDialog({ open, onOpenChange, finalFocus }) {
         <h3>{t('howItWorks.notCounted.title')}</h3>
         <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-muted-foreground">
           {notCounted.map(key => <li key={key}>{notCountedText(key)}</li>)}
+          {copy.countAudible && <li>{t('settings.method.audible')}</li>}
+        </ul>
+      </section>
+      <section className="flex flex-col gap-1">
+        <h3>{t('howItWorks.limits.title')}</h3>
+        <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-muted-foreground">
+          <li>{t('howItWorks.limits.audible')}</li>
+          <li>{t('howItWorks.limits.threshold')}</li>
         </ul>
       </section>
       <section className="flex flex-col gap-1">
@@ -43,8 +52,8 @@ export function HowItWorksDialog({ open, onOpenChange, finalFocus }) {
         <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-muted-foreground">
           <li>{t('howItWorks.privacy.fields')}</li>
           <li>{t('howItWorks.privacy.local')}</li>
-          <li>{t('howItWorks.privacy.retention', { count: timingCopy.days, limit: timingCopy.limit })}</li>
-          <li>{t('howItWorks.privacy.save', { count: timingCopy.checkpoint })}</li>
+          <li>{t('howItWorks.privacy.retention', { count: copy.days, limit: copy.limit })}</li>
+          <li>{t('howItWorks.privacy.save', { count: copy.checkpoint })}</li>
         </ul>
       </section>
       </div>

@@ -64,7 +64,9 @@
     "language": { "title": "Sprache", "description": "Wähle die Anzeigesprache von PageTime.", "label": "Anzeigesprache: {{language}}" },
     "recording": { "title": "Aufzeichnung", "description": "Zählt Seitenbesuche und misst nur die Zeit im aktiven Tab des fokussierten Fensters." },
     "privacy": { "title": "Lokal und privat", "description": "Speichert nur Domains, Zeiten und Besuchszahlen – niemals Seiteninhalte, Titel oder vollständige URLs.<br/>Inkognito-Fenster und interne Browserseiten werden ignoriert, und es werden keine Daten an einen Server gesendet." },
-    "method": { "title": "So wird gemessen", "description": "Jedes Laden oder Neuladen einer Seite zählt als ein Besuch; Tab-Wechsel und Navigation innerhalb von Single-Page-Apps zählen nicht.<br/>{{idle}} Sekunden ohne Systemeingabe gelten als Leerlauf; der Fortschritt wird alle {{checkpoint}} Sekunden gespeichert.<br/>Speichert Daten bis zu {{days}} Tage, höchstens {{limit}} Besuche und {{limit}} aktive Sitzungen." },
+    "method": { "title": "So wird gemessen", "description": "Jedes Laden oder Neuladen einer Seite zählt als ein Besuch; Tab-Wechsel und Navigation innerhalb von Single-Page-Apps zählen nicht.<br/>{{idle}} Sekunden ohne Systemeingabe gelten als Leerlauf; der Fortschritt wird alle {{checkpoint}} Sekunden gespeichert.<br/>Speichert Daten bis zu {{days}} Tage, höchstens {{limit}} Besuche und {{limit}} aktive Sitzungen.", "audible": "Ein Tab mit nicht stummgeschaltetem Ton zählt nicht als Leerlauf." },
+    "audible": { "title": "Bei Audiowiedergabe weiterzählen", "description": "Wenn der aktive Tab im fokussierten Fenster nicht stummgeschalteten Ton abspielt, zählt auch Leerlaufzeit. Die Zählung stoppt, sobald der Ton endet oder der Tab stummgeschaltet wird." },
+    "idle": { "title": "Leerlaufschwelle", "description": "Wie lange ohne Tastatur- oder Mauseingabe dieser Browser als im Leerlauf gilt.", "label": "Leerlaufschwelle: {{duration}}", "option_one": "{{count}} Minute", "option_other": "{{count}} Minuten" },
     "clear": { "title": "Alle Daten löschen", "description": "Löscht die von PageTime auf diesem Gerät gespeicherten Daten. Dies kann nicht rückgängig gemacht werden.", "button": "Daten löschen" }
   },
   "detail": {
@@ -126,6 +128,7 @@
       "save_one": "Speichert alle {{count}} Sekunde. Beim unerwarteten Schließen kann höchstens dieses Intervall verloren gehen.",
       "save_other": "Speichert alle {{count}} Sekunden. Beim unerwarteten Schließen kann höchstens dieses Intervall verloren gehen."
     },
+    "limits": { "title": "Bekannte Ungenauigkeiten", "audible": "Der Browser kann 2–3 Sekunden brauchen, bis er merkt, dass Ton begonnen oder aufgehört hat.", "threshold": "Bei einer Leerlaufschwelle von 10 Minuten können nach dem Verlassen bis zu 10 zusätzliche Minuten gezählt werden." },
     "close": "Schließen"
   }
 }

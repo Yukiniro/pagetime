@@ -1,6 +1,6 @@
 # PageTime privacy
 
-PageTime is a browsing ledger that lives in Chrome or Edge on this device. Each statement below matches the implementation: `entrypoints/background.ts` writes the records, `src/model.mjs` sets retention, `src/validate-data.mjs` sets the shape that may be stored, and `wxt.config.ts` sets the permissions. 中文版见 [PRIVACY.zh-CN.md](PRIVACY.zh-CN.md).
+PageTime is a browsing ledger that lives in Chrome or Edge on this device. Each statement below matches the implementation: `entrypoints/background.ts` writes the records, `src/model.mjs` sets retention, `src/settings.mjs` sets the timing preferences, `src/validate-data.mjs` sets the shape that may be stored, and `wxt.config.ts` sets the permissions. 中文版见 [PRIVACY.zh-CN.md](PRIVACY.zh-CN.md).
 
 ## What is stored
 
@@ -15,6 +15,16 @@ The durable ledger is the `data` key in `chrome.storage.local`:
 
 The visit count shown in the UI is the number of `visits`. It is not stored as its own counter. `domainOf` in `src/model.mjs` keeps only the `hostname` of an `http:` or `https:` URL. Path, query, fragment, port, and userinfo are dropped. `validate-data.mjs` rejects a domain that contains `/`, `?`, `#`, `@`, or whitespace. An invalid `data` object is left untouched.
 
+Timing preferences are a separate `settings` key in `chrome.storage.local`. They are not part of `data`:
+
+| Field | Contents |
+| --- | --- |
+| `schema` | `1` |
+| `idleSeconds` | `60`, `120`, `300`, or `600`. Seconds without keyboard or mouse input before the browser counts as idle |
+| `countAudible` | When true, idle time still counts if the active tab of the focused window is audible and not muted. The default is true |
+
+`validateSettings` in `src/settings.mjs` replaces an invalid field with the default. If `settings` is missing, the background uses `{ schema: 1, idleSeconds: 60, countAudible: true }`. These fields are not a browsing history. The background also reads `tab.audible` and `tab.mutedInfo` to apply `countAudible`. Those flags are not written into `data` or `settings`.
+
 Titles, full URLs, page content, cookies, and form input are not stored. The extension has no content script and does not call `chrome.scripting`, so it does not read the page DOM.
 
 The service-worker checkpoint is the `cursor` key in `chrome.storage.session`: `{ tabId, domain, since }`. `tabId` is the browser's tab id. The cursor is removed when nothing is being recorded, and also on browser startup, clear, pause, and resume. It is not a browsing history, and it disappears when the browser session ends.
@@ -28,25 +38,25 @@ On this device only:
 - The extension uses `chrome.storage.local` and `chrome.storage.session`. The code never calls `chrome.storage.sync`.
 - There is no account, sign-in, or identity permission.
 - The background and dashboard source make no network requests. The manifest requests no host permission, so the extension is not granted access to read pages or send the ledger to another host.
-- The local preview (`npm run dev`) is not the installed extension. It stores the same `data` shape in `localStorage` under `pagetime-preview` and still does not upload it. `worker/index.js` only serves the static Sites preview. It is not in the extension package and does not receive browsing records.
+- The local preview (`npm run dev`) is not the installed extension. It stores the same `data` shape in `localStorage` under `pagetime-preview`, and the same `settings` shape under `pagetime-preview-settings`. It still does not upload either. `worker/index.js` only serves the static Sites preview. It is not in the extension package and does not receive browsing records.
 
 ## How long it is kept
 
-The numbers are the constants in `src/model.mjs`. The in-extension explainer reads them through `timingCopy`:
+The numbers are the constants in `src/model.mjs`. The in-extension explainer reads them through `timingCopy(settings)`, so the idle number follows the stored threshold:
 
 | Constant | Value | Effect |
 | --- | --- | --- |
 | `RETENTION_DAYS` | 90 | Visits older than now minus 90 days are removed. Spans that end at or before that cutoff are removed. A span that crosses the cutoff is trimmed to start at the cutoff |
 | `LIMIT` | 20000 | Visits and spans are each capped at 20000. The oldest entries past the cap are removed |
 | `CHECKPOINT_SECONDS` | 30 | Period of the checkpoint alarm, in a `periodInMinutes` of this value divided by 60 |
-| `IDLE_SECONDS` | 60 | Recording stops after this many seconds without keyboard or mouse input |
+| `IDLE_SECONDS` | 60 | Default idle threshold. The stored `settings.idleSeconds` may instead be 120, 300, or 600. Recording stops after that many seconds without keyboard or mouse input, unless `countAudible` is on and the active tab of the focused window is audible and not muted. A locked screen never counts |
 | `GAP_LIMIT_MS` | 90000 | A gap between checkpoints is credited at most 90 seconds |
 
 Visits and spans are capped separately, so the two lists are not guaranteed to cover the same 90 days. The public timing rules are the README section on what is counted, the in-extension "How time is counted" dialog, `tests/model.test.mjs`, `tests/timing.test.mjs`, `tests/timing-copy.test.mjs`, and `docs/timing-qa.md`.
 
 ## No network, telemetry, or account
 
-The manifest permissions are `storage`, `tabs`, `webNavigation`, `idle`, and `alarms`. There is no host permission and no content script. `incognito` is `not_allowed`, so incognito windows are not recorded. The extension declares no telemetry, analytics, or account API. The dashboard may send only `snapshot`, `toggle`, and `clear`, and the background accepts those messages only from this extension's own `dashboard.html`.
+The manifest permissions are `storage`, `tabs`, `webNavigation`, `idle`, and `alarms`. Configurable idle time and audio counting add no new permission. There is no host permission and no content script. `incognito` is `not_allowed`, so incognito windows are not recorded. The extension declares no telemetry, analytics, or account API. The dashboard may send only `snapshot`, `toggle`, `clear`, and `settings`, and the background accepts those messages only from this extension's own `dashboard.html`.
 
 ## How to delete it
 
