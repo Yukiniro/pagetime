@@ -106,12 +106,51 @@ async function worker(context) {
   return context.waitForEvent('serviceworker');
 }
 
+// Reads the IndexedDB ledger into the `{ visits, spans, enabled, since }` shape these checks compare.
+// The cursor counts only when it belongs to this storage.session, as in the background.
+async function readLedger(sw) {
+  return sw.evaluate(async () => {
+    const { session } = await chrome.storage.session.get('session');
+    const db = await new Promise(resolve => {
+      const request = indexedDB.open('pagetime-ledger');
+      request.onupgradeneeded = () => request.transaction.abort();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => resolve(null);
+    });
+    if (!db) return { data: undefined, cursor: null };
+    try {
+      const names = ['meta', 'domains', 'spans', 'visits'];
+      const tx = db.transaction(names, 'readonly');
+      const [meta, domains, spans, visits] = await Promise.all(names.map(name => new Promise((resolve, reject) => {
+        const request = tx.objectStore(name).getAll();
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      })));
+      const host = new Map(domains.map(row => [row.id, row.host]));
+      const value = key => meta.find(row => row.key === key)?.value;
+      const state = value('state');
+      const cursor = value('cursor');
+      return {
+        data: state && {
+          visits: visits.sort((a, b) => a.at - b.at).map(visit => ({ domain: host.get(visit.domainId), at: visit.at })),
+          spans: spans.sort((a, b) => a.start - b.start).map(span => ({ domain: host.get(span.domainId), start: span.start, end: span.end })),
+          enabled: state.enabled,
+          since: state.since,
+        },
+        cursor: cursor && cursor.session === session ? { tabId: cursor.tabId, domain: cursor.domain, since: cursor.since } : null,
+      };
+    } finally {
+      db.close();
+    }
+  });
+}
+
 async function readData(sw) {
-  return sw.evaluate(async () => (await chrome.storage.local.get('data')).data);
+  return (await readLedger(sw)).data;
 }
 
 async function readCursor(sw) {
-  return sw.evaluate(async () => (await chrome.storage.session.get('cursor')).cursor ?? null);
+  return (await readLedger(sw)).cursor;
 }
 
 function xdo(args) {
@@ -440,4 +479,24 @@ test('S16 reloading the extension drops at most the unflushed tail', async () =>
     await second.close();
     fs.rmSync(userDataDir, { recursive: true, force: true });
   }
+});
+
+test('an open dashboard shows background writes without a reload', async () => {
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    const dashboard = await context.newPage();
+    await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
+    await expect(dashboard.locator('main')).toBeVisible();
+    await expect.poll(async () => (await readData(sw))?.enabled).toBe(true);
+    await expect(dashboard.getByText('a.test')).toHaveCount(0);
+    await dashboard.evaluate(() => { window.PAGETIME_MARKER = 'kept'; });
+    const page = await context.newPage();
+    await page.goto(pageUrl('a.test'));
+    await waitForDomain(context, 'a.test');
+    await page.waitForTimeout(2_000);
+    await page.goto('about:blank');
+    await waitForSpan(context, 'a.test', 1_000);
+    await expect(dashboard.getByText('a.test').first()).toBeAttached();
+    expect(await dashboard.evaluate(() => window.PAGETIME_MARKER)).toBe('kept');
+  });
 });
