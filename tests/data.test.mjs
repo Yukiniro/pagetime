@@ -30,6 +30,20 @@ test('invalid JSON and invalid record shapes are preserved across snapshot, togg
   assert.equal((await command()).enabled, true);
 });
 
+test('preview settings are stored apart from records and invalid values fall back', async () => {
+  const { DEFAULT_SETTINGS } = await import('../src/settings.mjs');
+  values.clear();
+  assert.deepEqual(await command('settings'), DEFAULT_SETTINGS);
+  assert.equal(values.has('pagetime-preview-settings'), false);
+  const saved = await command('settings', { settings: { schema: 1, idleSeconds: 300, countAudible: false } });
+  assert.deepEqual(saved, { schema: 1, idleSeconds: 300, countAudible: false });
+  assert.deepEqual(await command('settings'), saved);
+  assert.equal(values.has('pagetime-preview'), false);
+  values.set('pagetime-preview-settings', '{');
+  assert.deepEqual(await command('settings'), DEFAULT_SETTINGS);
+  assert.deepEqual(await command('settings', { settings: { schema: 2, idleSeconds: 15, countAudible: 'yes' } }), DEFAULT_SETTINGS);
+});
+
 test('snapshots never write storage and storage failures are reported', async () => {
   values.clear();
   const previous = globalThis.localStorage;

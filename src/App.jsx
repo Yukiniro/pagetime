@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ChartBar, Clock, GearSix, ShieldCheck, Pause, Play, ArrowRight, GlobeHemisphereWest, MagnifyingGlass, X, Trash, CaretDown, CalendarBlank, Translate, Info } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from '@app/components/ui/dropdown-menu';
+import { Switch } from '@app/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@app/components/ui/dialog';
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@app/components/ui/alert-dialog';
 import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@app/components/ui/sidebar';
@@ -14,6 +15,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@app/components/ui/avatar';
 import { ScrollArea } from '@app/components/ui/scroll-area';
 import { Trans, useTranslation } from 'react-i18next';
 import { blankData, midnight, summarize, timingCopy } from './model.mjs';
+import { DEFAULT_SETTINGS, IDLE_OPTIONS } from './settings.mjs';
 import { HowItWorksDialog } from './HowItWorksDialog.jsx';
 import { command, knownSites, colorOf } from './data.js';
 import { Trend, Timeline } from './Charts.jsx';
@@ -29,14 +31,19 @@ function SiteIcon({ domain }) {
 export function App() {
   const { t, i18n } = useTranslation();
   const rangeLabel = range => range === 1 ? t('range.today') : t('range.lastDays', { count: range });
-  const [data, setData] = useState(blankData), [ready, setReady] = useState(false), [error, setError] = useState(''), [busy, setBusy] = useState(false);
+  const [data, setData] = useState(blankData), [settings, setSettings] = useState(DEFAULT_SETTINGS), [ready, setReady] = useState(false), [error, setError] = useState(''), [busy, setBusy] = useState(false);
   const [page, setPage] = useState('overview'), [range, setRange] = useState(7), [search, setSearch] = useState(''), [expanded, setExpanded] = useState(false), [selected, setSelected] = useState(null);
   const [confirmClear, setConfirmClear] = useState(false), [howOpen, setHowOpen] = useState(false);
   const detailTrigger = useRef(null), howTrigger = useRef(null);
   const openHow = event => { howTrigger.current = event.currentTarget; setHowOpen(true); };
-  async function act(type = 'snapshot') {
+  async function act(type = 'snapshot', body) {
     setBusy(true);
-    try { setData(await command(type)); setError(''); setReady(true); return true; }
+    try {
+      const next = await command(type, body);
+      if (type === 'settings') setSettings(next);
+      else { setData(next); setSettings(await command('settings')); }
+      setError(''); setReady(true); return true;
+    }
     catch (e) { setError(e.message); return false; }
     finally { setBusy(false); }
   }
@@ -52,6 +59,9 @@ export function App() {
   const openSite = (domain, event) => { detailTrigger.current = event.currentTarget; setSelected(domain); };
   const errorText = t([`error.${error}`, 'error.connect']);
   const languageName = languages.find(([code]) => code === i18n.resolvedLanguage)?.[1];
+  const copy = timingCopy(settings);
+  const idleLabel = t('settings.idle.option', { count: settings.idleSeconds / 60 });
+  const saveSettings = next => act('settings', { settings: next });
   const sessions = data.spans.filter(s => s.domain === selected && s.end > today && s.start < end);
 
   return <TooltipProvider><AlertDialog open={confirmClear} onOpenChange={setConfirmClear}>
@@ -110,7 +120,7 @@ export function App() {
             </DropdownMenu></div>
             <div className="setting-row"><div><h2>{t('settings.recording.title')}</h2><p>{t('settings.recording.description')}</p></div><Button variant="outline" className="action-button" disabled={busy} onClick={() => act('toggle')}>{data.enabled ? t('actions.pause') : t('actions.enable')}</Button></div>
             <div className="setting-row"><div><h2>{t('settings.privacy.title')}</h2><p><Trans i18nKey="settings.privacy.description" /></p></div><ShieldCheck size={28} className="privacy-icon" /></div>
-            <div className="setting-row"><div><h2>{t('settings.method.title')}</h2><p><Trans i18nKey="settings.method.description" values={timingCopy} /></p><Button variant="outline" className="action-button mt-3" onClick={openHow}>{t('howItWorks.open')}</Button></div></div>
+            <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.method.title')}</h2><p><Trans i18nKey="settings.method.description" values={copy} /></p>{settings.countAudible && <p>{t('settings.method.audible')}</p>}<div className="mt-4 flex flex-col gap-4"><div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="count-audible">{t('settings.audible.title')}</h3><p>{t('settings.audible.description')}</p></div><Switch checked={settings.countAudible} onCheckedChange={checked => saveSettings({ ...settings, countAudible: checked })} disabled={busy} aria-labelledby="count-audible" /></div><div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="idle-threshold">{t('settings.idle.title')}</h3><p>{t('settings.idle.description')}</p></div><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.idle.label', { duration: idleLabel })} disabled={busy}>{idleLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={String(settings.idleSeconds)} onValueChange={value => saveSettings({ ...settings, idleSeconds: Number(value) })}>{IDLE_OPTIONS.map(seconds => <DropdownMenuRadioItem closeOnClick key={seconds} value={String(seconds)}>{t('settings.idle.option', { count: seconds / 60 })}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div></div><Button variant="outline" className="action-button mt-3" onClick={openHow}>{t('howItWorks.open')}</Button></div></div>
             <div className="setting-row"><div><h2>{t('settings.clear.title')}</h2><p>{t('settings.clear.description')}</p></div><AlertDialogTrigger render={<Button variant="destructive" className="action-button" disabled={busy} />}><Trash />{t('settings.clear.button')}</AlertDialogTrigger></div>
           </section>}
         </main>
@@ -128,7 +138,7 @@ export function App() {
         </>}
       </DialogContent>
     </Dialog>
-    <HowItWorksDialog open={howOpen} onOpenChange={setHowOpen} finalFocus={howTrigger} />
+    <HowItWorksDialog open={howOpen} onOpenChange={setHowOpen} finalFocus={howTrigger} settings={settings} />
     <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>{t('confirm.title')}</AlertDialogTitle><AlertDialogDescription>{t('confirm.description')}</AlertDialogDescription></AlertDialogHeader>
       {error && <Alert variant="destructive"><AlertDescription>{errorText}</AlertDescription></Alert>}
       <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction variant="destructive" disabled={busy} onClick={async () => { if (await act('clear')) setConfirmClear(false); }}>{busy ? t('confirm.clearing') : t('confirm.confirm')}</AlertDialogAction></AlertDialogFooter>

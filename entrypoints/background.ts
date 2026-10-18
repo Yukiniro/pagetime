@@ -1,6 +1,7 @@
 import { browser } from 'wxt/browser';
 import { defineBackground } from 'wxt/utils/define-background';
-import { addSpan, blankData, CHECKPOINT_SECONDS, creditUntil, domainOf, IDLE_SECONDS, prune } from '../src/model.mjs';
+import { addSpan, blankData, CHECKPOINT_SECONDS, creditUntil, domainOf, prune } from '../src/model.mjs';
+import { validateSettings } from '../src/settings.mjs';
 import { validateData } from '../src/validate-data.mjs';
 
 type Data = { visits: {domain: string; at: number}[]; spans: {domain: string; start: number; end: number}[]; enabled: boolean; since: number };
@@ -17,6 +18,8 @@ export default defineBackground(() => {
     const stored = (await browser.storage.local.get('data')).data;
     return stored === undefined ? blankData() : validateData(stored);
   };
+  const readSettings = async () => validateSettings((await browser.storage.local.get('settings')).settings);
+  const applyIdle = (settings: { idleSeconds: number }) => { browser.idle.setDetectionInterval(settings.idleSeconds); };
   const cursor = async (): Promise<Cursor | undefined> => (await browser.storage.session.get('cursor')).cursor as Cursor | undefined;
   let rechecks: ReturnType<typeof setTimeout>[] = [];
   // getAll() can lag a focus or bounds event. A few reads cover that lag, then the worker may sleep.
@@ -29,7 +32,9 @@ export default defineBackground(() => {
   };
 
   async function active(focusedId?: number, trustId = false): Promise<{id: number; domain: string} | null> {
-    if (await browser.idle.queryState(IDLE_SECONDS) !== 'active') return null;
+    const settings = await readSettings();
+    const state = await browser.idle.queryState(settings.idleSeconds);
+    if (state === 'locked') return null;
     const windows = await browser.windows.getAll();
     const reported = windows.find(w => w.focused && !w.incognito && w.state !== 'minimized');
     const hinted = focusedId !== undefined && focusedId !== browser.windows.WINDOW_ID_NONE
@@ -39,7 +44,11 @@ export default defineBackground(() => {
     if (focused?.id === undefined) return null;
     const [tab] = await browser.tabs.query({ active: true, windowId: focused.id });
     const domain = !tab?.incognito && domainOf(tab?.url);
-    return domain && tab?.id !== undefined ? { id: tab.id, domain } : null;
+    if (!domain || tab?.id === undefined) return null;
+    const playing = Boolean(tab.audible) && !tab.mutedInfo?.muted;
+    if (state === 'idle' && !(settings.countAudible && playing)) return null;
+    if (state !== 'active' && state !== 'idle') return null;
+    return { id: tab.id, domain };
   }
 
   async function flush(data: Data, now: number) {
@@ -69,7 +78,9 @@ export default defineBackground(() => {
 
   browser.tabs.onActivated.addListener(({ windowId }) => { void run(() => update(windowId)); });
   browser.tabs.onRemoved.addListener(() => { void run(() => update()); });
-  browser.tabs.onUpdated.addListener((_id, changes) => { if (changes.url) void run(() => update()); });
+  browser.tabs.onUpdated.addListener((_id, changes) => {
+    if (changes.url !== undefined || changes.audible !== undefined || changes.mutedInfo !== undefined) void run(() => update());
+  });
   browser.windows.onFocusChanged.addListener(windowId => {
     void run(async () => {
       await update(windowId);
@@ -102,11 +113,11 @@ export default defineBackground(() => {
     if (details.frameId === 0) void run(() => update());
   });
   browser.alarms.onAlarm.addListener(alarm => { if (alarm.name === 'checkpoint') void run(() => update()); });
-  browser.runtime.onStartup.addListener(() => { void run(async () => { await browser.storage.session.remove('cursor'); await update(); }); });
+  browser.runtime.onStartup.addListener(() => { void run(async () => { await browser.storage.session.remove('cursor'); applyIdle(await readSettings()); await update(); }); });
   browser.action.onClicked.addListener(() => { void browser.tabs.create({ url: browser.runtime.getURL('/dashboard.html') }); });
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (sender.id !== browser.runtime.id || !sender.url?.startsWith(browser.runtime.getURL('/dashboard.html'))) return;
-    if (!['snapshot', 'toggle', 'clear'].includes(message?.type)) return;
+    if (!['snapshot', 'toggle', 'clear', 'settings'].includes(message?.type)) return;
     void run(async () => {
       if (message.type === 'clear') {
         const data = await read();
@@ -117,13 +128,18 @@ export default defineBackground(() => {
         const data = await read(); data.enabled = !data.enabled;
         await browser.storage.local.set({ data });
         await browser.storage.session.remove('cursor');
+      } else if (message.type === 'settings' && message.settings !== undefined) {
+        const next = validateSettings(message.settings);
+        await browser.storage.local.set({ settings: next });
+        applyIdle(next);
+        await update();
       }
+      if (message.type === 'settings') return { settings: await readSettings() };
       await update();
       return { data: await read() };
     }).then(sendResponse, error => sendResponse({ error: error?.message === 'data' ? 'data' : 'save' }));
     return true;
   });
-  browser.idle.setDetectionInterval(IDLE_SECONDS);
   void browser.alarms.create('checkpoint', { periodInMinutes: CHECKPOINT_SECONDS / 60 });
-  void run(() => update());
+  void run(async () => { applyIdle(await readSettings()); await update(); });
 });

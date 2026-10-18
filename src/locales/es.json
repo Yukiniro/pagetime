@@ -69,7 +69,9 @@
     "language": { "title": "Idioma", "description": "Elige el idioma de la interfaz de PageTime.", "label": "Idioma de la interfaz: {{language}}" },
     "recording": { "title": "Registro de navegación", "description": "Cuenta las visitas a páginas y solo mide el tiempo en la pestaña activa de la ventana enfocada." },
     "privacy": { "title": "Local y privado", "description": "Solo guarda dominios, horas y número de visitas; nunca el contenido, los títulos ni las URL completas.<br/>Ignora las ventanas de incógnito y las páginas internas del navegador, y nunca envía datos a un servidor." },
-    "method": { "title": "Cómo se mide", "description": "Cada carga o recarga de página cuenta como una visita; cambiar de pestaña o navegar dentro de una aplicación de una sola página no suma visitas.<br/>{{idle}} segundos sin actividad del sistema se consideran inactividad; el progreso se guarda cada {{checkpoint}} segundos.<br/>Conserva hasta {{days}} días de datos, con un máximo de {{limit}} visitas y {{limit}} sesiones activas." },
+    "method": { "title": "Cómo se mide", "description": "Cada carga o recarga de página cuenta como una visita; cambiar de pestaña o navegar dentro de una aplicación de una sola página no suma visitas.<br/>{{idle}} segundos sin actividad del sistema se consideran inactividad; el progreso se guarda cada {{checkpoint}} segundos.<br/>Conserva hasta {{days}} días de datos, con un máximo de {{limit}} visitas y {{limit}} sesiones activas.", "audible": "Una pestaña que reproduce sonido sin silenciar no cuenta como inactividad." },
+    "audible": { "title": "Seguir contando mientras hay audio", "description": "Si la pestaña activa de la ventana enfocada reproduce sonido sin silenciar, el tiempo de inactividad también cuenta. El conteo se detiene en cuanto el sonido para o la pestaña se silencia." },
+    "idle": { "title": "Umbral de inactividad", "description": "Cuánto tiempo sin teclado ni ratón debe pasar para considerar inactivo este navegador.", "label": "Umbral de inactividad: {{duration}}", "option_one": "{{count}} minuto", "option_many": "{{count}} minutos", "option_other": "{{count}} minutos" },
     "clear": { "title": "Borrar todos los registros", "description": "Elimina los registros que PageTime ha guardado en este dispositivo. No se puede deshacer.", "button": "Borrar datos" }
   },
   "detail": {
@@ -137,6 +139,7 @@
       "save_many": "Se guarda cada {{count}} segundos. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente.",
       "save_other": "Se guarda cada {{count}} segundos. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente."
     },
+    "limits": { "title": "Límites conocidos", "audible": "El navegador puede tardar 2–3 segundos en notar que el sonido empezó o se detuvo.", "threshold": "Con un umbral de inactividad de 10 minutos, se pueden contar hasta 10 minutos de más después de que te vayas." },
     "close": "Cerrar"
   }
 }

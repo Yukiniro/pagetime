@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import vm from 'node:vm';
 import ts from 'typescript';
 import * as model from '../../src/model.mjs';
+import * as settings from '../../src/settings.mjs';
 import * as validation from '../../src/validate-data.mjs';
 
 export const WINDOW_ID_NONE = -1;
@@ -40,6 +41,8 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
   const tabs = new Map();
   const local = {};
   const session = {};
+  const detectionIntervals = [];
+  const idleQueries = [];
   let browser = null;
 
   class ClockDate extends Date { static now() { return now; } }
@@ -61,7 +64,11 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
   function makeBrowser() {
     return {
       storage: { local: area(local, true), session: area(session, false) },
-      idle: { queryState: async () => idle, setDetectionInterval() {}, onStateChanged: event() },
+      idle: {
+        queryState: async seconds => { idleQueries.push(seconds); return idle; },
+        setDetectionInterval(seconds) { detectionIntervals.push(seconds); },
+        onStateChanged: event(),
+      },
       windows: {
         WINDOW_ID_NONE,
         // Chrome's default getAll() omits devtools windows.
@@ -107,6 +114,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
       require: name => name === 'wxt/browser' ? { browser }
         : name === 'wxt/utils/define-background' ? { defineBackground: fn => fn() }
         : name.endsWith('validate-data.mjs') ? validation
+        : name.endsWith('settings.mjs') ? settings
         : model,
     };
     vm.runInNewContext(await backgroundCode(), context, { filename: 'background.ts' });
@@ -119,7 +127,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
     const tabId = nextTabId++;
     if (focused) for (const win of windows.values()) win.focused = false;
     windows.set(windowId, { id: windowId, focused, incognito, type, state: 'normal' });
-    tabs.set(tabId, { id: tabId, windowId, url: tabUrl, incognito, active: true, audible });
+    tabs.set(tabId, { id: tabId, windowId, url: tabUrl, incognito, active: true, audible, mutedInfo: { muted: false } });
     return { windowId, tabId };
   }
 
@@ -127,7 +135,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
     const win = windows.get(windowId);
     if (!win) throw new Error('no window');
     const tabId = nextTabId++;
-    tabs.set(tabId, { id: tabId, windowId, url: tabUrl, incognito: win.incognito, active: false, audible });
+    tabs.set(tabId, { id: tabId, windowId, url: tabUrl, incognito: win.incognito, active: false, audible, mutedInfo: { muted: false } });
     return tabId;
   }
 
@@ -164,10 +172,20 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
     await settle();
   }
 
-  function setAudible(tabId, audible) {
+  async function setAudible(tabId, audible) {
     const tab = tabs.get(tabId);
     if (!tab) throw new Error('no tab');
     tab.audible = audible;
+    browser.tabs.onUpdated.fire(tabId, { audible }, structuredClone(tab));
+    await settle();
+  }
+
+  async function setMuted(tabId, muted) {
+    const tab = tabs.get(tabId);
+    if (!tab) throw new Error('no tab');
+    tab.mutedInfo = { muted };
+    browser.tabs.onUpdated.fire(tabId, { mutedInfo: { muted } }, structuredClone(tab));
+    await settle();
   }
 
   async function fireAlarm() {
@@ -198,9 +216,9 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
     }
   }
 
-  function message(type) {
+  function message(type, body) {
     return new Promise(resolve => {
-      browser.runtime.onMessage.listeners[0]({ type }, { id: 'jilan', url: 'chrome-extension://jilan/dashboard.html' }, resolve);
+      browser.runtime.onMessage.listeners[0]({ type, ...body }, { id: 'jilan', url: 'chrome-extension://jilan/dashboard.html' }, resolve);
     });
   }
 
@@ -221,6 +239,9 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
     navigate,
     setIdle,
     setAudible,
+    setMuted,
+    get detectionIntervals() { return [...detectionIntervals]; },
+    get idleQueries() { return [...idleQueries]; },
     fireAlarm,
     advance,
     setNow(value) { now = value; },

@@ -1,16 +1,22 @@
+import { validateSettings } from './settings.mjs';
+
 export const DAY = 86_400_000;
 export const LIMIT = 20_000;
 export const GAP_LIMIT_MS = 90_000;
 export const IDLE_SECONDS = 60;
 export const CHECKPOINT_SECONDS = 30;
 export const RETENTION_DAYS = 90;
-export const timingCopy = {
-  idle: IDLE_SECONDS,
-  checkpoint: CHECKPOINT_SECONDS,
-  gap: GAP_LIMIT_MS / 1000,
-  days: RETENTION_DAYS,
-  limit: LIMIT,
-};
+export function timingCopy(settings) {
+  const valid = validateSettings(settings);
+  return {
+    idle: valid.idleSeconds,
+    checkpoint: CHECKPOINT_SECONDS,
+    gap: GAP_LIMIT_MS / 1000,
+    days: RETENTION_DAYS,
+    limit: LIMIT,
+    countAudible: valid.countAudible,
+  };
+}
 export const blankData = () => ({ visits: [], spans: [], enabled: true, since: Date.now() });
 
 export function domainOf(url) {

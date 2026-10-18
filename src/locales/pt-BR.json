@@ -69,7 +69,9 @@
     "language": { "title": "Idioma", "description": "Escolha o idioma de exibição do PageTime.", "label": "Idioma de exibição: {{language}}" },
     "recording": { "title": "Registro de navegação", "description": "Conta as visitas às páginas e mede apenas o tempo na guia ativa da janela em foco." },
     "privacy": { "title": "Local e privado", "description": "Armazena apenas domínios, horários e número de visitas — nunca o conteúdo, os títulos ou os URLs completos.<br/>Ignora janelas anônimas e páginas internas do navegador, e nunca envia dados para um servidor." },
-    "method": { "title": "Como é medido", "description": "Cada carregamento ou recarga de página conta como uma visita; trocar de guia ou navegar dentro de aplicativos de página única não adiciona visitas.<br/>{{idle}} segundos sem atividade no sistema contam como ociosidade; o progresso é salvo a cada {{checkpoint}} segundos.<br/>Mantém até {{days}} dias de dados, com no máximo {{limit}} visitas e {{limit}} sessões ativas." },
+    "method": { "title": "Como é medido", "description": "Cada carregamento ou recarga de página conta como uma visita; trocar de guia ou navegar dentro de aplicativos de página única não adiciona visitas.<br/>{{idle}} segundos sem atividade no sistema contam como ociosidade; o progresso é salvo a cada {{checkpoint}} segundos.<br/>Mantém até {{days}} dias de dados, com no máximo {{limit}} visitas e {{limit}} sessões ativas.", "audible": "Uma guia que reproduz som sem silenciar não conta como ociosidade." },
+    "audible": { "title": "Continuar contando enquanto houver áudio", "description": "Se a guia ativa da janela em foco reproduzir som sem silenciar, o tempo ocioso também conta. A contagem para assim que o som para ou a guia é silenciada." },
+    "idle": { "title": "Limite de ociosidade", "description": "Por quanto tempo sem teclado ou mouse este navegador passa a contar como ocioso.", "label": "Limite de ociosidade: {{duration}}", "option_one": "{{count}} minuto", "option_many": "{{count}} minutos", "option_other": "{{count}} minutos" },
     "clear": { "title": "Limpar todos os registros", "description": "Exclui os registros que o PageTime salvou neste dispositivo. Não é possível desfazer.", "button": "Limpar dados" }
   },
   "detail": {
@@ -137,6 +139,7 @@
       "save_many": "Salva a cada {{count}} segundos. Se o navegador fechar de forma inesperada, no máximo esse intervalo recente pode ser perdido.",
       "save_other": "Salva a cada {{count}} segundos. Se o navegador fechar de forma inesperada, no máximo esse intervalo recente pode ser perdido."
     },
+    "limits": { "title": "Limites conhecidos", "audible": "O navegador pode levar 2–3 segundos para perceber que o som começou ou parou.", "threshold": "Com um limite de ociosidade de 10 minutos, até 10 minutos a mais podem ser contados depois que você sair." },
     "close": "Fechar"
   }
 }
