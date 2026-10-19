@@ -81,6 +81,7 @@
       "prefix": "Agrupar www, m y mobile",
       "registrable": "Agrupar por dominio registrable"
     },
+    "ignored": { "title": "Sitios ignorados", "description": "Estos hosts y sus subdominios no se miden y las visitas no se cuentan, igual que una página interna del navegador. example.com también coincide con a.example.com; mail.example.com no coincide con example.com. Los registros existentes siguen en el libro y no se ocultan.", "input": "Host a ignorar", "placeholder": "example.com", "add": "Añadir", "remove": "Quitar {{domain}}", "emptyTitle": "No hay sitios ignorados", "emptyDescription": "Añade un host para dejar de registrarlo a partir de ahora.", "error": "Escribe un host como example.com. Se quitan el protocolo, la ruta y el puerto. No se permiten espacios, y un nombre sin punto solo se acepta para localhost.", "limit": "Puedes ignorar hasta {{count}} hosts." },
     "clear": { "title": "Borrar todos los registros", "description": "Elimina los registros que PageTime ha guardado en este dispositivo. No se puede deshacer.", "button": "Borrar datos" }
   },
   "detail": {
@@ -92,6 +93,9 @@
     "visits_other": "{{count}}",
     "todaySessions": "Sesiones activas de hoy",
     "noSessions": "Hoy no hay sesiones activas",
+    "ignore": "Dejar de registrar este sitio",
+    "ignored": "Este sitio ya está ignorado",
+    "ignoreConfirm": { "title": "¿Dejar de registrar este sitio?", "description": "{{domain}} y sus subdominios dejarán de medirse y de contar como visitas. Los registros existentes no se eliminan.", "confirm": "Dejar de registrar" },
     "viewVisits": "Ver visitas",
     "breakdown": {
       "title": "Desglose por subdominio",
@@ -138,7 +142,8 @@
       "paused": "Mientras la grabación está en pausa",
       "gap_one": "Si entre comprobaciones pasa más de {{count}} segundo, ese intervalo cuenta como máximo {{count}} segundo (por ejemplo, si el sistema está suspendido)",
       "gap_many": "Si entre comprobaciones pasan más de {{count}} segundos, ese intervalo cuenta como máximo {{count}} segundos (por ejemplo, si el sistema está suspendido)",
-      "gap_other": "Si entre comprobaciones pasan más de {{count}} segundos, ese intervalo cuenta como máximo {{count}} segundos (por ejemplo, si el sistema está suspendido)"
+      "gap_other": "Si entre comprobaciones pasan más de {{count}} segundos, ese intervalo cuenta como máximo {{count}} segundos (por ejemplo, si el sistema está suspendido)",
+      "ignored": "Sitios que elegiste ignorar ({{count}}) y sus subdominios. La entrada example.com coincide con ese host y cada subdominio; la entrada mail.example.com no coincide con example.com. Los registros existentes no se eliminan ni se ocultan."
     },
     "visits": {
       "title": "Cómo se cuentan las visitas",

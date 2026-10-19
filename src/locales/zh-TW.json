@@ -71,6 +71,7 @@
       "prefix": "合併 www、m、mobile",
       "registrable": "按可註冊網域合併"
     },
+    "ignored": { "title": "忽略的網站", "description": "這些網域及其子網域不計時長、不記造訪次數，和開啟瀏覽器內部頁面一樣。例如 example.com 也會符合 a.example.com；mail.example.com 不會符合 example.com。已有紀錄不會刪除，也不會從統計中隱藏。", "input": "要忽略的網域", "placeholder": "example.com", "add": "新增", "remove": "移除 {{domain}}", "emptyTitle": "沒有忽略的網站", "emptyDescription": "新增後，這些網站之後就不會再記入新的時長和造訪。", "error": "請輸入網域，例如 example.com。系統會去掉協定、路徑和連接埠。不能包含空格；沒有點號時只接受 localhost。", "limit": "最多忽略 {{count}} 個網站。" },
     "clear": { "title": "清除所有紀錄", "description": "刪除此裝置上 PageTime 已儲存的紀錄，刪除後無法復原。", "button": "清除資料" }
   },
   "detail": {
@@ -80,6 +81,9 @@
     "visits_other": "{{count}} 次",
     "todaySessions": "今日活躍時段",
     "noSessions": "今天暫無活躍時段",
+    "ignore": "不再記錄此網站",
+    "ignored": "此網站已在忽略清單中",
+    "ignoreConfirm": { "title": "不再記錄此網站？", "description": "之後不再記錄 {{domain}} 及其子網域的時長和造訪次數。已有紀錄不會刪除。", "confirm": "不再記錄" },
     "viewVisits": "查看造訪紀錄",
     "breakdown": {
       "title": "子網域組成",
@@ -120,7 +124,8 @@
       "internal": "瀏覽器內部頁面、擴充功能頁面和本機檔案",
       "incognito": "無痕視窗",
       "paused": "暫停記錄期間",
-      "gap_other": "兩次檢查間隔超過 {{count}} 秒時，超出的部分不計入，這段最多計入 {{count}} 秒（例如系統暫停）"
+      "gap_other": "兩次檢查間隔超過 {{count}} 秒時，超出的部分不計入，這段最多計入 {{count}} 秒（例如系統暫停）",
+      "ignored": "你設定為忽略的網站（目前 {{count}} 個）及其子網域。項目 example.com 同時符合該網域和所有子網域；項目 mail.example.com 不符合 example.com。已有紀錄不會刪除，也不會隱藏。"
     },
     "visits": {
       "title": "造訪次數",

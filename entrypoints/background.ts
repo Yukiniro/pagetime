@@ -2,7 +2,7 @@ import { browser } from 'wxt/browser';
 import { defineBackground } from 'wxt/utils/define-background';
 import { CHECKPOINT_SECONDS, creditUntil, dateKey, detailCutoff, domainOf } from '../src/model.mjs';
 import { clearLedger, commitTick, LEDGER_ERROR_KEY, openLedger, pruneDetail, readHead, reopening, toggleRecording } from '../src/ledger.mjs';
-import { validateSettings } from '../src/settings.mjs';
+import { isIgnored, validateSettings } from '../src/settings.mjs';
 
 // `session` ties the cursor to one storage.session lifetime, so a browser restart or extension reload starts without it.
 type Cursor = { tabId: number; domain: string; since: number; session: string };
@@ -67,7 +67,7 @@ export default defineBackground(() => {
     if (focused?.id === undefined) return null;
     const [tab] = await browser.tabs.query({ active: true, windowId: focused.id });
     const domain = !tab?.incognito && domainOf(tab?.url);
-    if (!domain || tab?.id === undefined) return null;
+    if (!domain || tab?.id === undefined || isIgnored(domain, settings.ignored)) return null;
     const playing = Boolean(tab.audible) && !tab.mutedInfo?.muted;
     if (state === 'idle' && !(settings.countAudible && playing)) return null;
     if (state !== 'active' && state !== 'idle') return null;
@@ -129,7 +129,8 @@ export default defineBackground(() => {
     void run(async () => {
       const tab = await browser.tabs.get(details.tabId).catch(() => null);
       const domain = domainOf(details.url);
-      await update(undefined, false, domain && tab && !tab.incognito ? { domain, at: details.timeStamp } : undefined);
+      const counted = domain && tab && !tab.incognito && !isIgnored(domain, (await readSettings()).ignored);
+      await update(undefined, false, counted ? { domain, at: details.timeStamp } : undefined);
     });
   });
   browser.webNavigation.onHistoryStateUpdated.addListener(details => {

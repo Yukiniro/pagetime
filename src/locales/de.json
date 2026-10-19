@@ -76,6 +76,7 @@
       "prefix": "www, m und mobile gruppieren",
       "registrable": "Nach registrierbarer Domain gruppieren"
     },
+    "ignored": { "title": "Ignorierte Websites", "description": "Diese Hosts und ihre Subdomains werden nicht gemessen, und Besuche zählen nicht, wie bei einer internen Browserseite. example.com gilt auch für a.example.com; mail.example.com gilt nicht für example.com. Vorhandene Einträge bleiben erhalten und werden nicht ausgeblendet.", "input": "Zu ignorierender Host", "placeholder": "example.com", "add": "Hinzufügen", "remove": "{{domain}} entfernen", "emptyTitle": "Keine ignorierten Websites", "emptyDescription": "Füge einen Host hinzu, um ihn ab jetzt nicht mehr aufzuzeichnen.", "error": "Gib einen Host wie example.com ein. Protokoll, Pfad und Port werden entfernt. Leerzeichen sind nicht erlaubt, und ein Name ohne Punkt wird nur für localhost akzeptiert.", "limit": "Du kannst höchstens {{count}} Hosts ignorieren." },
     "clear": { "title": "Alle Daten löschen", "description": "Löscht die von PageTime auf diesem Gerät gespeicherten Daten. Dies kann nicht rückgängig gemacht werden.", "button": "Daten löschen" }
   },
   "detail": {
@@ -86,6 +87,9 @@
     "visits_other": "{{count}}",
     "todaySessions": "Heutige aktive Sitzungen",
     "noSessions": "Heute keine aktiven Sitzungen",
+    "ignore": "Diese Website nicht mehr aufzeichnen",
+    "ignored": "Diese Website wird bereits ignoriert",
+    "ignoreConfirm": { "title": "Diese Website nicht mehr aufzeichnen?", "description": "{{domain}} und seine Subdomains werden nicht mehr gemessen, und Besuche zählen nicht. Vorhandene Einträge werden nicht gelöscht.", "confirm": "Nicht mehr aufzeichnen" },
     "viewVisits": "Besuche anzeigen",
     "breakdown": {
       "title": "Zusammensetzung der Subdomains",
@@ -129,7 +133,8 @@
       "incognito": "Inkognito-Fenster",
       "paused": "Während die Aufzeichnung pausiert ist",
       "gap_one": "Liegen Prüfungen mehr als {{count}} Sekunde auseinander, zählt diese Lücke höchstens {{count}} Sekunde (zum Beispiel bei Systemruhe)",
-      "gap_other": "Liegen Prüfungen mehr als {{count}} Sekunden auseinander, zählt diese Lücke höchstens {{count}} Sekunden (zum Beispiel bei Systemruhe)"
+      "gap_other": "Liegen Prüfungen mehr als {{count}} Sekunden auseinander, zählt diese Lücke höchstens {{count}} Sekunden (zum Beispiel bei Systemruhe)",
+      "ignored": "Von dir ignorierte Websites ({{count}}) und ihre Subdomains. Der Eintrag example.com gilt für diesen Host und jede Subdomain; der Eintrag mail.example.com gilt nicht für example.com. Vorhandene Einträge werden weder gelöscht noch ausgeblendet."
     },
     "visits": {
       "title": "Wie Besuche gezählt werden",

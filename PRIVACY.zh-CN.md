@@ -30,8 +30,9 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 | `schema` | `1` |
 | `idleSeconds` | `60`、`120`、`300` 或 `600`。连续多少秒没有键盘或鼠标操作后，把浏览器视为空闲 |
 | `countAudible` | 为 true 时，前台窗口的当前标签正在播放且未静音，空闲也继续计入。默认是 true |
+| `ignored` | 最多 500 条用户输入的域名，每条最长 253 个字符。只存在这个 `settings` 键里。一条记录匹配该域名及其子域名。添加或移除不会删除或隐藏账本里已有的行 |
 
-`src/settings.mjs` 的 `validateSettings` 会把非法字段换成默认值。没有 `settings` 时，后台使用 `{ schema: 1, idleSeconds: 60, countAudible: true }`。这些字段不是浏览历史。后台还会读取 `tab.audible` 和 `tab.mutedInfo` 来执行 `countAudible`。这两个标志不写入账本或 `settings`。
+`src/settings.mjs` 的 `validateSettings` 会把非法的 `schema`、`idleSeconds` 或 `countAudible` 换成默认值。没有 `ignored` 时按空列表处理。非法条目会被丢掉，重复项会去掉，列表在 500 条处截断。它不抛错，也不改账本。没有 `settings` 时，后台使用 `{ schema: 1, idleSeconds: 60, countAudible: true, ignored: [] }`。`idleSeconds` 和 `countAudible` 不是浏览历史。`ignored` 是用户输入的域名。后台还会读取 `tab.audible` 和 `tab.mutedInfo` 来执行 `countAudible`。这两个标志不写入账本或 `settings`。
 
 不保存标题、完整网址、页面正文、Cookie、表单输入，也不读取页面 DOM。扩展没有 content script，也不使用 `chrome.scripting`。
 

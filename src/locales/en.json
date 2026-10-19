@@ -76,6 +76,7 @@
       "prefix": "Group www, m, and mobile",
       "registrable": "Group by registrable domain"
     },
+    "ignored": { "title": "Ignored sites", "description": "These hosts and their subdomains are not timed and visits are not counted, the same as an internal browser page. example.com also matches a.example.com; mail.example.com does not match example.com. Existing records stay in the ledger and are not hidden.", "input": "Host to ignore", "placeholder": "example.com", "add": "Add", "remove": "Remove {{domain}}", "emptyTitle": "No ignored sites", "emptyDescription": "Add a host to stop recording it from now on.", "error": "Enter a host such as example.com. The protocol, path, and port are removed. Spaces are not allowed, and a name without a dot is only accepted for localhost.", "limit": "You can ignore up to {{count}} hosts." },
     "clear": { "title": "Clear all records", "description": "Deletes the records PageTime has saved on this device. This can't be undone.", "button": "Clear data" }
   },
   "detail": {
@@ -86,6 +87,9 @@
     "visits_other": "{{count}}",
     "todaySessions": "Today's active sessions",
     "noSessions": "No active sessions today",
+    "ignore": "Stop recording this site",
+    "ignored": "This site is already ignored",
+    "ignoreConfirm": { "title": "Stop recording this site?", "description": "{{domain}} and its subdomains will no longer be timed or counted as visits. Existing records are not deleted.", "confirm": "Stop recording" },
     "viewVisits": "View visits",
     "breakdown": {
       "title": "Subdomain breakdown",
@@ -129,7 +133,8 @@
       "incognito": "Incognito windows",
       "paused": "While recording is paused",
       "gap_one": "When checks are more than {{count}} second apart, at most {{count}} second of that gap is counted (for example, while the system is suspended)",
-      "gap_other": "When checks are more than {{count}} seconds apart, at most {{count}} seconds of that gap are counted (for example, while the system is suspended)"
+      "gap_other": "When checks are more than {{count}} seconds apart, at most {{count}} seconds of that gap are counted (for example, while the system is suspended)",
+      "ignored": "Sites you chose to ignore ({{count}}), and their subdomains. An entry of example.com matches that host and every subdomain; an entry of mail.example.com does not match example.com. Existing records are not deleted or hidden."
     },
     "visits": {
       "title": "How visits are counted",
