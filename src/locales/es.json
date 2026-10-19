@@ -15,6 +15,7 @@
     "retry": "Reintentar",
     "connect": "No se puede conectar con el servicio de registro. Vuelve a cargar la extensión.",
     "save": "No se pudieron guardar los registros. Comprueba el espacio de almacenamiento del navegador.",
+    "read": "No se pudieron leer los registros locales. Recarga esta página; si sigue ocurriendo, recarga la extensión.",
     "data": "Los registros guardados tienen un formato no válido. Los datos originales no se han modificado. Restaura datos válidos y vuelve a intentarlo."
   },
   "loading": "Cargando registros locales…",
@@ -69,7 +70,7 @@
     "language": { "title": "Idioma", "description": "Elige el idioma de la interfaz de PageTime.", "label": "Idioma de la interfaz: {{language}}" },
     "recording": { "title": "Registro de navegación", "description": "Cuenta las visitas a páginas y solo mide el tiempo en la pestaña activa de la ventana enfocada." },
     "privacy": { "title": "Local y privado", "description": "Solo guarda dominios, horas y número de visitas; nunca el contenido, los títulos ni las URL completas.<br/>Ignora las ventanas de incógnito y las páginas internas del navegador, y nunca envía datos a un servidor." },
-    "method": { "title": "Cómo se mide", "description": "Cada carga o recarga de página cuenta como una visita; cambiar de pestaña o navegar dentro de una aplicación de una sola página no suma visitas.<br/>{{idle}} segundos sin actividad del sistema se consideran inactividad; el progreso se guarda cada {{checkpoint}} segundos.<br/>Conserva hasta {{days}} días de datos, con un máximo de {{limit}} visitas y {{limit}} sesiones activas.", "audible": "Una pestaña que reproduce sonido sin silenciar no cuenta como inactividad." },
+    "method": { "title": "Cómo se mide", "description": "Cada carga o recarga de página cuenta como una visita; cambiar de pestaña o navegar dentro de una aplicación de una sola página no suma visitas.<br/>{{idle}} segundos sin actividad del sistema se consideran inactividad; el progreso se guarda cada {{checkpoint}} segundos.<br/>Conserva las visitas y sesiones activas durante {{days}} días; los totales diarios y por hora se mantienen hasta que los borres.", "audible": "Una pestaña que reproduce sonido sin silenciar no cuenta como inactividad." },
     "audible": { "title": "Seguir contando mientras hay audio", "description": "Si la pestaña activa de la ventana enfocada reproduce sonido sin silenciar, el tiempo de inactividad también cuenta. El conteo se detiene en cuanto el sonido para o la pestaña se silencia." },
     "idle": { "title": "Umbral de inactividad", "description": "Cuánto tiempo sin teclado ni ratón debe pasar para considerar inactivo este navegador.", "label": "Umbral de inactividad: {{duration}}", "option_one": "{{count}} minuto", "option_many": "{{count}} minutos", "option_other": "{{count}} minutos" },
     "clear": { "title": "Borrar todos los registros", "description": "Elimina los registros que PageTime ha guardado en este dispositivo. No se puede deshacer.", "button": "Borrar datos" }
@@ -132,9 +133,9 @@
       "title": "Privacidad y almacenamiento",
       "fields": "Solo se guardan el dominio, los tiempos y el número de visitas; nunca el título, el texto de la página ni la URL completa.",
       "local": "Los datos permanecen en el navegador de este dispositivo y no se suben a ningún servidor.",
-      "retention_one": "Se conserva el último {{count}} día, con un máximo de {{limit}} intervalos y {{limit}} visitas.",
-      "retention_many": "Se conservan los últimos {{count}} días, con un máximo de {{limit}} intervalos y {{limit}} visitas.",
-      "retention_other": "Se conservan los últimos {{count}} días, con un máximo de {{limit}} intervalos y {{limit}} visitas.",
+      "retention_one": "Se conservan las visitas e intervalos del último {{count}} día. Los totales diarios y por hora se mantienen hasta que los borres.",
+      "retention_many": "Se conservan las visitas e intervalos de los últimos {{count}} días. Los totales diarios y por hora se mantienen hasta que los borres.",
+      "retention_other": "Se conservan las visitas e intervalos de los últimos {{count}} días. Los totales diarios y por hora se mantienen hasta que los borres.",
       "save_one": "Se guarda cada {{count}} segundo. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente.",
       "save_many": "Se guarda cada {{count}} segundos. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente.",
       "save_other": "Se guarda cada {{count}} segundos. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente."

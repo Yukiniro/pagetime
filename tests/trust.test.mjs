@@ -4,7 +4,10 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { LIMIT, RETENTION_DAYS } from '../src/model.mjs';
+import { build } from 'vite';
+import { LEDGER_NAME } from '../src/ledger.mjs';
+import { DETAIL_DAYS } from '../src/model.mjs';
+import { NETWORK_API } from '../scripts/verify-build.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const text = path => readFileSync(join(root, path), 'utf8');
@@ -19,15 +22,38 @@ test('LICENSE is the verbatim Apache 2.0 text and NOTICE names the copyright hol
 test('privacy notes name the stored fields, storage areas, and model constants', () => {
   for (const path of ['PRIVACY.md', 'PRIVACY.zh-CN.md']) {
     const note = text(path).replaceAll(',', '');
+    assert.match(note, /IndexedDB/);
+    assert.match(note, new RegExp(LEDGER_NAME));
     assert.match(note, /chrome\.storage\.local/);
     assert.match(note, /chrome\.storage\.session/);
-    assert.match(note, /RETENTION_DAYS/);
-    assert.match(note, new RegExp(String(RETENTION_DAYS)));
-    assert.match(note, /LIMIT/);
-    assert.match(note, new RegExp(String(LIMIT)));
-    assert.match(note, /visits/);
-    assert.match(note, /spans/);
+    assert.match(note, /DETAIL_DAYS/);
+    assert.match(note, new RegExp(`\\b${DETAIL_DAYS}\\b`));
+    for (const name of ['domains', 'days', 'hours', 'spans', 'visits', 'meta', 'ledgerError', 'session', 'data']) assert.match(note, new RegExp(`\`${name}\``));
     assert.match(note, /hostname|主机名/);
+  }
+});
+
+test('the ledger has no sync or cloud package', () => {
+  for (const path of ['package.json', 'package-lock.json']) assert.doesNotMatch(text(path), /dexie-cloud/i, path);
+});
+
+test('the bundled storage layer makes no network request', async () => {
+  for (const entry of ['entrypoints/background.ts', 'src/use-ledger.js']) {
+    const output = await build({
+      configFile: false,
+      root,
+      logLevel: 'silent',
+      build: {
+        write: false,
+        minify: true,
+        lib: { entry: join(root, entry), formats: ['es'], fileName: 'bundle' },
+        rollupOptions: { external: [/^react(-dom)?(\/|$)/] },
+      },
+    });
+    const code = [output].flat().flatMap(result => result.output).map(chunk => chunk.code ?? '').join('\n');
+    assert.match(code, new RegExp(LEDGER_NAME), `${entry} bundles the ledger`);
+    assert.match(code, /DatabaseClosed/, `${entry} bundles Dexie`);
+    assert.doesNotMatch(code, NETWORK_API, entry);
   }
 });
 

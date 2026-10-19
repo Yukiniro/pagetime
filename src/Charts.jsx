@@ -4,7 +4,7 @@ import * as echarts from 'echarts/core';
 import {BarChart,CustomChart} from 'echarts/charts';
 import {GridComponent,TooltipComponent} from 'echarts/components';
 import {CanvasRenderer} from 'echarts/renderers';
-import {daily,midnight} from './model.mjs';
+import {midnight} from './model.mjs';
 import {colorOf} from './data.js';
 import {duration,formatDate,timeLabel} from './i18n.js';
 echarts.use([BarChart,CustomChart,GridComponent,TooltipComponent,CanvasRenderer]);
@@ -15,9 +15,8 @@ function Chart({option,label,className}){
     return()=>{observer.disconnect();chart.dispose();};},[option]);
   return <div ref={ref} role="img" aria-label={label} className={className}/>;
 }
-export function Trend({data,start,end}){
+export function Trend({days}){
   const {t}=useTranslation();
-  const days=daily(data,start,end);
   const option={animation:false,textStyle:{fontFamily:getComputedStyle(document.documentElement).fontFamily},grid:{left:56,right:10,top:12,bottom:52},
     tooltip:{trigger:'axis',renderMode:'richText',formatter:p=>`${formatDate(days[p[0].dataIndex].at)}\n${t('active',{duration:duration(p[0].value*3_600_000)})}`},
     xAxis:{type:'category',data:days.map(d=>d.at),axisTick:{show:false},axisLine:{lineStyle:{color:'#dfe6f2'}},axisLabel:{color:'#64748b',fontSize:12,interval:days.length>14?4:0,formatter:at=>`${formatDate(Number(at),{month:'numeric',day:'2-digit'})}\n${midnight(Number(at))===midnight(Date.now())?t('range.today'):formatDate(Number(at),{weekday:'short'})}`}},

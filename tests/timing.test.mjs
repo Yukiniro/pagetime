@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHarness, WINDOW_ID_NONE, ALARM_PERIOD } from './helpers/fake-browser.mjs';
-import { daily, DAY, LIMIT, GAP_LIMIT_MS } from '../src/model.mjs';
+import { daily, dateKey, DAY, DETAIL_DAYS, GAP_LIMIT_MS } from '../src/model.mjs';
+import { daysBetween } from '../src/ledger.mjs';
 
 const total = data => data.spans.reduce((sum, span) => sum + span.end - span.start, 0);
 
@@ -32,7 +33,7 @@ test('S1 alarm checkpoint during a 25s stay credits a.com for 25s', async () => 
 test('scheduled alarms fire while advance moves the clock', async () => {
   const h = await createHarness({ url: 'https://a.com/' });
   await h.advance(35_000, { alarms: true });
-  assert.equal(total(h.read()), 30_000);
+  assert.equal(total(await h.read()), 30_000);
   const data = (await h.snapshot()).data;
   assert.equal(ms(data, 'a.com'), 35_000);
 });
@@ -54,7 +55,7 @@ test('S3 cross-site navigation splits the span; a same-site history update does 
   await h.advance(10_000);
   await h.navigate(1, 'https://b.com/page');
   await h.advance(8_000);
-  const afterCommit = h.read();
+  const afterCommit = await h.read();
   assert.equal(afterCommit.visits.filter(visit => visit.domain === 'b.com').length, 1);
   await h.navigate(1, 'https://b.com/app', { history: true });
   await h.advance(5_000);
@@ -151,18 +152,18 @@ test('S7 a bounds event resumes a restored window even if getAll() still says mi
   h.setFocus(false);
   await h.settle();
   await h.advance(6_000);
-  assert.equal(h.cursor(), null);
+  assert.equal(await h.cursor(), null);
   const [win] = await h.browser.windows.getAll();
   assert.equal(win.focused, false);
   assert.equal(win.state, 'minimized');
   h.browser.windows.onFocusChanged.fire(win.id);
   await h.settle();
-  assert.equal(h.cursor(), null);
+  assert.equal(await h.cursor(), null);
   await h.restoreWindow(win.id);
-  assert.equal(h.cursor()?.domain, 'a.com');
+  assert.equal((await h.cursor())?.domain, 'a.com');
   await h.advance(3_000);
   await h.fireAlarm();
-  assert.equal(ms(h.read(), 'a.com'), 7_000);
+  assert.equal(ms(await h.read(), 'a.com'), 7_000);
 });
 
 test('S8 known behavior: a focused devtools window stops timing (issue #6 risk 3)', async () => {
@@ -199,10 +200,10 @@ test('S10 audible playback keeps counting through idle, then stops when the soun
   await h.setIdle('idle');
   await h.advance(20_000);
   const playing = (await h.snapshot()).data;
-  assert.equal(h.cursor()?.domain, 'a.com');
+  assert.equal((await h.cursor())?.domain, 'a.com');
   assert.equal(ms(playing, 'a.com'), 30_000);
   await h.setAudible(1, false);
-  assert.equal(h.cursor(), null);
+  assert.equal(await h.cursor(), null);
   await h.advance(15_000);
   assert.equal(ms((await h.snapshot()).data, 'a.com'), 30_000);
 });
@@ -214,7 +215,7 @@ test('S21 turning audio counting off stops timing while idle', async () => {
   await h.advance(9_000);
   await h.setIdle('idle');
   await h.advance(30_000);
-  assert.equal(h.cursor(), null);
+  assert.equal(await h.cursor(), null);
   assert.equal(ms((await h.snapshot()).data, 'a.com'), 9_000);
 });
 
@@ -225,17 +226,17 @@ test('S22 a muted tab does not count, and muting stops timing immediately', asyn
   await h.advance(7_000);
   await h.setIdle('idle');
   await h.advance(18_000);
-  assert.equal(h.cursor(), null);
+  assert.equal(await h.cursor(), null);
   assert.equal(ms((await h.snapshot()).data, 'a.com'), 7_000);
   await h.setIdle('active');
   await h.setMuted(1, false);
   await h.advance(4_000);
   await h.setIdle('idle');
   await h.advance(9_000);
-  assert.equal(h.cursor()?.domain, 'a.com');
+  assert.equal((await h.cursor())?.domain, 'a.com');
   await h.setMuted(1, true);
-  assert.equal(h.cursor(), null);
-  const stopped = ms(h.read(), 'a.com');
+  assert.equal(await h.cursor(), null);
+  const stopped = ms(await h.read(), 'a.com');
   await h.advance(15_000);
   assert.equal(ms((await h.snapshot()).data, 'a.com'), stopped);
 });
@@ -246,7 +247,7 @@ test('S23 locked does not count even while audio is playing', async () => {
   await h.advance(6_000);
   await h.setIdle('locked');
   await h.advance(25_000);
-  assert.equal(h.cursor(), null);
+  assert.equal(await h.cursor(), null);
   assert.equal(ms((await h.snapshot()).data, 'a.com'), 6_000);
 });
 
@@ -258,7 +259,7 @@ test('S24 audio in a background tab or an unfocused window does not count', asyn
   await h.setIdle('idle');
   await h.advance(20_000);
   const data = (await h.snapshot()).data;
-  assert.equal(h.cursor(), null);
+  assert.equal(await h.cursor(), null);
   assert.equal(ms(data, 'a.com'), 5_000);
   assert.equal(ms(data, 'video.test'), 0);
   assert.equal(ms(data, 'other.test'), 0);
@@ -289,14 +290,14 @@ test('S25 idleSeconds is passed to setDetectionInterval and queryState; invalid 
 test('S11 a service worker restarted within 30s continues the session cursor', async () => {
   const h = await createHarness({ url: 'https://a.com/' });
   await h.advance(10_000);
-  assert.equal(h.cursor()?.domain, 'a.com');
+  assert.equal((await h.cursor())?.domain, 'a.com');
   h.killWorker();
   await h.advance(15_000);
   await h.restartWorker();
-  assert.equal(total(h.read()), 25_000);
+  assert.equal(total(await h.read()), 25_000);
   await h.advance(5_000);
   await h.fireAlarm();
-  const data = h.read();
+  const data = await h.read();
   assert.equal(ms(data, 'a.com'), 30_000);
   assert.equal(data.spans.length, 1);
 });
@@ -306,15 +307,15 @@ test('S12 a dead worker with no event for over 90s credits at most GAP_LIMIT_MS'
   h.killWorker();
   await h.advance(120_000);
   await h.restartWorker();
-  assert.equal(total(h.read()), GAP_LIMIT_MS);
+  assert.equal(total(await h.read()), GAP_LIMIT_MS);
 });
 
 test('S13 checkpoints 95s apart credit 90s, not the whole gap and not zero', async () => {
   const h = await createHarness({ url: 'https://a.com/' });
   await h.advance(95_000);
   await h.fireAlarm();
-  assert.equal(total(h.read()), GAP_LIMIT_MS);
-  assert.ok(total(h.read()) >= 90_000);
+  assert.equal(total(await h.read()), GAP_LIMIT_MS);
+  assert.ok(total(await h.read()) >= 90_000);
 });
 
 test('S14 a 2h sleep credits the 90s cap, then timing resumes', async () => {
@@ -324,10 +325,10 @@ test('S14 a 2h sleep credits the 90s cap, then timing resumes', async () => {
   h.killWorker();
   await h.advance(2 * 60 * 60 * 1_000);
   await h.restartWorker();
-  assert.equal(total(h.read()), GAP_LIMIT_MS);
+  assert.equal(total(await h.read()), GAP_LIMIT_MS);
   await h.advance(10_000);
   await h.fireAlarm();
-  assert.equal(total(h.read()), GAP_LIMIT_MS + 10_000);
+  assert.equal(total(await h.read()), GAP_LIMIT_MS + 10_000);
 });
 
 test('S15 browser restart keeps flushed spans and does not credit the time it was closed', async () => {
@@ -338,10 +339,10 @@ test('S15 browser restart keeps flushed spans and does not credit the time it wa
   h.killWorker();
   await h.advance(60 * 60 * 1_000);
   await h.restartBrowser();
-  assert.equal(total(h.read()), 10_000);
+  assert.equal(total(await h.read()), 10_000);
   await h.advance(8_000);
   await h.fireAlarm();
-  assert.equal(ms(h.read(), 'a.com'), 18_000);
+  assert.equal(ms(await h.read(), 'a.com'), 18_000);
 });
 
 test('S16 known behavior: extension reload drops the unflushed tail, at most one checkpoint (issue #6 risk 5)', async () => {
@@ -352,10 +353,10 @@ test('S16 known behavior: extension reload drops the unflushed tail, at most one
   await h.advance(12_000);
   assert.ok(12_000 <= ALARM_PERIOD);
   await h.reloadExtension();
-  assert.equal(total(h.read()), 20_000);
+  assert.equal(total(await h.read()), 20_000);
   await h.advance(7_000);
   await h.fireAlarm();
-  assert.equal(ms(h.read(), 'a.com'), 27_000);
+  assert.equal(ms(await h.read(), 'a.com'), 27_000);
 });
 
 test('S17 pause credits nothing; clear does not backfill the old cursor', async () => {
@@ -369,7 +370,7 @@ test('S17 pause credits nothing; clear does not backfill the old cursor', async 
   await h.advance(2_000);
   const resumed = (await h.snapshot()).data;
   assert.equal(resumed.spans.at(-1).end, h.now);
-  const cleared = (await h.message('clear')).data;
+  const cleared = (await h.command('clear')).data;
   assert.equal(cleared.spans.length, 0);
   assert.equal(cleared.visits.length, 0);
   assert.equal(cleared.enabled, true);
@@ -385,25 +386,27 @@ test('S18 rollback creates no negative span; a span crossing midnight splits in 
   await h.fireAlarm();
   h.setNow(h.now - 15_000);
   await h.fireAlarm();
-  const rolled = h.read();
+  const rolled = await h.read();
   assert.equal(total(rolled), 10_000);
   for (const span of rolled.spans) assert.ok(span.end >= span.start && span.end - span.start < GAP_LIMIT_MS + 1);
 
   h.setNow(10_010_000);
   await h.fireAlarm();
-  assert.equal(ms(h.read(), 'a.com'), 10_000);
+  assert.equal(ms(await h.read(), 'a.com'), 10_000);
 
   h.setNow(10_013_000);
   await h.fireAlarm();
-  assert.equal(ms(h.read(), 'a.com'), 13_000);
+  assert.equal(ms(await h.read(), 'a.com'), 13_000);
 
   const midnight = new Date(2026, 5, 15, 0, 0, 0, 0).getTime();
   const crossed = await createHarness({ url: 'https://a.com/', now: midnight - 10_000 });
   await crossed.advance(20_000);
   await crossed.fireAlarm();
-  const days = daily(crossed.read(), midnight - DAY, midnight + DAY);
+  const days = daily(await crossed.read(), midnight - DAY, midnight + DAY);
   assert.equal(days.find(day => day.at === midnight - DAY).ms, 10_000);
   assert.equal(days.find(day => day.at === midnight).ms, 10_000);
+  const stored = await daysBetween(crossed.db, dateKey(midnight - DAY), dateKey(midnight));
+  assert.deepEqual(stored.map(day => [day.date, day.ms]), [[dateKey(midnight - DAY), 10_000], [dateKey(midnight), 10_000]]);
 });
 
 test('S19 a focused incognito window is not counted and stores no visit', async () => {
@@ -422,51 +425,58 @@ test('S19 a focused incognito window is not counted and stores no visit', async 
   assert.equal(JSON.stringify(data).includes('token'), false);
 });
 
-test('S20 baseline: one update with 20_000 spans and visits logs time and bytes', async () => {
+const BASELINE_ROWS = 20_000;
+
+test('S20 baseline: one checkpoint over 20_000 stored spans and visits is one transaction; logs time', async () => {
   const h = await createHarness({ url: 'https://a.com/' });
-  const data = h.read();
   const base = h.now;
-  data.visits = Array.from({ length: LIMIT }, (_, index) => ({ domain: 'a.com', at: base + index }));
-  data.spans = Array.from({ length: LIMIT }, (_, index) => ({ domain: 'a.com', start: base + index * 2, end: base + index * 2 + 1 }));
-  h.seed(data);
-  h.resetWrites();
+  await h.db.domains.add({ id: 1, host: 'a.com' });
+  await h.db.visits.bulkAdd(Array.from({ length: BASELINE_ROWS }, (_, index) => ({ domainId: 1, at: base - BASELINE_ROWS + index })));
+  await h.db.spans.bulkAdd(Array.from({ length: BASELINE_ROWS }, (_, index) => ({ domainId: 1, start: base - 2 * BASELINE_ROWS + index * 2, end: base - 2 * BASELINE_ROWS + index * 2 + 1 })));
+  h.resetTicks();
+  await h.advance(30_000);
   const started = performance.now();
   await h.fireAlarm();
   const elapsed = performance.now() - started;
-  const stored = h.read();
-  console.log(`S20 baseline: ${elapsed.toFixed(2)} ms, ${h.lastWriteBytes} bytes, writes=${h.localWrites}`);
-  assert.equal(stored.spans.length, LIMIT);
-  assert.equal(stored.visits.length, LIMIT);
-  assert.equal(h.localWrites, 1);
-  assert.ok(h.lastWriteBytes > 0);
-  assert.equal(Number.isFinite(elapsed), true);
+  const stored = await h.read();
+  console.log(`S20 baseline: ${elapsed.toFixed(2)} ms, transactions=${h.ticks}`);
+  assert.equal(h.ticks, 1);
+  assert.equal(stored.spans.length, BASELINE_ROWS + 1);
+  assert.equal(stored.visits.length, BASELINE_ROWS);
+  assert.equal(total(stored), BASELINE_ROWS + 30_000);
 });
 
-test('known behavior: onCommitted rewrites the whole store twice, and a wake updates again (issue #6 risk 6)', async () => {
+test('a main-frame commit records the visit and the time in one transaction, and a wake updates again', async () => {
   const h = await createHarness({ url: 'https://a.com/' });
-  h.resetWrites();
+  await h.advance(4_000);
+  h.resetTicks();
   h.browser.webNavigation.onCommitted.fire({ url: 'https://b.com/', frameId: 0, tabId: 1, timeStamp: h.now });
   await h.settle();
-  assert.equal(h.localWrites, 2);
-  h.resetWrites();
+  assert.equal(h.ticks, 1);
+  const data = await h.read();
+  assert.deepEqual(data.visits, [{ domain: 'b.com', at: h.now }]);
+  assert.equal(ms(data, 'a.com'), 4_000);
+  h.resetTicks();
   await h.restartWorker();
-  assert.ok(h.localWrites >= 1);
+  assert.ok(h.ticks >= 1);
 });
 
-test('known behavior: the 20_000 cap drops in-window spans before 90 days (issue #6 risk 7)', async () => {
-  const h = await createHarness({ url: 'https://a.com/' });
-  const data = h.read();
-  const start = h.now - LIMIT - 10;
-  data.visits = [];
-  data.spans = Array.from({ length: LIMIT + 1 }, (_, index) => ({
-    domain: index === 0 ? 'oldest.test' : 'a.com',
-    start: start + index,
-    end: start + index + 1,
-  }));
-  h.seed(data);
-  await h.fireAlarm();
-  const stored = h.read();
-  assert.equal(stored.spans.length, LIMIT);
+test('detail has no count cap inside 31 days; older spans and visits are pruned while day and hour totals stay', async () => {
+  const today = new Date(2026, 9, 18, 12).getTime();
+  const h = await createHarness({ url: 'https://a.com/', now: today });
+  await h.db.domains.bulkAdd([{ id: 1, host: 'a.com' }, { id: 2, host: 'oldest.test' }]);
+  const recent = today - 10 * DAY;
+  await h.db.spans.bulkAdd(Array.from({ length: BASELINE_ROWS + 1 }, (_, index) => ({ domainId: 1, start: recent + index * 2, end: recent + index * 2 + 1 })));
+  const old = today - DETAIL_DAYS * DAY;
+  await h.db.spans.add({ domainId: 2, start: old, end: old + 60_000 });
+  await h.db.visits.add({ domainId: 2, at: old });
+  await h.db.days.add({ date: dateKey(old), domainId: 2, ms: 60_000, visits: 1 });
+  await h.db.hours.add({ date: dateKey(old), hour: new Date(old).getHours(), domainId: 2, ms: 60_000 });
+  await h.restartWorker();
+  const stored = await h.read();
+  assert.equal(stored.spans.length, BASELINE_ROWS + 1);
   assert.equal(stored.spans.some(span => span.domain === 'oldest.test'), false);
-  assert.ok(stored.spans.every(span => h.now - span.end < 90 * DAY));
+  assert.equal(stored.visits.length, 0);
+  assert.deepEqual((await daysBetween(h.db, dateKey(old), dateKey(old))).map(day => [day.ms, day.visits]), [[60_000, 1]]);
+  assert.equal(await h.db.hours.count(), 1);
 });

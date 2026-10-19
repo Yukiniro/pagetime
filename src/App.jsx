@@ -14,10 +14,12 @@ import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@a
 import { Avatar, AvatarImage, AvatarFallback } from '@app/components/ui/avatar';
 import { ScrollArea } from '@app/components/ui/scroll-area';
 import { Trans, useTranslation } from 'react-i18next';
-import { blankData, midnight, summarize, timingCopy } from './model.mjs';
+import { addDays, midnight, timingCopy } from './model.mjs';
 import { DEFAULT_SETTINGS, IDLE_OPTIONS } from './settings.mjs';
 import { HowItWorksDialog } from './HowItWorksDialog.jsx';
 import { command, knownSites, colorOf } from './data.js';
+import { useLedger } from './use-ledger.js';
+import { VISIT_LIST_LIMIT } from './ledger-view.mjs';
 import { Trend, Timeline } from './Charts.jsx';
 import { duration, formatDate, languages, timeLabel } from './i18n.js';
 
@@ -31,38 +33,38 @@ function SiteIcon({ domain }) {
 export function App() {
   const { t, i18n } = useTranslation();
   const rangeLabel = range => range === 1 ? t('range.today') : t('range.lastDays', { count: range });
-  const [data, setData] = useState(blankData), [settings, setSettings] = useState(DEFAULT_SETTINGS), [ready, setReady] = useState(false), [error, setError] = useState(''), [busy, setBusy] = useState(false);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS), [ready, setReady] = useState(false), [error, setError] = useState(''), [busy, setBusy] = useState(false);
   const [page, setPage] = useState('overview'), [range, setRange] = useState(7), [search, setSearch] = useState(''), [expanded, setExpanded] = useState(false), [selected, setSelected] = useState(null);
   const [confirmClear, setConfirmClear] = useState(false), [howOpen, setHowOpen] = useState(false);
   const detailTrigger = useRef(null), howTrigger = useRef(null);
   const openHow = event => { howTrigger.current = event.currentTarget; setHowOpen(true); };
+  const now = Date.now(), today = midnight(now);
+  const start = addDays(today, 1 - range), end = addDays(today, 1);
+  const ledger = useLedger({ start, end, today, search: search.trim().toLowerCase() });
+  const view = ledger.view, stats = view?.stats, todayStats = view?.todayStats;
   async function act(type = 'snapshot', body) {
     setBusy(true);
     try {
       const next = await command(type, body);
       if (type === 'settings') setSettings(next);
-      else { setData(next); setSettings(await command('settings')); }
+      else { ledger.apply(next); setSettings(await command('settings')); }
       setError(''); setReady(true); return true;
     }
     catch (e) { setError(e.message); return false; }
     finally { setBusy(false); }
   }
-  useEffect(() => { act(); const timer = setInterval(() => act(), 30_000); return () => clearInterval(timer); }, []);
-  const now = Date.now(), today = midnight(now);
-  const fromDate = new Date(today); fromDate.setDate(fromDate.getDate() - range + 1);
-  const start = fromDate.getTime();
-  const tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
-  const end = tomorrow.getTime();
-  const stats = summarize(data, start, end), todayStats = summarize(data, today, end);
-  const visits = data.visits.filter(v => v.at >= start && v.at < end && v.domain.includes(search.trim().toLowerCase())).sort((a, b) => b.at - a.at);
+  useEffect(() => { act(); }, []);
+  const shown = ready && view;
+  const enabled = view?.enabled ?? true;
   const goRecords = (domain = '') => { setSearch(domain); setPage('records'); };
   const openSite = (domain, event) => { detailTrigger.current = event.currentTarget; setSelected(domain); };
-  const errorText = t([`error.${error}`, 'error.connect']);
+  const problem = error || ledger.error;
+  const errorText = t([`error.${problem}`, 'error.connect']);
   const languageName = languages.find(([code]) => code === i18n.resolvedLanguage)?.[1];
   const copy = timingCopy(settings);
   const idleLabel = t('settings.idle.option', { count: settings.idleSeconds / 60 });
   const saveSettings = next => act('settings', { settings: next });
-  const sessions = data.spans.filter(s => s.domain === selected && s.end > today && s.start < end);
+  const sessions = view?.spans.filter(s => s.domain === selected) ?? [];
 
   return <TooltipProvider><AlertDialog open={confirmClear} onOpenChange={setConfirmClear}>
     <SidebarProvider className="app-shell">
@@ -76,8 +78,8 @@ export function App() {
       </Sidebar>
       <div className="workspace">
         <header className="topbar">
-          <div className="record-status"><span className={`status-dot ${data.enabled ? '' : 'paused'}`} /><div><strong>{data.enabled ? t('status.recording') : t('status.paused')}</strong><small>{t('status.since', { date: formatDate(data.since) })}</small></div></div>
-          <Button variant="outline" className="action-button" disabled={busy || !ready} onClick={() => act('toggle')}>{data.enabled ? <Pause weight="fill" /> : <Play weight="fill" />}{data.enabled ? t('actions.pause') : t('actions.resume')}</Button>
+          <div className="record-status"><span className={`status-dot ${enabled ? '' : 'paused'}`} /><div><strong>{enabled ? t('status.recording') : t('status.paused')}</strong><small>{t('status.since', { date: formatDate(view?.since ?? now) })}</small></div></div>
+          <Button variant="outline" className="action-button" disabled={busy || !shown} onClick={() => act('toggle')}>{enabled ? <Pause weight="fill" /> : <Play weight="fill" />}{enabled ? t('actions.pause') : t('actions.resume')}</Button>
         </header>
         <main>
           <div className="page-header"><div><h1>{t(`pages.${page}.title`)}</h1><p>{t(`pages.${page}.subtitle`)}</p></div>
@@ -90,11 +92,11 @@ export function App() {
               </DropdownMenuRadioGroup></DropdownMenuContent>
             </DropdownMenu>}
           </div>
-          {error && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => act()}>{t('error.retry')}</Button></AlertDescription></Alert>}
-          {!ready ? (!error && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'overview' ? <>
+          {problem && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => { ledger.retry(); act(); }}>{t('error.retry')}</Button></AlertDescription></Alert>}
+          {!shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'overview' ? <>
             <section className="summary" aria-label={t('summary.label')}><div className="total-time">{duration(stats.ms)}</div><p className="flex items-center gap-1"><span>{t('summary.totalTime')}</span><Button variant="ghost" size="icon-sm" aria-label={t('howItWorks.infoButton')} onClick={openHow}><Info /></Button></p><div className="totals"><Trans i18nKey="summary.visits" count={stats.visits} components={{ b: <strong /> }} /><span>·</span><Trans i18nKey="summary.sites" count={stats.rows.length} components={{ b: <strong /> }} /></div></section>
-            <Trend data={data} start={start} end={end} />
-            <section className="timeline-section"><h2>{t('timeline.title')}</h2><p>{formatDate(now, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(todayStats.ms) })}</p><Timeline spans={data.spans} />
+            <Trend days={view.days} />
+            <section className="timeline-section"><h2>{t('timeline.title')}</h2><p>{formatDate(now, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(todayStats.ms) })}</p><Timeline spans={view.spans} />
               <div className="legend">{todayStats.rows.filter(r => r.ms).slice(0, 5).map(r => r.domain).map(domain => <Button variant="ghost" size="xs" key={domain} onClick={event => openSite(domain, event)}><i style={{ background: colorOf(domain) }} />{domain}</Button>)}<span className="idle-legend"><i />{t('timeline.idle')}</span></div>
             </section>
             <section className="ranking"><h2>{t('ranking.title')}</h2>
@@ -106,11 +108,11 @@ export function App() {
             </section>
           </> : page === 'records' ? <section className="records">
             <InputGroup className="h-11 max-w-[460px]"><InputGroupInput aria-label={t('records.search')} placeholder={t('records.placeholder')} value={search} onChange={e => setSearch(e.target.value)} /><InputGroupAddon><MagnifyingGlass /></InputGroupAddon>{search && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-sm" aria-label={t('records.clearSearch')} onClick={() => setSearch('')}><X /></InputGroupButton></InputGroupAddon>}</InputGroup>
-            <p className="muted">{t('records.count', { count: visits.length })}{visits.length > 200 ? t('records.limited') : ''}</p>
+            <p className="muted">{t('records.count', { count: view.visitCount })}{view.visitCount > VISIT_LIST_LIMIT ? t('records.limited') : ''}</p>
             <Table><TableHeader><TableRow><TableHead>{t('ranking.site')}</TableHead><TableHead>{t('records.visitedAt')}</TableHead><TableHead>{t('records.details')}</TableHead></TableRow></TableHeader><TableBody>
-              {visits.slice(0, 200).map((visit, i) => <TableRow key={`${visit.at}-${i}`}><TableCell><div className="site-link"><SiteIcon domain={visit.domain} />{visit.domain}</div></TableCell><TableCell>{formatDate(visit.at)} {timeLabel(visit.at)}</TableCell><TableCell><Button variant="link" className="px-0" onClick={event => openSite(visit.domain, event)}>{t('records.view')}<ArrowRight /></Button></TableCell></TableRow>)}
+              {view.visits.map((visit, i) => <TableRow key={`${visit.at}-${i}`}><TableCell><div className="site-link"><SiteIcon domain={visit.domain} />{visit.domain}</div></TableCell><TableCell>{formatDate(visit.at)} {timeLabel(visit.at)}</TableCell><TableCell><Button variant="link" className="px-0" onClick={event => openSite(visit.domain, event)}>{t('records.view')}<ArrowRight /></Button></TableCell></TableRow>)}
             </TableBody></Table>
-            {!visits.length && <Empty><EmptyHeader><EmptyTitle>{t('records.empty')}</EmptyTitle></EmptyHeader></Empty>}
+            {!view.visits.length && <Empty><EmptyHeader><EmptyTitle>{t('records.empty')}</EmptyTitle></EmptyHeader></Empty>}
           </section> : <section className="settings">
             <div className="setting-row"><div><h2>{t('settings.language.title')}</h2><p>{t('settings.language.description')}</p></div><DropdownMenu>
               <DropdownMenuTrigger render={<Button variant="outline" className="action-button" />} aria-label={t('settings.language.label', { language: languageName })}><Translate />{languageName}<CaretDown /></DropdownMenuTrigger>
@@ -118,7 +120,7 @@ export function App() {
                 {languages.map(([code, name]) => <DropdownMenuRadioItem closeOnClick key={code} value={code} lang={code}>{name}</DropdownMenuRadioItem>)}
               </DropdownMenuRadioGroup></DropdownMenuContent>
             </DropdownMenu></div>
-            <div className="setting-row"><div><h2>{t('settings.recording.title')}</h2><p>{t('settings.recording.description')}</p></div><Button variant="outline" className="action-button" disabled={busy} onClick={() => act('toggle')}>{data.enabled ? t('actions.pause') : t('actions.enable')}</Button></div>
+            <div className="setting-row"><div><h2>{t('settings.recording.title')}</h2><p>{t('settings.recording.description')}</p></div><Button variant="outline" className="action-button" disabled={busy} onClick={() => act('toggle')}>{enabled ? t('actions.pause') : t('actions.enable')}</Button></div>
             <div className="setting-row"><div><h2>{t('settings.privacy.title')}</h2><p><Trans i18nKey="settings.privacy.description" /></p></div><ShieldCheck size={28} className="privacy-icon" /></div>
             <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.method.title')}</h2><p><Trans i18nKey="settings.method.description" values={copy} /></p>{settings.countAudible && <p>{t('settings.method.audible')}</p>}<div className="mt-4 flex flex-col gap-4"><div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="count-audible">{t('settings.audible.title')}</h3><p>{t('settings.audible.description')}</p></div><Switch checked={settings.countAudible} onCheckedChange={checked => saveSettings({ ...settings, countAudible: checked })} disabled={busy} aria-labelledby="count-audible" /></div><div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="idle-threshold">{t('settings.idle.title')}</h3><p>{t('settings.idle.description')}</p></div><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.idle.label', { duration: idleLabel })} disabled={busy}>{idleLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={String(settings.idleSeconds)} onValueChange={value => saveSettings({ ...settings, idleSeconds: Number(value) })}>{IDLE_OPTIONS.map(seconds => <DropdownMenuRadioItem closeOnClick key={seconds} value={String(seconds)}>{t('settings.idle.option', { count: seconds / 60 })}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div></div><Button variant="outline" className="action-button mt-3" onClick={openHow}>{t('howItWorks.open')}</Button></div></div>
             <div className="setting-row"><div><h2>{t('settings.clear.title')}</h2><p>{t('settings.clear.description')}</p></div><AlertDialogTrigger render={<Button variant="destructive" className="action-button" disabled={busy} />}><Trash />{t('settings.clear.button')}</AlertDialogTrigger></div>
@@ -130,7 +132,7 @@ export function App() {
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-[520px] p-7" finalFocus={detailTrigger} showCloseButton={false}>
         <DialogHeader><DialogTitle className="text-xl">{t('detail.title')}</DialogTitle><DialogDescription>{t('detail.description', { range: rangeLabel(range) })}</DialogDescription></DialogHeader>
         <DialogClose render={<Button variant="ghost" size="icon-sm" className="absolute right-4 top-4" />} aria-label={t('detail.close')}><X /></DialogClose>
-        {selected && <><div className="detail-site"><SiteIcon domain={selected} /><h3>{selected}</h3></div>
+        {selected && stats && <><div className="detail-site"><SiteIcon domain={selected} /><h3>{selected}</h3></div>
           <div className="detail-stats"><div><strong>{duration(stats.rows.find(r => r.domain === selected)?.ms || 0)}</strong><span>{t('ranking.activeTime')}</span></div><div><strong>{t('detail.visits', { count: stats.rows.find(r => r.domain === selected)?.visits || 0 })}</strong><span>{t('ranking.visits')}</span></div></div>
           <h3>{t('detail.todaySessions')}</h3>
           {sessions.length ? <ScrollArea className="h-[230px]"><ul className="session-list">{sessions.map((s, i) => <li key={i}><time>{timeLabel(Math.max(today, s.start))} — {timeLabel(Math.min(end, s.end))}</time><span>{duration(Math.min(end, s.end) - Math.max(today, s.start))}</span></li>)}</ul></ScrollArea> : <p className="muted">{t('detail.noSessions')}</p>}

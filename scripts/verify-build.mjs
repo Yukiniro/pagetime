@@ -7,6 +7,7 @@ import { unzipSync } from 'fflate';
 export const root = fileURLToPath(new URL('..', import.meta.url));
 export const zipName = ({ name, version }) => `${name}-${version}-chrome.zip`;
 export const readArchive = path => unzipSync(readFileSync(path));
+export const NETWORK_API = /\bfetch\s*\(|\bXMLHttpRequest\b|\bWebSocket\b|\bsendBeacon\b/;
 
 export function verifyFiles(read, { version, locales }) {
   const json = path => JSON.parse(Buffer.from(read(path)).toString('utf8'));
@@ -31,7 +32,7 @@ export function verifyFiles(read, { version, locales }) {
     assert.ok(bytes.length, `Missing/empty artifact: ${path}`);
     return bytes;
   };
-  file(manifest.background.service_worker);
+  assert.doesNotMatch(file(manifest.background.service_worker).toString('utf8'), NETWORK_API, 'The background makes no network request');
   const html = file('dashboard.html').toString('utf8');
   for (const [, path] of html.matchAll(/(?:src|href)="([^"]+)"/g)) file(path.replace(/^\//, ''));
   assert.deepEqual(Object.keys(manifest.icons).sort(), ['16', '32', '48', '96', '128'].sort());

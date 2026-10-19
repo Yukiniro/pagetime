@@ -1,12 +1,25 @@
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { IDBFactory, IDBKeyRange } from 'fake-indexeddb';
+import * as ledger from '../../src/ledger.mjs';
 import * as model from '../../src/model.mjs';
 import * as settings from '../../src/settings.mjs';
-import * as validation from '../../src/validate-data.mjs';
 
 export const WINDOW_ID_NONE = -1;
 export const ALARM_PERIOD = model.CHECKPOINT_SECONDS * 1_000;
+
+// The ledger in the shape the old storage.local `data` key had, so timing assertions read the same.
+export async function readLedger(db) {
+  const hosts = new Map((await db.domains.toArray()).map(row => [row.id, row.host]));
+  const state = await ledger.readState(db);
+  return {
+    visits: (await db.visits.toArray()).map(visit => ({ domain: hosts.get(visit.domainId), at: visit.at })),
+    spans: (await db.spans.orderBy('start').toArray()).map(span => ({ domain: hosts.get(span.domainId), start: span.start, end: span.end })),
+    enabled: state?.enabled ?? true,
+    since: state?.since ?? null,
+  };
+}
 
 let code;
 
@@ -21,21 +34,15 @@ function event() {
   return { listeners: [], addListener(fn) { this.listeners.push(fn); }, fire(...args) { for (const fn of this.listeners) fn(...args); } };
 }
 
-// Service worker awaits only resolve on the microtask queue, so one macrotask
-// drains the serial recording queue. A second turn catches the queue's tail.
-async function settle() {
-  await new Promise(resolve => setImmediate(resolve));
-  await new Promise(resolve => setImmediate(resolve));
-}
-
 export async function createHarness({ now: start = 1_000_000, url = 'https://example.com/private?key=secret' } = {}) {
   let now = start;
   let idle = 'active';
   let nextWindowId = 1;
   let nextTabId = 1;
   let nextAlarm = start + ALARM_PERIOD;
-  let localWrites = 0;
-  let lastWriteBytes = 0;
+  let ticks = 0;
+  let pending = 0;
+  let pruneError = null;
   const errors = [];
   const windows = new Map();
   const tabs = new Map();
@@ -44,26 +51,53 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
   const detectionIntervals = [];
   const idleQueries = [];
   let browser = null;
+  const factory = new IDBFactory();
+  const reader = ledger.openLedger({ indexedDB: factory, IDBKeyRange });
+  const workerDbs = [];
+  // Every ledger call from the worker goes through reopening() or pruneDetail(), so counting those calls tells when it is idle.
+  const workerLedger = {
+    ...ledger,
+    openLedger() {
+      const db = ledger.openLedger({ indexedDB: factory, IDBKeyRange });
+      workerDbs.push(db);
+      return db;
+    },
+    commitTick(...args) { ticks += 1; return ledger.commitTick(...args); },
+    async pruneDetail(...args) {
+      pending += 1;
+      try {
+        if (pruneError) throw pruneError;
+        return await ledger.pruneDetail(...args);
+      } finally { pending -= 1; }
+    },
+    async reopening(...args) {
+      pending += 1;
+      try { return await ledger.reopening(...args); }
+      finally { pending -= 1; }
+    },
+  };
 
   class ClockDate extends Date { static now() { return now; } }
 
-  function area(store, trackWrites) {
+  // IndexedDB work spans macrotasks, so wait until no ledger call is in flight for a whole turn.
+  async function settle() {
+    for (let idleTurns = 0; idleTurns < 2;) {
+      await new Promise(resolve => setImmediate(resolve));
+      idleTurns = pending ? 0 : idleTurns + 1;
+    }
+  }
+
+  function area(store) {
     return {
       async get(key) { return structuredClone({ [key]: store[key] }); },
-      async set(patch) {
-        if (trackWrites) {
-          localWrites += 1;
-          lastWriteBytes = Buffer.byteLength(JSON.stringify(patch));
-        }
-        Object.assign(store, structuredClone(patch));
-      },
+      async set(patch) { Object.assign(store, structuredClone(patch)); },
       async remove(key) { delete store[key]; },
     };
   }
 
   function makeBrowser() {
     return {
-      storage: { local: area(local, true), session: area(session, false) },
+      storage: { local: area(local), session: area(session) },
       idle: {
         queryState: async seconds => { idleQueries.push(seconds); return idle; },
         setDetectionInterval(seconds) { detectionIntervals.push(seconds); },
@@ -100,11 +134,13 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
   }
 
   async function boot() {
+    for (const db of workerDbs.splice(0)) db.close();
     browser = makeBrowser();
     const context = {
       exports: {},
       console: { ...console, error: (...args) => { errors.push(args); } },
       Date: ClockDate,
+      crypto: globalThis.crypto,
       setTimeout(...args) {
         const timer = setTimeout(...args);
         timer.unref();
@@ -113,7 +149,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
       clearTimeout,
       require: name => name === 'wxt/browser' ? { browser }
         : name === 'wxt/utils/define-background' ? { defineBackground: fn => fn() }
-        : name.endsWith('validate-data.mjs') ? validation
+        : name.endsWith('ledger.mjs') ? workerLedger
         : name.endsWith('settings.mjs') ? settings
         : model,
     };
@@ -222,15 +258,23 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
     });
   }
 
+  // The dashboard reads the ledger itself; this returns what it would see after the command.
+  async function command(type, body) {
+    const response = await message(type, body);
+    return response.error ? response : { ...response, data: await readLedger(reader) };
+  }
+
   openWindow({ url, focused: true });
   await boot();
 
   return {
     errors,
+    db: reader,
     get browser() { return browser; },
     get now() { return now; },
-    get localWrites() { return localWrites; },
-    get lastWriteBytes() { return lastWriteBytes; },
+    get ticks() { return ticks; },
+    get local() { return structuredClone(local); },
+    get workerDb() { return workerDbs.at(-1); },
     settle,
     openWindow,
     openTab,
@@ -246,11 +290,17 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
     advance,
     setNow(value) { now = value; },
     message,
-    snapshot() { return message('snapshot'); },
-    read() { return structuredClone(local.data ?? null); },
-    cursor() { return structuredClone(session.cursor ?? null); },
-    seed(data) { local.data = structuredClone(data); },
-    resetWrites() { localWrites = 0; lastWriteBytes = 0; },
+    command,
+    snapshot() { return command('snapshot'); },
+    read() { return readLedger(reader); },
+    async cursor() {
+      const cursor = (await ledger.readHead(reader)).cursor;
+      if (!cursor || cursor.session !== session.session) return null;
+      const { session: _, ...rest } = cursor;
+      return rest;
+    },
+    resetTicks() { ticks = 0; },
+    failPrune(error) { pruneError = error; },
     killWorker() { browser = null; },
     async restartWorker() { browser = null; await boot(); },
     async reloadExtension() {

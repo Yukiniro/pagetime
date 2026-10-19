@@ -15,6 +15,7 @@
     "retry": "Retry",
     "connect": "Can't reach the recording service. Please reload the extension.",
     "save": "Couldn't save records. Check your browser's storage space.",
+    "read": "Couldn't read local records. Reload this page; if it keeps happening, reload the extension.",
     "data": "Saved records have an invalid format. They have been kept unchanged. Retry after restoring valid data."
   },
   "loading": "Loading local records…",
@@ -64,7 +65,7 @@
     "language": { "title": "Language", "description": "Choose the display language for PageTime.", "label": "Display language: {{language}}" },
     "recording": { "title": "Browsing records", "description": "Counts page visits and only tracks time on the active tab of the focused window." },
     "privacy": { "title": "Local and private", "description": "Stores only site domains, times, and visit counts — never page content, titles, or full URLs.<br/>Ignores incognito windows and internal browser pages, and never sends data to a server." },
-    "method": { "title": "How it's measured", "description": "Each page load or reload counts as one visit; switching tabs or in-app navigation in single-page apps doesn't add visits.<br/>{{idle}} seconds without system input counts as idle; progress is saved every {{checkpoint}} seconds.<br/>Keeps up to {{days}} days of data, with at most {{limit}} visits and {{limit}} active sessions.", "audible": "A tab playing unmuted sound isn't counted as idle." },
+    "method": { "title": "How it's measured", "description": "Each page load or reload counts as one visit; switching tabs or in-app navigation in single-page apps doesn't add visits.<br/>{{idle}} seconds without system input counts as idle; progress is saved every {{checkpoint}} seconds.<br/>Keeps visits and active sessions for {{days}} days; daily and hourly totals stay until you clear them.", "audible": "A tab playing unmuted sound isn't counted as idle." },
     "audible": { "title": "Keep counting while audio plays", "description": "If the active tab in the focused window is playing unmuted sound, idle time still counts. Timing stops as soon as the sound stops or the tab is muted." },
     "idle": { "title": "Idle threshold", "description": "How long without keyboard or mouse input before this browser counts as idle.", "label": "Idle threshold: {{duration}}", "option_one": "{{count}} minute", "option_other": "{{count}} minutes" },
     "clear": { "title": "Clear all records", "description": "Deletes the records PageTime has saved on this device. This can't be undone.", "button": "Clear data" }
@@ -123,8 +124,8 @@
       "title": "Privacy and storage",
       "fields": "Only the domain, times, and visit counts are saved — never the title, page text, or full URL.",
       "local": "Data stays in this browser on this device and is never uploaded to a server.",
-      "retention_one": "Keeps the last {{count}} day, with at most {{limit}} time spans and {{limit}} visit records.",
-      "retention_other": "Keeps the last {{count}} days, with at most {{limit}} time spans and {{limit}} visit records.",
+      "retention_one": "Keeps visit records and time spans for the last {{count}} day. Daily and hourly totals stay until you clear them.",
+      "retention_other": "Keeps visit records and time spans for the last {{count}} days. Daily and hourly totals stay until you clear them.",
       "save_one": "Saves every {{count}} second. If the browser closes unexpectedly, at most that recent interval can be lost.",
       "save_other": "Saves every {{count}} seconds. If the browser closes unexpectedly, at most that recent interval can be lost."
     },
