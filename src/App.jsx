@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ChartBar, Clock, GearSix, ShieldCheck, Pause, Play, ArrowRight, MagnifyingGlass, X, Trash, CaretDown, CalendarBlank, Translate } from '@phosphor-icons/react';
+import { ChartBar, Clock, GearSix, ShieldCheck, Pause, Play, ArrowRight, MagnifyingGlass, X, Trash, CaretDown, CalendarBlank, Translate, WarningCircle } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from '@app/components/ui/dropdown-menu';
+import { RadioGroup, RadioGroupItem } from '@app/components/ui/radio-group';
 import { Switch } from '@app/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@app/components/ui/dialog';
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@app/components/ui/alert-dialog';
@@ -15,7 +16,7 @@ import { Empty, EmptyHeader, EmptyTitle } from '@app/components/ui/empty';
 import { ScrollArea } from '@app/components/ui/scroll-area';
 import { Trans, useTranslation } from 'react-i18next';
 import { addDays, dateKey, dateKeyStart, midnight, timingCopy } from './model.mjs';
-import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, MERGE_MODES, isIgnored, normalizeHost } from './settings.mjs';
+import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, MERGE_MODES, RECORD_MODES, isAllowed, isIgnored, normalizeHost } from './settings.mjs';
 import { hostsToDelete } from './site.mjs';
 import { IgnoredSites } from './IgnoredSites.jsx';
 import { HowItWorksDialog } from './HowItWorksDialog.jsx';
@@ -69,15 +70,18 @@ export function App() {
   const saveSettings = next => act('settings', { settings: next });
   const selectedRow = stats?.rows.find(row => row.domain === selected);
   const sessions = view?.spans.filter(span => (span.site ?? span.domain) === selected) ?? [];
-  const ignoreHost = selected ? normalizeHost(selected) : null;
-  const alreadyIgnored = selected ? isIgnored(selected, settings.ignored) : false;
-  const ignoreLimit = (settings.ignored?.length ?? 0) >= IGNORED_LIMIT;
-  async function confirmIgnore() {
+  const listField = settings.recordMode === 'whitelist' ? 'allowed' : 'ignored';
+  const scopeHost = selected ? normalizeHost(selected) : null;
+  const alreadyListed = selected ? (listField === 'allowed' ? isAllowed(selected, settings.allowed) : isIgnored(selected, settings.ignored)) : false;
+  const listLimit = (settings[listField]?.length ?? 0) >= IGNORED_LIMIT;
+  const confirmKey = listField === 'allowed' ? 'detail.allowConfirm' : 'detail.ignoreConfirm';
+  async function confirmListAdd() {
     const host = normalizeHost(ignoreTarget);
-    const current = settings.ignored ?? [];
-    if (!host || isIgnored(host, current)) { setIgnoreTarget(null); return; }
+    const current = settings[listField] ?? [];
+    const covered = listField === 'allowed' ? isAllowed(host, current) : isIgnored(host, current);
+    if (!host || covered) { setIgnoreTarget(null); return; }
     if (current.length >= IGNORED_LIMIT) return;
-    if (await saveSettings({ ...settings, ignored: [...current, host] })) setIgnoreTarget(null);
+    if (await saveSettings({ ...settings, [listField]: [...current, host] })) setIgnoreTarget(null);
   }
   const minDay = dateKey(view?.since ?? now);
   const maxDay = dateKey(today);
@@ -129,7 +133,13 @@ export function App() {
             <div className="setting-row"><div><h2 id="toolbar-badge">{t('settings.badge.title')}</h2><p>{t('settings.badge.description')}</p></div><Switch className="shrink-0" checked={settings.badge} onCheckedChange={checked => saveSettings({ ...settings, badge: checked })} disabled={busy} aria-labelledby="toolbar-badge" /></div>
             <div className="setting-row"><div><h2>{t('settings.recording.title')}</h2><p>{t('settings.recording.description')}</p></div><Button variant="outline" className="action-button" disabled={busy} onClick={() => act('toggle')}>{enabled ? t('actions.pause') : t('actions.enable')}</Button></div>
             <div className="setting-row"><div><h2>{t('settings.privacy.title')}</h2><p><Trans i18nKey="settings.privacy.description" /></p></div><ShieldCheck size={28} className="privacy-icon" /></div>
-            <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.ignored.title')}</h2><p>{t('settings.ignored.description')}</p><IgnoredSites settings={settings} busy={busy} onSave={saveSettings} /></div></div>
+            <div className="setting-row"><div className="min-w-0 flex-1"><h2 id="record-mode">{t('settings.recordMode.title')}</h2><p>{t('settings.recordMode.description')}</p>
+              <RadioGroup className="mt-4 gap-3" aria-labelledby="record-mode" value={settings.recordMode} disabled={busy} onValueChange={value => { if (value !== settings.recordMode) saveSettings({ ...settings, recordMode: value }); }}>
+                {RECORD_MODES.map(mode => <label key={mode} className="flex items-start gap-3"><RadioGroupItem value={mode} className="mt-1" /><span className="min-w-0"><strong>{t(`settings.recordMode.${mode}`)}</strong><p>{t(`settings.recordMode.${mode}Hint`)}</p></span></label>)}
+              </RadioGroup>
+              {listField === 'allowed' && !(settings.allowed?.length) && <Alert variant="destructive" className="mt-4"><WarningCircle /><AlertTitle>{t('settings.allowed.emptyWarningTitle')}</AlertTitle><AlertDescription>{t('settings.allowed.emptyWarning')}</AlertDescription></Alert>}
+              <h3 className="mt-4">{t(`settings.${listField}.title`)}</h3><p>{t(`settings.${listField}.description`)}</p><IgnoredSites key={listField} field={listField} settings={settings} busy={busy} onSave={saveSettings} />
+            </div></div>
             <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.method.title')}</h2><p><Trans i18nKey="settings.method.description" values={copy} /></p>{settings.countAudible && <p>{t('settings.method.audible')}</p>}<div className="mt-4 flex flex-col gap-4"><div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="count-audible">{t('settings.audible.title')}</h3><p>{t('settings.audible.description')}</p></div><Switch checked={settings.countAudible} onCheckedChange={checked => saveSettings({ ...settings, countAudible: checked })} disabled={busy} aria-labelledby="count-audible" /></div><div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="idle-threshold">{t('settings.idle.title')}</h3><p>{t('settings.idle.description')}</p></div><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.idle.label', { duration: idleLabel })} disabled={busy}>{idleLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={String(settings.idleSeconds)} onValueChange={value => saveSettings({ ...settings, idleSeconds: Number(value) })}>{IDLE_OPTIONS.map(seconds => <DropdownMenuRadioItem closeOnClick key={seconds} value={String(seconds)}>{t('settings.idle.option', { count: seconds / 60 })}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div></div><Button variant="outline" className="action-button mt-3" onClick={openHow}>{t('howItWorks.open')}</Button></div></div>
             <div className="setting-row"><div className="min-w-0 flex-1"><h2 id="site-merge">{t('settings.siteMerge.title')}</h2><p>{t('settings.siteMerge.description')}</p></div><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.siteMerge.label', { mode: mergeLabel })} disabled={busy}>{mergeLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={settings.siteMerge} onValueChange={value => { setSite(''); setSearch(''); setFilterSite(''); saveSettings({ ...settings, siteMerge: value }); }}>{MERGE_MODES.map(mode => <DropdownMenuRadioItem closeOnClick key={mode} value={mode}>{t(`settings.siteMerge.${mode}`)}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div>
             <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.deleteDay.title')}</h2><p>{t('settings.deleteDay.description')}</p><div className="mt-4 flex max-w-xs flex-col gap-2">
@@ -158,9 +168,9 @@ export function App() {
           <h3>{t('detail.todaySessions')}</h3>
           {sessions.length ? <ScrollArea className="h-[230px]"><ul className="session-list">{sessions.map((s, i) => <li key={i}><time>{timeLabel(Math.max(today, s.start))} — {timeLabel(Math.min(end, s.end))}</time>{(selectedRow?.hosts.length ?? 0) >= 2 && <span className="session-host">{s.domain}</span>}<span>{duration(Math.min(end, s.end) - Math.max(today, s.start))}</span></li>)}</ul></ScrollArea> : <p className="muted">{t('detail.noSessions')}</p>}
           <div className="mt-4 flex flex-col gap-2">
-            <Button variant="outline" className="action-button w-full" disabled={busy || alreadyIgnored || !ignoreHost || ignoreLimit} onClick={() => setIgnoreTarget(selected)}>{alreadyIgnored ? t('detail.ignored') : t('detail.ignore')}</Button>
-            {selected && !alreadyIgnored && !ignoreHost && <p className="text-sm text-destructive" role="alert">{t('settings.ignored.error')}</p>}
-            {selected && !alreadyIgnored && ignoreHost && ignoreLimit && <p className="text-sm text-destructive" role="alert">{t('settings.ignored.limit', { count: IGNORED_LIMIT })}</p>}
+            <Button variant="outline" className="action-button w-full" disabled={busy || alreadyListed || !scopeHost || listLimit} onClick={() => setIgnoreTarget(selected)}>{alreadyListed ? t(listField === 'allowed' ? 'detail.allowed' : 'detail.ignored') : t(listField === 'allowed' ? 'detail.allow' : 'detail.ignore')}</Button>
+            {selected && !alreadyListed && !scopeHost && <p className="text-sm text-destructive" role="alert">{t(`settings.${listField}.error`)}</p>}
+            {selected && !alreadyListed && scopeHost && listLimit && <p className="text-sm text-destructive" role="alert">{t(`settings.${listField}.limit`, { count: IGNORED_LIMIT })}</p>}
             <Button className="action-button w-full" onClick={() => { goRecords(selected); setSelected(null); }}>{t('detail.viewVisits')}<ArrowRight /></Button>
             <Button variant="destructive" className="action-button w-full" disabled={busy} onClick={() => setDeleteTarget(selected)}><Trash />{t('detail.delete')}</Button>
           </div>
@@ -189,8 +199,8 @@ export function App() {
   </AlertDialog>
   <AlertDialog open={Boolean(ignoreTarget)} onOpenChange={open => { if (!open) setIgnoreTarget(null); }}>
     <AlertDialogContent>
-      <AlertDialogHeader><AlertDialogTitle>{t('detail.ignoreConfirm.title')}</AlertDialogTitle><AlertDialogDescription>{t('detail.ignoreConfirm.description', { domain: ignoreTarget ?? '' })}</AlertDialogDescription></AlertDialogHeader>
-      <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction disabled={busy} onClick={confirmIgnore}>{t('detail.ignoreConfirm.confirm')}</AlertDialogAction></AlertDialogFooter>
+      <AlertDialogHeader><AlertDialogTitle>{t(`${confirmKey}.title`)}</AlertDialogTitle><AlertDialogDescription>{t(`${confirmKey}.description`, { domain: ignoreTarget ?? '' })}</AlertDialogDescription></AlertDialogHeader>
+      <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction disabled={busy} onClick={confirmListAdd}>{t(`${confirmKey}.confirm`)}</AlertDialogAction></AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
   </TooltipProvider>;

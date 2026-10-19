@@ -100,7 +100,9 @@
       "prefix": "合并 www、m、mobile",
       "registrable": "按可注册域名合并"
     },
+    "recordMode": { "title": "记录范围", "description": "选择之后哪些站点会计入时长和访问。黑名单和白名单分开保存，切换模式不会清空另一份列表，也不会删除或隐藏已有记录。example.com 匹配该域名及其子域名；mail.example.com 不匹配 example.com。", "blacklist": "黑名单", "whitelist": "白名单", "blacklistHint": "除下面列出的站点外，其他站点都会记录。", "whitelistHint": "只记录下面列出的站点。" },
     "ignored": { "title": "忽略的站点", "description": "这些域名及其子域名不计时长、不记访问次数，和打开浏览器内部页面一样。例如 example.com 也会匹配 a.example.com；mail.example.com 不会匹配 example.com。已有记录不会删除，也不会从统计里隐藏。", "input": "要忽略的域名", "placeholder": "example.com", "add": "添加", "remove": "移除 {{domain}}", "emptyTitle": "没有忽略的站点", "emptyDescription": "添加后，这些站点之后就不再记入新的时长和访问。", "error": "请输入域名，例如 example.com。系统会去掉协议、路径和端口。不能包含空格；没有点号时只接受 localhost。", "limit": "最多忽略 {{count}} 个站点。" },
+    "allowed": { "title": "允许的站点", "description": "只有这些域名及其子域名会计入时长和访问次数。例如 example.com 也会匹配 a.example.com；mail.example.com 不会匹配 example.com。已有记录不会删除，也不会从统计里隐藏。", "input": "要允许的域名", "placeholder": "example.com", "add": "添加", "remove": "移除 {{domain}}", "emptyTitle": "没有允许的站点", "emptyDescription": "添加后，只有这些站点之后会计入新的时长和访问。列表为空时不会记录任何站点。", "limit": "最多允许 {{count}} 个站点。", "emptyWarningTitle": "空白名单不会记录任何站点", "emptyWarning": "允许列表是空的，所以不会记录任何网站的时长和访问。空白名单不等于记录全部站点。请先添加至少一个域名。已有记录会保留，也不会被隐藏。", "error": "请输入域名，例如 example.com。系统会去掉协议、路径和端口。不能包含空格；没有点号时只接受 localhost。" },
     "badge": { "title": "工具栏角标", "description": "在工具栏图标上显示今天的活跃浏览时长。" },
     "deleteDay": { "title": "删除某一天的记录", "description": "从这台设备上删除某一天的活跃时长、访问次数和时段，删除后无法恢复。", "label": "要删除的日期", "button": "删除这一天", "done": "已删除 {{date}} 的记录。", "confirmTitle": "删除 {{date}} 的记录？", "confirmDescription": "将从这台设备上删除这一天的活跃时长、访问次数和时段，无法撤销。", "confirm": "删除这一天", "deleting": "正在删除…" },
     "clear": { "title": "清空所有记录", "description": "删除此设备上 PageTime 已保存的记录，删除后无法恢复。", "button": "清空数据" }
@@ -114,6 +116,9 @@
     "noSessions": "今天暂无活跃时段",
     "ignore": "不再记录此站点",
     "ignored": "此站点已在忽略列表中",
+    "allow": "加入白名单",
+    "allowed": "此站点已在白名单中",
+    "allowConfirm": { "title": "把此站点加入白名单？", "description": "之后会记录 {{domain}} 及其子域名的时长和访问次数。已有记录不会删除，也不会隐藏。", "confirm": "加入白名单" },
     "ignoreConfirm": { "title": "不再记录此站点？", "description": "之后不再记录 {{domain}} 及其子域名的时长和访问次数。已有记录不会删除。", "confirm": "不再记录" },
     "delete": "删除此站点的记录",
     "deleteConfirm": { "title": "删除此站点的记录？", "description": "将删除 {{domain}} 在所有日期的时长、访问次数和时段，无法撤销。如果以后也不想记录，请把它加入忽略列表。", "confirm": "删除记录", "deleting": "正在删除…" },
@@ -173,7 +178,8 @@
       "incognito": "无痕窗口",
       "paused": "暂停记录期间",
       "gap_other": "两次检查间隔超过 {{count}} 秒时，超出的部分不计入，这段最多计入 {{count}} 秒（例如系统挂起）",
-      "ignored": "你设置为忽略的站点（当前 {{count}} 个）及其子域名。条目 example.com 同时匹配该域名和所有子域名；条目 mail.example.com 不匹配 example.com。已有记录不会删除，也不会隐藏。"
+      "ignored": "黑名单模式：你设置为忽略的站点（当前 {{count}} 个）及其子域名不计时长、不记访问。条目 example.com 同时匹配该域名和所有子域名；条目 mail.example.com 不匹配 example.com。已有记录不会删除，也不会隐藏。",
+      "whitelist": "白名单模式：只有允许的站点（当前 {{count}} 个）及其子域名会计入时长和访问。列表为空时不记录任何站点。条目 example.com 同时匹配该域名和所有子域名；条目 mail.example.com 不匹配 example.com。已有记录不会删除，也不会隐藏。"
     },
     "visits": {
       "title": "访问次数",

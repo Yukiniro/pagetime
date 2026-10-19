@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { domainOf } from '../src/model.mjs';
-import { HOST_MAX, IGNORED_LIMIT, isIgnored, normalizeHost, validateSettings } from '../src/settings.mjs';
+import { HOST_MAX, IGNORED_LIMIT, isAllowed, isIgnored, normalizeHost, shouldRecord, validateSettings } from '../src/settings.mjs';
 
 const host253 = `${'a'.repeat(63)}.${'b'.repeat(63)}.${'c'.repeat(63)}.${'d'.repeat(61)}`;
 
@@ -94,7 +94,7 @@ test('ignored entries use the same host the ledger stores', () => {
 test('validateSettings keeps schema 1, filters invalid hosts, dedupes, and caps the list', () => {
   assert.equal(IGNORED_LIMIT, 500);
   assert.equal(HOST_MAX, 253);
-  assert.deepEqual(validateSettings(undefined), { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', ignored: [], badge: true });
+  assert.deepEqual(validateSettings(undefined), { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', recordMode: 'blacklist', ignored: [], allowed: [], badge: true });
   assert.deepEqual(validateSettings({ ignored: 'example.com' }).ignored, []);
   assert.deepEqual(validateSettings({
     schema: 1,
@@ -106,7 +106,9 @@ test('validateSettings keeps schema 1, filters invalid hosts, dedupes, and caps 
     idleSeconds: 300,
     countAudible: false,
     siteMerge: 'prefix',
+    recordMode: 'blacklist',
     ignored: ['mail.example.com', 'localhost', normalizeHost('::1')],
+    allowed: [],
     badge: true,
   });
   assert.deepEqual(validateSettings({ ignored: ['Example.com', 'example.com'] }).ignored, ['example.com']);
@@ -120,7 +122,47 @@ test('validateSettings keeps schema 1, filters invalid hosts, dedupes, and caps 
     idleSeconds: 60,
     countAudible: true,
     siteMerge: 'prefix',
+    recordMode: 'blacklist',
     ignored: ['ok.com'],
+    allowed: [],
     badge: true,
   });
+});
+
+test('shouldRecord follows the active list and leaves the other list unused', () => {
+  const blacklist = { recordMode: 'blacklist', ignored: ['example.com'], allowed: ['other.com'] };
+  assert.equal(shouldRecord('example.com', blacklist), false);
+  assert.equal(shouldRecord('a.example.com', blacklist), false);
+  assert.equal(shouldRecord('other.com', blacklist), true);
+  assert.equal(shouldRecord('ok.com', blacklist), true);
+  const whitelist = { recordMode: 'whitelist', ignored: ['example.com'], allowed: ['example.com'] };
+  assert.equal(shouldRecord('example.com', whitelist), true);
+  assert.equal(shouldRecord('a.example.com', whitelist), true);
+  assert.equal(shouldRecord('other.com', whitelist), false);
+  assert.equal(isAllowed('mail.example.com', ['mail.example.com']), true);
+  assert.equal(shouldRecord('example.com', { recordMode: 'whitelist', allowed: ['mail.example.com'] }), false);
+  assert.equal(shouldRecord('mail.example.com', { recordMode: 'whitelist', allowed: ['mail.example.com'] }), true);
+  assert.equal(shouldRecord('ok.com', { recordMode: 'whitelist', allowed: [] }), false);
+  assert.equal(shouldRecord('ok.com', { recordMode: 'nope', ignored: [] }), true);
+});
+
+test('validateSettings keeps both host lists and falls back on an illegal record mode', () => {
+  const kept = validateSettings({ recordMode: 'whitelist', ignored: ['a.com'], allowed: ['https://B.com/path', 'b.com', 'nope'] });
+  assert.equal(kept.recordMode, 'whitelist');
+  assert.deepEqual(kept.ignored, ['a.com']);
+  assert.deepEqual(kept.allowed, ['b.com']);
+  const flipped = validateSettings({ ...kept, recordMode: 'blacklist' });
+  assert.equal(flipped.recordMode, 'blacklist');
+  assert.deepEqual(flipped.ignored, ['a.com']);
+  assert.deepEqual(flipped.allowed, ['b.com']);
+  const illegal = validateSettings({ recordMode: 'all', ignored: ['keep.example'], allowed: ['stay.example'] });
+  assert.equal(illegal.recordMode, 'blacklist');
+  assert.deepEqual(illegal.ignored, ['keep.example']);
+  assert.deepEqual(illegal.allowed, ['stay.example']);
+  assert.deepEqual(validateSettings({ allowed: 'example.com' }).allowed, []);
+  const many = Array.from({ length: IGNORED_LIMIT + 5 }, (_, index) => `b${index}.example.com`);
+  const capped = validateSettings({ recordMode: 'whitelist', ignored: ['keep.example'], allowed: many });
+  assert.equal(capped.allowed.length, IGNORED_LIMIT);
+  assert.deepEqual(capped.ignored, ['keep.example']);
+  assert.equal(capped.allowed[0], 'b0.example.com');
 });

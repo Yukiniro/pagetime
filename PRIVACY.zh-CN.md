@@ -31,9 +31,11 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 | `idleSeconds` | `60`、`120`、`300` 或 `600`。连续多少秒没有键盘或鼠标操作后，把浏览器视为空闲 |
 | `countAudible` | 为 true 时，前台窗口的当前标签正在播放且未静音，空闲也继续计入。默认是 true |
 | `badge` | 为 true 时，工具栏图标显示今天的活跃浏览时长。默认开启 |
-| `ignored` | 最多 500 条用户输入的域名，每条最长 253 个字符。只存在这个 `settings` 键里。一条记录匹配该域名及其子域名。添加或移除不会删除或隐藏账本里已有的行 |
+| `recordMode` | `blacklist` 或 `whitelist`。默认是 `blacklist`。黑名单记录除 `ignored` 以外的主机；白名单只记录 `allowed` 里的主机。`allowed` 为空时不记录任何站点。切换模式不会清空另一份列表，也不会删除或隐藏账本里的行 |
+| `ignored` | 最多 500 条用户输入的域名，每条最长 253 个字符。只存在这个 `settings` 键里。一条记录匹配该域名及其子域名。只在 `recordMode` 为 `blacklist` 时生效。添加或移除不会删除或隐藏账本里已有的行 |
+| `allowed` | 最多 500 条域名，长度和匹配规则与 `ignored` 相同。只在 `recordMode` 为 `whitelist` 时生效。添加或移除不会删除或隐藏账本里已有的行 |
 
-`src/settings.mjs` 的 `validateSettings` 会把非法的 `schema`、`idleSeconds` 或 `countAudible` 换成默认值。没有 `ignored` 时按空列表处理。非法条目会被丢掉，重复项会去掉，列表在 500 条处截断。它不抛错，也不改账本。没有 `settings` 时，后台使用 `{ schema: 1, idleSeconds: 60, countAudible: true, ignored: [], badge: true }`。`idleSeconds`、`countAudible` 和 `badge` 不是浏览历史。界面语言存在 `chrome.storage.local` 的 `language` 键，供工具栏标题使用。`ignored` 是用户输入的域名。后台还会读取 `tab.audible` 和 `tab.mutedInfo` 来执行 `countAudible`。这两个标志不写入账本或 `settings`。
+`src/settings.mjs` 的 `validateSettings` 会把非法的 `schema`、`idleSeconds`、`countAudible` 或 `recordMode` 换成默认值。没有 `ignored` 或 `allowed` 时按空列表处理。非法条目会被丢掉，重复项会去掉，每份列表在 500 条处截断。它不抛错，也不改账本。没有 `settings` 时，后台使用 `{ schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', recordMode: 'blacklist', ignored: [], allowed: [], badge: true }`。`idleSeconds`、`countAudible`、`badge` 和 `recordMode` 不是浏览历史。界面语言存在 `chrome.storage.local` 的 `language` 键，供工具栏标题使用。`ignored` 和 `allowed` 是用户输入的域名。后台还会读取 `tab.audible` 和 `tab.mutedInfo` 来执行 `countAudible`。这两个标志不写入账本或 `settings`。
 
 不保存标题、完整网址、页面正文、Cookie、表单输入，也不读取页面 DOM。扩展没有 content script，也不使用 `chrome.scripting`。
 
@@ -69,7 +71,7 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 
 ## 如何删除
 
-- 在站点详情里选择删除此站点的记录，并在确认框中确认。后台收到 `deleteSite` 后，在一个事务里删掉该主机名在 `days`、`hours`、`spans`、`visits` 中的行，再删掉 `domains` 里的对应条目。统计页会把当前合并方式下显示为这个站点的每个原始主机名都交出去。把站点加入 `ignored` 不会删除已有行；这次删除也不会把它加入忽略列表。
+- 在站点详情里选择删除此站点的记录，并在确认框中确认。后台收到 `deleteSite` 后，在一个事务里删掉该主机名在 `days`、`hours`、`spans`、`visits` 中的行，再删掉 `domains` 里的对应条目。统计页会把当前合并方式下显示为这个站点的每个原始主机名都交出去。把站点加入 `ignored` 或 `allowed` 不会删除已有行；这次删除也不会把它加入这两份列表。
 - 在「设置」里、「清空所有记录」上方选择一个日期，范围是这份账本开始以来、不晚于今天。页面会显示这一天的总时长和站点数。确认后发送 `deleteDay`。后台删掉该本地日的 `days` 和 `hours` 行、落在这一天的访问，以及时段里落在这一天的部分。跨过零点的时段只去掉这一天的部分，其余保留。同一次操作在一个事务里完成。
 - 如果删的是游标上的站点，或删的是今天，同一个事务会把游标的 `since` 改成删除时刻。下一次检查点不会把已删除的那段补记回来。
 - 统计页「设置」里清空所有记录，并在确认框中确认。后台收到 `clear` 后在一个事务里清空 `pagetime-ledger` 的所有表（包括 `cursor`），保留原来的 `enabled`，`since` 改为清空时刻。旧的 `data` 键不受影响。
