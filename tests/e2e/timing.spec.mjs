@@ -217,6 +217,19 @@ async function waitForSpan(context, domain, minimum) {
   return data;
 }
 
+function visitCount(data, domain) {
+  return (data?.visits ?? []).filter(visit => visit.domain === domain).length;
+}
+
+async function waitForVisit(context, domain, count) {
+  let data;
+  await expect.poll(async () => {
+    data = await readData(await worker(context));
+    return visitCount(data, domain);
+  }).toBe(count);
+  return data;
+}
+
 async function liveWorker(context, timeout = 8_000) {
   const started = Date.now();
   while (Date.now() - started < timeout) {
@@ -276,9 +289,9 @@ test('S3 full navigation splits domains and pushState does not add a visit', asy
     await page.waitForTimeout(STAY);
     await page.goto(pageUrl('b.test', '/next'));
     await waitForDomain(context, 'b.test');
-    const switched = await readData(await worker(context));
+    const switched = await waitForVisit(context, 'b.test', 1);
     assertClose(domainMs(switched, 'a.test'), STAY);
-    expect(switched.visits.filter(visit => visit.domain === 'b.test')).toHaveLength(1);
+    expect(visitCount(switched, 'b.test')).toBe(1);
     await page.waitForTimeout(2_000);
     await page.evaluate(() => history.pushState({ step: 1 }, '', '/spa'));
     await page.waitForTimeout(1_500);
