@@ -91,6 +91,21 @@
     "ignored": "このサイトはすでに無視リストにあります",
     "ignoreConfirm": { "title": "このサイトを記録しないようにしますか？", "description": "今後、{{domain}} とそのサブドメインの時間と訪問回数は記録しません。既存の記録は削除されません。", "confirm": "記録しない" },
     "viewVisits": "訪問履歴を表示",
+    "trend": {
+      "title": "日別の推移",
+      "label": "{{domain}} の日別アクティブ時間。{{days}}",
+      "item": "{{date}}、{{duration}}",
+      "unrecorded": "未記録",
+      "separator": "、"
+    },
+    "hours": {
+      "title": "時間帯",
+      "label": "{{domain}} の時間帯ごとのアクティブ時間。{{hours}}",
+      "item": "{{hour}}、{{duration}}、{{average}}",
+      "separator": "、",
+      "slot": "{{from}}–{{to}}",
+      "average": "1日平均 {{duration}}"
+    },
     "breakdown": {
       "title": "サブドメインの内訳",
       "label": "サブドメインの内訳。{{hosts}}",

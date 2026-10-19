@@ -175,6 +175,10 @@ export const daysBetween = (db, from, to) =>
 export const siteDays = (db, domainId, from, to) =>
   db.table('days').where('[domainId+date]').between([domainId, from], [domainId, to], true, true).toArray();
 
+/** Hour buckets for one site, `from` and `to` inclusive. Hours are 0–23. @param {Dexie} db */
+export const siteHours = (db, domainId, from, to) =>
+  db.table('hours').where('[domainId+date+hour]').between([domainId, from, 0], [domainId, to, 23], true, true).toArray();
+
 /** Non-empty hour buckets for every site, `from` and `to` inclusive. @param {Dexie} db */
 export const hoursBetween = (db, from, to) =>
   db.table('hours').where('[date+hour+domainId]').between([from, Dexie.minKey, Dexie.minKey], [to, Dexie.maxKey, Dexie.maxKey], true, true).toArray();

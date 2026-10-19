@@ -91,6 +91,21 @@
     "ignored": "此網站已在忽略清單中",
     "ignoreConfirm": { "title": "不再記錄此網站？", "description": "之後不再記錄 {{domain}} 及其子網域的時長和造訪次數。已有紀錄不會刪除。", "confirm": "不再記錄" },
     "viewVisits": "查看造訪紀錄",
+    "trend": {
+      "title": "每日趨勢",
+      "label": "{{domain}} 的每日活躍時長。{{days}}",
+      "item": "{{date}}，{{duration}}",
+      "unrecorded": "未記錄",
+      "separator": "；"
+    },
+    "hours": {
+      "title": "一天中的時段",
+      "label": "{{domain}} 在各小時的活躍時長。{{hours}}",
+      "item": "{{hour}}，{{duration}}，{{average}}",
+      "separator": "；",
+      "slot": "{{from}}–{{to}}",
+      "average": "日均 {{duration}}"
+    },
     "breakdown": {
       "title": "子網域組成",
       "label": "子網域組成。{{hosts}}",

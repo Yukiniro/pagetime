@@ -97,6 +97,21 @@
     "ignored": "This site is already ignored",
     "ignoreConfirm": { "title": "Stop recording this site?", "description": "{{domain}} and its subdomains will no longer be timed or counted as visits. Existing records are not deleted.", "confirm": "Stop recording" },
     "viewVisits": "View visits",
+    "trend": {
+      "title": "Daily trend",
+      "label": "Daily active time for {{domain}}. {{days}}",
+      "item": "{{date}}, {{duration}}",
+      "unrecorded": "Not recorded",
+      "separator": "; "
+    },
+    "hours": {
+      "title": "Time of day",
+      "label": "Active time by hour for {{domain}}. {{hours}}",
+      "item": "{{hour}}, {{duration}}, {{average}}",
+      "separator": "; ",
+      "slot": "{{from}}–{{to}}",
+      "average": "Daily average {{duration}}"
+    },
     "breakdown": {
       "title": "Subdomain breakdown",
       "label": "Subdomain breakdown. {{hosts}}",

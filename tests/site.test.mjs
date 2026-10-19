@@ -2,9 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { IDBFactory, IDBKeyRange } from 'fake-indexeddb';
-import { commitTick, openLedger, readDomains, readHead } from '../src/ledger.mjs';
-import { viewFromLedger, viewFromSnapshot } from '../src/ledger-view.mjs';
-import { breakdown, summarize } from '../src/model.mjs';
+import { commitTick, daysBetween, openLedger, readDomains, readHead, siteDays, siteHours } from '../src/ledger.mjs';
+import { siteSeries, siteSeriesFromSnapshot, viewFromLedger, viewFromSnapshot } from '../src/ledger-view.mjs';
+import { addDays, breakdown, dateKey, summarize } from '../src/model.mjs';
 import { siteOf } from '../src/site.mjs';
 import { DEFAULT_SETTINGS, validateSettings } from '../src/settings.mjs';
 
@@ -193,6 +193,146 @@ test('ledger rows stay raw while the query view groups them', async () => {
   }, { ...range, site: 'youtube.com', siteMerge: 'prefix' });
   assert.deepEqual(filtered.visits.map(visit => visit.domain), ['www.youtube.com']);
   assert.equal(filtered.visitCount, 3);
+});
+
+const sum = rows => rows.reduce((total, row) => total + row.ms, 0);
+const at = (day, hour = 0, minute = 0) => new Date(2026, 9, day, hour, minute).getTime();
+
+test('site daily bars and the 24 hour bars equal the detail header for merged hosts', async () => {
+  const db = openLedger({ indexedDB: new IDBFactory(), IDBKeyRange });
+  const spans = [
+    ['www.youtube.com', at(17, 9), at(17, 10)],
+    ['m.youtube.com', at(17, 10, 30), at(17, 11)],
+    ['www.youtube.com', at(18, 23, 30), at(19, 0, 30)],
+    ['gist.github.com', at(17, 9), at(17, 9, 10)],
+    ['docs.github.com', at(17, 8), at(17, 8, 10)],
+    ['github.com', at(17, 8, 10), at(17, 8, 20)],
+  ];
+  for (const [domain, start, end] of spans) {
+    await commitTick(db, { expect: await readHead(db), now: end, span: { domain, start, end }, cursor: null });
+  }
+  const start = at(15);
+  const end = at(21);
+  const from = dateKey(start);
+  const to = dateKey(addDays(end, -1));
+  const domains = await readDomains(db);
+  const head = await readHead(db);
+  const days = await daysBetween(db, from, to);
+  const load = async (site, siteMerge) => {
+    const ids = domains.filter(row => siteOf(row.host, siteMerge) === site).map(row => row.id);
+    const [dayRows, hourRows] = await Promise.all([
+      Promise.all(ids.map(id => siteDays(db, id, from, to))),
+      Promise.all(ids.map(id => siteHours(db, id, from, to))),
+    ]);
+    return { dayRows: dayRows.flat(), hourRows: hourRows.flat() };
+  };
+  const rowsFor = (site, siteMerge) => load(site, siteMerge).then(({ dayRows, hourRows }) => ({
+    series: siteSeries({ domains, days: dayRows, hours: hourRows, state: head.state }, { site, siteMerge, start, end, now: at(19, 12) }),
+    header: viewFromLedger({
+      state: head.state, domains, days, spans: [], visits: [],
+    }, { start, end, today: at(19), siteMerge, now: at(19, 12) }).stats.rows.find(row => row.domain === site)?.ms ?? 0,
+  }));
+  const youtube = await rowsFor('youtube.com', 'prefix');
+  assert.equal(head.state.since, at(17, 10));
+  assert.deepEqual(youtube.series.days.map(day => [dateKey(day.at), day.ms, day.recorded]), [
+    ['2026-10-15', 0, false],
+    ['2026-10-16', 0, false],
+    ['2026-10-17', 5_400_000, true],
+    ['2026-10-18', 1_800_000, true],
+    ['2026-10-19', 1_800_000, true],
+    ['2026-10-20', 0, true],
+  ]);
+  assert.deepEqual(youtube.series.hours.map(hour => hour.ms), Array.from({ length: 24 }, (_, hour) => (
+    hour === 0 || hour === 10 || hour === 23 ? 1_800_000 : hour === 9 ? 3_600_000 : 0
+  )));
+  assert.equal(youtube.header, 9_000_000);
+  assert.equal(sum(youtube.series.days), youtube.header);
+  assert.equal(sum(youtube.series.hours), youtube.header);
+
+  const today = await load('youtube.com', 'prefix').then(({ dayRows, hourRows }) => siteSeries(
+    { domains, days: dayRows, hours: hourRows, state: head.state },
+    { site: 'youtube.com', siteMerge: 'prefix', start: at(19), end: at(20), now: at(19, 12) },
+  ));
+  assert.equal(today.days.length, 1);
+  assert.equal(today.days[0].ms, 1_800_000);
+  assert.equal(sum(today.hours), 1_800_000);
+
+  const separate = await rowsFor('www.youtube.com', 'none');
+  assert.equal(separate.header, 7_200_000);
+  assert.equal(sum(separate.series.days), separate.header);
+  assert.equal(sum(separate.series.hours), separate.header);
+  const mobile = await rowsFor('m.youtube.com', 'none');
+  assert.equal(mobile.header, 1_800_000);
+  assert.equal(sum(mobile.series.hours), mobile.header);
+
+  const prefixGitHub = await rowsFor('github.com', 'prefix');
+  const registrableGitHub = await rowsFor('github.com', 'registrable');
+  assert.equal(prefixGitHub.header, 600_000);
+  assert.equal(sum(prefixGitHub.series.days), prefixGitHub.header);
+  assert.equal(registrableGitHub.header, 1_800_000);
+  assert.equal(sum(registrableGitHub.series.days), registrableGitHub.header);
+  assert.equal(sum(registrableGitHub.series.hours), registrableGitHub.header);
+
+  const creditStart = at(19, 12);
+  const creditedNow = at(19, 12, 0) + 45_000;
+  const creditedSeries = siteSeries({
+    domains,
+    days: (await load('youtube.com', 'prefix')).dayRows,
+    hours: (await load('youtube.com', 'prefix')).hourRows,
+    state: head.state,
+    cursor: { domain: 'm.youtube.com', since: creditStart },
+    lastEnd: creditStart,
+  }, { site: 'youtube.com', siteMerge: 'prefix', start, end, now: creditedNow });
+  const creditedHeader = viewFromLedger({
+    state: head.state, domains, days, spans: [], visits: [],
+    cursor: { domain: 'm.youtube.com', since: creditStart }, lastEnd: creditStart,
+  }, { start, end, today: at(19), siteMerge: 'prefix', now: creditedNow }).stats.rows.find(row => row.domain === 'youtube.com').ms;
+  assert.equal(creditedHeader, 9_045_000);
+  assert.equal(sum(creditedSeries.days), creditedHeader);
+  assert.equal(sum(creditedSeries.hours), creditedHeader);
+  assert.equal(creditedSeries.days.find(day => dateKey(day.at) === '2026-10-19').ms, 1_845_000);
+  assert.equal(creditedSeries.hours[12].ms, 45_000);
+  const paused = siteSeries({
+    domains,
+    days: (await load('youtube.com', 'prefix')).dayRows,
+    hours: (await load('youtube.com', 'prefix')).hourRows,
+    state: { ...head.state, enabled: false },
+    cursor: { domain: 'm.youtube.com', since: creditStart },
+    lastEnd: creditStart,
+  }, { site: 'youtube.com', siteMerge: 'prefix', start, end, now: creditedNow });
+  const pausedHeader = viewFromLedger({
+    state: { ...head.state, enabled: false }, domains, days, spans: [], visits: [],
+    cursor: { domain: 'm.youtube.com', since: creditStart }, lastEnd: creditStart,
+  }, { start, end, today: at(19), siteMerge: 'prefix', now: creditedNow }).stats.rows.find(row => row.domain === 'youtube.com').ms;
+  assert.equal(pausedHeader, 9_000_000);
+  assert.equal(sum(paused.days), pausedHeader);
+  assert.equal(sum(paused.hours), pausedHeader);
+
+  const snapshot = {
+    enabled: true,
+    since: at(17, 10),
+    visits: [{ domain: 'www.youtube.com', at: at(17, 9) }],
+    spans: spans.map(([domain, spanStart, spanEnd]) => ({ domain, start: spanStart, end: spanEnd })),
+  };
+  const preview = siteSeriesFromSnapshot(snapshot, { site: 'youtube.com', siteMerge: 'prefix', start, end, now: at(19, 12) });
+  const previewHeader = viewFromSnapshot(snapshot, { start, end, today: at(19), siteMerge: 'prefix' }).stats.rows.find(row => row.domain === 'youtube.com').ms;
+  assert.equal(previewHeader, 9_000_000);
+  assert.equal(sum(preview.days), previewHeader);
+  assert.equal(sum(preview.hours), previewHeader);
+  assert.equal(preview.days.find(day => dateKey(day.at) === '2026-10-16').recorded, false);
+  assert.equal(preview.days.find(day => dateKey(day.at) === '2026-10-20').ms, 0);
+  const empty = siteSeriesFromSnapshot(
+    { enabled: true, since: start, visits: [{ domain: 'example.com', at: start + 1 }], spans: [] },
+    { site: 'example.com', siteMerge: 'prefix', start, end, now: end },
+  );
+  assert.equal(empty.days.length, 6);
+  assert.equal(empty.hours.length, 24);
+  assert.equal(sum(empty.days), 0);
+  assert.equal(sum(empty.hours), 0);
+  assert.equal(viewFromSnapshot(
+    { enabled: true, since: start, visits: [{ domain: 'example.com', at: start + 1 }], spans: [] },
+    { start, end, today: at(19), siteMerge: 'prefix' },
+  ).stats.rows.find(row => row.domain === 'example.com').ms, 0);
 });
 
 test('timing notes and the readme describe the three groupings and raw storage', () => {
