@@ -40,7 +40,9 @@
     "active": "已过滤：{{domain}}",
     "clear": "清除过滤",
     "emptyTitle": "这张图没有活跃时间",
-    "emptyDescription": "{{domain}} 在这张图上没有活跃时间。"
+    "emptyDescription": "{{domain}} 在这张图上没有活跃时间。",
+    "emptyRankingTitle": "这个范围没有排行",
+    "emptyRankingDescription": "{{domain}} 在当前范围内没有记录。"
   },
   "chart": { "label": "主图" },
   "trend": { "label": "每日活跃浏览时长。{{days}}", "separator": "；", "hours_other": "{{count}} 小时" },

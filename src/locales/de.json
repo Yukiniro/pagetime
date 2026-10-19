@@ -42,7 +42,9 @@
     "active": "Gefiltert: {{domain}}",
     "clear": "Filter aufheben",
     "emptyTitle": "Keine aktive Zeit in diesem Diagramm",
-    "emptyDescription": "{{domain}} hat in diesem Diagramm keine aktive Zeit."
+    "emptyDescription": "{{domain}} hat in diesem Diagramm keine aktive Zeit.",
+    "emptyRankingTitle": "Keine Rangliste in diesem Zeitraum",
+    "emptyRankingDescription": "{{domain}} hat in diesem Zeitraum keine Einträge."
   },
   "chart": { "label": "Hauptdiagramm" },
   "trend": { "label": "Aktive Surfzeit pro Tag. {{days}}", "separator": "; ", "hours_one": "{{count}} Std.", "hours_other": "{{count}} Std." },

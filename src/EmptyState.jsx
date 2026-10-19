@@ -24,13 +24,13 @@ export function LedgerEmpty({ onOpenHow }) {
   />;
 }
 
-export function FilterEmpty({ domain, onClear, className = 'chart-empty' }) {
+export function FilterEmpty({ domain, onClear, className = 'chart-empty', title, description }) {
   const { t } = useTranslation();
   return <EmptyState
     className={className}
     status="filter-empty"
-    title={t('filter.emptyTitle')}
-    description={<><span className="block">{t('filter.active', { domain })}</span>{t('filter.emptyDescription', { domain })}</>}
+    title={title || t('filter.emptyTitle')}
+    description={description || t('filter.emptyDescription', { domain })}
     action={<Button variant="link" onClick={onClear}>{t('filter.clear')}</Button>}
   />;
 }

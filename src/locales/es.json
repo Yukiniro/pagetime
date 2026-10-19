@@ -44,7 +44,9 @@
     "active": "Filtrado: {{domain}}",
     "clear": "Quitar filtro",
     "emptyTitle": "No hay tiempo activo en este gráfico",
-    "emptyDescription": "{{domain}} no tiene tiempo activo en este gráfico."
+    "emptyDescription": "{{domain}} no tiene tiempo activo en este gráfico.",
+    "emptyRankingTitle": "No hay ranking en este periodo",
+    "emptyRankingDescription": "{{domain}} no tiene registros en este periodo."
   },
   "chart": { "label": "Gráfico principal" },
   "trend": { "label": "Tiempo diario de navegación activa. {{days}}", "separator": "; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },

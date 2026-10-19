@@ -53,7 +53,9 @@
     "active": "Фильтр: {{domain}}",
     "clear": "Сбросить фильтр",
     "emptyTitle": "На этом графике нет активного времени",
-    "emptyDescription": "У {{domain}} нет активного времени на этом графике."
+    "emptyDescription": "У {{domain}} нет активного времени на этом графике.",
+    "emptyRankingTitle": "В этом диапазоне нет рейтинга",
+    "emptyRankingDescription": "У {{domain}} нет записей в этом диапазоне."
   },
   "chart": { "label": "Основной график" },
   "trend": { "label": "Время активного просмотра по дням. {{days}}", "separator": "; ", "hours_one": "{{count}} ч", "hours_few": "{{count}} ч", "hours_many": "{{count}} ч", "hours_other": "{{count}} ч" },

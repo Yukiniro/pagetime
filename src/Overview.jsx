@@ -93,7 +93,7 @@ export function Overview({ todayStats, stats, weekDays = [], spans, hourRows, si
       </div>
     </section>
     <section className="rank-section" aria-label={t('ranking.title')}>
-      {!rows.length ? (filtered ? <FilterEmpty className="ledger-card chart-empty" domain={filterSite} onClear={() => onFilter('')} /> : <EmptyState className="ledger-card chart-empty" title={t('ranking.emptyTitle')} description={t('ranking.emptyDescription')} />) : <>
+      {!rows.length ? (filtered ? <FilterEmpty className="ledger-card chart-empty" domain={filterSite} onClear={() => onFilter('')} title={t('filter.emptyRankingTitle')} description={t('filter.emptyRankingDescription', { domain: filterSite })} /> : <EmptyState className="ledger-card chart-empty" title={t('ranking.emptyTitle')} description={t('ranking.emptyDescription')} />) : <>
         <div className="rank-grid">
           <div className="rank-card ledger-card">
             <div className="rank-card-head"><h2>{t('ranking.title')}</h2><p>{rangeLabel}</p></div>

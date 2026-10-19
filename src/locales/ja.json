@@ -40,7 +40,9 @@
     "active": "{{domain}} で絞り込み中",
     "clear": "絞り込みを解除",
     "emptyTitle": "このグラフにアクティブ時間はありません",
-    "emptyDescription": "{{domain}} のアクティブ時間はこのグラフにありません。"
+    "emptyDescription": "{{domain}} のアクティブ時間はこのグラフにありません。",
+    "emptyRankingTitle": "この範囲に順位はありません",
+    "emptyRankingDescription": "{{domain}} の記録はこの範囲にありません。"
   },
   "chart": { "label": "メインのグラフ" },
   "trend": { "label": "日別のアクティブな閲覧時間。{{days}}", "separator": "、", "hours_other": "{{count}} 時間" },

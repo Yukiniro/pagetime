@@ -59,12 +59,12 @@ export function App() {
   }
   useEffect(() => { act(); }, []);
   const shown = ready && view;
-  const overviewStatus = problem && !view ? 'error' : dashboardStatus({ view, pending: !ready || ledger.pending });
   const enabled = view?.enabled ?? true;
   const goRecords = (domain = '') => { setSite(domain); setSearch(domain); setPage('records'); };
   const openSite = (domain, event) => { detailTrigger.current = event.currentTarget; setSelected(domain); };
   const onFilter = domain => setFilterSite(current => toggleSiteFilter(current, domain));
   const problem = error || ledger.error;
+  const overviewStatus = problem && !view ? 'error' : dashboardStatus({ view, pending: !ready || ledger.pending });
   const errorText = t([`error.${problem}`, 'error.connect']);
   const languageName = languages.find(([code]) => code === i18n.resolvedLanguage)?.[1];
   const copy = timingCopy(settings);
