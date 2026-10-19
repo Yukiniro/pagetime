@@ -269,11 +269,11 @@ test('S25 idleSeconds is passed to setDetectionInterval and queryState; invalid 
   const h = await createHarness({ url: 'https://a.com/' });
   assert.equal(h.detectionIntervals.at(-1), 60);
   const saved = await h.message('settings', { settings: { schema: 1, idleSeconds: 300, countAudible: true } });
-  assert.deepEqual(saved.settings, { schema: 1, idleSeconds: 300, countAudible: true });
+  assert.deepEqual(saved.settings, { schema: 1, idleSeconds: 300, countAudible: true, ignored: [] });
   assert.equal(h.detectionIntervals.at(-1), 300);
   assert.equal(h.idleQueries.at(-1), 300);
   const fallback = await h.message('settings', { settings: { schema: 9, idleSeconds: 90, countAudible: 'yes' } });
-  assert.deepEqual(fallback.settings, { schema: 1, idleSeconds: 60, countAudible: true });
+  assert.deepEqual(fallback.settings, { schema: 1, idleSeconds: 60, countAudible: true, ignored: [] });
   assert.deepEqual((await h.browser.storage.local.get('settings')).settings, fallback.settings);
   assert.equal(h.detectionIntervals.includes(90), false);
   assert.equal(h.idleQueries.includes(90), false);
@@ -479,4 +479,78 @@ test('detail has no count cap inside 31 days; older spans and visits are pruned 
   assert.equal(stored.visits.length, 0);
   assert.deepEqual((await daysBetween(h.db, dateKey(old), dateKey(old))).map(day => [day.ms, day.visits]), [[60_000, 1]]);
   assert.equal(await h.db.hours.count(), 1);
+});
+
+const baseSettings = { schema: 1, idleSeconds: 60, countAudible: true };
+
+test('an ignored foreground site ends the previous span and records no time or visit', async () => {
+  const h = await createHarness({ url: 'https://a.com/' });
+  await h.message('settings', { settings: { ...baseSettings, ignored: ['b.com'] } });
+  await h.advance(10_000);
+  await h.navigate(1, 'https://b.com/secret');
+  await h.advance(8_000);
+  await h.navigate(1, 'https://mail.b.com/inbox');
+  await h.advance(4_000);
+  await h.navigate(1, 'https://a.com/back');
+  await h.advance(3_000);
+  const data = (await h.snapshot()).data;
+  assert.equal(ms(data, 'a.com'), 13_000);
+  assert.equal(ms(data, 'b.com'), 0);
+  assert.equal(ms(data, 'mail.b.com'), 0);
+  assert.equal(total(data), 13_000);
+  assert.equal(data.visits.filter(visit => visit.domain === 'b.com' || visit.domain === 'mail.b.com').length, 0);
+  assert.equal(data.visits.filter(visit => visit.domain === 'a.com').length, 1);
+});
+
+test('ignoring mail.example.com does not ignore example.com', async () => {
+  const h = await createHarness({ url: 'https://example.com/' });
+  await h.message('settings', { settings: { ...baseSettings, ignored: ['mail.example.com'] } });
+  await h.advance(5_000);
+  await h.navigate(1, 'https://mail.example.com/');
+  await h.advance(9_000);
+  await h.navigate(1, 'https://example.com/inbox');
+  await h.advance(2_000);
+  const data = (await h.snapshot()).data;
+  assert.equal(ms(data, 'example.com'), 7_000);
+  assert.equal(ms(data, 'mail.example.com'), 0);
+  assert.equal(data.visits.filter(visit => visit.domain === 'mail.example.com').length, 0);
+  assert.equal(data.visits.filter(visit => visit.domain === 'example.com').length, 1);
+});
+
+test('adding an ignore while that site is timing stops at the settings save and keeps history', async () => {
+  const h = await createHarness({ url: 'https://a.com/account' });
+  await h.advance(10_000);
+  await h.navigate(1, 'https://a.com/refresh');
+  await h.advance(4_000);
+  const before = await h.read();
+  assert.equal(ms(before, 'a.com'), 10_000);
+  assert.equal(before.visits.length, 1);
+  const saved = await h.message('settings', { settings: { ...baseSettings, ignored: ['https://A.com/path'] } });
+  assert.deepEqual(saved.settings.ignored, ['a.com']);
+  assert.equal(await h.cursor(), null);
+  const stopped = await h.read();
+  assert.equal(ms(stopped, 'a.com'), 14_000);
+  assert.deepEqual(stopped.visits, before.visits);
+  assert.equal(stopped.spans[0].domain, 'a.com');
+  await h.advance(20_000);
+  await h.fireAlarm();
+  const held = await h.read();
+  assert.equal(ms(held, 'a.com'), 14_000);
+  assert.deepEqual(held.visits, before.visits);
+  assert.deepEqual(held.spans, stopped.spans);
+  await h.message('settings', { settings: { ...baseSettings, ignored: [] } });
+  assert.equal((await h.cursor())?.domain, 'a.com');
+  await h.advance(5_000);
+  const resumed = await h.snapshot();
+  assert.equal(ms(resumed.data, 'a.com'), 19_000);
+  assert.deepEqual(resumed.data.visits, before.visits);
+});
+
+test('ignoring a parent stops a subdomain that is currently timing', async () => {
+  const h = await createHarness({ url: 'https://mail.a.com/' });
+  await h.advance(6_000);
+  await h.message('settings', { settings: { ...baseSettings, ignored: ['a.com'] } });
+  assert.equal(await h.cursor(), null);
+  await h.advance(10_000);
+  assert.equal(ms(await h.read(), 'mail.a.com'), 6_000);
 });

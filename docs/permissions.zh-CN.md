@@ -16,7 +16,7 @@
 
 ## `storage`
 
-用来把计时偏好放进 `chrome.storage.local` 的 `settings`，把写入失败标记放进同一处的 `ledgerError`，并把检查点所属的会话编号放进 `chrome.storage.session` 的 `session`。账本本身在扩展的 IndexedDB 数据库 `pagetime-ledger` 里，不需要权限。旧版本留在 `chrome.storage.local` 的 `data` 键不受影响。
+用来把计时偏好放进 `chrome.storage.local` 的 `settings`（其中 `ignored` 是用户输入的域名），把写入失败标记放进同一处的 `ledgerError`，并把检查点所属的会话编号放进 `chrome.storage.session` 的 `session`。账本本身在扩展的 IndexedDB 数据库 `pagetime-ledger` 里，不需要权限。旧版本留在 `chrome.storage.local` 的 `data` 键不受影响。
 
 能够读写本扩展自己的存储区。代码只用 local 和 session，不用 sync。不能读其他扩展的存储、网站 Cookie 或磁盘上的任意文件。不触发安装警告。
 

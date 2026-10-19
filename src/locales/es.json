@@ -73,6 +73,7 @@
     "method": { "title": "Cómo se mide", "description": "Cada carga o recarga de página cuenta como una visita; cambiar de pestaña o navegar dentro de una aplicación de una sola página no suma visitas.<br/>{{idle}} segundos sin actividad del sistema se consideran inactividad; el progreso se guarda cada {{checkpoint}} segundos.<br/>Conserva las visitas y sesiones activas durante {{days}} días; los totales diarios y por hora se mantienen hasta que los borres.", "audible": "Una pestaña que reproduce sonido sin silenciar no cuenta como inactividad." },
     "audible": { "title": "Seguir contando mientras hay audio", "description": "Si la pestaña activa de la ventana enfocada reproduce sonido sin silenciar, el tiempo de inactividad también cuenta. El conteo se detiene en cuanto el sonido para o la pestaña se silencia." },
     "idle": { "title": "Umbral de inactividad", "description": "Cuánto tiempo sin teclado ni ratón debe pasar para considerar inactivo este navegador.", "label": "Umbral de inactividad: {{duration}}", "option_one": "{{count}} minuto", "option_many": "{{count}} minutos", "option_other": "{{count}} minutos" },
+    "ignored": { "title": "Sitios ignorados", "description": "Estos hosts y sus subdominios no se miden y las visitas no se cuentan, igual que una página interna del navegador. example.com también coincide con a.example.com; mail.example.com no coincide con example.com. Los registros existentes siguen en el libro y no se ocultan.", "input": "Host a ignorar", "placeholder": "example.com", "add": "Añadir", "remove": "Quitar {{domain}}", "emptyTitle": "No hay sitios ignorados", "emptyDescription": "Añade un host para dejar de registrarlo a partir de ahora.", "error": "Escribe un host como example.com. Se quitan el protocolo, la ruta y el puerto. No se permiten espacios, y un nombre sin punto solo se acepta para localhost.", "limit": "Puedes ignorar hasta {{count}} hosts." },
     "clear": { "title": "Borrar todos los registros", "description": "Elimina los registros que PageTime ha guardado en este dispositivo. No se puede deshacer.", "button": "Borrar datos" }
   },
   "detail": {
@@ -84,6 +85,9 @@
     "visits_other": "{{count}}",
     "todaySessions": "Sesiones activas de hoy",
     "noSessions": "Hoy no hay sesiones activas",
+    "ignore": "Dejar de registrar este sitio",
+    "ignored": "Este sitio ya está ignorado",
+    "ignoreConfirm": { "title": "¿Dejar de registrar este sitio?", "description": "{{domain}} y sus subdominios dejarán de medirse y de contar como visitas. Los registros existentes no se eliminan.", "confirm": "Dejar de registrar" },
     "viewVisits": "Ver visitas"
   },
   "confirm": {
@@ -123,7 +127,8 @@
       "paused": "Mientras la grabación está en pausa",
       "gap_one": "Si entre comprobaciones pasa más de {{count}} segundo, ese intervalo cuenta como máximo {{count}} segundo (por ejemplo, si el sistema está suspendido)",
       "gap_many": "Si entre comprobaciones pasan más de {{count}} segundos, ese intervalo cuenta como máximo {{count}} segundos (por ejemplo, si el sistema está suspendido)",
-      "gap_other": "Si entre comprobaciones pasan más de {{count}} segundos, ese intervalo cuenta como máximo {{count}} segundos (por ejemplo, si el sistema está suspendido)"
+      "gap_other": "Si entre comprobaciones pasan más de {{count}} segundos, ese intervalo cuenta como máximo {{count}} segundos (por ejemplo, si el sistema está suspendido)",
+      "ignored": "Sitios que elegiste ignorar ({{count}}) y sus subdominios. La entrada example.com coincide con ese host y cada subdominio; la entrada mail.example.com no coincide con example.com. Los registros existentes no se eliminan ni se ocultan."
     },
     "visits": {
       "title": "Cómo se cuentan las visitas",
