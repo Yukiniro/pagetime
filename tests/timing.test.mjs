@@ -123,8 +123,8 @@ async function flicker(h, windowId, gapMs) {
 }
 
 test('S6 known behavior: a stale focused flag ignores WINDOW_ID_NONE (issue #6 risk 4)', async () => {
-  // onFocusChanged does not trust the event id. If getAll() still reports the
-  // previous window focused, timing continues on that window.
+  // Accepted on some platforms: onFocusChanged does not trust the event id. If getAll() still reports the
+  // previous window focused, timing continues on that window. See docs/timing-coverage.md (S6).
   const h = await createHarness({ url: 'https://a.com/' });
   await h.advance(5_000);
   h.browser.windows.onFocusChanged.fire(WINDOW_ID_NONE);
@@ -167,7 +167,8 @@ test('S7 a bounds event resumes a restored window even if getAll() still says mi
 });
 
 test('S8 known behavior: a focused devtools window stops timing (issue #6 risk 3)', async () => {
-  // windows.getAll() omits devtools, so a focused inspector looks like no focused window.
+  // Accepted product behavior: windows.getAll() omits devtools, so a focused inspector looks like no focused window.
+  // See docs/timing-coverage.md (S8).
   const h = await createHarness({ url: 'https://a.com/' });
   await h.advance(5_000);
   const devtools = h.openWindow({ type: 'devtools', url: 'devtools://devtools/bundled/inspector.html' });
@@ -348,7 +349,8 @@ test('S15 browser restart keeps flushed spans and does not credit the time it wa
 });
 
 test('S16 known behavior: extension reload drops the unflushed tail, at most one checkpoint (issue #6 risk 5)', async () => {
-  // storage.session is cleared on reload/update. The cursor is not flushed first.
+  // Accepted product behavior: storage.session is cleared on reload/update; cursor is not flushed first.
+  // See docs/timing-coverage.md (S16).
   const h = await createHarness({ url: 'https://a.com/' });
   await h.advance(20_000);
   await h.fireAlarm();

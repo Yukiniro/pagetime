@@ -1,5 +1,7 @@
 # 计时手动验证清单
 
+S1–S19 与自动化用例的对照表见 **[timing-coverage.md](./timing-coverage.md)**（A / B / 手动三层、接受现状说明）。
+
 每次发布前在 **macOS** 和 **Windows** 上各走一遍。Linux 上能自动跑的部分不要靠这份清单代替：
 
 - A 层：`npm test`（假浏览器，场景 S1–S25）
