@@ -29,11 +29,16 @@ function RankRows({ rows, metric, filterSite, onFilter, onOpen }) {
       const share = Math.round(value * 100 / max);
       const icon = iconForSite(row.domain, row.hosts) || row.domain;
       const active = filterSite === row.domain;
+      const time = duration(row.ms);
+      const visits = t('records.count', { count: row.visits });
       return <li key={row.domain} className="rank-line">
         <Button variant="ghost" className={active ? 'rank-row is-filtered' : 'rank-row'} aria-pressed={active} aria-label={t('ranking.filterSite', { domain: row.domain })} onClick={() => onFilter(row.domain)}>
           <span className="rank-bar" style={{ width: `${share}%` }} aria-hidden="true" />
           <span className="rank-main"><SiteIcon domain={icon} site={icon} /><span>{row.domain}</span></span>
-          <span className="rank-value">{metric === 'visits' ? row.visits : duration(row.ms)}</span>
+          <span className="rank-metrics">
+            <span className="rank-value">{metric === 'visits' ? row.visits : time}</span>
+            <span className="rank-secondary">{metric === 'visits' ? time : visits}</span>
+          </span>
         </Button>
         <Button variant="ghost" size="icon-sm" className="rank-detail" aria-label={t('ranking.openDetail', { domain: row.domain })} onClick={event => onOpen(row.domain, event)}><CaretRight /></Button>
       </li>;
