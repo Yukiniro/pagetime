@@ -9,7 +9,7 @@
     "records": { "title": "Histórico de visitas", "subtitle": "Cada visita, registrada" },
     "settings": { "title": "Configurações", "subtitle": "Controle seus dados e a forma de registro" }
   },
-  "range": { "today": "Hoje", "lastDays_one": "Último {{count}} dia", "lastDays_many": "Últimos {{count}} dias", "lastDays_other": "Últimos {{count}} dias", "label": "Período: {{range}}" },
+  "range": { "today": "Hoje", "last7": "Últimos 7 dias", "last30": "Últimos 30 dias", "custom": "Personalizado", "start": "Data inicial", "end": "Data final", "apply": "Aplicar", "cancel": "Cancelar", "invalid": "A data final não pode ser anterior à data inicial", "lastDays_one": "Último {{count}} dia", "lastDays_many": "Últimos {{count}} dias", "lastDays_other": "Últimos {{count}} dias", "label": "Período: {{range}}" },
   "error": {
     "title": "Não foi possível carregar ou salvar os dados",
     "retry": "Tentar novamente",
@@ -39,7 +39,7 @@
     "sites_many": "<b>{{count}}</b> sites",
     "sites_other": "<b>{{count}}</b> sites"
   },
-  "kpi": { "label": "Totais de hoje", "sites": "Sites" },
+  "kpi": { "label": "Totais de {{range}}", "sites": "Sites" },
   "filter": {
     "active": "Filtrado: {{domain}}",
     "clear": "Limpar filtro",

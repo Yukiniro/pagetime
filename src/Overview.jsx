@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight, CaretDown, CaretRight, Info } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import { colorOf, iconForSite } from './data.js';
 import { Heatmap, Timeline, Trend } from './Charts.jsx';
 import { SiteIcon } from './SiteIcon.jsx';
 import { duration, formatDate } from './i18n.js';
+import { addDays } from './model.mjs';
 import { focusSpans, focusSummary, timelineHasActivity, trendHasActivity } from './site-filter.mjs';
 
 const RANK_LIMIT = 8;
@@ -41,31 +42,34 @@ function RankRows({ rows, metric, filterSite, onFilter, onOpen }) {
   </ol>;
 }
 
-export function Overview({ todayStats, stats, weekDays = [], spans, hourRows, since, start, end, today, now, rangeLabel, filterSite = '', onFilter, openSite, openHow, isDark = false }) {
+export function Overview({ todayStats, stats, trendDays = [], spans, hourRows, since, start, end, today, now, rangeLabel, chartMode = 'timeline', trendLabel, filterSite = '', onFilter, openSite, openHow, isDark = false }) {
   const { t } = useTranslation();
-  const [chart, setChart] = useState('timeline');
+  const [chart, setChart] = useState(chartMode);
   const [metric, setMetric] = useState('visits');
   const [expanded, setExpanded] = useState(false);
   const [hoursOpen, setHoursOpen] = useState(false);
+  useEffect(() => { setChart(chartMode); }, [chartMode, start, end]);
   const rows = stats?.rows ?? [];
   const limit = expanded ? rows.length : RANK_LIMIT;
   const timeRows = rows.slice(0, limit);
   const rightRows = (metric === 'visits' ? byVisits(rows) : rows).slice(0, limit);
-  const kpi = focusSummary(todayStats, filterSite);
+  const kpi = focusSummary(stats, filterSite);
+  const todayKpi = focusSummary(todayStats, filterSite);
   const chartSpans = focusSpans(spans, filterSite);
   const filtered = Boolean(filterSite);
-  const showTimeline = !filtered || timelineHasActivity(chartSpans, today, end);
-  const showTrend = !filtered || trendHasActivity(weekDays);
-  const legend = (kpi?.rows ?? []).filter(row => row.ms).slice(0, 5);
-  const tabs = [['timeline', t('timeline.title')], ['trend', t('range.lastDays', { count: 7 })]];
+  const showTimeline = !filtered || timelineHasActivity(chartSpans, today, addDays(today, 1));
+  const showTrend = !filtered || trendHasActivity(trendDays);
+  const legend = (todayKpi?.rows ?? []).filter(row => row.ms).slice(0, 5);
+  const trendTitle = trendLabel || t('range.last7');
+  const tabs = [['timeline', t('timeline.title')], ['trend', trendTitle]];
 
   return <div className="contents" data-status="ready">
     {filtered && <div className="filter-bar" role="status">
       <div className="filter-chip"><span>{t('filter.active', { domain: filterSite })}</span><Button variant="ghost" size="sm" onClick={() => onFilter('')}>{t('filter.clear')}</Button></div>
     </div>}
-    <section className="kpi ledger-card" aria-label={t('kpi.label')}>
+    <section className="kpi ledger-card" aria-label={t('kpi.label', { range: rangeLabel })}>
       <div className="kpi-item primary">
-        <div className="kpi-label"><span>{t('ranking.activeTime')}</span><span className="kpi-today">{t('range.today')}</span><Button variant="ghost" size="icon-sm" aria-label={t('howItWorks.infoButton')} onClick={openHow}><Info /></Button></div>
+        <div className="kpi-label"><span>{t('ranking.activeTime')}</span><span className="kpi-today">{rangeLabel}</span><Button variant="ghost" size="icon-sm" aria-label={t('howItWorks.infoButton')} onClick={openHow}><Info /></Button></div>
         <div className="kpi-value">{duration(kpi.ms)}</div>
       </div>
       <div className="kpi-item">
@@ -79,17 +83,17 @@ export function Overview({ todayStats, stats, weekDays = [], spans, hourRows, si
     </section>
     <section className="chart-card ledger-card" aria-label={t('chart.label')}>
       <div className="chart-head">
-        <h2>{chart === 'timeline' ? t('timeline.title') : t('range.lastDays', { count: 7 })}</h2>
+        <h2>{chart === 'timeline' ? t('timeline.title') : trendTitle}</h2>
         <div className="chart-tabs" role="tablist" aria-label={t('chart.label')}>
           {tabs.map(([key, label]) => <Button key={key} variant="ghost" size="sm" role="tab" id={`chart-tab-${key}`} className="chart-tab" aria-selected={chart === key} aria-controls="primary-chart" onClick={() => setChart(key)}>{label}</Button>)}
         </div>
       </div>
       <div id="primary-chart" role="tabpanel" aria-labelledby={`chart-tab-${chart}`} className="chart-panel">
         {chart === 'timeline' ? (showTimeline ? <>
-          <p className="chart-caption">{formatDate(now, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(kpi.ms) })}</p>
+          <p className="chart-caption">{formatDate(now, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(todayKpi.ms) })}</p>
           <Timeline spans={chartSpans} className="primary-timeline" lane={36} isDark={isDark} />
           <div className="legend">{legend.map(row => <Button variant="ghost" size="xs" key={row.domain} onClick={event => openSite(row.domain, event)}><i style={{ background: colorOf(row.domain) }} />{row.domain}</Button>)}<span className="idle-legend"><i />{t('timeline.idle')}</span></div>
-        </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />) : (showTrend ? <Trend days={weekDays} className="primary-trend" isDark={isDark} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
+        </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />) : (showTrend ? <Trend days={trendDays} className="primary-trend" isDark={isDark} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
       </div>
     </section>
     <section className="rank-section" aria-label={t('ranking.title')}>

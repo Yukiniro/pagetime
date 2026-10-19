@@ -9,7 +9,7 @@
     "records": { "title": "訪問履歴", "subtitle": "すべての訪問をたどれます" },
     "settings": { "title": "設定", "subtitle": "データと記録方法を管理します" }
   },
-  "range": { "today": "今日", "lastDays_other": "過去 {{count}} 日間", "label": "集計期間：{{range}}" },
+  "range": { "today": "今日", "last7": "過去 7 日間", "last30": "過去 30 日間", "custom": "カスタム", "start": "開始日", "end": "終了日", "apply": "適用", "cancel": "キャンセル", "invalid": "終了日は開始日以降にしてください", "lastDays_other": "過去 {{count}} 日間", "label": "集計期間：{{range}}" },
   "error": {
     "title": "読み込みまたは保存に失敗しました",
     "retry": "再試行",
@@ -35,7 +35,7 @@
     "visits_other": "<b>{{count}}</b> 回訪問",
     "sites_other": "<b>{{count}}</b> サイト"
   },
-  "kpi": { "label": "今日の合計", "sites": "サイト数" },
+  "kpi": { "label": "{{range}}の合計", "sites": "サイト数" },
   "filter": {
     "active": "{{domain}} で絞り込み中",
     "clear": "絞り込みを解除",

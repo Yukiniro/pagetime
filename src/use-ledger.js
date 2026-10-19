@@ -4,6 +4,7 @@ import { isExtension, watchLedgerError } from './data.js';
 import { daysBetween, hoursBetween, openLedger, readDomains, readHead, recentVisits, siteDays, siteHours, spansBetween } from './ledger.mjs';
 import { siteSeries, siteSeriesFromSnapshot, VISIT_LIST_LIMIT, daySummary, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
 import { addDays, dateKey, openCredit } from './model.mjs';
+import { trendWindow } from './range.mjs';
 import { siteOf } from './site.mjs';
 
 let db;
@@ -25,21 +26,22 @@ function useExtensionLedger(range) {
       const now = Date.now();
       const displayFrom = dateKey(range.start);
       const displayTo = dateKey(addDays(range.end, -1));
-      // The trend tab is always the last 7 local days, even when the selected range is today.
-      // Those extra day rows stay out of the main view, so rankings and visits keep the selected range.
+      // Today keeps a last-7-days trend tab. Any other range charts that range.
+      // Extra trend rows stay out of the main view, so rankings and visits keep the selected range.
       // `focus` limits the bars to one merged site. It does not change the visit list or ranking totals.
-      const weekStart = addDays(range.today, -6);
-      const fetchFrom = dateKey(Math.min(range.start, weekStart));
+      const trend = trendWindow(range, range.today);
+      const fetchFrom = dateKey(Math.min(range.start, trend.start, range.today));
+      const fetchTo = dateKey(Math.max(addDays(range.end, -1), addDays(trend.end, -1), range.today));
       const [allDays, hours, spans, visits] = await Promise.all([
-        daysBetween(db, fetchFrom, displayTo),
+        daysBetween(db, fetchFrom, fetchTo),
         hoursBetween(db, displayFrom, displayTo),
-        spansBetween(db, range.today, range.end),
+        spansBetween(db, range.today, addDays(range.today, 1)),
         recentVisits(db, range.start, range.end, ids, VISIT_LIST_LIMIT),
       ]);
       const rows = {
         state: head.state,
         domains,
-        days: allDays.filter(row => row.date >= displayFrom && row.date <= displayTo),
+        days: allDays,
         hours,
         spans,
         visits,
@@ -51,14 +53,14 @@ function useExtensionLedger(range) {
         Promise.all(detailIds.map(id => siteDays(db, id, displayFrom, displayTo))),
         Promise.all(detailIds.map(id => siteHours(db, id, displayFrom, displayTo))),
       ]) : [[], []];
-      const weekDays = viewFromLedger({
+      const trendDays = viewFromLedger({
         ...rows,
         days: allDays,
         hours: [],
         visits: [],
       }, {
-        start: weekStart,
-        end: addDays(range.today, 1),
+        start: trend.start,
+        end: trend.end,
         today: range.today,
         search: '',
         site: range.focus || '',
@@ -68,7 +70,7 @@ function useExtensionLedger(range) {
       return {
         rangeKey,
         view: viewFromLedger(rows, { ...range, now }),
-        weekDays,
+        trendDays,
         detail: range.detail ? siteSeries({
           domains, days: detailDays.flat(), hours: detailHours.flat(), state: head.state, cursor, lastEnd: head.lastEnd,
         }, { site: range.detail, siteMerge: range.siteMerge, start: range.start, end: range.end, now }) : null,
@@ -82,7 +84,7 @@ function useExtensionLedger(range) {
   const settled = result?.rangeKey === rangeKey;
   return {
     view: result?.view,
-    weekDays: result?.weekDays,
+    trendDays: result?.trendDays,
     detail: result?.detail ?? null,
     detailSite: result?.detailSite ?? '',
     pending: !settled,
@@ -95,11 +97,10 @@ function useExtensionLedger(range) {
 function usePreviewLedger(range) {
   const [data, setData] = useState(null);
   const now = Date.now();
-  const weekStart = addDays(range.today, -6);
-  const weekEnd = addDays(range.today, 1);
+  const trend = trendWindow(range, range.today);
   return {
     view: data ? viewFromSnapshot(data, range) : undefined,
-    weekDays: data ? viewFromSnapshot(data, { start: weekStart, end: weekEnd, today: range.today, site: range.focus || '', siteMerge: range.siteMerge }).days : undefined,
+    trendDays: data ? viewFromSnapshot(data, { start: trend.start, end: trend.end, today: range.today, site: range.focus || '', siteMerge: range.siteMerge }).days : undefined,
     detail: data && range.detail ? siteSeriesFromSnapshot(data, { start: range.start, end: range.end, site: range.detail, siteMerge: range.siteMerge, now }) : null,
     detailSite: range.detail || '',
     pending: !data,

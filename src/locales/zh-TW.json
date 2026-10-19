@@ -9,7 +9,7 @@
     "records": { "title": "造訪紀錄", "subtitle": "每一次造訪，都有跡可循" },
     "settings": { "title": "設定", "subtitle": "掌握自己的資料與記錄方式" }
   },
-  "range": { "today": "今天", "lastDays_other": "最近 {{count}} 天", "label": "統計時間範圍：{{range}}" },
+  "range": { "today": "今天", "last7": "近 7 天", "last30": "近 30 天", "custom": "自訂", "start": "開始日期", "end": "結束日期", "apply": "套用", "cancel": "取消", "invalid": "結束日期不能早於開始日期", "lastDays_other": "最近 {{count}} 天", "label": "統計時間範圍：{{range}}" },
   "error": {
     "title": "讀取或儲存失敗",
     "retry": "重試",
@@ -35,7 +35,7 @@
     "visits_other": "造訪 <b>{{count}}</b> 次",
     "sites_other": "<b>{{count}}</b> 個網站"
   },
-  "kpi": { "label": "今日摘要", "sites": "網站數" },
+  "kpi": { "label": "{{range}}彙總", "sites": "網站數" },
   "filter": {
     "active": "已篩選：{{domain}}",
     "clear": "清除篩選",

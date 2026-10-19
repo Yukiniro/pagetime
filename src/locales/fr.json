@@ -9,7 +9,7 @@
     "records": { "title": "Historique des visites", "subtitle": "Chaque visite, retracée" },
     "settings": { "title": "Paramètres", "subtitle": "Gérez vos données et leur mode d’enregistrement" }
   },
-  "range": { "today": "Aujourd’hui", "lastDays_one": "{{count}} dernier jour", "lastDays_many": "{{count}} derniers jours", "lastDays_other": "{{count}} derniers jours", "label": "Période : {{range}}" },
+  "range": { "today": "Aujourd’hui", "last7": "7 derniers jours", "last30": "30 derniers jours", "custom": "Personnalisé", "start": "Date de début", "end": "Date de fin", "apply": "Appliquer", "cancel": "Annuler", "invalid": "La date de fin doit être le même jour ou un jour ultérieur", "lastDays_one": "{{count}} dernier jour", "lastDays_many": "{{count}} derniers jours", "lastDays_other": "{{count}} derniers jours", "label": "Période : {{range}}" },
   "error": {
     "title": "Impossible de charger ou d’enregistrer les données",
     "retry": "Réessayer",
@@ -39,7 +39,7 @@
     "sites_many": "<b>{{count}}</b> sites",
     "sites_other": "<b>{{count}}</b> sites"
   },
-  "kpi": { "label": "Totaux du jour", "sites": "Sites" },
+  "kpi": { "label": "Totaux pour {{range}}", "sites": "Sites" },
   "filter": {
     "active": "Filtré : {{domain}}",
     "clear": "Effacer le filtre",
