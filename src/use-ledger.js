@@ -25,6 +25,7 @@ function useExtensionLedger(range) {
       const displayTo = dateKey(addDays(range.end, -1));
       // The trend tab is always the last 7 local days, even when the selected range is today.
       // Those extra day rows stay out of the main view, so rankings and visits keep the selected range.
+      // `focus` limits the bars to one merged site. It does not change the visit list or ranking totals.
       const weekStart = addDays(range.today, -6);
       const fetchFrom = dateKey(Math.min(range.start, weekStart));
       const [allDays, hours, spans, visits] = await Promise.all([
@@ -58,7 +59,7 @@ function useExtensionLedger(range) {
         end: addDays(range.today, 1),
         today: range.today,
         search: '',
-        site: '',
+        site: range.focus || '',
         siteMerge: range.siteMerge,
         now,
       }).days;
@@ -74,7 +75,7 @@ function useExtensionLedger(range) {
       console.error('PageTime could not read the ledger', error);
       return { error: 'read' };
     }
-  }, [range.start, range.end, range.today, range.search, range.site, range.siteMerge, range.detail, attempt]);
+  }, [range.start, range.end, range.today, range.search, range.site, range.siteMerge, range.detail, range.focus, attempt]);
   return {
     view: result?.view,
     weekDays: result?.weekDays,
@@ -93,7 +94,7 @@ function usePreviewLedger(range) {
   const weekEnd = addDays(range.today, 1);
   return {
     view: data && viewFromSnapshot(data, range),
-    weekDays: data ? viewFromSnapshot(data, { start: weekStart, end: weekEnd, today: range.today, siteMerge: range.siteMerge }).days : undefined,
+    weekDays: data ? viewFromSnapshot(data, { start: weekStart, end: weekEnd, today: range.today, site: range.focus || '', siteMerge: range.siteMerge }).days : undefined,
     detail: data && range.detail ? siteSeriesFromSnapshot(data, { start: range.start, end: range.end, site: range.detail, siteMerge: range.siteMerge, now }) : null,
     detailSite: range.detail || '',
     error: undefined,

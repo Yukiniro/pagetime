@@ -32,6 +32,12 @@
     "sites_other": "<b>{{count}}</b> 個網站"
   },
   "kpi": { "label": "今日摘要", "sites": "網站數" },
+  "filter": {
+    "active": "已篩選：{{domain}}",
+    "clear": "清除篩選",
+    "emptyTitle": "這個網站沒有記錄",
+    "emptyDescription": "目前範圍內沒有 {{domain}} 的活躍記錄。"
+  },
   "chart": { "label": "主圖" },
   "trend": { "label": "每日活躍瀏覽時長。{{days}}", "separator": "；", "hours_other": "{{count}} 小時" },
   "timeline": {
@@ -64,7 +70,9 @@
     "emptyDescription": "造訪一個網頁後，紀錄會自動出現在這裡。",
     "collapse": "收合清單",
     "showAll_other": "查看全部 {{count}} 個網站",
-    "details": "查看網站詳情"
+    "details": "查看網站詳情",
+    "filterSite": "依 {{domain}} 篩選",
+    "openDetail": "查看 {{domain}} 的詳情"
   },
   "records": {
     "search": "搜尋網站",

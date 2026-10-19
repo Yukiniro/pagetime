@@ -45,6 +45,12 @@
     "sites_other": "<b>{{count}}</b> сайта"
   },
   "kpi": { "label": "Итоги за сегодня", "sites": "Сайты" },
+  "filter": {
+    "active": "Фильтр: {{domain}}",
+    "clear": "Сбросить фильтр",
+    "emptyTitle": "Нет активности для этого сайта",
+    "emptyDescription": "В этом диапазоне нет записей для {{domain}}."
+  },
   "chart": { "label": "Основной график" },
   "trend": { "label": "Время активного просмотра по дням. {{days}}", "separator": "; ", "hours_one": "{{count}} ч", "hours_few": "{{count}} ч", "hours_many": "{{count}} ч", "hours_other": "{{count}} ч" },
   "timeline": {
@@ -86,7 +92,9 @@
     "showAll_few": "Показать все {{count}} сайта",
     "showAll_many": "Показать все {{count}} сайтов",
     "showAll_other": "Показать все {{count}} сайта",
-    "details": "Подробнее о сайте"
+    "details": "Подробнее о сайте",
+    "filterSite": "Фильтр по {{domain}}",
+    "openDetail": "Подробности {{domain}}"
   },
   "records": {
     "search": "Поиск сайтов",

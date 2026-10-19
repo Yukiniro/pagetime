@@ -36,6 +36,12 @@
     "sites_other": "<b>{{count}}</b> sites"
   },
   "kpi": { "label": "Totais de hoje", "sites": "Sites" },
+  "filter": {
+    "active": "Filtrado: {{domain}}",
+    "clear": "Limpar filtro",
+    "emptyTitle": "Nenhuma atividade neste site",
+    "emptyDescription": "Não há registros de {{domain}} neste período."
+  },
   "chart": { "label": "Gráfico principal" },
   "trend": { "label": "Tempo diário de navegação ativa. {{days}}", "separator": "; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },
   "timeline": {
@@ -74,7 +80,9 @@
     "showAll_one": "Ver {{count}} site",
     "showAll_many": "Ver todos os {{count}} sites",
     "showAll_other": "Ver todos os {{count}} sites",
-    "details": "Ver detalhes do site"
+    "details": "Ver detalhes do site",
+    "filterSite": "Filtrar por {{domain}}",
+    "openDetail": "Detalhes de {{domain}}"
   },
   "records": {
     "search": "Pesquisar sites",

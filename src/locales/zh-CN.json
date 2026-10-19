@@ -32,6 +32,12 @@
     "sites_other": "<b>{{count}}</b> 个站点"
   },
   "kpi": { "label": "今日汇总", "sites": "站点数" },
+  "filter": {
+    "active": "已过滤：{{domain}}",
+    "clear": "清除过滤",
+    "emptyTitle": "这个站点没有记录",
+    "emptyDescription": "当前范围内没有 {{domain}} 的活跃记录。"
+  },
   "chart": { "label": "主图" },
   "trend": { "label": "每日活跃浏览时长。{{days}}", "separator": "；", "hours_other": "{{count}} 小时" },
   "timeline": {
@@ -64,7 +70,9 @@
     "emptyDescription": "访问一个网页后，记录会自动出现在这里。",
     "collapse": "收起列表",
     "showAll_other": "查看全部 {{count}} 个站点",
-    "details": "查看站点详情"
+    "details": "查看站点详情",
+    "filterSite": "按 {{domain}} 过滤",
+    "openDetail": "查看 {{domain}} 的详情"
   },
   "records": {
     "search": "搜索站点",

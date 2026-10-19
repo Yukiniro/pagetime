@@ -34,6 +34,12 @@
     "sites_other": "<b>{{count}}</b> Websites"
   },
   "kpi": { "label": "Heutige Summen", "sites": "Websites" },
+  "filter": {
+    "active": "Gefiltert: {{domain}}",
+    "clear": "Filter aufheben",
+    "emptyTitle": "Keine Aktivität für diese Website",
+    "emptyDescription": "In diesem Zeitraum gibt es keine Aufzeichnung für {{domain}}."
+  },
   "chart": { "label": "Hauptdiagramm" },
   "trend": { "label": "Aktive Surfzeit pro Tag. {{days}}", "separator": "; ", "hours_one": "{{count}} Std.", "hours_other": "{{count}} Std." },
   "timeline": {
@@ -69,7 +75,9 @@
     "collapse": "Weniger anzeigen",
     "showAll_one": "{{count}} Website anzeigen",
     "showAll_other": "Alle {{count}} Websites anzeigen",
-    "details": "Website-Details"
+    "details": "Website-Details",
+    "filterSite": "Nach {{domain}} filtern",
+    "openDetail": "Details zu {{domain}}"
   },
   "records": {
     "search": "Websites suchen",

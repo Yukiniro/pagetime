@@ -4,7 +4,9 @@ import { siteOf } from './site.mjs';
 export const VISIT_LIST_LIMIT = 200;
 
 // Both sources produce the same view for a range: { start, end, today } are local midnights, `search` is lower case.
-// `site` is an exact merged-site filter. `siteMerge` only changes grouping; rows passed in stay raw hostnames.
+// `site` is an exact merged-site filter for the visit list and for trend day totals.
+// Stats, spans, and hour rows stay complete, so a site focus can narrow KPI and the timeline
+// without hiding ranking rows or the site-detail totals. Hour-cell filtering is not applied.
 
 const keyFor = siteMerge => domain => siteOf(domain, siteMerge);
 const matches = (domain, search, site, keyOf) => site ? keyOf(domain) === site : !search || domain.includes(search);
@@ -39,12 +41,16 @@ export function daySummary({ domains, days, segment = null, date, siteMerge = 'p
 export function viewFromSnapshot(data, { start, end, today, search = '', site = '', siteMerge = 'prefix', day = '' }) {
   const keyOf = keyFor(siteMerge);
   const visits = data.visits.filter(visit => visit.at >= start && visit.at < end && matches(visit.domain, search, site, keyOf)).sort((a, b) => b.at - a.at);
+  const trendData = site ? {
+    visits: data.visits.filter(visit => keyOf(visit.domain) === site),
+    spans: data.spans.filter(span => keyOf(span.domain) === site),
+  } : data;
   return {
     enabled: data.enabled,
     since: data.since,
     stats: summarize(data, start, end, keyOf),
     todayStats: summarize(data, today, end, keyOf),
-    days: daily(data, start, end).map(({ at, ms }) => ({ at, ms, recorded: at >= midnight(data.since) })),
+    days: daily(trendData, start, end).map(({ at, ms }) => ({ at, ms, recorded: at >= midnight(data.since) })),
     hourRows: data.spans.flatMap(span => hourPieces(Math.max(span.start, start), Math.min(span.end, end))),
     spans: data.spans.filter(span => span.end > today && span.start < end).map(span => ({ ...span, site: keyOf(span.domain) })),
     visits: visits.slice(0, VISIT_LIST_LIMIT).map(visit => ({ domain: visit.domain, site: keyOf(visit.domain), at: visit.at })),
@@ -62,13 +68,14 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
   const entries = [];
   const todayEntries = [];
   const perDay = new Map();
+  const includeInTrend = domain => !site || keyOf(domain) === site;
   let visitCount = 0;
   for (const row of days) {
     const domain = host.get(row.domainId);
     if (!domain) continue;
     entries.push({ domain, ms: row.ms, visits: row.visits });
     if (row.date === todayKey) todayEntries.push({ domain, ms: row.ms, visits: row.visits });
-    perDay.set(row.date, (perDay.get(row.date) ?? 0) + row.ms);
+    if (includeInTrend(domain)) perDay.set(row.date, (perDay.get(row.date) ?? 0) + row.ms);
     if (matches(domain, search, site, keyOf)) visitCount += row.visits;
   }
   const enabled = state?.enabled ?? true;
@@ -82,7 +89,7 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
     for (let at = midnight(from); at < to; at = addDays(at, 1)) {
       const piece = overlapMs(segment, Math.max(from, at), Math.min(to, addDays(at, 1)));
       if (!piece) continue;
-      perDay.set(dateKey(at), (perDay.get(dateKey(at)) ?? 0) + piece);
+      if (includeInTrend(segment.domain)) perDay.set(dateKey(at), (perDay.get(dateKey(at)) ?? 0) + piece);
       if (dateKey(at) === todayKey) todayEntries.push({ domain: segment.domain, ms: piece, visits: 0 });
     }
   }
