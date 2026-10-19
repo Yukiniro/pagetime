@@ -54,7 +54,7 @@ export function Heatmap({rows,since,start,end,today}){
   const item=cell=>{const [from,to]=hourRange(cell.hour);return t('heatmap.item',{weekday:weekdayName(cell.weekday,'long'),from,to,duration:duration(cell.average),days:t('heatmap.days',{count:cell.days})});};
   const top=matrix.cells.filter(cell=>cell.ms>0).sort((a,b)=>b.average-a.average||a.row-b.row||a.hour-b.hour).slice(0,3);
   const peak=matrix.cells.reduce((max,cell)=>Math.max(max,cell.average),0);
-  const option={animation:false,textStyle:{fontFamily:getComputedStyle(document.documentElement).fontFamily},grid:{left:4,right:8,top:8,bottom:4,containLabel:true},
+  const option={animation:false,textStyle:{fontFamily:getComputedStyle(document.documentElement).fontFamily},grid:{left:4,right:8,top:8,bottom:18,containLabel:true},
     tooltip:{trigger:'item',renderMode:'richText',formatter:params=>item(matrix.cells[params.value[1]*24+params.value[0]])},
     visualMap:{type:'continuous',min:0,max:peak||1,dimension:2,seriesIndex:0,show:false,inRange:{color:['#e4ecf8','#2875ff']}},
     xAxis:{type:'category',data:Array.from({length:24},(_,hour)=>String(hour)),axisTick:{show:false},axisLine:{lineStyle:{color:'#dfe6f2'}},axisLabel:{color:'#64748b',fontSize:11,interval:2},splitLine:{show:false}},
