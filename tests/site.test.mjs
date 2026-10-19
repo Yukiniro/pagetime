@@ -248,6 +248,10 @@ test('site daily bars and the 24 hour bars equal the detail header for merged ho
   assert.equal(youtube.header, 9_000_000);
   assert.equal(sum(youtube.series.days), youtube.header);
   assert.equal(sum(youtube.series.hours), youtube.header);
+  const overview = viewFromLedger({
+    state: head.state, domains, days, spans: [], visits: [],
+  }, { start, end, today: at(19), siteMerge: 'prefix', now: at(19, 12) });
+  assert.deepEqual(overview.days.map(day => [dateKey(day.at), day.recorded]), youtube.series.days.map(day => [dateKey(day.at), day.recorded]));
 
   const today = await load('youtube.com', 'prefix').then(({ dayRows, hourRows }) => siteSeries(
     { domains, days: dayRows, hours: hourRows, state: head.state },

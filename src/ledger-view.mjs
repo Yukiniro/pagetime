@@ -17,7 +17,7 @@ export function viewFromSnapshot(data, { start, end, today, search = '', site = 
     since: data.since,
     stats: summarize(data, start, end, keyOf),
     todayStats: summarize(data, today, end, keyOf),
-    days: daily(data, start, end).map(({ at, ms }) => ({ at, ms })),
+    days: daily(data, start, end).map(({ at, ms }) => ({ at, ms, recorded: at >= midnight(data.since) })),
     spans: data.spans.filter(span => span.end > today && span.start < end).map(span => ({ ...span, site: keyOf(span.domain) })),
     visits: visits.slice(0, VISIT_LIST_LIMIT).map(visit => ({ domain: visit.domain, site: keyOf(visit.domain), at: visit.at })),
     visitCount: visits.length,
@@ -54,7 +54,8 @@ export function viewFromLedger({ state, domains, days, spans, visits, cursor = n
     }
   }
   const trend = [];
-  for (let at = start; at < end; at = addDays(at, 1)) trend.push({ at, ms: perDay.get(dateKey(at)) ?? 0 });
+  const recordedFrom = midnight(state?.since ?? now);
+  for (let at = start; at < end; at = addDays(at, 1)) trend.push({ at, ms: perDay.get(dateKey(at)) ?? 0, recorded: at >= recordedFrom });
   const listed = [];
   for (const visit of visits) {
     const domain = host.get(visit.domainId);
@@ -133,7 +134,8 @@ export function siteSeriesFromSnapshot(data, { site, siteMerge = 'prefix', start
     domains.push({ id, host });
     return id;
   };
-  const dayTotals = new Map();
+  const dayRows = [];
+  const dayIndex = new Map();
   const hours = [];
   for (const span of data.spans) {
     const from = Math.max(span.start, start);
@@ -143,16 +145,19 @@ export function siteSeriesFromSnapshot(data, { site, siteMerge = 'prefix', start
     for (const piece of splitByHour(from, to)) {
       const ms = piece.end - piece.start;
       const key = `${piece.date}|${domainId}`;
-      dayTotals.set(key, (dayTotals.get(key) ?? 0) + ms);
+      let day = dayIndex.get(key);
+      if (!day) {
+        day = { date: piece.date, domainId, ms: 0 };
+        dayIndex.set(key, day);
+        dayRows.push(day);
+      }
+      day.ms += ms;
       hours.push({ date: piece.date, hour: piece.hour, domainId, ms });
     }
   }
   return siteSeries({
     domains,
-    days: [...dayTotals].map(([key, ms]) => {
-      const [date, domainId] = key.split('|');
-      return { date, domainId: Number(domainId), ms };
-    }),
+    days: dayRows,
     hours,
     state: { enabled: data.enabled, since: data.since },
     cursor: null,
