@@ -16,7 +16,13 @@
 h1,h2,h3{font-weight:700}.nav-item svg{width:23px;height:23px}@media(max-width:760px){.nav-item svg{width:17px;height:17px}}
 
 @media(max-width:760px){.sidebar{flex-wrap:wrap;gap:12px}.sidebar-navigation{flex:0 1 auto}.nav-item{font-size:12px;padding:8px 6px}.brand{flex-shrink:0}}
-.detail-chart{min-width:0;max-width:100%}.detail-chart h3{margin-top:16px}.detail-trend,.hour-chart,.breakdown-chart{display:block;width:100%;max-width:100%;min-width:0;overflow:hidden}.detail-trend{height:168px}.hour-chart{height:128px}.detail-trend canvas,.hour-chart canvas,.breakdown-chart canvas{max-width:100%}.site-detail{grid-template-columns:minmax(0,1fr)}
+.detail-chart{min-width:0;max-width:100%}.detail-chart h3{margin-top:16px}.detail-trend,.hour-chart,.breakdown-chart{display:block;width:100%;max-width:100%;min-width:0;overflow:hidden}.detail-trend{height:168px}.hour-chart{height:128px}.detail-trend canvas,.hour-chart canvas,.breakdown-chart canvas{max-width:100%}
+.site-detail{display:flex;flex-direction:column;gap:0;overflow:hidden;padding:0;background:#fff}
+.site-detail[data-side="right"]{width:400px;max-width:min(400px,100vw);height:100%}
+.site-detail[data-side="bottom"]{max-height:85vh;border-radius:16px 16px 0 0}
+.site-detail-head{display:flex;flex-direction:row;align-items:flex-start;justify-content:space-between;gap:12px;flex:none;background:#fff}
+.site-detail-scroll{min-width:0;flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;padding:8px 20px 16px}
+.site-detail-actions{flex:none;border-top:1px solid var(--line);background:#fff}
 
 .ledger-card{background:#fff;border:1px solid var(--line);border-radius:12px}
 .filter-bar{display:flex;margin-top:18px}.filter-chip{display:inline-flex;align-items:center;gap:2px;max-width:100%;padding:3px 4px 3px 12px;border-radius:999px;background:#e7f0ff;color:#10203e}.filter-chip>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:650;line-height:1.4}.filter-chip [data-slot=button]{height:28px;color:#2875ff;font-weight:650}

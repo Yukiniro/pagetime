@@ -4,7 +4,6 @@ import { Button } from '@app/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from '@app/components/ui/dropdown-menu';
 import { RadioGroup, RadioGroupItem } from '@app/components/ui/radio-group';
 import { Switch } from '@app/components/ui/switch';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@app/components/ui/dialog';
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@app/components/ui/alert-dialog';
 import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@app/components/ui/sidebar';
 import { TooltipProvider } from '@app/components/ui/tooltip';
@@ -13,18 +12,17 @@ import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from '
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@app/components/ui/table';
 import { Alert, AlertTitle, AlertDescription } from '@app/components/ui/alert';
 import { Empty, EmptyHeader, EmptyTitle } from '@app/components/ui/empty';
-import { ScrollArea } from '@app/components/ui/scroll-area';
 import { Trans, useTranslation } from 'react-i18next';
 import { addDays, dateKey, dateKeyStart, midnight, timingCopy } from './model.mjs';
 import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, MERGE_MODES, RECORD_MODES, isAllowed, isIgnored, normalizeHost } from './settings.mjs';
 import { hostsToDelete } from './site.mjs';
 import { IgnoredSites } from './IgnoredSites.jsx';
 import { HowItWorksDialog } from './HowItWorksDialog.jsx';
-import { command, iconForSite, isExtension } from './data.js';
+import { command, isExtension } from './data.js';
 import { useDaySummary, useLedger } from './use-ledger.js';
 import { VISIT_LIST_LIMIT } from './ledger-view.mjs';
-import { Breakdown, HourChart, SiteTrend } from './Charts.jsx';
 import { SiteIcon } from './SiteIcon.jsx';
+import { SiteDetailSheet } from './SiteDetailPanel.jsx';
 import { Overview } from './Overview.jsx';
 import { toggleSiteFilter } from './site-filter.mjs';
 import { duration, formatDate, languages, timeLabel } from './i18n.js';
@@ -152,31 +150,28 @@ export function App() {
         </main>
       </div>
     </SidebarProvider>
-    <Dialog open={Boolean(selected)} onOpenChange={open => { if (!open) setSelected(null); }}>
-      <DialogContent className="site-detail max-h-[85vh] min-w-0 overflow-x-hidden overflow-y-auto sm:max-w-[520px] p-7" finalFocus={detailTrigger} showCloseButton={false}>
-        <DialogHeader><DialogTitle className="text-xl">{t('detail.title')}</DialogTitle><DialogDescription>{t('detail.description', { range: rangeLabel(range) })}</DialogDescription></DialogHeader>
-        <DialogClose render={<Button variant="ghost" size="icon-sm" className="absolute right-4 top-4" />} aria-label={t('detail.close')}><X /></DialogClose>
-        {selected && stats && <><div className="detail-site"><SiteIcon domain={iconForSite(selected, selectedRow?.hosts) || selected} site={iconForSite(selected, selectedRow?.hosts) || selected} /><h3>{selected}</h3></div>
-          <div className="detail-stats"><div><strong>{duration(selectedRow?.ms || 0)}</strong><span>{t('ranking.activeTime')}</span></div><div><strong>{t('detail.visits', { count: selectedRow?.visits || 0 })}</strong><span>{t('ranking.visits')}</span></div></div>
-          {ledger.detailSite === selected && ledger.detail && <section className="detail-chart min-w-0">
-            <h3>{t('detail.trend.title')}</h3>
-            <SiteTrend days={ledger.detail.days} domain={selected} />
-            <h3>{t('detail.hours.title')}</h3>
-            <HourChart hours={ledger.detail.hours} dayCount={ledger.detail.days.length} domain={selected} />
-          </section>}
-          {(selectedRow?.hosts.length ?? 0) >= 2 && <><h3>{t('detail.breakdown.title')}</h3><Breakdown hosts={selectedRow.hosts} /></>}
-          <h3>{t('detail.todaySessions')}</h3>
-          {sessions.length ? <ScrollArea className="h-[230px]"><ul className="session-list">{sessions.map((s, i) => <li key={i}><time>{timeLabel(Math.max(today, s.start))} — {timeLabel(Math.min(end, s.end))}</time>{(selectedRow?.hosts.length ?? 0) >= 2 && <span className="session-host">{s.domain}</span>}<span>{duration(Math.min(end, s.end) - Math.max(today, s.start))}</span></li>)}</ul></ScrollArea> : <p className="muted">{t('detail.noSessions')}</p>}
-          <div className="mt-4 flex flex-col gap-2">
-            <Button variant="outline" className="action-button w-full" disabled={busy || alreadyListed || !scopeHost || listLimit} onClick={() => setIgnoreTarget(selected)}>{alreadyListed ? t(listField === 'allowed' ? 'detail.allowed' : 'detail.ignored') : t(listField === 'allowed' ? 'detail.allow' : 'detail.ignore')}</Button>
-            {selected && !alreadyListed && !scopeHost && <p className="text-sm text-destructive" role="alert">{t(`settings.${listField}.error`)}</p>}
-            {selected && !alreadyListed && scopeHost && listLimit && <p className="text-sm text-destructive" role="alert">{t(`settings.${listField}.limit`, { count: IGNORED_LIMIT })}</p>}
-            <Button className="action-button w-full" onClick={() => { goRecords(selected); setSelected(null); }}>{t('detail.viewVisits')}<ArrowRight /></Button>
-            <Button variant="destructive" className="action-button w-full" disabled={busy} onClick={() => setDeleteTarget(selected)}><Trash />{t('detail.delete')}</Button>
-          </div>
-        </>}
-      </DialogContent>
-    </Dialog>
+    {/* Dismissing the drawer clears the open site and leaves the ranking filter in place. */}
+    <SiteDetailSheet
+      open={Boolean(selected)}
+      onOpenChange={open => { if (!open) setSelected(null); }}
+      finalFocus={detailTrigger}
+      siteKey={selected ?? ''}
+      range={range}
+      ready={Boolean(stats)}
+      row={selectedRow}
+      detail={ledger.detailSite === selected ? ledger.detail : null}
+      sessions={sessions}
+      today={today}
+      end={end}
+      busy={busy}
+      listField={listField}
+      alreadyListed={alreadyListed}
+      scopeHost={scopeHost}
+      listLimit={listLimit}
+      onListAdd={() => setIgnoreTarget(selected)}
+      onViewVisits={() => { goRecords(selected); setSelected(null); }}
+      onDelete={() => setDeleteTarget(selected)}
+    />
     <HowItWorksDialog open={howOpen} onOpenChange={setHowOpen} finalFocus={howTrigger} settings={settings} />
     <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>{t('confirm.title')}</AlertDialogTitle><AlertDialogDescription>{t('confirm.description')}</AlertDialogDescription></AlertDialogHeader>
       {error && <Alert variant="destructive"><AlertDescription>{errorText}</AlertDescription></Alert>}
