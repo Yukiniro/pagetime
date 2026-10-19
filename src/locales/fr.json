@@ -19,6 +19,10 @@
     "data": "Le format des données enregistrées est invalide. Les données originales restent inchangées. Restaurez des données valides, puis réessayez."
   },
   "loading": "Chargement des données locales…",
+  "empty": {
+    "title": "Cela apparaîtra ici après la navigation",
+    "description": "Après avoir visité une page, le temps actif, la chronologie et le classement des sites s’affichent ici."
+  },
   "active": "Actif {{duration}}",
   "badge": {
     "today": "Aujourd’hui {{duration}}",
@@ -40,7 +44,9 @@
     "active": "Filtré : {{domain}}",
     "clear": "Effacer le filtre",
     "emptyTitle": "Aucun temps actif sur ce graphique",
-    "emptyDescription": "{{domain}} n'a pas de temps actif sur ce graphique."
+    "emptyDescription": "{{domain}} n'a pas de temps actif sur ce graphique.",
+    "emptyRankingTitle": "Aucun classement sur cette période",
+    "emptyRankingDescription": "{{domain}} n’a aucun enregistrement sur cette période."
   },
   "chart": { "label": "Graphique principal" },
   "trend": { "label": "Temps de navigation active par jour. {{days}}", "separator": " ; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },

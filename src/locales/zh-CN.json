@@ -19,6 +19,10 @@
     "data": "已保存的记录格式无效，原始数据未被修改。恢复有效数据后请重试。"
   },
   "loading": "正在读取本地记录…",
+  "empty": {
+    "title": "开始浏览后会出现在这里",
+    "description": "访问网页后，活跃时间、时间线和站点排行会显示在这一页。"
+  },
   "active": "活跃 {{duration}}",
   "badge": {
     "today": "今天 {{duration}}",
@@ -36,7 +40,9 @@
     "active": "已过滤：{{domain}}",
     "clear": "清除过滤",
     "emptyTitle": "这张图没有活跃时间",
-    "emptyDescription": "{{domain}} 在这张图上没有活跃时间。"
+    "emptyDescription": "{{domain}} 在这张图上没有活跃时间。",
+    "emptyRankingTitle": "这个范围没有排行",
+    "emptyRankingDescription": "{{domain}} 在当前范围内没有记录。"
   },
   "chart": { "label": "主图" },
   "trend": { "label": "每日活跃浏览时长。{{days}}", "separator": "；", "hours_other": "{{count}} 小时" },

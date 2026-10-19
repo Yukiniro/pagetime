@@ -19,6 +19,10 @@
     "data": "Saved records have an invalid format. They have been kept unchanged. Retry after restoring valid data."
   },
   "loading": "Loading local records…",
+  "empty": {
+    "title": "Your browsing will show up here",
+    "description": "After you visit a page, active time, the timeline, and site rankings appear on this page."
+  },
   "active": "Active {{duration}}",
   "badge": {
     "today": "Today {{duration}}",
@@ -38,7 +42,9 @@
     "active": "Filtered to {{domain}}",
     "clear": "Clear filter",
     "emptyTitle": "No active time to chart",
-    "emptyDescription": "{{domain}} has no active time on this chart."
+    "emptyDescription": "{{domain}} has no active time on this chart.",
+    "emptyRankingTitle": "No rankings in this range",
+    "emptyRankingDescription": "{{domain}} has no records in this range."
   },
   "chart": { "label": "Primary chart" },
   "trend": { "label": "Daily active browsing time. {{days}}", "separator": "; ", "hours_one": "{{count}} hr", "hours_other": "{{count}} hrs" },

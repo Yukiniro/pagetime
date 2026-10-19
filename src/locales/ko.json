@@ -19,6 +19,10 @@
     "data": "저장된 기록의 형식이 올바르지 않습니다. 원본 데이터는 변경되지 않았습니다. 올바른 데이터를 복원한 후 다시 시도하세요."
   },
   "loading": "로컬 기록을 불러오는 중…",
+  "empty": {
+    "title": "탐색을 시작하면 여기에 표시됩니다",
+    "description": "웹페이지를 방문하면 활성 시간, 타임라인, 사이트 순위가 이 페이지에 나타납니다."
+  },
   "active": "활성 {{duration}}",
   "badge": {
     "today": "오늘 {{duration}}",
@@ -36,7 +40,9 @@
     "active": "{{domain}} 필터 적용 중",
     "clear": "필터 지우기",
     "emptyTitle": "이 차트에는 활성 시간이 없습니다",
-    "emptyDescription": "{{domain}}의 활성 시간이 이 차트에 없습니다."
+    "emptyDescription": "{{domain}}의 활성 시간이 이 차트에 없습니다.",
+    "emptyRankingTitle": "이 범위에는 순위가 없습니다",
+    "emptyRankingDescription": "{{domain}}의 기록이 이 범위에 없습니다."
   },
   "chart": { "label": "기본 차트" },
   "trend": { "label": "일별 활성 브라우징 시간. {{days}}", "separator": ", ", "hours_other": "{{count}}시간" },

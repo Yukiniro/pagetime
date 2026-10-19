@@ -19,6 +19,10 @@
     "data": "Los registros guardados tienen un formato no válido. Los datos originales no se han modificado. Restaura datos válidos y vuelve a intentarlo."
   },
   "loading": "Cargando registros locales…",
+  "empty": {
+    "title": "Aparecerá aquí cuando empieces a navegar",
+    "description": "Después de visitar una página, el tiempo activo, la línea de tiempo y el ranking de sitios se muestran en esta página."
+  },
   "active": "Activo {{duration}}",
   "badge": {
     "today": "Hoy {{duration}}",
@@ -40,7 +44,9 @@
     "active": "Filtrado: {{domain}}",
     "clear": "Quitar filtro",
     "emptyTitle": "No hay tiempo activo en este gráfico",
-    "emptyDescription": "{{domain}} no tiene tiempo activo en este gráfico."
+    "emptyDescription": "{{domain}} no tiene tiempo activo en este gráfico.",
+    "emptyRankingTitle": "No hay ranking en este periodo",
+    "emptyRankingDescription": "{{domain}} no tiene registros en este periodo."
   },
   "chart": { "label": "Gráfico principal" },
   "trend": { "label": "Tiempo diario de navegación activa. {{days}}", "separator": "; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },

@@ -19,6 +19,10 @@
     "data": "已儲存的紀錄格式無效，原始資料未被修改。還原有效資料後請重試。"
   },
   "loading": "正在讀取本機紀錄…",
+  "empty": {
+    "title": "開始瀏覽後會出現在這裡",
+    "description": "造訪網頁後，活躍時間、時間軸和網站排行會顯示在這一頁。"
+  },
   "active": "活躍 {{duration}}",
   "badge": {
     "today": "今天 {{duration}}",
@@ -36,7 +40,9 @@
     "active": "已篩選：{{domain}}",
     "clear": "清除篩選",
     "emptyTitle": "這張圖沒有活躍時間",
-    "emptyDescription": "{{domain}} 在這張圖上沒有活躍時間。"
+    "emptyDescription": "{{domain}} 在這張圖上沒有活躍時間。",
+    "emptyRankingTitle": "這個範圍沒有排行",
+    "emptyRankingDescription": "{{domain}} 在目前範圍內沒有紀錄。"
   },
   "chart": { "label": "主圖" },
   "trend": { "label": "每日活躍瀏覽時長。{{days}}", "separator": "；", "hours_other": "{{count}} 小時" },

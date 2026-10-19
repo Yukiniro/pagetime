@@ -24,6 +24,9 @@ import { VISIT_LIST_LIMIT } from './ledger-view.mjs';
 import { SiteIcon } from './SiteIcon.jsx';
 import { SiteDetailSheet } from './SiteDetailPanel.jsx';
 import { Overview } from './Overview.jsx';
+import { DashboardSkeleton } from './DashboardSkeleton.jsx';
+import { LedgerEmpty } from './EmptyState.jsx';
+import { dashboardStatus } from './dashboard-status.mjs';
 import { toggleSiteFilter } from './site-filter.mjs';
 import { duration, formatDate, languages, timeLabel } from './i18n.js';
 import { useDocumentTheme } from './use-theme.js';
@@ -61,6 +64,7 @@ export function App() {
   const openSite = (domain, event) => { detailTrigger.current = event.currentTarget; setSelected(domain); };
   const onFilter = domain => setFilterSite(current => toggleSiteFilter(current, domain));
   const problem = error || ledger.error;
+  const overviewStatus = problem && !view ? 'error' : dashboardStatus({ view, pending: !ready || ledger.pending });
   const errorText = t([`error.${problem}`, 'error.connect']);
   const languageName = languages.find(([code]) => code === i18n.resolvedLanguage)?.[1];
   const copy = timingCopy(settings);
@@ -117,7 +121,7 @@ export function App() {
             </DropdownMenu>}
           </div>
           {problem && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => { ledger.retry(); act(); }}>{t('error.retry')}</Button></AlertDescription></Alert>}
-          {!shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'overview' ? <Overview todayStats={todayStats} stats={stats} weekDays={ledger.weekDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={rangeLabel(range)} filterSite={filterSite} onFilter={onFilter} openSite={openSite} openHow={openHow} isDark={isDark} /> : page === 'records' ? <section className="records">
+          {page === 'overview' ? (overviewStatus === 'loading' ? <DashboardSkeleton /> : overviewStatus === 'empty' ? <LedgerEmpty onOpenHow={openHow} /> : overviewStatus === 'ready' ? <Overview todayStats={todayStats} stats={stats} weekDays={ledger.weekDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={rangeLabel(range)} filterSite={filterSite} onFilter={onFilter} openSite={openSite} openHow={openHow} isDark={isDark} /> : null) : !shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'records' ? <section className="records">
             <InputGroup className="h-11 max-w-[460px]"><InputGroupInput aria-label={t('records.search')} placeholder={t('records.placeholder')} value={search} onChange={e => { setSearch(e.target.value); setSite(''); }} /><InputGroupAddon><MagnifyingGlass /></InputGroupAddon>{search && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-sm" aria-label={t('records.clearSearch')} onClick={() => { setSearch(''); setSite(''); }}><X /></InputGroupButton></InputGroupAddon>}</InputGroup>
             <p className="muted">{t('records.count', { count: view.visitCount })}{view.visitCount > VISIT_LIST_LIMIT ? t('records.limited') : ''}</p>
             <Table><TableHeader><TableRow><TableHead>{t('ranking.site')}</TableHead><TableHead>{t('records.visitedAt')}</TableHead><TableHead>{t('records.details')}</TableHead></TableRow></TableHeader><TableBody>
@@ -162,7 +166,7 @@ export function App() {
     <HowItWorksDialog open={howOpen} onOpenChange={setHowOpen} finalFocus={howTrigger} settings={settings} />
     <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>{t('confirm.title')}</AlertDialogTitle><AlertDialogDescription>{t('confirm.description')}</AlertDialogDescription></AlertDialogHeader>
       {error && <Alert variant="destructive"><AlertDescription>{errorText}</AlertDescription></Alert>}
-      <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction variant="destructive" disabled={busy} onClick={async () => { if (await act('clear')) setConfirmClear(false); }}>{busy ? t('confirm.clearing') : t('confirm.confirm')}</AlertDialogAction></AlertDialogFooter>
+      <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction variant="destructive" disabled={busy} onClick={async () => { if (await act('clear')) { setConfirmClear(false); setFilterSite(''); setSelected(null); } }}>{busy ? t('confirm.clearing') : t('confirm.confirm')}</AlertDialogAction></AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
   <AlertDialog open={Boolean(deleteTarget)} onOpenChange={open => { if (!open) setDeleteTarget(null); }}>
