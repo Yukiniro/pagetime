@@ -87,8 +87,8 @@
   "settings": {
     "language": { "title": "Idioma", "description": "Elige el idioma de la interfaz de PageTime.", "label": "Idioma de la interfaz: {{language}}" },
     "recording": { "title": "Registro de navegación", "description": "Cuenta las visitas a páginas y solo mide el tiempo en la pestaña activa de la ventana enfocada." },
-    "privacy": { "title": "Local y privado", "description": "Solo guarda dominios, horas y número de visitas; nunca el contenido, los títulos ni las URL completas.<br/>Ignora las ventanas de incógnito y las páginas internas del navegador, y nunca envía datos a un servidor." },
-    "method": { "title": "Cómo se mide", "description": "Cada carga o recarga de página cuenta como una visita; cambiar de pestaña o navegar dentro de una aplicación de una sola página no suma visitas.<br/>{{idle}} segundos sin actividad del sistema se consideran inactividad; el progreso se guarda cada {{checkpoint}} segundos.<br/>Conserva las visitas y sesiones activas durante {{days}} días; los totales diarios y por hora se mantienen hasta que los borres.", "audible": "Una pestaña que reproduce sonido sin silenciar no cuenta como inactividad." },
+    "privacy": { "title": "Local y privado", "description": "Solo guarda dominios, horas y número de visitas; nunca el contenido, los títulos ni las URL completas.<br/>Ignora las ventanas de incógnito y las páginas internas del navegador, y nunca envía datos a un servidor.<br/>Puedes eliminar un sitio o un día. Eso quita esos registros de la base de datos de este dispositivo." },
+    "method": { "title": "Cómo se mide", "description": "Cada carga o recarga de página cuenta como una visita; cambiar de pestaña o navegar dentro de una aplicación de una sola página no suma visitas.<br/>{{idle}} segundos sin actividad del sistema se consideran inactividad; el progreso se guarda cada {{checkpoint}} segundos.<br/>Conserva las visitas y sesiones activas durante {{days}} días; los totales diarios y por hora se mantienen hasta que los borres o elimines ese sitio o ese día.", "audible": "Una pestaña que reproduce sonido sin silenciar no cuenta como inactividad." },
     "audible": { "title": "Seguir contando mientras hay audio", "description": "Si la pestaña activa de la ventana enfocada reproduce sonido sin silenciar, el tiempo de inactividad también cuenta. El conteo se detiene en cuanto el sonido para o la pestaña se silencia." },
     "idle": { "title": "Umbral de inactividad", "description": "Cuánto tiempo sin teclado ni ratón debe pasar para considerar inactivo este navegador.", "label": "Umbral de inactividad: {{duration}}", "option_one": "{{count}} minuto", "option_many": "{{count}} minutos", "option_other": "{{count}} minutos" },
     "siteMerge": {
@@ -101,6 +101,7 @@
     },
     "ignored": { "title": "Sitios ignorados", "description": "Estos hosts y sus subdominios no se miden y las visitas no se cuentan, igual que una página interna del navegador. example.com también coincide con a.example.com; mail.example.com no coincide con example.com. Los registros existentes siguen en el libro y no se ocultan.", "input": "Host a ignorar", "placeholder": "example.com", "add": "Añadir", "remove": "Quitar {{domain}}", "emptyTitle": "No hay sitios ignorados", "emptyDescription": "Añade un host para dejar de registrarlo a partir de ahora.", "error": "Escribe un host como example.com. Se quitan el protocolo, la ruta y el puerto. No se permiten espacios, y un nombre sin punto solo se acepta para localhost.", "limit": "Puedes ignorar hasta {{count}} hosts." },
     "badge": { "title": "Insignia de la barra", "description": "Muestra el tiempo de navegación activo de hoy en el icono de la barra." },
+    "deleteDay": { "title": "Eliminar los registros de un día", "description": "Quita de este dispositivo el tiempo activo, las visitas y las sesiones de un día. No se puede deshacer.", "label": "Fecha que se eliminará", "button": "Eliminar este día", "done": "Se eliminaron los registros del {{date}}.", "confirmTitle": "¿Eliminar los registros del {{date}}?", "confirmDescription": "Se quitarán de este dispositivo el tiempo activo, las visitas y las sesiones de ese día. No se puede deshacer.", "confirm": "Eliminar este día", "deleting": "Eliminando…" },
     "clear": { "title": "Borrar todos los registros", "description": "Elimina los registros que PageTime ha guardado en este dispositivo. No se puede deshacer.", "button": "Borrar datos" }
   },
   "detail": {
@@ -115,6 +116,8 @@
     "ignore": "Dejar de registrar este sitio",
     "ignored": "Este sitio ya está ignorado",
     "ignoreConfirm": { "title": "¿Dejar de registrar este sitio?", "description": "{{domain}} y sus subdominios dejarán de medirse y de contar como visitas. Los registros existentes no se eliminan.", "confirm": "Dejar de registrar" },
+    "delete": "Eliminar los registros de este sitio",
+    "deleteConfirm": { "title": "¿Eliminar los registros de este sitio?", "description": "Se eliminarán el tiempo activo, el número de visitas y las sesiones de {{domain}} en todas las fechas. No se puede deshacer. Si tampoco quieres registrarlo más adelante, añádelo a la lista de sitios ignorados.", "confirm": "Eliminar registros", "deleting": "Eliminando…" },
     "viewVisits": "Ver visitas",
     "trend": {
       "title": "Tendencia diaria",
@@ -187,9 +190,10 @@
       "title": "Privacidad y almacenamiento",
       "fields": "Solo se guardan el dominio, los tiempos y el número de visitas; nunca el título, el texto de la página ni la URL completa.",
       "local": "Los datos permanecen en el navegador de este dispositivo y no se suben a ningún servidor.",
-      "retention_one": "Se conservan las visitas e intervalos del último {{count}} día. Los totales diarios y por hora se mantienen hasta que los borres.",
-      "retention_many": "Se conservan las visitas e intervalos de los últimos {{count}} días. Los totales diarios y por hora se mantienen hasta que los borres.",
-      "retention_other": "Se conservan las visitas e intervalos de los últimos {{count}} días. Los totales diarios y por hora se mantienen hasta que los borres.",
+      "delete": "Puedes eliminar un sitio o un día. Esos registros se quitan de la base de datos de este dispositivo y no se puede deshacer.",
+      "retention_one": "Se conservan las visitas e intervalos del último {{count}} día. Los totales diarios y por hora se mantienen hasta que los borres o elimines ese sitio o ese día.",
+      "retention_many": "Se conservan las visitas e intervalos de los últimos {{count}} días. Los totales diarios y por hora se mantienen hasta que los borres o elimines ese sitio o ese día.",
+      "retention_other": "Se conservan las visitas e intervalos de los últimos {{count}} días. Los totales diarios y por hora se mantienen hasta que los borres o elimines ese sitio o ese día.",
       "save_one": "Se guarda cada {{count}} segundo. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente.",
       "save_many": "Se guarda cada {{count}} segundos. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente.",
       "save_other": "Se guarda cada {{count}} segundos. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente."

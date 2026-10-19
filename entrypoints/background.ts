@@ -1,8 +1,8 @@
 import { browser } from 'wxt/browser';
 import { defineBackground } from 'wxt/utils/define-background';
 import { badgeLabels, resolveLocale, todayFigures } from '../src/badge.mjs';
-import { CHECKPOINT_SECONDS, dateKey, detailCutoff, domainOf, openCredit } from '../src/model.mjs';
-import { clearLedger, commitTick, daysBetween, LEDGER_ERROR_KEY, openLedger, pruneDetail, readDomains, readHead, reopening, toggleRecording } from '../src/ledger.mjs';
+import { CHECKPOINT_SECONDS, dateKey, dateKeyStart, detailCutoff, domainOf, openCredit } from '../src/model.mjs';
+import { clearLedger, commitTick, daysBetween, deleteDay, deleteSite, LEDGER_ERROR_KEY, openLedger, pruneDetail, readDomains, readHead, reopening, toggleRecording } from '../src/ledger.mjs';
 import { isIgnored, validateSettings } from '../src/settings.mjs';
 
 // `session` ties the cursor to one storage.session lifetime, so a browser restart or extension reload starts without it.
@@ -179,12 +179,22 @@ export default defineBackground(() => {
   });
   browser.runtime.onStartup.addListener(() => { void run(async () => { applyIdle(await readSettings()); await update(); }); });
   browser.action.onClicked.addListener(() => { void browser.tabs.create({ url: browser.runtime.getURL('/dashboard.html') }); });
+  const deleteHosts = (message: { host?: unknown, hosts?: unknown }) => {
+    const listed = [message.host, ...(Array.isArray(message.hosts) ? message.hosts : [])];
+    return [...new Set(listed.filter((host): host is string => typeof host === 'string' && host.length > 0 && host.length <= 253))];
+  };
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (sender.id !== browser.runtime.id || !sender.url?.startsWith(browser.runtime.getURL('/dashboard.html'))) return;
-    if (!['snapshot', 'toggle', 'clear', 'settings'].includes(message?.type)) return;
+    if (!['snapshot', 'toggle', 'clear', 'deleteSite', 'deleteDay', 'settings'].includes(message?.type)) return;
     void run(async () => {
       if (message.type === 'clear') {
         await write(() => clearLedger(db, Date.now()));
+      } else if (message.type === 'deleteSite') {
+        const hosts = deleteHosts(message);
+        if (hosts.length) await write(() => deleteSite(db, hosts, Date.now()));
+      } else if (message.type === 'deleteDay') {
+        if (dateKeyStart(message.date) === null) throw new Error('invalid date');
+        await write(() => deleteDay(db, message.date, Date.now()));
       } else if (message.type === 'toggle') {
         await update();
         await write(() => toggleRecording(db, Date.now()));

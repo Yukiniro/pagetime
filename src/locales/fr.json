@@ -87,8 +87,8 @@
   "settings": {
     "language": { "title": "Langue", "description": "Choisissez la langue d’affichage de PageTime.", "label": "Langue d’affichage : {{language}}" },
     "recording": { "title": "Enregistrement", "description": "Compte les visites de pages et ne mesure que le temps passé sur l’onglet actif de la fenêtre au premier plan." },
-    "privacy": { "title": "Local et privé", "description": "Seuls les domaines, horaires et nombres de visites sont enregistrés — jamais le contenu, les titres ni les URL complètes.<br/>Les fenêtres de navigation privée et les pages internes du navigateur sont ignorées, et aucune donnée n’est envoyée à un serveur." },
-    "method": { "title": "Mode de calcul", "description": "Chaque chargement ou rechargement de page compte comme une visite ; changer d’onglet ou naviguer dans une application monopage n’ajoute pas de visite.<br/>{{idle}} secondes sans activité système sont considérées comme de l’inactivité ; la progression est enregistrée toutes les {{checkpoint}} secondes.<br/>Conserve les visites et sessions actives pendant {{days}} jours ; les totaux par jour et par heure restent jusqu’à ce que vous les effaciez.", "audible": "Un onglet qui lit un son non coupé n’est pas compté comme inactif." },
+    "privacy": { "title": "Local et privé", "description": "Seuls les domaines, horaires et nombres de visites sont enregistrés — jamais le contenu, les titres ni les URL complètes.<br/>Les fenêtres de navigation privée et les pages internes du navigateur sont ignorées, et aucune donnée n’est envoyée à un serveur.<br/>Vous pouvez supprimer un site ou un jour. Ces enregistrements sont alors retirés de la base de données de cet appareil." },
+    "method": { "title": "Mode de calcul", "description": "Chaque chargement ou rechargement de page compte comme une visite ; changer d’onglet ou naviguer dans une application monopage n’ajoute pas de visite.<br/>{{idle}} secondes sans activité système sont considérées comme de l’inactivité ; la progression est enregistrée toutes les {{checkpoint}} secondes.<br/>Conserve les visites et sessions actives pendant {{days}} jours ; les totaux par jour et par heure restent jusqu’à ce que vous les effaciez ou supprimiez ce site ou ce jour.", "audible": "Un onglet qui lit un son non coupé n’est pas compté comme inactif." },
     "audible": { "title": "Continuer à compter pendant la lecture audio", "description": "Si l’onglet actif de la fenêtre au premier plan lit un son non coupé, le temps d’inactivité compte aussi. Le décompte s’arrête dès que le son s’arrête ou que l’onglet est coupé." },
     "idle": { "title": "Seuil d’inactivité", "description": "Durée sans clavier ni souris avant que ce navigateur soit considéré comme inactif.", "label": "Seuil d’inactivité : {{duration}}", "option_one": "{{count}} minute", "option_many": "{{count}} minutes", "option_other": "{{count}} minutes" },
     "siteMerge": {
@@ -101,6 +101,7 @@
     },
     "ignored": { "title": "Sites ignorés", "description": "Ces hôtes et leurs sous-domaines ne sont pas mesurés et les visites ne sont pas comptées, comme une page interne du navigateur. example.com correspond aussi à a.example.com ; mail.example.com ne correspond pas à example.com. Les enregistrements existants restent et ne sont pas masqués.", "input": "Hôte à ignorer", "placeholder": "example.com", "add": "Ajouter", "remove": "Retirer {{domain}}", "emptyTitle": "Aucun site ignoré", "emptyDescription": "Ajoutez un hôte pour ne plus l’enregistrer à partir de maintenant.", "error": "Saisissez un hôte tel que example.com. Le protocole, le chemin et le port sont retirés. Les espaces ne sont pas admis, et un nom sans point n’est accepté que pour localhost.", "limit": "Vous pouvez ignorer au plus {{count}} hôtes." },
     "badge": { "title": "Badge de la barre d’outils", "description": "Affiche le temps de navigation actif d’aujourd’hui sur l’icône de la barre d’outils." },
+    "deleteDay": { "title": "Supprimer les enregistrements d’un jour", "description": "Retire de cet appareil le temps actif, les visites et les sessions d’un jour. Cette action est irréversible.", "label": "Date à supprimer", "button": "Supprimer ce jour", "done": "Enregistrements du {{date}} supprimés.", "confirmTitle": "Supprimer les enregistrements du {{date}} ?", "confirmDescription": "Le temps actif, les visites et les sessions de ce jour seront retirés de cet appareil. Cette action est irréversible.", "confirm": "Supprimer ce jour", "deleting": "Suppression…" },
     "clear": { "title": "Effacer tous les enregistrements", "description": "Supprime les données enregistrées par PageTime sur cet appareil. Action irréversible.", "button": "Effacer les données" }
   },
   "detail": {
@@ -115,6 +116,8 @@
     "ignore": "Ne plus enregistrer ce site",
     "ignored": "Ce site est déjà ignoré",
     "ignoreConfirm": { "title": "Ne plus enregistrer ce site ?", "description": "{{domain}} et ses sous-domaines ne seront plus mesurés ni comptés comme visites. Les enregistrements existants ne sont pas supprimés.", "confirm": "Ne plus enregistrer" },
+    "delete": "Supprimer les enregistrements de ce site",
+    "deleteConfirm": { "title": "Supprimer les enregistrements de ce site ?", "description": "Le temps actif, le nombre de visites et les sessions de {{domain}} seront supprimés pour toutes les dates. Cette action est irréversible. Pour ne plus l’enregistrer ensuite, ajoutez-le à la liste des sites ignorés.", "confirm": "Supprimer les enregistrements", "deleting": "Suppression…" },
     "viewVisits": "Voir les visites",
     "trend": {
       "title": "Tendance quotidienne",
@@ -187,9 +190,10 @@
       "title": "Confidentialité et stockage",
       "fields": "Seuls le domaine, les horaires et le nombre de visites sont enregistrés — jamais le titre, le texte de la page ni l’URL complète.",
       "local": "Les données restent dans le navigateur de cet appareil et ne sont jamais envoyées à un serveur.",
-      "retention_one": "Conserve les visites et intervalles du dernier {{count}} jour. Les totaux par jour et par heure restent jusqu’à ce que vous les effaciez.",
-      "retention_many": "Conserve les visites et intervalles des {{count}} derniers jours. Les totaux par jour et par heure restent jusqu’à ce que vous les effaciez.",
-      "retention_other": "Conserve les visites et intervalles des {{count}} derniers jours. Les totaux par jour et par heure restent jusqu’à ce que vous les effaciez.",
+      "delete": "Vous pouvez supprimer un site ou un jour. Ces enregistrements sont retirés de la base de données de cet appareil et cette action est irréversible.",
+      "retention_one": "Conserve les visites et intervalles du dernier {{count}} jour. Les totaux par jour et par heure restent jusqu’à ce que vous les effaciez ou supprimiez ce site ou ce jour.",
+      "retention_many": "Conserve les visites et intervalles des {{count}} derniers jours. Les totaux par jour et par heure restent jusqu’à ce que vous les effaciez ou supprimiez ce site ou ce jour.",
+      "retention_other": "Conserve les visites et intervalles des {{count}} derniers jours. Les totaux par jour et par heure restent jusqu’à ce que vous les effaciez ou supprimiez ce site ou ce jour.",
       "save_one": "Enregistre toutes les {{count}} seconde. En cas de fermeture inattendue, seule cette période récente peut être perdue.",
       "save_many": "Enregistre toutes les {{count}} secondes. En cas de fermeture inattendue, seule cette période récente peut être perdue.",
       "save_other": "Enregistre toutes les {{count}} secondes. En cas de fermeture inattendue, seule cette période récente peut être perdue."

@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { dateKey, splitByHour } from './model.mjs';
+import { addDays, dateKey, dateKeyStart, spansAfterDayRemoval, splitByHour } from './model.mjs';
 
 export const LEDGER_NAME = 'pagetime-ledger';
 export const LEDGER_ERROR_KEY = 'ledgerError';
@@ -133,6 +133,77 @@ export function toggleRecording(db, now) {
       t.meta.put({ key: 'state', value: { enabled: !(state?.enabled ?? true), since: state?.since ?? now } }),
       t.meta.delete('cursor'),
     ],
+  });
+}
+
+const hostList = hosts => [...new Set((Array.isArray(hosts) ? hosts : [hosts]).filter(host => typeof host === 'string' && host))];
+
+/**
+ * Deletes every stored hostname in `hosts`. One transaction. When the cursor names one of them,
+ * `since` becomes `now`, so the next tick cannot write the removed interval back.
+ * @param {Dexie} db @param {string | string[]} hosts @param {number} now
+ * @returns {Promise<void>}
+ */
+export async function deleteSite(db, hosts, now) {
+  const wanted = hostList(hosts);
+  if (!wanted.length) return;
+  await ledgerTx(db, {
+    async read(t) {
+      return {
+        domains: await t.domains.where('host').anyOf(wanted).toArray(),
+        cursor: (await t.meta.get('cursor'))?.value,
+      };
+    },
+    write(t, { domains, cursor }) {
+      const writes = [];
+      for (const domain of domains) {
+        const id = domain.id;
+        writes.push(
+          t.days.where('[domainId+date]').between([id, Dexie.minKey], [id, Dexie.maxKey]).delete(),
+          t.hours.where('[domainId+date+hour]').between([id, Dexie.minKey, Dexie.minKey], [id, Dexie.maxKey, Dexie.maxKey]).delete(),
+          t.spans.where('[domainId+start]').between([id, Dexie.minKey], [id, Dexie.maxKey]).delete(),
+          t.visits.where('[domainId+at]').between([id, Dexie.minKey], [id, Dexie.maxKey]).delete(),
+          t.domains.delete(id),
+        );
+      }
+      if (cursor && wanted.includes(cursor.domain)) writes.push(t.meta.put({ key: 'cursor', value: { ...cursor, since: now } }));
+      return writes;
+    },
+  });
+}
+
+/**
+ * Deletes one local date. A span that crosses that midnight keeps the part outside the day.
+ * When `date` is today, the cursor `since` becomes `now` in the same transaction.
+ * @param {Dexie} db @param {string} date @param {number} now
+ * @returns {Promise<void>}
+ */
+export async function deleteDay(db, date, now) {
+  const dayStart = dateKeyStart(date);
+  if (dayStart === null) throw new TypeError('invalid date');
+  const dayEnd = addDays(dayStart, 1);
+  await ledgerTx(db, {
+    async read(t) {
+      const spans = (await t.spans.where('start').below(dayEnd).toArray()).filter(span => span.end > dayStart);
+      return { spans, cursor: (await t.meta.get('cursor'))?.value };
+    },
+    write(t, { spans, cursor }) {
+      const writes = [
+        t.days.where('[date+domainId]').between([date, Dexie.minKey], [date, Dexie.maxKey]).delete(),
+        t.hours.where('[date+hour+domainId]').between([date, Dexie.minKey, Dexie.minKey], [date, Dexie.maxKey, Dexie.maxKey]).delete(),
+        t.visits.where('at').between(dayStart, dayEnd, true, false).delete(),
+      ];
+      for (const span of spans) {
+        const kept = spansAfterDayRemoval(span, dayStart, dayEnd);
+        if (!kept.length) writes.push(t.spans.delete(span.id));
+        else {
+          writes.push(t.spans.put({ id: span.id, domainId: span.domainId, start: kept[0].start, end: kept[0].end }));
+          if (kept[1]) writes.push(t.spans.add({ domainId: span.domainId, start: kept[1].start, end: kept[1].end }));
+        }
+      }
+      if (cursor && date === dateKey(now)) writes.push(t.meta.put({ key: 'cursor', value: { ...cursor, since: now } }));
+      return writes;
+    },
   });
 }
 

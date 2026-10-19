@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { isExtension, watchLedgerError } from './data.js';
 import { daysBetween, hoursBetween, openLedger, readDomains, readHead, recentVisits, siteDays, siteHours, spansBetween } from './ledger.mjs';
-import { siteSeries, siteSeriesFromSnapshot, VISIT_LIST_LIMIT, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
-import { addDays, dateKey } from './model.mjs';
+import { siteSeries, siteSeriesFromSnapshot, VISIT_LIST_LIMIT, daySummary, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
+import { addDays, dateKey, openCredit } from './model.mjs';
 import { siteOf } from './site.mjs';
 
 let db;
@@ -71,6 +71,26 @@ function usePreviewLedger(range) {
     apply: setData,
     retry() {},
   };
+}
+
+// Separate from the range query so choosing a day does not blank the dashboard while IndexedDB answers.
+export function useDaySummary(date, siteMerge) {
+  const result = useLiveQuery(async () => {
+    if (!isExtension || !date) return null;
+    try {
+      db ??= openLedger();
+      const { browser } = await import('wxt/browser');
+      const [domains, head, stored] = await Promise.all([readDomains(db), readHead(db), browser.storage.session.get('session')]);
+      const cursor = head.cursor?.session === stored.session ? head.cursor : null;
+      const enabled = head.state?.enabled ?? true;
+      const segment = enabled ? openCredit(cursor, head.lastEnd, Date.now()) : null;
+      return { date, ...daySummary({ domains, days: await daysBetween(db, date, date), segment, date, siteMerge }) };
+    } catch (error) {
+      console.error('PageTime could not read that day', error);
+      return null;
+    }
+  }, [date, siteMerge]);
+  return result === undefined ? undefined : result;
 }
 
 export const useLedger = isExtension ? useExtensionLedger : usePreviewLedger;

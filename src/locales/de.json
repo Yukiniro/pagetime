@@ -81,8 +81,8 @@
   "settings": {
     "language": { "title": "Sprache", "description": "Wähle die Anzeigesprache von PageTime.", "label": "Anzeigesprache: {{language}}" },
     "recording": { "title": "Aufzeichnung", "description": "Zählt Seitenbesuche und misst nur die Zeit im aktiven Tab des fokussierten Fensters." },
-    "privacy": { "title": "Lokal und privat", "description": "Speichert nur Domains, Zeiten und Besuchszahlen – niemals Seiteninhalte, Titel oder vollständige URLs.<br/>Inkognito-Fenster und interne Browserseiten werden ignoriert, und es werden keine Daten an einen Server gesendet." },
-    "method": { "title": "So wird gemessen", "description": "Jedes Laden oder Neuladen einer Seite zählt als ein Besuch; Tab-Wechsel und Navigation innerhalb von Single-Page-Apps zählen nicht.<br/>{{idle}} Sekunden ohne Systemeingabe gelten als Leerlauf; der Fortschritt wird alle {{checkpoint}} Sekunden gespeichert.<br/>Besuche und aktive Sitzungen werden {{days}} Tage aufbewahrt; Tages- und Stundensummen bleiben, bis du sie löschst.", "audible": "Ein Tab mit nicht stummgeschaltetem Ton zählt nicht als Leerlauf." },
+    "privacy": { "title": "Lokal und privat", "description": "Speichert nur Domains, Zeiten und Besuchszahlen – niemals Seiteninhalte, Titel oder vollständige URLs.<br/>Inkognito-Fenster und interne Browserseiten werden ignoriert, und es werden keine Daten an einen Server gesendet.<br/>Du kannst eine Website oder einen Tag löschen. Damit werden diese Einträge aus der Datenbank auf diesem Gerät entfernt." },
+    "method": { "title": "So wird gemessen", "description": "Jedes Laden oder Neuladen einer Seite zählt als ein Besuch; Tab-Wechsel und Navigation innerhalb von Single-Page-Apps zählen nicht.<br/>{{idle}} Sekunden ohne Systemeingabe gelten als Leerlauf; der Fortschritt wird alle {{checkpoint}} Sekunden gespeichert.<br/>Besuche und aktive Sitzungen werden {{days}} Tage aufbewahrt; Tages- und Stundensummen bleiben, bis du sie löschst oder diese Website oder diesen Tag entfernst.", "audible": "Ein Tab mit nicht stummgeschaltetem Ton zählt nicht als Leerlauf." },
     "audible": { "title": "Bei Audiowiedergabe weiterzählen", "description": "Wenn der aktive Tab im fokussierten Fenster nicht stummgeschalteten Ton abspielt, zählt auch Leerlaufzeit. Die Zählung stoppt, sobald der Ton endet oder der Tab stummgeschaltet wird." },
     "idle": { "title": "Leerlaufschwelle", "description": "Wie lange ohne Tastatur- oder Mauseingabe dieser Browser als im Leerlauf gilt.", "label": "Leerlaufschwelle: {{duration}}", "option_one": "{{count}} Minute", "option_other": "{{count}} Minuten" },
     "siteMerge": {
@@ -95,6 +95,7 @@
     },
     "ignored": { "title": "Ignorierte Websites", "description": "Diese Hosts und ihre Subdomains werden nicht gemessen, und Besuche zählen nicht, wie bei einer internen Browserseite. example.com gilt auch für a.example.com; mail.example.com gilt nicht für example.com. Vorhandene Einträge bleiben erhalten und werden nicht ausgeblendet.", "input": "Zu ignorierender Host", "placeholder": "example.com", "add": "Hinzufügen", "remove": "{{domain}} entfernen", "emptyTitle": "Keine ignorierten Websites", "emptyDescription": "Füge einen Host hinzu, um ihn ab jetzt nicht mehr aufzuzeichnen.", "error": "Gib einen Host wie example.com ein. Protokoll, Pfad und Port werden entfernt. Leerzeichen sind nicht erlaubt, und ein Name ohne Punkt wird nur für localhost akzeptiert.", "limit": "Du kannst höchstens {{count}} Hosts ignorieren." },
     "badge": { "title": "Symbol-Badge", "description": "Zeigt die heutige aktive Surfzeit auf dem Symbol in der Symbolleiste." },
+    "deleteDay": { "title": "Aufzeichnungen eines Tages löschen", "description": "Entfernt die aktive Zeit, Besuche und Sitzungen eines Tages von diesem Gerät. Das kann nicht rückgängig gemacht werden.", "label": "Zu löschendes Datum", "button": "Diesen Tag löschen", "done": "Aufzeichnungen vom {{date}} wurden gelöscht.", "confirmTitle": "Aufzeichnungen vom {{date}} löschen?", "confirmDescription": "Damit werden die aktive Zeit, Besuche und Sitzungen dieses Tages von diesem Gerät entfernt. Das kann nicht rückgängig gemacht werden.", "confirm": "Diesen Tag löschen", "deleting": "Wird gelöscht…" },
     "clear": { "title": "Alle Daten löschen", "description": "Löscht die von PageTime auf diesem Gerät gespeicherten Daten. Dies kann nicht rückgängig gemacht werden.", "button": "Daten löschen" }
   },
   "detail": {
@@ -108,6 +109,8 @@
     "ignore": "Diese Website nicht mehr aufzeichnen",
     "ignored": "Diese Website wird bereits ignoriert",
     "ignoreConfirm": { "title": "Diese Website nicht mehr aufzeichnen?", "description": "{{domain}} und seine Subdomains werden nicht mehr gemessen, und Besuche zählen nicht. Vorhandene Einträge werden nicht gelöscht.", "confirm": "Nicht mehr aufzeichnen" },
+    "delete": "Aufzeichnungen dieser Website löschen",
+    "deleteConfirm": { "title": "Aufzeichnungen dieser Website löschen?", "description": "Damit werden aktive Zeit, Besuchszahlen und Sitzungen von {{domain}} für alle Tage entfernt. Das kann nicht rückgängig gemacht werden. Wenn die Website auch künftig nicht aufgezeichnet werden soll, füge sie zur Ignorierliste hinzu.", "confirm": "Aufzeichnungen löschen", "deleting": "Wird gelöscht…" },
     "viewVisits": "Besuche anzeigen",
     "trend": {
       "title": "Tagestrend",
@@ -177,8 +180,9 @@
       "title": "Privatsphäre und Speicherung",
       "fields": "Gespeichert werden nur Domain, Zeiten und Besuchszahlen — nie Titel, Seitentext oder die vollständige URL.",
       "local": "Die Daten bleiben im Browser auf diesem Gerät und werden nie hochgeladen.",
-      "retention_one": "Besuche und Zeitspannen werden für den letzten {{count}} Tag aufbewahrt. Tages- und Stundensummen bleiben, bis du sie löschst.",
-      "retention_other": "Besuche und Zeitspannen werden für die letzten {{count}} Tage aufbewahrt. Tages- und Stundensummen bleiben, bis du sie löschst.",
+      "delete": "Du kannst eine Website oder einen Tag löschen. Diese Einträge werden aus der Datenbank auf diesem Gerät entfernt und können nicht wiederhergestellt werden.",
+      "retention_one": "Besuche und Zeitspannen werden für den letzten {{count}} Tag aufbewahrt. Tages- und Stundensummen bleiben, bis du sie löschst oder diese Website oder diesen Tag entfernst.",
+      "retention_other": "Besuche und Zeitspannen werden für die letzten {{count}} Tage aufbewahrt. Tages- und Stundensummen bleiben, bis du sie löschst oder diese Website oder diesen Tag entfernst.",
       "save_one": "Speichert alle {{count}} Sekunde. Beim unerwarteten Schließen kann höchstens dieses Intervall verloren gehen.",
       "save_other": "Speichert alle {{count}} Sekunden. Beim unerwarteten Schließen kann höchstens dieses Intervall verloren gehen."
     },

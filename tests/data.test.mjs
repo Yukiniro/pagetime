@@ -45,6 +45,37 @@ test('preview settings are stored apart from records and invalid values fall bac
   assert.deepEqual(await command('settings', { settings: { schema: 2, idleSeconds: 15, countAudible: 'yes' } }), DEFAULT_SETTINGS);
 });
 
+test('preview deleteSite and deleteDay remove only the named records', async () => {
+  const start = new Date(2026, 9, 18, 9).getTime();
+  const end = start + 60 * 60_000;
+  const next = new Date(2026, 9, 19, 1).getTime();
+  values.set('pagetime-preview', JSON.stringify({
+    enabled: true,
+    since: new Date(2026, 9, 1).getTime(),
+    visits: [{ domain: 'a.test', at: start }, { domain: 'b.test', at: start }, { domain: 'a.test', at: next }],
+    spans: [
+      { domain: 'a.test', start, end: next + 30 * 60_000 },
+      { domain: 'b.test', start, end },
+      { domain: 'www.youtube.com', start: next, end: next + 20 * 60_000 },
+      { domain: 'gist.github.com', start: next, end: next + 20 * 60_000 },
+    ],
+  }));
+  const day = await command('deleteDay', { date: '2026-10-18' });
+  assert.deepEqual(day.visits.map(visit => [visit.domain, visit.at]), [['a.test', next]]);
+  assert.equal(day.spans.some(span => span.domain === 'b.test'), false);
+  assert.equal(day.spans.find(span => span.domain === 'a.test').start, new Date(2026, 9, 19).getTime());
+  const removed = await command('deleteSite', { host: 'youtube.com', hosts: ['www.youtube.com', 'youtube.com'] });
+  assert.equal(removed.spans.some(span => span.domain === 'www.youtube.com'), false);
+  assert.equal(removed.spans.some(span => span.domain === 'gist.github.com'), true);
+  const site = await command('deleteSite', { host: 'a.test' });
+  assert.equal(site.spans.some(span => span.domain === 'a.test'), false);
+  assert.equal(site.visits.length, 0);
+  const again = await command('deleteSite', { host: 'missing.test' });
+  assert.equal(again.spans.some(span => span.domain === 'gist.github.com'), true);
+  const same = await command('deleteDay', { date: 'not-a-day' });
+  assert.equal(same.spans.some(span => span.domain === 'gist.github.com'), true);
+});
+
 test('snapshots never write storage and storage failures are reported', async () => {
   values.clear();
   const previous = globalThis.localStorage;
