@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { timingCopy } from './model.mjs';
 
 const counted = ['focus', 'web', 'navigation'];
-const notCounted = ['idle', 'locked', 'unfocused', 'internal', 'incognito', 'paused', 'gap'];
+const notCounted = ['idle', 'locked', 'unfocused', 'internal', 'incognito', 'paused', 'gap', 'ignored'];
 
 export function HowItWorksDialog({ open, onOpenChange, finalFocus, settings }) {
   const { t } = useTranslation();
@@ -13,6 +13,7 @@ export function HowItWorksDialog({ open, onOpenChange, finalFocus, settings }) {
   const notCountedText = key => {
     if (key === 'idle') return t('howItWorks.notCounted.idle', { count: copy.idle });
     if (key === 'gap') return t('howItWorks.notCounted.gap', { count: copy.gap });
+    if (key === 'ignored') return t('howItWorks.notCounted.ignored', { count: settings?.ignored?.length ?? 0 });
     return t(`howItWorks.notCounted.${key}`);
   };
   return <Dialog open={open} onOpenChange={onOpenChange}>

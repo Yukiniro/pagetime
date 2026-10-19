@@ -16,7 +16,7 @@ The warning describes what those APIs are able to do, not what PageTime writes i
 
 ## `storage`
 
-Stores the timing preferences in the `settings` key and the write-failure marker in the `ledgerError` key of `chrome.storage.local`, and the id that ties the service-worker checkpoint to this browser session in the `session` key of `chrome.storage.session`. The ledger itself is in the extension's IndexedDB database `pagetime-ledger`, which needs no permission. An older version's `data` key in `chrome.storage.local` is left untouched.
+Stores the timing preferences, including hostnames the user typed into `settings.ignored`, in the `settings` key and the write-failure marker in the `ledgerError` key of `chrome.storage.local`, and the id that ties the service-worker checkpoint to this browser session in the `session` key of `chrome.storage.session`. The ledger itself is in the extension's IndexedDB database `pagetime-ledger`, which needs no permission. An older version's `data` key in `chrome.storage.local` is left untouched.
 
 It can read and write this extension's own storage area. The code uses local and session only, not sync. It cannot read another extension's storage, site cookies, or arbitrary files on disk. No install warning.
 

@@ -63,6 +63,7 @@
     "method": { "title": "집계 방식", "description": "페이지 로드와 새로고침은 각각 1회 방문으로 계산합니다. 탭 전환이나 단일 페이지 앱 내부 이동은 방문 횟수를 늘리지 않습니다.<br/>{{idle}}초 동안 시스템 입력이 없으면 유휴 상태로 간주하며, {{checkpoint}}초마다 저장합니다.<br/>방문 기록과 활성 구간은 {{days}}일간 보관하며, 일별·시간별 합계는 지울 때까지 남습니다.", "audible": "음소거되지 않은 소리를 재생 중인 탭은 유휴로 세지 않습니다." },
     "audible": { "title": "오디오 재생 중에는 계속 집계", "description": "포커스된 창의 활성 탭이 음소거되지 않은 소리를 재생 중이면 유휴 상태에서도 집계합니다. 소리가 멈추거나 탭이 음소거되면 바로 멈춥니다." },
     "idle": { "title": "유휴 판정 시간", "description": "키보드나 마우스 입력이 얼마나 없으면 브라우저를 유휴로 볼지 정합니다.", "label": "유휴 판정 시간: {{duration}}", "option_other": "{{count}}분" },
+    "ignored": { "title": "무시할 사이트", "description": "이 호스트와 하위 도메인은 브라우저 내부 페이지와 같이 시간도 방문 횟수도 기록하지 않습니다. example.com 은 a.example.com 과도 일치합니다. mail.example.com 은 example.com 과 일치하지 않습니다. 기존 기록은 그대로 남으며 통계에서 숨기지 않습니다.", "input": "무시할 호스트", "placeholder": "example.com", "add": "추가", "remove": "{{domain}} 제거", "emptyTitle": "무시할 사이트가 없습니다", "emptyDescription": "호스트를 추가하면 지금부터 그 사이트를 기록하지 않습니다.", "error": "example.com 같은 호스트를 입력하세요. 프로토콜, 경로, 포트는 제거됩니다. 공백은 허용되지 않으며, 점이 없는 이름은 localhost 만 받습니다.", "limit": "무시할 호스트는 최대 {{count}}개입니다." },
     "clear": { "title": "모든 기록 삭제", "description": "이 기기에 PageTime이 저장한 기록을 삭제합니다. 삭제 후에는 복구할 수 없습니다.", "button": "데이터 삭제" }
   },
   "detail": {
@@ -72,6 +73,9 @@
     "visits_other": "{{count}}회",
     "todaySessions": "오늘의 활성 구간",
     "noSessions": "오늘은 활성 구간이 없습니다",
+    "ignore": "이 사이트 기록 안 함",
+    "ignored": "이 사이트는 이미 무시 목록에 있습니다",
+    "ignoreConfirm": { "title": "이 사이트를 더 이상 기록하지 않을까요?", "description": "이후 {{domain}} 과 그 하위 도메인의 시간과 방문 횟수를 기록하지 않습니다. 기존 기록은 삭제되지 않습니다.", "confirm": "기록 안 함" },
     "viewVisits": "방문 기록 보기"
   },
   "confirm": {
@@ -105,7 +109,8 @@
       "internal": "브라우저 내부 페이지, 확장 프로그램 페이지, 로컬 파일",
       "incognito": "시크릿 창",
       "paused": "기록을 일시 중지한 동안",
-      "gap_other": "확인 간격이 {{count}}초를 넘으면 초과분은 포함하지 않으며, 그 구간은 최대 {{count}}초만 계산합니다(시스템 일시 중지 등)."
+      "gap_other": "확인 간격이 {{count}}초를 넘으면 초과분은 포함하지 않으며, 그 구간은 최대 {{count}}초만 계산합니다(시스템 일시 중지 등).",
+      "ignored": "무시하도록 설정한 사이트({{count}}개)와 그 하위 도메인. example.com 은 그 호스트와 모든 하위 도메인에 일치하고, mail.example.com 은 example.com 과 일치하지 않습니다. 기존 기록은 삭제하거나 숨기지 않습니다."
     },
     "visits": {
       "title": "방문 횟수",
