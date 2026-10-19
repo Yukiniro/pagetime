@@ -65,11 +65,13 @@ export function App() {
   const copy = timingCopy(settings);
   const idleLabel = t('settings.idle.option', { count: settings.idleSeconds / 60 });
   const saveSettings = next => act('settings', { settings: next });
+  const ignoreHost = selected ? normalizeHost(selected) : null;
   const alreadyIgnored = selected ? isIgnored(selected, settings.ignored) : false;
+  const ignoreLimit = (settings.ignored?.length ?? 0) >= IGNORED_LIMIT;
   async function confirmIgnore() {
     const host = normalizeHost(ignoreTarget);
     const current = settings.ignored ?? [];
-    if (!host || current.includes(host)) { setIgnoreTarget(null); return; }
+    if (!host || isIgnored(host, current)) { setIgnoreTarget(null); return; }
     if (current.length >= IGNORED_LIMIT) return;
     if (await saveSettings({ ...settings, ignored: [...current, host] })) setIgnoreTarget(null);
   }
@@ -147,8 +149,9 @@ export function App() {
           <h3>{t('detail.todaySessions')}</h3>
           {sessions.length ? <ScrollArea className="h-[230px]"><ul className="session-list">{sessions.map((s, i) => <li key={i}><time>{timeLabel(Math.max(today, s.start))} — {timeLabel(Math.min(end, s.end))}</time><span>{duration(Math.min(end, s.end) - Math.max(today, s.start))}</span></li>)}</ul></ScrollArea> : <p className="muted">{t('detail.noSessions')}</p>}
           <div className="mt-4 flex flex-col gap-2">
-            <Button variant="outline" className="action-button w-full" disabled={busy || alreadyIgnored || (settings.ignored?.length ?? 0) >= IGNORED_LIMIT} onClick={() => setIgnoreTarget(selected)}>{alreadyIgnored ? t('detail.ignored') : t('detail.ignore')}</Button>
-            {(settings.ignored?.length ?? 0) >= IGNORED_LIMIT && !alreadyIgnored && <p className="text-sm text-destructive" role="alert">{t('settings.ignored.limit', { count: IGNORED_LIMIT })}</p>}
+            <Button variant="outline" className="action-button w-full" disabled={busy || alreadyIgnored || !ignoreHost || ignoreLimit} onClick={() => setIgnoreTarget(selected)}>{alreadyIgnored ? t('detail.ignored') : t('detail.ignore')}</Button>
+            {selected && !alreadyIgnored && !ignoreHost && <p className="text-sm text-destructive" role="alert">{t('settings.ignored.error')}</p>}
+            {selected && !alreadyIgnored && ignoreHost && ignoreLimit && <p className="text-sm text-destructive" role="alert">{t('settings.ignored.limit', { count: IGNORED_LIMIT })}</p>}
             <Button className="action-button w-full" onClick={() => { goRecords(selected); setSelected(null); }}>{t('detail.viewVisits')}<ArrowRight /></Button>
           </div>
         </>}

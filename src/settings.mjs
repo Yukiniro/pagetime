@@ -3,17 +3,18 @@ export const IDLE_OPTIONS = [60, 120, 300, 600];
 export const HOST_MAX = 253;
 export const IGNORED_LIMIT = 500;
 
-const DNS_LABEL = /^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$/;
+const IPV4 = /^\d{1,3}(?:\.\d{1,3}){3}$/;
 
 function isSubnet(value) {
-  const bare = value.replace(/^[a-z][a-z0-9+.-]*:\/\//i, '').replace(/^\/\//, '');
-  const slash = bare.indexOf('/');
+  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(value) || value.startsWith('//')) return false;
+  const slash = value.indexOf('/');
   if (slash === -1) return false;
-  const tail = bare.slice(slash + 1);
+  const tail = value.slice(slash + 1);
   if (!/^\d{1,3}$/.test(tail)) return false;
-  const head = bare.slice(0, slash);
-  const host = head.startsWith('[') && head.endsWith(']') ? head.slice(1, -1) : head.replace(/:\d+$/, '');
-  return host.includes(':') || /^\d{1,3}(?:\.\d{1,3}){3}$/.test(host);
+  const head = value.slice(0, slash);
+  if (/:\d+$/.test(head)) return false;
+  const host = head.startsWith('[') && head.endsWith(']') ? head.slice(1, -1) : head;
+  return host.includes(':') || IPV4.test(host);
 }
 
 function asUrl(value) {
@@ -26,21 +27,14 @@ function asUrl(value) {
   return `http://${value}`;
 }
 
-function isDnsName(host) {
-  if (host.length > HOST_MAX || host.includes('..')) return false;
-  const labels = host.split('.');
-  if (labels.length < 2) return false;
-  return labels.every(label => label.length <= 63 && DNS_LABEL.test(label));
-}
-
 function isAddress(host) {
-  return host.startsWith('[') || host.includes(':') || /^\d{1,3}(?:\.\d{1,3}){3}$/.test(host);
+  return host.startsWith('[') || host.includes(':') || IPV4.test(host);
 }
 
 export function normalizeHost(input) {
   if (typeof input !== 'string') return null;
   const trimmed = input.trim();
-  if (!trimmed || trimmed.length > 2000 || /\s/.test(trimmed) || trimmed.includes('*') || isSubnet(trimmed)) return null;
+  if (!trimmed || trimmed.length > 16_384 || /\s/.test(trimmed) || trimmed.includes('*') || isSubnet(trimmed)) return null;
   let url;
   try { url = new URL(asUrl(trimmed)); }
   catch { return null; }
@@ -58,11 +52,11 @@ export function normalizeHost(input) {
       return canonical && canonical.length <= HOST_MAX ? canonical : null;
     } catch { return null; }
   }
-  if (/^\d{1,3}(?:\.\d{1,3}){3}$/.test(host)) {
+  if (IPV4.test(host)) {
     return host.split('.').some(part => Number(part) > 255) ? null : host;
   }
-  if (host === 'localhost') return host;
-  return isDnsName(host) ? host : null;
+  if (host === 'localhost' || host.includes('.')) return host;
+  return null;
 }
 
 // An entry matches that host and its subdomains. An address matches only itself.

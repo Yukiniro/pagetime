@@ -41,8 +41,12 @@ test('normalizeHost accepts IPv4 and IPv6 literals and rejects subnets', () => {
   assert.equal(normalizeHost('999.999.999.999'), null);
   assert.equal(normalizeHost('10.0.0.0/8'), null);
   assert.equal(normalizeHost('192.168.0.1/24'), null);
-  assert.equal(normalizeHost('https://192.168.0.1/24'), null);
+  assert.equal(normalizeHost('https://192.168.0.1/24'), '192.168.0.1');
+  assert.equal(normalizeHost('https://192.168.0.1/admin'), '192.168.0.1');
+  assert.equal(normalizeHost('http://192.168.1.10:8080/24'), '192.168.1.10');
+  assert.equal(normalizeHost('192.168.1.10:8080/24'), '192.168.1.10');
   assert.equal(normalizeHost('2001:db8::/32'), null);
+  assert.equal(normalizeHost('https://[2001:db8::1]/32'), normalizeHost('[2001:db8::1]'));
   const v6 = normalizeHost('https://[2001:DB8::1]/x');
   assert.equal(v6, normalizeHost('2001:DB8::1'));
   assert.equal(v6, normalizeHost('[2001:db8::1]:443'));
@@ -66,6 +70,14 @@ test('isIgnored matches a host and its subdomains, not a parent or a lookalike',
   assert.equal(isIgnored('192.168.1.10', ['192.168.1.10']), true);
   assert.equal(isIgnored(null, ['example.com']), false);
   assert.equal(isIgnored('example.com', null), false);
+});
+
+test('normalizeHost keeps hosts the ledger already stores, including a long path', () => {
+  assert.equal(normalizeHost('my_host.example.com'), 'my_host.example.com');
+  assert.equal(normalizeHost('https://-bad.example.com/a'), '-bad.example.com');
+  assert.equal(normalizeHost('bad-.example.com'), 'bad-.example.com');
+  assert.equal(normalizeHost(`https://example.com/${'a'.repeat(3000)}`), 'example.com');
+  assert.equal(isIgnored(domainOf('https://my_host.example.com/a'), ['my_host.example.com']), true);
 });
 
 test('ignored entries use the same host the ledger stores', () => {
