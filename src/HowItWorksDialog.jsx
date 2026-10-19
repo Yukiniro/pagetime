@@ -3,6 +3,7 @@ import { Button } from '@app/components/ui/button';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@app/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
 import { timingCopy } from './model.mjs';
+import { MERGE_MODES } from './settings.mjs';
 
 const counted = ['focus', 'web', 'navigation'];
 const notCounted = ['idle', 'locked', 'unfocused', 'internal', 'incognito', 'paused', 'gap', 'ignored'];
@@ -47,6 +48,13 @@ export function HowItWorksDialog({ open, onOpenChange, finalFocus, settings }) {
       <section className="flex flex-col gap-1">
         <h3>{t('howItWorks.visits.title')}</h3>
         <p>{t('howItWorks.visits.description')}</p>
+      </section>
+      <section className="flex flex-col gap-1">
+        <h3>{t('howItWorks.merge.title')}</h3>
+        <p>{t('howItWorks.merge.storage')}</p>
+        <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-muted-foreground">
+          {MERGE_MODES.map(mode => <li key={mode}>{t(`howItWorks.merge.${mode}`)}</li>)}
+        </ul>
       </section>
       <section className="flex flex-col gap-1">
         <h3>{t('howItWorks.privacy.title')}</h3>

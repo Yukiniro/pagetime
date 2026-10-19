@@ -73,6 +73,14 @@
     "method": { "title": "Como é medido", "description": "Cada carregamento ou recarga de página conta como uma visita; trocar de guia ou navegar dentro de aplicativos de página única não adiciona visitas.<br/>{{idle}} segundos sem atividade no sistema contam como ociosidade; o progresso é salvo a cada {{checkpoint}} segundos.<br/>Mantém visitas e sessões ativas por {{days}} dias; os totais diários e por hora ficam até você apagá-los.", "audible": "Uma guia que reproduz som sem silenciar não conta como ociosidade." },
     "audible": { "title": "Continuar contando enquanto houver áudio", "description": "Se a guia ativa da janela em foco reproduzir som sem silenciar, o tempo ocioso também conta. A contagem para assim que o som para ou a guia é silenciada." },
     "idle": { "title": "Limite de ociosidade", "description": "Por quanto tempo sem teclado ou mouse este navegador passa a contar como ocioso.", "label": "Limite de ociosidade: {{duration}}", "option_one": "{{count}} minuto", "option_many": "{{count}} minutos", "option_other": "{{count}} minutos" },
+    "siteMerge": {
+      "title": "Agrupar subdomínios",
+      "description": "Muda apenas como a visão geral e os detalhes do site são agrupados. Os registros guardam o hostname original, e você pode trocar quando quiser.",
+      "label": "Agrupamento de subdomínios: {{mode}}",
+      "none": "Não agrupar",
+      "prefix": "Agrupar www, m e mobile",
+      "registrable": "Agrupar por domínio registrável"
+    },
     "ignored": { "title": "Sites ignorados", "description": "Estes hosts e seus subdomínios não entram no tempo nem nas visitas, como uma página interna do navegador. example.com também corresponde a a.example.com; mail.example.com não corresponde a example.com. Os registros existentes permanecem e não são ocultados.", "input": "Host a ignorar", "placeholder": "example.com", "add": "Adicionar", "remove": "Remover {{domain}}", "emptyTitle": "Nenhum site ignorado", "emptyDescription": "Adicione um host para deixar de registrá-lo a partir de agora.", "error": "Informe um host como example.com. Protocolo, caminho e porta são removidos. Espaços não são permitidos, e um nome sem ponto só é aceito para localhost.", "limit": "Você pode ignorar até {{count}} hosts." },
     "clear": { "title": "Limpar todos os registros", "description": "Exclui os registros que o PageTime salvou neste dispositivo. Não é possível desfazer.", "button": "Limpar dados" }
   },
@@ -88,7 +96,14 @@
     "ignore": "Parar de registrar este site",
     "ignored": "Este site já está ignorado",
     "ignoreConfirm": { "title": "Parar de registrar este site?", "description": "{{domain}} e seus subdomínios deixarão de ter tempo e visitas registrados. Os registros existentes não são apagados.", "confirm": "Parar de registrar" },
-    "viewVisits": "Ver visitas"
+    "viewVisits": "Ver visitas",
+    "breakdown": {
+      "title": "Composição por subdomínio",
+      "label": "Composição por subdomínio. {{hosts}}",
+      "item": "{{domain}}, {{duration}}, {{percent}}%",
+      "separator": "; ",
+      "share": "{{duration}} · {{percent}}%"
+    }
   },
   "confirm": {
     "title": "Limpar todos os registros de navegação?",
@@ -146,6 +161,13 @@
       "save_other": "Salva a cada {{count}} segundos. Se o navegador fechar de forma inesperada, no máximo esse intervalo recente pode ser perdido."
     },
     "limits": { "title": "Limites conhecidos", "audible": "O navegador pode levar 2–3 segundos para perceber que o som começou ou parou.", "threshold": "Com um limite de ociosidade de 10 minutos, até 10 minutos a mais podem ser contados depois que você sair." },
+    "merge": {
+      "title": "Como os sites são agrupados",
+      "storage": "O registro continua com o hostname original. O agrupamento só muda a consulta exibida, não reescreve as linhas salvas e pode ser desligado.",
+      "none": "Não agrupar: cada hostname é contado separadamente.",
+      "prefix": "Prefixos comuns: remove um www., m. ou mobile. no início. www.youtube.com e m.youtube.com viram youtube.com. Outros nomes, como gist.github.com, continuam separados.",
+      "registrable": "Domínio registrável: agrupa pela seção ICANN da Public Suffix List. a.b.example.co.uk vira example.co.uk. Endereços IP, localhost e hosts sem domínio registrável permanecem iguais. Sufixos privados como github.io não são tratados como sufixos públicos, então user.github.io entra em github.io."
+    },
     "close": "Fechar"
   }
 }

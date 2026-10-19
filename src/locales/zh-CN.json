@@ -63,6 +63,14 @@
     "method": { "title": "统计方式", "description": "页面加载与刷新各计一次访问；切换标签不增加次数，单页应用内部跳转不重复计数。<br/>连续 {{idle}} 秒无系统操作视为空闲，每 {{checkpoint}} 秒保存一次。<br/>访问记录和活跃时段保留 {{days}} 天，按天和按小时的汇总会一直保留，直到你清除。", "audible": "正在播放未静音声音的标签不会被算作空闲。" },
     "audible": { "title": "播放音频时继续计时", "description": "前台窗口的当前标签正在播放未静音声音时，系统空闲也继续计时。声音停止或标签静音后立即停止。" },
     "idle": { "title": "空闲判定时间", "description": "多久没有键盘或鼠标操作后，把浏览器视为空闲。", "label": "空闲判定时间：{{duration}}", "option_other": "{{count}} 分钟" },
+    "siteMerge": {
+      "title": "站点合并方式",
+      "description": "只改变概览和站点详情的分组。记录里仍保存原始主机名，可以随时切换。",
+      "label": "站点合并方式：{{mode}}",
+      "none": "不合并",
+      "prefix": "合并 www、m、mobile",
+      "registrable": "按可注册域名合并"
+    },
     "ignored": { "title": "忽略的站点", "description": "这些域名及其子域名不计时长、不记访问次数，和打开浏览器内部页面一样。例如 example.com 也会匹配 a.example.com；mail.example.com 不会匹配 example.com。已有记录不会删除，也不会从统计里隐藏。", "input": "要忽略的域名", "placeholder": "example.com", "add": "添加", "remove": "移除 {{domain}}", "emptyTitle": "没有忽略的站点", "emptyDescription": "添加后，这些站点之后就不再记入新的时长和访问。", "error": "请输入域名，例如 example.com。系统会去掉协议、路径和端口。不能包含空格；没有点号时只接受 localhost。", "limit": "最多忽略 {{count}} 个站点。" },
     "clear": { "title": "清空所有记录", "description": "删除此设备上 PageTime 已保存的记录，删除后无法恢复。", "button": "清空数据" }
   },
@@ -76,7 +84,14 @@
     "ignore": "不再记录此站点",
     "ignored": "此站点已在忽略列表中",
     "ignoreConfirm": { "title": "不再记录此站点？", "description": "之后不再记录 {{domain}} 及其子域名的时长和访问次数。已有记录不会删除。", "confirm": "不再记录" },
-    "viewVisits": "查看访问记录"
+    "viewVisits": "查看访问记录",
+    "breakdown": {
+      "title": "子域名构成",
+      "label": "子域名构成。{{hosts}}",
+      "item": "{{domain}}，{{duration}}，{{percent}}%",
+      "separator": "；",
+      "share": "{{duration}} · {{percent}}%"
+    }
   },
   "confirm": {
     "title": "清空所有浏览记录？",
@@ -124,6 +139,13 @@
       "save_other": "每 {{count}} 秒保存一次；意外关闭时最多丢失最近这段时间。"
     },
     "limits": { "title": "已知误差", "audible": "浏览器判断声音开始或停止可能晚 2–3 秒。", "threshold": "空闲判定时间设为 10 分钟时，离开后最多还会多计 10 分钟。" },
+    "merge": {
+      "title": "站点如何合并",
+      "storage": "账本仍按原始主机名保存。合并只改变概览的呈现，不会改写已有记录，也可以随时关闭。",
+      "none": "不合并：每个主机名单独统计。",
+      "prefix": "合并常见前缀：去掉开头的 www.、m.、mobile.。www.youtube.com 与 m.youtube.com 会显示为 youtube.com；gist.github.com 仍单独统计。",
+      "registrable": "按可注册域名：使用 Public Suffix List 的 ICANN 部分。a.b.example.co.uk 会显示为 example.co.uk。IP 地址、localhost，以及无法得到可注册域名的主机保持原样。github.io 这类私有后缀不当作公共后缀，因此 user.github.io 会并入 github.io。"
+    },
     "close": "关闭"
   }
 }

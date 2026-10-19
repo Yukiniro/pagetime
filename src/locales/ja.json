@@ -63,6 +63,14 @@
     "method": { "title": "集計方法", "description": "ページの読み込みと再読み込みはそれぞれ 1 回の訪問として数えます。タブの切り替えやシングルページアプリ内の移動では増えません。<br/>{{idle}} 秒間システム操作がない場合はアイドルとみなし、{{checkpoint}} 秒ごとに保存します。<br/>訪問履歴とアクティブな時間帯は {{days}} 日間保持し、日別・時間別の合計は消去するまで残ります。", "audible": "ミュートされていない音声を再生しているタブはアイドルになりません。" },
     "audible": { "title": "音声の再生中は計測を続ける", "description": "フォーカスされたウィンドウのアクティブなタブがミュートされていない音声を再生している間は、アイドル中も計測します。音声が止まるかタブをミュートすると、すぐに停止します。" },
     "idle": { "title": "アイドル判定時間", "description": "キーボードやマウスの操作がなくなってから、ブラウザをアイドルとみなすまでの時間です。", "label": "アイドル判定時間：{{duration}}", "option_other": "{{count}} 分" },
+    "siteMerge": {
+      "title": "サイトのまとめ方",
+      "description": "概要とサイト詳細のグループ分けだけを変えます。記録には元のホスト名が残ります。いつでも切り替えできます。",
+      "label": "サイトのまとめ方：{{mode}}",
+      "none": "まとめない",
+      "prefix": "www・m・mobile をまとめる",
+      "registrable": "登録可能ドメインでまとめる"
+    },
     "ignored": { "title": "無視するサイト", "description": "これらのホストとそのサブドメインは、ブラウザの内部ページと同じように、時間も訪問回数も記録しません。example.com は a.example.com にも一致します。mail.example.com は example.com には一致しません。既存の記録は残り、統計からも隠れません。", "input": "無視するホスト", "placeholder": "example.com", "add": "追加", "remove": "{{domain}} を削除", "emptyTitle": "無視するサイトはありません", "emptyDescription": "ホストを追加すると、これ以降はそのサイトを記録しません。", "error": "example.com のようなホストを入力してください。プロトコル、パス、ポートは除かれます。空白は使えず、ドットのない名前は localhost だけ受け付けます。", "limit": "無視できるホストは {{count}} 件までです。" },
     "clear": { "title": "すべての記録を削除", "description": "このデバイスに PageTime が保存した記録を削除します。削除後は元に戻せません。", "button": "データを削除" }
   },
@@ -76,7 +84,14 @@
     "ignore": "このサイトを記録しない",
     "ignored": "このサイトはすでに無視リストにあります",
     "ignoreConfirm": { "title": "このサイトを記録しないようにしますか？", "description": "今後、{{domain}} とそのサブドメインの時間と訪問回数は記録しません。既存の記録は削除されません。", "confirm": "記録しない" },
-    "viewVisits": "訪問履歴を表示"
+    "viewVisits": "訪問履歴を表示",
+    "breakdown": {
+      "title": "サブドメインの内訳",
+      "label": "サブドメインの内訳。{{hosts}}",
+      "item": "{{domain}}、{{duration}}、{{percent}}%",
+      "separator": "、",
+      "share": "{{duration}} · {{percent}}%"
+    }
   },
   "confirm": {
     "title": "すべての閲覧記録を削除しますか？",
@@ -124,6 +139,13 @@
       "save_other": "{{count}} 秒ごとに保存します。予期せず閉じた場合、失われるのは直近のこの間隔までです。"
     },
     "limits": { "title": "既知の誤差", "audible": "音声の開始と停止をブラウザが認識するまで 2–3 秒遅れることがあります。", "threshold": "アイドル判定を 10 分にすると、離席後も最大 10 分が加算されることがあります。" },
+    "merge": {
+      "title": "サイトのまとめ方",
+      "storage": "台帳には元のホスト名のまま保存されます。まとめは表示上の集計だけで、保存済みの記録は書き換えず、いつでもオフにできます。",
+      "none": "まとめない：ホスト名ごとに集計します。",
+      "prefix": "よくある接頭辞：先頭の www.、m.、mobile. だけを外します。www.youtube.com と m.youtube.com は youtube.com になります。gist.github.com はそのまま分かれます。",
+      "registrable": "登録可能ドメイン：Public Suffix List の ICANN 部分でまとめます。a.b.example.co.uk は example.co.uk になります。IP アドレス、localhost、登録可能ドメインが得られないホストはそのままです。github.io のような私用サフィックスは公共サフィックスにしないため、user.github.io は github.io にまとまります。"
+    },
     "close": "閉じる"
   }
 }

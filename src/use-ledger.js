@@ -4,6 +4,7 @@ import { isExtension, watchLedgerError } from './data.js';
 import { daysBetween, openLedger, readDomains, readState, recentVisits, spansBetween } from './ledger.mjs';
 import { VISIT_LIST_LIMIT, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
 import { addDays, dateKey } from './model.mjs';
+import { siteOf } from './site.mjs';
 
 let db;
 
@@ -16,7 +17,7 @@ function useExtensionLedger(range) {
     try {
       db ??= openLedger();
       const domains = await readDomains(db);
-      const ids = new Set(domains.filter(row => row.host.includes(range.search)).map(row => row.id));
+      const ids = new Set(domains.filter(row => range.site ? siteOf(row.host, range.siteMerge) === range.site : row.host.includes(range.search)).map(row => row.id));
       const rows = {
         state: await readState(db),
         domains,
@@ -29,7 +30,7 @@ function useExtensionLedger(range) {
       console.error('PageTime could not read the ledger', error);
       return { error: 'read' };
     }
-  }, [range.start, range.end, range.today, range.search, attempt]);
+  }, [range.start, range.end, range.today, range.search, range.site, range.siteMerge, attempt]);
   return {
     view: result?.view,
     error: result?.error ?? (marker ? 'save' : undefined),
