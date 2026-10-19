@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { isExtension, watchLedgerError } from './data.js';
-import { daysBetween, openLedger, readDomains, readState, recentVisits, spansBetween } from './ledger.mjs';
+import { daysBetween, openLedger, readDomains, readHead, recentVisits, spansBetween } from './ledger.mjs';
 import { VISIT_LIST_LIMIT, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
 import { addDays, dateKey } from './model.mjs';
 import { siteOf } from './site.mjs';
@@ -16,14 +16,18 @@ function useExtensionLedger(range) {
   const result = useLiveQuery(async () => {
     try {
       db ??= openLedger();
-      const domains = await readDomains(db);
+      const { browser } = await import('wxt/browser');
+      const [domains, head, stored] = await Promise.all([readDomains(db), readHead(db), browser.storage.session.get('session')]);
       const ids = new Set(domains.filter(row => range.site ? siteOf(row.host, range.siteMerge) === range.site : row.host.includes(range.search)).map(row => row.id));
+      const cursor = head.cursor?.session === stored.session ? head.cursor : null;
       const rows = {
-        state: await readState(db),
+        state: head.state,
         domains,
         days: await daysBetween(db, dateKey(range.start), dateKey(addDays(range.end, -1))),
         spans: await spansBetween(db, range.today, range.end),
         visits: await recentVisits(db, range.start, range.end, ids, VISIT_LIST_LIMIT),
+        cursor,
+        lastEnd: head.lastEnd,
       };
       return { view: viewFromLedger(rows, { ...range, now: Date.now() }) };
     } catch (error) {

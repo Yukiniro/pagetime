@@ -20,6 +20,11 @@
   },
   "loading": "Chargement des données locales…",
   "active": "Actif {{duration}}",
+  "badge": {
+    "today": "Aujourd’hui {{duration}}",
+    "todaySite": "Aujourd’hui {{duration}} · {{domain}} {{siteDuration}}",
+    "paused": "Enregistrement en pause"
+  },
   "summary": {
     "label": "Résumé",
     "totalTime": "Temps de navigation active total",
@@ -82,6 +87,7 @@
       "registrable": "Regrouper par domaine enregistrable"
     },
     "ignored": { "title": "Sites ignorés", "description": "Ces hôtes et leurs sous-domaines ne sont pas mesurés et les visites ne sont pas comptées, comme une page interne du navigateur. example.com correspond aussi à a.example.com ; mail.example.com ne correspond pas à example.com. Les enregistrements existants restent et ne sont pas masqués.", "input": "Hôte à ignorer", "placeholder": "example.com", "add": "Ajouter", "remove": "Retirer {{domain}}", "emptyTitle": "Aucun site ignoré", "emptyDescription": "Ajoutez un hôte pour ne plus l’enregistrer à partir de maintenant.", "error": "Saisissez un hôte tel que example.com. Le protocole, le chemin et le port sont retirés. Les espaces ne sont pas admis, et un nom sans point n’est accepté que pour localhost.", "limit": "Vous pouvez ignorer au plus {{count}} hôtes." },
+    "badge": { "title": "Badge de la barre d’outils", "description": "Affiche le temps de navigation actif d’aujourd’hui sur l’icône de la barre d’outils." },
     "clear": { "title": "Effacer tous les enregistrements", "description": "Supprime les données enregistrées par PageTime sur cet appareil. Action irréversible.", "button": "Effacer les données" }
   },
   "detail": {

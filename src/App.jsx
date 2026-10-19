@@ -134,6 +134,7 @@ export function App() {
                 {languages.map(([code, name]) => <DropdownMenuRadioItem closeOnClick key={code} value={code} lang={code}>{name}</DropdownMenuRadioItem>)}
               </DropdownMenuRadioGroup></DropdownMenuContent>
             </DropdownMenu></div>
+            <div className="setting-row"><div><h2 id="toolbar-badge">{t('settings.badge.title')}</h2><p>{t('settings.badge.description')}</p></div><Switch className="shrink-0" checked={settings.badge} onCheckedChange={checked => saveSettings({ ...settings, badge: checked })} disabled={busy} aria-labelledby="toolbar-badge" /></div>
             <div className="setting-row"><div><h2>{t('settings.recording.title')}</h2><p>{t('settings.recording.description')}</p></div><Button variant="outline" className="action-button" disabled={busy} onClick={() => act('toggle')}>{enabled ? t('actions.pause') : t('actions.enable')}</Button></div>
             <div className="setting-row"><div><h2>{t('settings.privacy.title')}</h2><p><Trans i18nKey="settings.privacy.description" /></p></div><ShieldCheck size={28} className="privacy-icon" /></div>
             <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.ignored.title')}</h2><p>{t('settings.ignored.description')}</p><IgnoredSites settings={settings} busy={busy} onSave={saveSettings} /></div></div>

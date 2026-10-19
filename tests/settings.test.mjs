@@ -94,7 +94,7 @@ test('ignored entries use the same host the ledger stores', () => {
 test('validateSettings keeps schema 1, filters invalid hosts, dedupes, and caps the list', () => {
   assert.equal(IGNORED_LIMIT, 500);
   assert.equal(HOST_MAX, 253);
-  assert.deepEqual(validateSettings(undefined), { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', ignored: [] });
+  assert.deepEqual(validateSettings(undefined), { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', ignored: [], badge: true });
   assert.deepEqual(validateSettings({ ignored: 'example.com' }).ignored, []);
   assert.deepEqual(validateSettings({
     schema: 1,
@@ -107,6 +107,7 @@ test('validateSettings keeps schema 1, filters invalid hosts, dedupes, and caps 
     countAudible: false,
     siteMerge: 'prefix',
     ignored: ['mail.example.com', 'localhost', normalizeHost('::1')],
+    badge: true,
   });
   assert.deepEqual(validateSettings({ ignored: ['Example.com', 'example.com'] }).ignored, ['example.com']);
   const many = Array.from({ length: IGNORED_LIMIT + 20 }, (_, index) => `a${index}.example.com`);
@@ -120,5 +121,6 @@ test('validateSettings keeps schema 1, filters invalid hosts, dedupes, and caps 
     countAudible: true,
     siteMerge: 'prefix',
     ignored: ['ok.com'],
+    badge: true,
   });
 });

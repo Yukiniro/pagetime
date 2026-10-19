@@ -11,13 +11,20 @@ import es from './locales/es.json';
 import fr from './locales/fr.json';
 import ptBR from './locales/pt-BR.json';
 import ru from './locales/ru.json';
+import { formatDuration } from './duration.mjs';
 
 const resources = { 'zh-CN': zhCN, 'zh-TW': zhTW, en, ja, ko, de, es, fr, 'pt-BR': ptBR, ru };
 export const languages = [['zh-CN', '简体中文'], ['zh-TW', '繁體中文'], ['en', 'English'], ['ja', '日本語'], ['ko', '한국어'], ['de', 'Deutsch'], ['es', 'Español'], ['fr', 'Français'], ['pt-BR', 'Português (Brasil)'], ['ru', 'Русский']];
 
+function rememberLanguage(lng) {
+  if (typeof location === 'undefined' || !['chrome-extension:', 'moz-extension:'].includes(location.protocol)) return;
+  import('wxt/browser').then(({ browser }) => browser.storage.local.set({ language: lng })).catch(error => console.error('PageTime could not store the language', error));
+}
+
 i18n.on('languageChanged', () => {
   document.documentElement.lang = i18n.resolvedLanguage;
   document.title = i18n.t('appTitle');
+  rememberLanguage(i18n.resolvedLanguage);
 });
 
 i18n.use(LanguageDetector).use(initReactI18next).init({
@@ -38,9 +45,7 @@ export const formatDate = (at, options) => new Date(at).toLocaleDateString(i18n.
 export const timeLabel = at => new Date(at).toLocaleTimeString(i18n.resolvedLanguage, { hour: '2-digit', minute: '2-digit', hour12: false });
 
 export function duration(ms) {
-  if (ms < 60_000) return ms ? i18n.t('duration.underMinute') : i18n.t('duration.minutes', { count: 0 });
-  const mins = Math.floor(ms / 60_000);
-  return mins >= 60 ? i18n.t('duration.hours', { hours: Math.floor(mins / 60), minutes: mins % 60 }) : i18n.t('duration.minutes', { count: mins });
+  return formatDuration(ms, (key, options) => i18n.t(key, options));
 }
 
 export default i18n;
