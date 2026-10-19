@@ -103,5 +103,7 @@ test('today opens the timeline and keeps a 7-day trend; other ranges open their 
   const past = customRange('2026-10-12', '2026-10-12');
   assert.equal(view(past).stats.ms, HOUR);
   assert.equal(view(past).stats.visits, 1);
+  assert.equal(view(past).todayStats.ms, 3 * HOUR);
+  assert.equal(view(past).todayStats.visits, 1);
   assert.deepEqual(view(past).spans.map(span => span.domain).sort(), ['a.test', 'b.test']);
 });

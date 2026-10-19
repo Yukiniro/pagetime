@@ -30,8 +30,8 @@ function useExtensionLedger(range) {
       // Extra trend rows stay out of the main view, so rankings and visits keep the selected range.
       // `focus` limits the bars to one merged site. It does not change the visit list or ranking totals.
       const trend = trendWindow(range, range.today);
-      const fetchFrom = dateKey(Math.min(range.start, trend.start));
-      const fetchTo = dateKey(addDays(Math.max(range.end, trend.end), -1));
+      const fetchFrom = dateKey(Math.min(range.start, trend.start, range.today));
+      const fetchTo = dateKey(Math.max(addDays(range.end, -1), addDays(trend.end, -1), range.today));
       const [allDays, hours, spans, visits] = await Promise.all([
         daysBetween(db, fetchFrom, fetchTo),
         hoursBetween(db, displayFrom, displayTo),
@@ -41,7 +41,7 @@ function useExtensionLedger(range) {
       const rows = {
         state: head.state,
         domains,
-        days: allDays.filter(row => row.date >= displayFrom && row.date <= displayTo),
+        days: allDays,
         hours,
         spans,
         visits,

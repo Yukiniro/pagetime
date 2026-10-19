@@ -79,6 +79,7 @@ h1,h2,h3{font-weight:700}.nav-item svg{width:23px;height:23px}@media(max-width:7
 @media(max-width:900px){.kpi{grid-template-columns:1fr}.kpi-item{border-left:0;border-top:1px solid var(--line)}.kpi-item:first-child{border-top:0}.kpi-item.primary .kpi-value{font-size:36px}.rank-grid{grid-template-columns:1fr}.chart-head h2{font-size:15px}.kpi-item.primary .skel-kpi{height:42px}}
 .range-control{position:relative;flex:0 0 auto}
 .range-panel{position:absolute;z-index:30;top:calc(100% + 8px);right:0;display:flex;flex-direction:column;gap:10px;width:min(280px,calc(100vw - 32px));padding:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(16,32,62,.12)}
+@media(max-width:760px){.range-panel{right:auto;left:0}}
 .range-field{display:flex;flex-direction:column;gap:4px;color:var(--ink-soft);font-size:12px;line-height:1.4}
 .range-field p,.range-invalid{margin:0}
 .range-invalid{color:var(--destructive);font-size:12px;line-height:1.45}

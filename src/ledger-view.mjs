@@ -49,7 +49,7 @@ export function viewFromSnapshot(data, { start, end, today, search = '', site = 
     enabled: data.enabled,
     since: data.since,
     stats: summarize(data, start, end, keyOf),
-    todayStats: summarize(data, today, end, keyOf),
+    todayStats: summarize(data, today, addDays(today, 1), keyOf),
     days: daily(trendData, start, end).map(({ at, ms }) => ({ at, ms, recorded: at >= midnight(data.since) })),
     hourRows: data.spans.flatMap(span => hourPieces(Math.max(span.start, start), Math.min(span.end, end))),
     // Timeline sessions stay on the local day of `today`, including when the query range is earlier.
@@ -71,13 +71,16 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
   const perDay = new Map();
   const includeInTrend = domain => !site || keyOf(domain) === site;
   let visitCount = 0;
+  // Day rows may include today even when the query range is earlier, so the timeline total stays on today.
   for (const row of days) {
     const domain = host.get(row.domainId);
     if (!domain) continue;
-    entries.push({ domain, ms: row.ms, visits: row.visits });
+    if (inRange(row.date, start, end)) {
+      entries.push({ domain, ms: row.ms, visits: row.visits });
+      if (includeInTrend(domain)) perDay.set(row.date, (perDay.get(row.date) ?? 0) + row.ms);
+      if (matches(domain, search, site, keyOf)) visitCount += row.visits;
+    }
     if (row.date === todayKey) todayEntries.push({ domain, ms: row.ms, visits: row.visits });
-    if (includeInTrend(domain)) perDay.set(row.date, (perDay.get(row.date) ?? 0) + row.ms);
-    if (matches(domain, search, site, keyOf)) visitCount += row.visits;
   }
   const enabled = state?.enabled ?? true;
   const segment = enabled ? openCredit(cursor, lastEnd, now) : null;
@@ -91,9 +94,10 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
       const piece = overlapMs(segment, Math.max(from, at), Math.min(to, addDays(at, 1)));
       if (!piece) continue;
       if (includeInTrend(segment.domain)) perDay.set(dateKey(at), (perDay.get(dateKey(at)) ?? 0) + piece);
-      if (dateKey(at) === todayKey) todayEntries.push({ domain: segment.domain, ms: piece, visits: 0 });
     }
   }
+  const todayPiece = overlapMs(segment, today, addDays(today, 1));
+  if (todayPiece) todayEntries.push({ domain: segment.domain, ms: todayPiece, visits: 0 });
   const trend = [];
   const recordedFrom = midnight(state?.since ?? now);
   for (let at = start; at < end; at = addDays(at, 1)) trend.push({ at, ms: perDay.get(dateKey(at)) ?? 0, recorded: at >= recordedFrom });
