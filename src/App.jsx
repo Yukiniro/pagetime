@@ -25,13 +25,14 @@ import { VISIT_LIST_LIMIT } from './ledger-view.mjs';
 import { Breakdown, HourChart, SiteTrend } from './Charts.jsx';
 import { SiteIcon } from './SiteIcon.jsx';
 import { Overview } from './Overview.jsx';
+import { toggleSiteFilter } from './site-filter.mjs';
 import { duration, formatDate, languages, timeLabel } from './i18n.js';
 
 export function App() {
   const { t, i18n } = useTranslation();
   const rangeLabel = range => range === 1 ? t('range.today') : t('range.lastDays', { count: range });
   const [settings, setSettings] = useState(DEFAULT_SETTINGS), [ready, setReady] = useState(false), [error, setError] = useState(''), [busy, setBusy] = useState(false);
-  const [page, setPage] = useState('overview'), [range, setRange] = useState(1), [search, setSearch] = useState(''), [site, setSite] = useState(''), [selected, setSelected] = useState(null);
+  const [page, setPage] = useState('overview'), [range, setRange] = useState(1), [search, setSearch] = useState(''), [site, setSite] = useState(''), [filterSite, setFilterSite] = useState(''), [selected, setSelected] = useState(null);
   const [confirmClear, setConfirmClear] = useState(false), [howOpen, setHowOpen] = useState(false), [ignoreTarget, setIgnoreTarget] = useState(null);
   const [chosenDay, setChosenDay] = useState(''), [dayDone, setDayDone] = useState(''), [confirmDay, setConfirmDay] = useState(false), [deleteTarget, setDeleteTarget] = useState(null);
   const dayQuery = /^\d{4}-\d{2}-\d{2}$/.test(chosenDay) ? chosenDay : '';
@@ -39,7 +40,7 @@ export function App() {
   const openHow = event => { howTrigger.current = event.currentTarget; setHowOpen(true); };
   const now = Date.now(), today = midnight(now);
   const start = addDays(today, 1 - range), end = addDays(today, 1);
-  const ledger = useLedger({ start, end, today, search: search.trim().toLowerCase(), site: site.trim(), siteMerge: settings.siteMerge, detail: selected ?? '', day: isExtension ? '' : dayQuery });
+  const ledger = useLedger({ start, end, today, search: search.trim().toLowerCase(), site: site.trim(), siteMerge: settings.siteMerge, detail: selected ?? '', day: isExtension ? '' : dayQuery, focus: filterSite });
   const liveDay = useDaySummary(isExtension ? dayQuery : '', settings.siteMerge);
   const view = ledger.view, stats = view?.stats, todayStats = view?.todayStats;
   async function act(type = 'snapshot', body) {
@@ -58,6 +59,7 @@ export function App() {
   const enabled = view?.enabled ?? true;
   const goRecords = (domain = '') => { setSite(domain); setSearch(domain); setPage('records'); };
   const openSite = (domain, event) => { detailTrigger.current = event.currentTarget; setSelected(domain); };
+  const onFilter = domain => setFilterSite(current => toggleSiteFilter(current, domain));
   const problem = error || ledger.error;
   const errorText = t([`error.${problem}`, 'error.connect']);
   const languageName = languages.find(([code]) => code === i18n.resolvedLanguage)?.[1];
@@ -110,7 +112,7 @@ export function App() {
             </DropdownMenu>}
           </div>
           {problem && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => { ledger.retry(); act(); }}>{t('error.retry')}</Button></AlertDescription></Alert>}
-          {!shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'overview' ? <Overview todayStats={todayStats} stats={stats} weekDays={ledger.weekDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={rangeLabel(range)} openSite={openSite} openHow={openHow} /> : page === 'records' ? <section className="records">
+          {!shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'overview' ? <Overview todayStats={todayStats} stats={stats} weekDays={ledger.weekDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={rangeLabel(range)} filterSite={filterSite} onFilter={onFilter} openSite={openSite} openHow={openHow} /> : page === 'records' ? <section className="records">
             <InputGroup className="h-11 max-w-[460px]"><InputGroupInput aria-label={t('records.search')} placeholder={t('records.placeholder')} value={search} onChange={e => { setSearch(e.target.value); setSite(''); }} /><InputGroupAddon><MagnifyingGlass /></InputGroupAddon>{search && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-sm" aria-label={t('records.clearSearch')} onClick={() => { setSearch(''); setSite(''); }}><X /></InputGroupButton></InputGroupAddon>}</InputGroup>
             <p className="muted">{t('records.count', { count: view.visitCount })}{view.visitCount > VISIT_LIST_LIMIT ? t('records.limited') : ''}</p>
             <Table><TableHeader><TableRow><TableHead>{t('ranking.site')}</TableHead><TableHead>{t('records.visitedAt')}</TableHead><TableHead>{t('records.details')}</TableHead></TableRow></TableHeader><TableBody>
@@ -129,7 +131,7 @@ export function App() {
             <div className="setting-row"><div><h2>{t('settings.privacy.title')}</h2><p><Trans i18nKey="settings.privacy.description" /></p></div><ShieldCheck size={28} className="privacy-icon" /></div>
             <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.ignored.title')}</h2><p>{t('settings.ignored.description')}</p><IgnoredSites settings={settings} busy={busy} onSave={saveSettings} /></div></div>
             <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.method.title')}</h2><p><Trans i18nKey="settings.method.description" values={copy} /></p>{settings.countAudible && <p>{t('settings.method.audible')}</p>}<div className="mt-4 flex flex-col gap-4"><div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="count-audible">{t('settings.audible.title')}</h3><p>{t('settings.audible.description')}</p></div><Switch checked={settings.countAudible} onCheckedChange={checked => saveSettings({ ...settings, countAudible: checked })} disabled={busy} aria-labelledby="count-audible" /></div><div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="idle-threshold">{t('settings.idle.title')}</h3><p>{t('settings.idle.description')}</p></div><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.idle.label', { duration: idleLabel })} disabled={busy}>{idleLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={String(settings.idleSeconds)} onValueChange={value => saveSettings({ ...settings, idleSeconds: Number(value) })}>{IDLE_OPTIONS.map(seconds => <DropdownMenuRadioItem closeOnClick key={seconds} value={String(seconds)}>{t('settings.idle.option', { count: seconds / 60 })}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div></div><Button variant="outline" className="action-button mt-3" onClick={openHow}>{t('howItWorks.open')}</Button></div></div>
-            <div className="setting-row"><div className="min-w-0 flex-1"><h2 id="site-merge">{t('settings.siteMerge.title')}</h2><p>{t('settings.siteMerge.description')}</p></div><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.siteMerge.label', { mode: mergeLabel })} disabled={busy}>{mergeLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={settings.siteMerge} onValueChange={value => { setSite(''); setSearch(''); saveSettings({ ...settings, siteMerge: value }); }}>{MERGE_MODES.map(mode => <DropdownMenuRadioItem closeOnClick key={mode} value={mode}>{t(`settings.siteMerge.${mode}`)}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div>
+            <div className="setting-row"><div className="min-w-0 flex-1"><h2 id="site-merge">{t('settings.siteMerge.title')}</h2><p>{t('settings.siteMerge.description')}</p></div><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.siteMerge.label', { mode: mergeLabel })} disabled={busy}>{mergeLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={settings.siteMerge} onValueChange={value => { setSite(''); setSearch(''); setFilterSite(''); saveSettings({ ...settings, siteMerge: value }); }}>{MERGE_MODES.map(mode => <DropdownMenuRadioItem closeOnClick key={mode} value={mode}>{t(`settings.siteMerge.${mode}`)}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div>
             <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.deleteDay.title')}</h2><p>{t('settings.deleteDay.description')}</p><div className="mt-4 flex max-w-xs flex-col gap-2">
               <Input type="date" aria-label={t('settings.deleteDay.label')} min={minDay} max={maxDay} value={chosenDay} disabled={busy || minDay > maxDay} onChange={event => { setChosenDay(event.target.value); setDayDone(''); }} />
               {dayStats && <p>{duration(dayStats.ms)} · <Trans i18nKey="summary.sites" count={dayStats.sites} components={{ b: <strong /> }} /></p>}

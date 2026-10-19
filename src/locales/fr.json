@@ -36,6 +36,12 @@
     "sites_other": "<b>{{count}}</b> sites"
   },
   "kpi": { "label": "Totaux du jour", "sites": "Sites" },
+  "filter": {
+    "active": "Filtré : {{domain}}",
+    "clear": "Effacer le filtre",
+    "emptyTitle": "Aucun temps actif sur ce graphique",
+    "emptyDescription": "{{domain}} n'a pas de temps actif sur ce graphique."
+  },
   "chart": { "label": "Graphique principal" },
   "trend": { "label": "Temps de navigation active par jour. {{days}}", "separator": " ; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },
   "timeline": {
@@ -74,7 +80,9 @@
     "showAll_one": "Voir {{count}} site",
     "showAll_many": "Voir les {{count}} sites",
     "showAll_other": "Voir les {{count}} sites",
-    "details": "Voir les détails du site"
+    "details": "Voir les détails du site",
+    "filterSite": "Filtrer sur {{domain}}",
+    "openDetail": "Détails de {{domain}}"
   },
   "records": {
     "search": "Rechercher des sites",

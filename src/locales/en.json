@@ -34,6 +34,12 @@
     "sites_other": "<b>{{count}}</b> sites"
   },
   "kpi": { "label": "Today's totals", "sites": "Sites" },
+  "filter": {
+    "active": "Filtered to {{domain}}",
+    "clear": "Clear filter",
+    "emptyTitle": "No active time to chart",
+    "emptyDescription": "{{domain}} has no active time on this chart."
+  },
   "chart": { "label": "Primary chart" },
   "trend": { "label": "Daily active browsing time. {{days}}", "separator": "; ", "hours_one": "{{count}} hr", "hours_other": "{{count}} hrs" },
   "timeline": {
@@ -69,7 +75,9 @@
     "collapse": "Show less",
     "showAll_one": "View all {{count}} site",
     "showAll_other": "View all {{count}} sites",
-    "details": "View site details"
+    "details": "View site details",
+    "filterSite": "Filter to {{domain}}",
+    "openDetail": "Details for {{domain}}"
   },
   "records": {
     "search": "Search sites",

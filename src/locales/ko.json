@@ -32,6 +32,12 @@
     "sites_other": "사이트 <b>{{count}}</b>개"
   },
   "kpi": { "label": "오늘 합계", "sites": "사이트 수" },
+  "filter": {
+    "active": "{{domain}} 필터 적용 중",
+    "clear": "필터 지우기",
+    "emptyTitle": "이 차트에는 활성 시간이 없습니다",
+    "emptyDescription": "{{domain}}의 활성 시간이 이 차트에 없습니다."
+  },
   "chart": { "label": "기본 차트" },
   "trend": { "label": "일별 활성 브라우징 시간. {{days}}", "separator": ", ", "hours_other": "{{count}}시간" },
   "timeline": {
@@ -64,7 +70,9 @@
     "emptyDescription": "웹페이지를 방문하면 기록이 자동으로 여기에 표시됩니다.",
     "collapse": "목록 접기",
     "showAll_other": "사이트 {{count}}개 모두 보기",
-    "details": "사이트 세부정보 보기"
+    "details": "사이트 세부정보 보기",
+    "filterSite": "{{domain}}(으)로 필터",
+    "openDetail": "{{domain}} 상세"
   },
   "records": {
     "search": "사이트 검색",

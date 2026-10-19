@@ -32,6 +32,12 @@
     "sites_other": "<b>{{count}}</b> サイト"
   },
   "kpi": { "label": "今日の合計", "sites": "サイト数" },
+  "filter": {
+    "active": "{{domain}} で絞り込み中",
+    "clear": "絞り込みを解除",
+    "emptyTitle": "このグラフにアクティブ時間はありません",
+    "emptyDescription": "{{domain}} のアクティブ時間はこのグラフにありません。"
+  },
   "chart": { "label": "メインのグラフ" },
   "trend": { "label": "日別のアクティブな閲覧時間。{{days}}", "separator": "、", "hours_other": "{{count}} 時間" },
   "timeline": {
@@ -64,7 +70,9 @@
     "emptyDescription": "ウェブページを訪問すると、ここに自動的に記録が表示されます。",
     "collapse": "一覧を閉じる",
     "showAll_other": "全 {{count}} サイトを表示",
-    "details": "サイトの詳細を表示"
+    "details": "サイトの詳細を表示",
+    "filterSite": "{{domain}} で絞り込む",
+    "openDetail": "{{domain}} の詳細"
   },
   "records": {
     "search": "サイトを検索",
