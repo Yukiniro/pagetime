@@ -91,10 +91,17 @@ test('ignored entries use the same host the ledger stores', () => {
   assert.equal(isIgnored(domainOf('https://example.com./path'), ['example.com']), true);
 });
 
+test('theme defaults to system and rejects any other value', () => {
+  assert.equal(validateSettings({ theme: 'dark' }).theme, 'dark');
+  assert.equal(validateSettings({ theme: 'light' }).theme, 'light');
+  assert.equal(validateSettings({ theme: 'sepia' }).theme, 'system');
+  assert.equal(validateSettings({ theme: true }).theme, 'system');
+});
+
 test('validateSettings keeps schema 1, filters invalid hosts, dedupes, and caps the list', () => {
   assert.equal(IGNORED_LIMIT, 500);
   assert.equal(HOST_MAX, 253);
-  assert.deepEqual(validateSettings(undefined), { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', recordMode: 'blacklist', ignored: [], allowed: [], badge: true });
+  assert.deepEqual(validateSettings(undefined), { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', recordMode: 'blacklist', ignored: [], allowed: [], badge: true, theme: 'system' });
   assert.deepEqual(validateSettings({ ignored: 'example.com' }).ignored, []);
   assert.deepEqual(validateSettings({
     schema: 1,
@@ -110,6 +117,7 @@ test('validateSettings keeps schema 1, filters invalid hosts, dedupes, and caps 
     ignored: ['mail.example.com', 'localhost', normalizeHost('::1')],
     allowed: [],
     badge: true,
+    theme: 'system',
   });
   assert.deepEqual(validateSettings({ ignored: ['Example.com', 'example.com'] }).ignored, ['example.com']);
   const many = Array.from({ length: IGNORED_LIMIT + 20 }, (_, index) => `a${index}.example.com`);
@@ -126,6 +134,7 @@ test('validateSettings keeps schema 1, filters invalid hosts, dedupes, and caps 
     ignored: ['ok.com'],
     allowed: [],
     badge: true,
+    theme: 'system',
   });
 });
 

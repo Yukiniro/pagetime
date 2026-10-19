@@ -270,13 +270,13 @@ test('S25 idleSeconds is passed to setDetectionInterval and queryState; invalid 
   const h = await createHarness({ url: 'https://a.com/' });
   assert.equal(h.detectionIntervals.at(-1), 60);
   const saved = await h.message('settings', { settings: { schema: 1, idleSeconds: 300, countAudible: true } });
-  assert.deepEqual(saved.settings, { schema: 1, idleSeconds: 300, countAudible: true, siteMerge: 'prefix', recordMode: 'blacklist', ignored: [], allowed: [], badge: true });
+  assert.deepEqual(saved.settings, { schema: 1, idleSeconds: 300, countAudible: true, siteMerge: 'prefix', recordMode: 'blacklist', ignored: [], allowed: [], badge: true, theme: 'system' });
   const grouped = await h.message('settings', { settings: { schema: 1, idleSeconds: 300, countAudible: true, siteMerge: 'registrable' } });
   assert.equal(grouped.settings.siteMerge, 'registrable');
   assert.equal(h.detectionIntervals.at(-1), 300);
   assert.equal(h.idleQueries.at(-1), 300);
   const fallback = await h.message('settings', { settings: { schema: 9, idleSeconds: 90, countAudible: 'yes' } });
-  assert.deepEqual(fallback.settings, { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', recordMode: 'blacklist', ignored: [], allowed: [], badge: true });
+  assert.deepEqual(fallback.settings, { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', recordMode: 'blacklist', ignored: [], allowed: [], badge: true, theme: 'system' });
   assert.deepEqual((await h.browser.storage.local.get('settings')).settings, fallback.settings);
   assert.equal(h.detectionIntervals.includes(90), false);
   assert.equal(h.idleQueries.includes(90), false);

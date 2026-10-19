@@ -93,6 +93,7 @@
   },
   "settings": {
     "language": { "title": "Language", "description": "Choose the display language for PageTime.", "label": "Display language: {{language}}" },
+    "theme": { "title": "Appearance", "description": "Use light, dark, or follow the system. This choice stays on this device.", "label": "Appearance: {{mode}}", "system": "Follow system", "light": "Light", "dark": "Dark" },
     "recording": { "title": "Browsing records", "description": "Counts page visits and only tracks time on the active tab of the focused window." },
     "privacy": { "title": "Local and private", "description": "Stores only site domains, times, and visit counts — never page content, titles, or full URLs.<br/>Ignores incognito windows and internal browser pages, and never sends data to a server.<br/>You can delete one site or one day. That removes those records from this device." },
     "method": { "title": "How it's measured", "description": "Each page load or reload counts as one visit; switching tabs or in-app navigation in single-page apps doesn't add visits.<br/>{{idle}} seconds without system input counts as idle; progress is saved every {{checkpoint}} seconds.<br/>Keeps visits and active sessions for {{days}} days; daily and hourly totals stay until you clear them or delete that site or day.", "audible": "A tab playing unmuted sound isn't counted as idle." },

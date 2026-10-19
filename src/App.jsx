@@ -14,7 +14,7 @@ import { Alert, AlertTitle, AlertDescription } from '@app/components/ui/alert';
 import { Empty, EmptyHeader, EmptyTitle } from '@app/components/ui/empty';
 import { Trans, useTranslation } from 'react-i18next';
 import { addDays, dateKey, dateKeyStart, midnight, timingCopy } from './model.mjs';
-import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, MERGE_MODES, RECORD_MODES, isAllowed, isIgnored, normalizeHost } from './settings.mjs';
+import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, MERGE_MODES, RECORD_MODES, THEME_MODES, isAllowed, isIgnored, normalizeHost } from './settings.mjs';
 import { hostsToDelete } from './site.mjs';
 import { IgnoredSites } from './IgnoredSites.jsx';
 import { HowItWorksDialog } from './HowItWorksDialog.jsx';
@@ -26,6 +26,7 @@ import { SiteDetailSheet } from './SiteDetailPanel.jsx';
 import { Overview } from './Overview.jsx';
 import { toggleSiteFilter } from './site-filter.mjs';
 import { duration, formatDate, languages, timeLabel } from './i18n.js';
+import { useDocumentTheme } from './use-theme.js';
 
 export function App() {
   const { t, i18n } = useTranslation();
@@ -65,6 +66,8 @@ export function App() {
   const copy = timingCopy(settings);
   const idleLabel = t('settings.idle.option', { count: settings.idleSeconds / 60 });
   const mergeLabel = t(`settings.siteMerge.${settings.siteMerge}`);
+  const themeLabel = t(`settings.theme.${settings.theme}`);
+  const isDark = useDocumentTheme(settings.theme, ready);
   const saveSettings = next => act('settings', { settings: next });
   const selectedRow = stats?.rows.find(row => row.domain === selected);
   const sessions = view?.spans.filter(span => (span.site ?? span.domain) === selected) ?? [];
@@ -114,7 +117,7 @@ export function App() {
             </DropdownMenu>}
           </div>
           {problem && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => { ledger.retry(); act(); }}>{t('error.retry')}</Button></AlertDescription></Alert>}
-          {!shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'overview' ? <Overview todayStats={todayStats} stats={stats} weekDays={ledger.weekDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={rangeLabel(range)} filterSite={filterSite} onFilter={onFilter} openSite={openSite} openHow={openHow} /> : page === 'records' ? <section className="records">
+          {!shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'overview' ? <Overview todayStats={todayStats} stats={stats} weekDays={ledger.weekDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={rangeLabel(range)} filterSite={filterSite} onFilter={onFilter} openSite={openSite} openHow={openHow} isDark={isDark} /> : page === 'records' ? <section className="records">
             <InputGroup className="h-11 max-w-[460px]"><InputGroupInput aria-label={t('records.search')} placeholder={t('records.placeholder')} value={search} onChange={e => { setSearch(e.target.value); setSite(''); }} /><InputGroupAddon><MagnifyingGlass /></InputGroupAddon>{search && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-sm" aria-label={t('records.clearSearch')} onClick={() => { setSearch(''); setSite(''); }}><X /></InputGroupButton></InputGroupAddon>}</InputGroup>
             <p className="muted">{t('records.count', { count: view.visitCount })}{view.visitCount > VISIT_LIST_LIMIT ? t('records.limited') : ''}</p>
             <Table><TableHeader><TableRow><TableHead>{t('ranking.site')}</TableHead><TableHead>{t('records.visitedAt')}</TableHead><TableHead>{t('records.details')}</TableHead></TableRow></TableHeader><TableBody>
@@ -126,6 +129,12 @@ export function App() {
               <DropdownMenuTrigger render={<Button variant="outline" className="action-button" />} aria-label={t('settings.language.label', { language: languageName })}><Translate />{languageName}<CaretDown /></DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={i18n.resolvedLanguage} onValueChange={value => i18n.changeLanguage(value)}>
                 {languages.map(([code, name]) => <DropdownMenuRadioItem closeOnClick key={code} value={code} lang={code}>{name}</DropdownMenuRadioItem>)}
+              </DropdownMenuRadioGroup></DropdownMenuContent>
+            </DropdownMenu></div>
+            <div className="setting-row"><div><h2>{t('settings.theme.title')}</h2><p>{t('settings.theme.description')}</p></div><DropdownMenu>
+              <DropdownMenuTrigger render={<Button variant="outline" className="action-button" />} aria-label={t('settings.theme.label', { mode: themeLabel })} disabled={busy}>{themeLabel}<CaretDown /></DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={settings.theme} onValueChange={value => saveSettings({ ...settings, theme: value })}>
+                {THEME_MODES.map(mode => <DropdownMenuRadioItem closeOnClick key={mode} value={mode}>{t(`settings.theme.${mode}`)}</DropdownMenuRadioItem>)}
               </DropdownMenuRadioGroup></DropdownMenuContent>
             </DropdownMenu></div>
             <div className="setting-row"><div><h2 id="toolbar-badge">{t('settings.badge.title')}</h2><p>{t('settings.badge.description')}</p></div><Switch className="shrink-0" checked={settings.badge} onCheckedChange={checked => saveSettings({ ...settings, badge: checked })} disabled={busy} aria-labelledby="toolbar-badge" /></div>
@@ -187,6 +196,7 @@ export function App() {
     row={selectedRow}
     detail={ledger.detailSite === selected ? ledger.detail : null}
     sessions={sessions}
+    isDark={isDark}
     today={today}
     end={end}
     busy={busy}
