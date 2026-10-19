@@ -1,5 +1,6 @@
 export const MERGE_MODES = ['none', 'prefix', 'registrable'];
-export const DEFAULT_SETTINGS = { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', ignored: [], badge: true };
+export const RECORD_MODES = ['blacklist', 'whitelist'];
+export const DEFAULT_SETTINGS = { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', recordMode: 'blacklist', ignored: [], allowed: [], badge: true };
 export const IDLE_OPTIONS = [60, 120, 300, 600];
 export const HOST_MAX = 253;
 export const IGNORED_LIMIT = 500;
@@ -61,10 +62,10 @@ export function normalizeHost(input) {
 }
 
 // An entry matches that host and its subdomains. An address matches only itself.
-export function isIgnored(domain, ignored) {
+function hostMatches(domain, list) {
   const host = normalizeHost(domain);
-  if (!host || !Array.isArray(ignored)) return false;
-  return ignored.some(entry => {
+  if (!host || !Array.isArray(list)) return false;
+  return list.some(entry => {
     const rule = typeof entry === 'string' ? normalizeHost(entry) : null;
     if (!rule) return false;
     if (isAddress(host) || isAddress(rule)) return host === rule;
@@ -72,7 +73,21 @@ export function isIgnored(domain, ignored) {
   });
 }
 
-function ignoredList(value) {
+export function isIgnored(domain, ignored) {
+  return hostMatches(domain, ignored);
+}
+
+export function isAllowed(domain, allowed) {
+  return hostMatches(domain, allowed);
+}
+
+// Blacklist records everything except `ignored`. Whitelist records only `allowed`. Any other mode is blacklist.
+export function shouldRecord(domain, settings) {
+  if (settings?.recordMode === 'whitelist') return isAllowed(domain, settings.allowed);
+  return !isIgnored(domain, settings?.ignored);
+}
+
+function hostList(value) {
   if (!Array.isArray(value)) return [];
   const seen = new Set();
   const list = [];
@@ -92,7 +107,9 @@ export function validateSettings(value) {
     idleSeconds: IDLE_OPTIONS.includes(value?.idleSeconds) ? value.idleSeconds : DEFAULT_SETTINGS.idleSeconds,
     countAudible: typeof value?.countAudible === 'boolean' ? value.countAudible : DEFAULT_SETTINGS.countAudible,
     siteMerge: MERGE_MODES.includes(value?.siteMerge) ? value.siteMerge : DEFAULT_SETTINGS.siteMerge,
-    ignored: ignoredList(value?.ignored),
+    recordMode: RECORD_MODES.includes(value?.recordMode) ? value.recordMode : DEFAULT_SETTINGS.recordMode,
+    ignored: hostList(value?.ignored),
+    allowed: hostList(value?.allowed),
     badge: typeof value?.badge === 'boolean' ? value.badge : DEFAULT_SETTINGS.badge,
   };
 }

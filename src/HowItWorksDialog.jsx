@@ -14,7 +14,10 @@ export function HowItWorksDialog({ open, onOpenChange, finalFocus, settings }) {
   const notCountedText = key => {
     if (key === 'idle') return t('howItWorks.notCounted.idle', { count: copy.idle });
     if (key === 'gap') return t('howItWorks.notCounted.gap', { count: copy.gap });
-    if (key === 'ignored') return t('howItWorks.notCounted.ignored', { count: settings?.ignored?.length ?? 0 });
+    if (key === 'ignored') {
+      if (settings?.recordMode === 'whitelist') return t('howItWorks.notCounted.whitelist', { count: settings?.allowed?.length ?? 0 });
+      return t('howItWorks.notCounted.ignored', { count: settings?.ignored?.length ?? 0 });
+    }
     return t(`howItWorks.notCounted.${key}`);
   };
   return <Dialog open={open} onOpenChange={onOpenChange}>

@@ -100,7 +100,9 @@
       "prefix": "www, m, mobile 합치기",
       "registrable": "등록 가능 도메인으로 합치기"
     },
+    "recordMode": { "title": "기록 범위", "description": "지금부터 어떤 사이트를 기록할지 고릅니다. 블랙리스트와 화이트리스트는 따로 저장됩니다. 모드를 바꿔도 다른 목록은 지워지지 않고, 기존 기록도 삭제되거나 숨겨지지 않습니다. example.com 은 그 호스트와 하위 도메인에 일치하고, mail.example.com 은 example.com 과 일치하지 않습니다.", "blacklist": "블랙리스트", "whitelist": "화이트리스트", "blacklistHint": "아래 목록을 뺀 모든 사이트를 기록합니다.", "whitelistHint": "아래 목록에 있는 사이트만 기록합니다." },
     "ignored": { "title": "무시할 사이트", "description": "이 호스트와 하위 도메인은 브라우저 내부 페이지와 같이 시간도 방문 횟수도 기록하지 않습니다. example.com 은 a.example.com 과도 일치합니다. mail.example.com 은 example.com 과 일치하지 않습니다. 기존 기록은 그대로 남으며 통계에서 숨기지 않습니다.", "input": "무시할 호스트", "placeholder": "example.com", "add": "추가", "remove": "{{domain}} 제거", "emptyTitle": "무시할 사이트가 없습니다", "emptyDescription": "호스트를 추가하면 지금부터 그 사이트를 기록하지 않습니다.", "error": "example.com 같은 호스트를 입력하세요. 프로토콜, 경로, 포트는 제거됩니다. 공백은 허용되지 않으며, 점이 없는 이름은 localhost 만 받습니다.", "limit": "무시할 호스트는 최대 {{count}}개입니다." },
+    "allowed": { "title": "허용할 사이트", "description": "이 호스트와 하위 도메인만 시간과 방문 횟수를 기록합니다. example.com 은 a.example.com 과도 일치합니다. mail.example.com 은 example.com 과 일치하지 않습니다. 기존 기록은 그대로 남으며 통계에서 숨기지 않습니다.", "input": "허용할 호스트", "placeholder": "example.com", "add": "추가", "remove": "{{domain}} 제거", "emptyTitle": "허용할 사이트가 없습니다", "emptyDescription": "호스트를 추가하면 지금부터 그 사이트를 기록합니다. 목록이 비어 있는 동안에는 아무것도 기록하지 않습니다.", "limit": "허용할 호스트는 최대 {{count}}개입니다.", "emptyWarningTitle": "빈 화이트리스트는 아무것도 기록하지 않습니다", "emptyWarning": "허용된 호스트가 없어서 어떤 사이트의 시간도 방문 횟수도 기록하지 않습니다. 빈 목록은 모든 사이트를 기록한다는 뜻이 아닙니다. 기록을 시작하려면 호스트를 하나 이상 추가하세요. 기존 기록은 남고 숨겨지지 않습니다.", "error": "example.com 같은 호스트를 입력하세요. 프로토콜, 경로, 포트는 제거됩니다. 공백은 허용되지 않으며, 점이 없는 이름은 localhost 만 받습니다." },
     "badge": { "title": "도구 모음 배지", "description": "도구 모음 아이콘에 오늘의 활성 탐색 시간을 표시합니다." },
     "deleteDay": { "title": "하루 기록 삭제", "description": "이 기기에서 선택한 날의 활성 시간, 방문 횟수, 시간 구간을 삭제합니다. 되돌릴 수 없습니다.", "label": "삭제할 날짜", "button": "이 날짜 삭제", "done": "{{date}} 기록을 삭제했습니다.", "confirmTitle": "{{date}} 기록을 삭제할까요?", "confirmDescription": "이 기기에서 그날의 활성 시간, 방문 횟수, 시간 구간을 삭제합니다. 되돌릴 수 없습니다.", "confirm": "이 날짜 삭제", "deleting": "삭제하는 중…" },
     "clear": { "title": "모든 기록 삭제", "description": "이 기기에 PageTime이 저장한 기록을 삭제합니다. 삭제 후에는 복구할 수 없습니다.", "button": "데이터 삭제" }
@@ -114,6 +116,9 @@
     "noSessions": "오늘은 활성 구간이 없습니다",
     "ignore": "이 사이트 기록 안 함",
     "ignored": "이 사이트는 이미 무시 목록에 있습니다",
+    "allow": "화이트리스트에 추가",
+    "allowed": "이 사이트는 이미 허용되어 있습니다",
+    "allowConfirm": { "title": "이 사이트를 화이트리스트에 추가할까요?", "description": "이후 {{domain}} 과 그 하위 도메인의 시간과 방문 횟수를 기록합니다. 기존 기록은 삭제하거나 숨기지 않습니다.", "confirm": "화이트리스트에 추가" },
     "ignoreConfirm": { "title": "이 사이트를 더 이상 기록하지 않을까요?", "description": "이후 {{domain}} 과 그 하위 도메인의 시간과 방문 횟수를 기록하지 않습니다. 기존 기록은 삭제되지 않습니다.", "confirm": "기록 안 함" },
     "delete": "이 사이트의 기록 삭제",
     "deleteConfirm": { "title": "이 사이트의 기록을 삭제할까요?", "description": "{{domain}}의 모든 날짜에 대한 시간, 방문 횟수, 시간 구간을 삭제합니다. 되돌릴 수 없습니다. 앞으로 기록하지 않으려면 무시 목록에 추가하세요.", "confirm": "기록 삭제", "deleting": "삭제하는 중…" },
@@ -173,7 +178,8 @@
       "incognito": "시크릿 창",
       "paused": "기록을 일시 중지한 동안",
       "gap_other": "확인 간격이 {{count}}초를 넘으면 초과분은 포함하지 않으며, 그 구간은 최대 {{count}}초만 계산합니다(시스템 일시 중지 등).",
-      "ignored": "무시하도록 설정한 사이트({{count}}개)와 그 하위 도메인. example.com 은 그 호스트와 모든 하위 도메인에 일치하고, mail.example.com 은 example.com 과 일치하지 않습니다. 기존 기록은 삭제하거나 숨기지 않습니다."
+      "ignored": "블랙리스트: 무시하도록 설정한 사이트({{count}}개)와 그 하위 도메인은 시간도 방문 횟수도 기록하지 않습니다. example.com 은 그 호스트와 모든 하위 도메인에 일치하고, mail.example.com 은 example.com 과 일치하지 않습니다. 기존 기록은 삭제하거나 숨기지 않습니다.",
+      "whitelist": "화이트리스트: 허용한 사이트({{count}}개)와 그 하위 도메인만 시간과 방문 횟수를 기록합니다. 목록이 비어 있으면 아무것도 기록하지 않습니다. example.com 은 그 호스트와 모든 하위 도메인에 일치하고, mail.example.com 은 example.com 과 일치하지 않습니다. 기존 기록은 삭제하거나 숨기지 않습니다."
     },
     "visits": {
       "title": "방문 횟수",
