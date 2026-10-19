@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ChartBar, Clock, GearSix, ShieldCheck, Pause, Play, ArrowRight, MagnifyingGlass, X, Trash, CaretDown, CalendarBlank, Translate, WarningCircle } from '@phosphor-icons/react';
+import { ChartBar, Clock, GearSix, ShieldCheck, Pause, Play, ArrowRight, MagnifyingGlass, X, Trash, CaretDown, Translate, WarningCircle } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from '@app/components/ui/dropdown-menu';
 import { RadioGroup, RadioGroupItem } from '@app/components/ui/radio-group';
@@ -13,7 +13,9 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import { Alert, AlertTitle, AlertDescription } from '@app/components/ui/alert';
 import { Empty, EmptyHeader, EmptyTitle } from '@app/components/ui/empty';
 import { Trans, useTranslation } from 'react-i18next';
-import { addDays, dateKey, dateKeyStart, midnight, timingCopy } from './model.mjs';
+import { dateKey, dateKeyStart, midnight, timingCopy } from './model.mjs';
+import { activeRange, defaultChart } from './range.mjs';
+import { RangeControl, rangeChip, trendLabel as trendTitle } from './RangeControl.jsx';
 import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, MERGE_MODES, RECORD_MODES, THEME_MODES, isAllowed, isIgnored, normalizeHost } from './settings.mjs';
 import { hostsToDelete } from './site.mjs';
 import { IgnoredSites } from './IgnoredSites.jsx';
@@ -33,16 +35,17 @@ import { useDocumentTheme } from './use-theme.js';
 
 export function App() {
   const { t, i18n } = useTranslation();
-  const rangeLabel = range => range === 1 ? t('range.today') : t('range.lastDays', { count: range });
   const [settings, setSettings] = useState(DEFAULT_SETTINGS), [ready, setReady] = useState(false), [error, setError] = useState(''), [busy, setBusy] = useState(false);
-  const [page, setPage] = useState('overview'), [range, setRange] = useState(1), [search, setSearch] = useState(''), [site, setSite] = useState(''), [filterSite, setFilterSite] = useState(''), [selected, setSelected] = useState(null);
+  const [page, setPage] = useState('overview'), [range, setRange] = useState({ preset: 'today', start: 0, end: 0 }), [search, setSearch] = useState(''), [site, setSite] = useState(''), [filterSite, setFilterSite] = useState(''), [selected, setSelected] = useState(null);
   const [confirmClear, setConfirmClear] = useState(false), [howOpen, setHowOpen] = useState(false), [ignoreTarget, setIgnoreTarget] = useState(null);
   const [chosenDay, setChosenDay] = useState(''), [dayDone, setDayDone] = useState(''), [confirmDay, setConfirmDay] = useState(false), [deleteTarget, setDeleteTarget] = useState(null);
   const dayQuery = /^\d{4}-\d{2}-\d{2}$/.test(chosenDay) ? chosenDay : '';
   const detailTrigger = useRef(null), howTrigger = useRef(null);
   const openHow = event => { howTrigger.current = event.currentTarget; setHowOpen(true); };
   const now = Date.now(), today = midnight(now);
-  const start = addDays(today, 1 - range), end = addDays(today, 1);
+  const active = activeRange(range, today);
+  const start = active.start, end = active.end;
+  const chip = rangeChip(t, active);
   const ledger = useLedger({ start, end, today, search: search.trim().toLowerCase(), site: site.trim(), siteMerge: settings.siteMerge, detail: selected ?? '', day: isExtension ? '' : dayQuery, focus: filterSite });
   const liveDay = useDaySummary(isExtension ? dayQuery : '', settings.siteMerge);
   const view = ledger.view, stats = view?.stats, todayStats = view?.todayStats;
@@ -111,24 +114,17 @@ export function App() {
         </header>
         <main>
           <div className="page-header"><div><h1>{t(`pages.${page}.title`)}</h1><p>{t(`pages.${page}.subtitle`)}</p></div>
-            {page !== 'settings' && <DropdownMenu>
-              <DropdownMenuTrigger render={<Button variant="outline" className="range" />} aria-label={t('range.label', { range: rangeLabel(range) })}>
-                <CalendarBlank /><span>{rangeLabel(range)}</span>{range !== 1 && <span className="range-dates">{formatDate(start, { month: '2-digit', day: '2-digit' })}–{formatDate(today, { month: '2-digit', day: '2-digit' })}</span>}<CaretDown />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end"><DropdownMenuRadioGroup value={String(range)} onValueChange={value => setRange(Number(value))}>
-                {[1, 7, 30].map(value => <DropdownMenuRadioItem closeOnClick key={value} value={String(value)}>{rangeLabel(value)}</DropdownMenuRadioItem>)}
-              </DropdownMenuRadioGroup></DropdownMenuContent>
-            </DropdownMenu>}
+            {page !== 'settings' && <RangeControl range={active} today={today} onChange={setRange} />}
           </div>
           {problem && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => { ledger.retry(); act(); }}>{t('error.retry')}</Button></AlertDescription></Alert>}
-          {page === 'overview' ? (overviewStatus === 'loading' ? <DashboardSkeleton /> : overviewStatus === 'empty' ? <LedgerEmpty onOpenHow={openHow} /> : overviewStatus === 'ready' ? <Overview todayStats={todayStats} stats={stats} weekDays={ledger.weekDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={rangeLabel(range)} filterSite={filterSite} onFilter={onFilter} openSite={openSite} openHow={openHow} isDark={isDark} /> : null) : !shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'records' ? <section className="records">
+          {page === 'overview' ? (overviewStatus === 'loading' ? <DashboardSkeleton /> : overviewStatus === 'empty' ? <LedgerEmpty onOpenHow={openHow} /> : overviewStatus === 'ready' ? <Overview todayStats={todayStats} stats={stats} trendDays={ledger.trendDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={chip} chartMode={defaultChart(active, today)} trendLabel={trendTitle(t, active, today)} filterSite={filterSite} onFilter={onFilter} openSite={openSite} openHow={openHow} isDark={isDark} /> : null) : !shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'records' ? (ledger.pending ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : <section className="records">
             <InputGroup className="h-11 max-w-[460px]"><InputGroupInput aria-label={t('records.search')} placeholder={t('records.placeholder')} value={search} onChange={e => { setSearch(e.target.value); setSite(''); }} /><InputGroupAddon><MagnifyingGlass /></InputGroupAddon>{search && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-sm" aria-label={t('records.clearSearch')} onClick={() => { setSearch(''); setSite(''); }}><X /></InputGroupButton></InputGroupAddon>}</InputGroup>
             <p className="muted">{t('records.count', { count: view.visitCount })}{view.visitCount > VISIT_LIST_LIMIT ? t('records.limited') : ''}</p>
             <Table><TableHeader><TableRow><TableHead>{t('ranking.site')}</TableHead><TableHead>{t('records.visitedAt')}</TableHead><TableHead>{t('records.details')}</TableHead></TableRow></TableHeader><TableBody>
               {view.visits.map((visit, i) => <TableRow key={`${visit.at}-${i}`}><TableCell><div className="site-link"><SiteIcon domain={visit.domain} site={visit.site} />{visit.domain}</div></TableCell><TableCell>{formatDate(visit.at)} {timeLabel(visit.at)}</TableCell><TableCell><Button variant="link" className="px-0" onClick={event => openSite(visit.site ?? visit.domain, event)}>{t('records.view')}<ArrowRight /></Button></TableCell></TableRow>)}
             </TableBody></Table>
             {!view.visits.length && <Empty><EmptyHeader><EmptyTitle>{t('records.empty')}</EmptyTitle></EmptyHeader></Empty>}
-          </section> : <section className="settings">
+          </section>) : <section className="settings">
             <div className="setting-row"><div><h2>{t('settings.language.title')}</h2><p>{t('settings.language.description')}</p></div><DropdownMenu>
               <DropdownMenuTrigger render={<Button variant="outline" className="action-button" />} aria-label={t('settings.language.label', { language: languageName })}><Translate />{languageName}<CaretDown /></DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={i18n.resolvedLanguage} onValueChange={value => i18n.changeLanguage(value)}>
@@ -195,14 +191,13 @@ export function App() {
     onOpenChange={open => { if (!open) setSelected(null); }}
     finalFocus={detailTrigger}
     siteKey={selected ?? ''}
-    range={range}
+    rangeLabel={chip}
     ready={Boolean(stats)}
     row={selectedRow}
     detail={ledger.detailSite === selected ? ledger.detail : null}
     sessions={sessions}
     isDark={isDark}
     today={today}
-    end={end}
     busy={busy}
     listField={listField}
     alreadyListed={alreadyListed}

@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Breakdown, HourChart, SiteTrend } from './Charts.jsx';
 import { iconForSite } from './data.js';
 import { duration, timeLabel } from './i18n.js';
+import { addDays } from './model.mjs';
 import { IGNORED_LIMIT } from './settings.mjs';
 import { SiteIcon } from './SiteIcon.jsx';
 
@@ -24,12 +25,13 @@ function useNarrowDrawer() {
   return narrow;
 }
 
-function SessionList({ sessions, merged, today, end }) {
+function SessionList({ sessions, merged, today }) {
   const { t } = useTranslation();
+  const dayEnd = addDays(today, 1);
   if (!sessions.length) return <p className="muted">{t('detail.noSessions')}</p>;
   return <ScrollArea className="h-[230px]"><ul className="session-list">{sessions.map(session => {
     const from = Math.max(today, session.start);
-    const to = Math.min(end, session.end);
+    const to = Math.min(dayEnd, session.end);
     return <li key={`${session.domain}-${session.start}-${session.end}`}>
       <time>{timeLabel(from)} — {timeLabel(to)}</time>
       {merged && <span className="session-host">{session.domain}</span>}
@@ -51,7 +53,7 @@ function DetailActions({ busy, listField, alreadyListed, scopeHost, listLimit, o
   </SheetFooter>;
 }
 
-export function SiteDetailPanel({ siteKey, row, detail, sessions, today, end, isDark = false, ...actions }) {
+export function SiteDetailPanel({ siteKey, row, detail, sessions, today, isDark = false, ...actions }) {
   const { t } = useTranslation();
   const icon = iconForSite(siteKey, row?.hosts) || siteKey;
   const hosts = row?.hosts ?? [];
@@ -71,16 +73,15 @@ export function SiteDetailPanel({ siteKey, row, detail, sessions, today, end, is
       </section>}
       {merged && <><h3>{t('detail.breakdown.title')}</h3><Breakdown hosts={hosts} isDark={isDark} /></>}
       <h3>{t('detail.todaySessions')}</h3>
-      <SessionList sessions={sessions} merged={merged} today={today} end={end} />
+      <SessionList sessions={sessions} merged={merged} today={today} />
     </div>
     <DetailActions {...actions} />
   </>;
 }
 
-export function SiteDetailSheet({ open, onOpenChange, finalFocus, siteKey, ready, range, ...panel }) {
+export function SiteDetailSheet({ open, onOpenChange, finalFocus, siteKey, ready, rangeLabel, ...panel }) {
   const { t } = useTranslation();
   const narrow = useNarrowDrawer();
-  const rangeLabel = range === 1 ? t('range.today') : t('range.lastDays', { count: range });
 
   return <Sheet open={open} onOpenChange={onOpenChange}>
     <SheetContent side={narrow ? 'bottom' : 'right'} showCloseButton={false} finalFocus={finalFocus} className="site-detail">

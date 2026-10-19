@@ -9,7 +9,7 @@
     "records": { "title": "Besuchsverlauf", "subtitle": "Jeder Besuch nachvollziehbar" },
     "settings": { "title": "Einstellungen", "subtitle": "Behalte die Kontrolle über deine Daten und die Aufzeichnung" }
   },
-  "range": { "today": "Heute", "lastDays_one": "{{count}} vergangener Tag", "lastDays_other": "Letzte {{count}} Tage", "label": "Zeitraum: {{range}}" },
+  "range": { "today": "Heute", "last7": "Letzte 7 Tage", "last30": "Letzte 30 Tage", "custom": "Benutzerdefiniert", "start": "Startdatum", "end": "Enddatum", "apply": "Übernehmen", "cancel": "Abbrechen", "invalid": "Das Enddatum darf nicht vor dem Startdatum liegen", "lastDays_one": "{{count}} vergangener Tag", "lastDays_other": "Letzte {{count}} Tage", "label": "Zeitraum: {{range}}" },
   "error": {
     "title": "Daten konnten nicht geladen oder gespeichert werden",
     "retry": "Erneut versuchen",
@@ -37,7 +37,7 @@
     "sites_one": "<b>{{count}}</b> Website",
     "sites_other": "<b>{{count}}</b> Websites"
   },
-  "kpi": { "label": "Heutige Summen", "sites": "Websites" },
+  "kpi": { "label": "Summen für {{range}}", "sites": "Websites" },
   "filter": {
     "active": "Gefiltert: {{domain}}",
     "clear": "Filter aufheben",

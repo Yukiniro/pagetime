@@ -9,7 +9,7 @@
     "records": { "title": "Visit history", "subtitle": "Every visit, accounted for" },
     "settings": { "title": "Settings", "subtitle": "Control your data and how it is recorded" }
   },
-  "range": { "today": "Today", "lastDays_one": "Last {{count}} day", "lastDays_other": "Last {{count}} days", "label": "Date range: {{range}}" },
+  "range": { "today": "Today", "last7": "Last 7 days", "last30": "Last 30 days", "custom": "Custom", "start": "Start date", "end": "End date", "apply": "Apply", "cancel": "Cancel", "invalid": "The end date must be on or after the start date", "lastDays_one": "Last {{count}} day", "lastDays_other": "Last {{count}} days", "label": "Date range: {{range}}" },
   "error": {
     "title": "Couldn't load or save data",
     "retry": "Retry",
@@ -37,7 +37,7 @@
     "sites_one": "<b>{{count}}</b> site",
     "sites_other": "<b>{{count}}</b> sites"
   },
-  "kpi": { "label": "Today's totals", "sites": "Sites" },
+  "kpi": { "label": "{{range}} totals", "sites": "Sites" },
   "filter": {
     "active": "Filtered to {{domain}}",
     "clear": "Clear filter",
