@@ -150,28 +150,6 @@ export function App() {
         </main>
       </div>
     </SidebarProvider>
-    {/* Dismissing the drawer clears the open site and leaves the ranking filter in place. */}
-    <SiteDetailSheet
-      open={Boolean(selected)}
-      onOpenChange={open => { if (!open) setSelected(null); }}
-      finalFocus={detailTrigger}
-      siteKey={selected ?? ''}
-      range={range}
-      ready={Boolean(stats)}
-      row={selectedRow}
-      detail={ledger.detailSite === selected ? ledger.detail : null}
-      sessions={sessions}
-      today={today}
-      end={end}
-      busy={busy}
-      listField={listField}
-      alreadyListed={alreadyListed}
-      scopeHost={scopeHost}
-      listLimit={listLimit}
-      onListAdd={() => setIgnoreTarget(selected)}
-      onViewVisits={() => { goRecords(selected); setSelected(null); }}
-      onDelete={() => setDeleteTarget(selected)}
-    />
     <HowItWorksDialog open={howOpen} onOpenChange={setHowOpen} finalFocus={howTrigger} settings={settings} />
     <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>{t('confirm.title')}</AlertDialogTitle><AlertDialogDescription>{t('confirm.description')}</AlertDialogDescription></AlertDialogHeader>
       {error && <Alert variant="destructive"><AlertDescription>{errorText}</AlertDescription></Alert>}
@@ -198,5 +176,27 @@ export function App() {
       <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction disabled={busy} onClick={confirmListAdd}>{t(`${confirmKey}.confirm`)}</AlertDialogAction></AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
+  {/* Dismissing the drawer clears the open site and leaves the ranking filter in place. */}
+  <SiteDetailSheet
+    open={Boolean(selected)}
+    onOpenChange={open => { if (!open) setSelected(null); }}
+    finalFocus={detailTrigger}
+    siteKey={selected ?? ''}
+    range={range}
+    ready={Boolean(stats)}
+    row={selectedRow}
+    detail={ledger.detailSite === selected ? ledger.detail : null}
+    sessions={sessions}
+    today={today}
+    end={end}
+    busy={busy}
+    listField={listField}
+    alreadyListed={alreadyListed}
+    scopeHost={scopeHost}
+    listLimit={listLimit}
+    onListAdd={() => setIgnoreTarget(selected)}
+    onViewVisits={() => { goRecords(selected); setSelected(null); }}
+    onDelete={() => setDeleteTarget(selected)}
+  />
   </TooltipProvider>;
 }

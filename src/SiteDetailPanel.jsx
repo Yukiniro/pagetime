@@ -24,30 +24,38 @@ function useNarrowDrawer() {
   return narrow;
 }
 
-export function SiteDetailPanel({
-  siteKey,
-  row,
-  detail,
-  sessions,
-  today,
-  end,
-  busy,
-  listField,
-  alreadyListed,
-  scopeHost,
-  listLimit,
-  onListAdd,
-  onViewVisits,
-  onDelete,
-}) {
+function SessionList({ sessions, merged, today, end }) {
+  const { t } = useTranslation();
+  if (!sessions.length) return <p className="muted">{t('detail.noSessions')}</p>;
+  return <ScrollArea className="h-[230px]"><ul className="session-list">{sessions.map(session => {
+    const from = Math.max(today, session.start);
+    const to = Math.min(end, session.end);
+    return <li key={`${session.domain}-${session.start}-${session.end}`}>
+      <time>{timeLabel(from)} — {timeLabel(to)}</time>
+      {merged && <span className="session-host">{session.domain}</span>}
+      <span>{duration(to - from)}</span>
+    </li>;
+  })}</ul></ScrollArea>;
+}
+
+function DetailActions({ busy, listField, alreadyListed, scopeHost, listLimit, onListAdd, onViewVisits, onDelete }) {
+  const { t } = useTranslation();
+  const listedKey = listField === 'allowed' ? 'detail.allowed' : 'detail.ignored';
+  const addKey = listField === 'allowed' ? 'detail.allow' : 'detail.ignore';
+  return <SheetFooter className="site-detail-actions">
+    <Button variant="outline" className="action-button w-full" disabled={busy || alreadyListed || !scopeHost || listLimit} onClick={onListAdd}>{alreadyListed ? t(listedKey) : t(addKey)}</Button>
+    {!alreadyListed && !scopeHost && <p className="text-sm text-destructive" role="alert">{t(`settings.${listField}.error`)}</p>}
+    {!alreadyListed && scopeHost && listLimit && <p className="text-sm text-destructive" role="alert">{t(`settings.${listField}.limit`, { count: IGNORED_LIMIT })}</p>}
+    <Button className="action-button w-full" onClick={onViewVisits}>{t('detail.viewVisits')}<ArrowRight /></Button>
+    <Button variant="destructive" className="action-button w-full" disabled={busy} onClick={onDelete}><Trash />{t('detail.delete')}</Button>
+  </SheetFooter>;
+}
+
+export function SiteDetailPanel({ siteKey, row, detail, sessions, today, end, ...actions }) {
   const { t } = useTranslation();
   const icon = iconForSite(siteKey, row?.hosts) || siteKey;
   const hosts = row?.hosts ?? [];
   const merged = hosts.length >= 2;
-  const listLabel = alreadyListed
-    ? t(listField === 'allowed' ? 'detail.allowed' : 'detail.ignored')
-    : t(listField === 'allowed' ? 'detail.allow' : 'detail.ignore');
-
   return <>
     <div className="site-detail-scroll">
       <div className="detail-site"><SiteIcon domain={icon} site={icon} /><h3>{siteKey}</h3></div>
@@ -63,19 +71,9 @@ export function SiteDetailPanel({
       </section>}
       {merged && <><h3>{t('detail.breakdown.title')}</h3><Breakdown hosts={hosts} /></>}
       <h3>{t('detail.todaySessions')}</h3>
-      {sessions.length ? <ScrollArea className="h-[230px]"><ul className="session-list">{sessions.map((session, index) => <li key={index}>
-        <time>{timeLabel(Math.max(today, session.start))} — {timeLabel(Math.min(end, session.end))}</time>
-        {merged && <span className="session-host">{session.domain}</span>}
-        <span>{duration(Math.min(end, session.end) - Math.max(today, session.start))}</span>
-      </li>)}</ul></ScrollArea> : <p className="muted">{t('detail.noSessions')}</p>}
+      <SessionList sessions={sessions} merged={merged} today={today} end={end} />
     </div>
-    <SheetFooter className="site-detail-actions">
-      <Button variant="outline" className="action-button w-full" disabled={busy || alreadyListed || !scopeHost || listLimit} onClick={onListAdd}>{listLabel}</Button>
-      {!alreadyListed && !scopeHost && <p className="text-sm text-destructive" role="alert">{t(`settings.${listField}.error`)}</p>}
-      {!alreadyListed && scopeHost && listLimit && <p className="text-sm text-destructive" role="alert">{t(`settings.${listField}.limit`, { count: IGNORED_LIMIT })}</p>}
-      <Button className="action-button w-full" onClick={onViewVisits}>{t('detail.viewVisits')}<ArrowRight /></Button>
-      <Button variant="destructive" className="action-button w-full" disabled={busy} onClick={onDelete}><Trash />{t('detail.delete')}</Button>
-    </SheetFooter>
+    <DetailActions {...actions} />
   </>;
 }
 
