@@ -103,6 +103,21 @@
     "ignored": "Ce site est déjà ignoré",
     "ignoreConfirm": { "title": "Ne plus enregistrer ce site ?", "description": "{{domain}} et ses sous-domaines ne seront plus mesurés ni comptés comme visites. Les enregistrements existants ne sont pas supprimés.", "confirm": "Ne plus enregistrer" },
     "viewVisits": "Voir les visites",
+    "trend": {
+      "title": "Tendance quotidienne",
+      "label": "Temps actif quotidien pour {{domain}}. {{days}}",
+      "item": "{{date}}, {{duration}}",
+      "unrecorded": "Non enregistré",
+      "separator": " ; "
+    },
+    "hours": {
+      "title": "Heure de la journée",
+      "label": "Temps actif par heure pour {{domain}}. {{hours}}",
+      "item": "{{hour}}, {{duration}}, {{average}}",
+      "separator": " ; ",
+      "slot": "{{from}}–{{to}}",
+      "average": "Moyenne quotidienne {{duration}}"
+    },
     "breakdown": {
       "title": "Répartition par sous-domaine",
       "label": "Répartition par sous-domaine. {{hosts}}",

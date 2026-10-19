@@ -15,14 +15,34 @@ function Chart({option,label,className,height}){
     return()=>{observer.disconnect();chart.dispose();};},[option]);
   return <div ref={ref} role="img" aria-label={label} className={className} style={height?{height}:undefined}/>;
 }
-export function Trend({days}){
+export function Trend({days, label, className='trend-chart', variant='overview'}){
   const {t}=useTranslation();
-  const option={animation:false,textStyle:{fontFamily:getComputedStyle(document.documentElement).fontFamily},grid:{left:56,right:10,top:12,bottom:52},
-    tooltip:{trigger:'axis',renderMode:'richText',formatter:p=>`${formatDate(days[p[0].dataIndex].at)}\n${t('active',{duration:duration(p[0].value*3_600_000)})}`},
-    xAxis:{type:'category',data:days.map(d=>d.at),axisTick:{show:false},axisLine:{lineStyle:{color:'#dfe6f2'}},axisLabel:{color:'#64748b',fontSize:12,interval:days.length>14?4:0,formatter:at=>`${formatDate(Number(at),{month:'numeric',day:'2-digit'})}\n${midnight(Number(at))===midnight(Date.now())?t('range.today'):formatDate(Number(at),{weekday:'short'})}`}},
-    yAxis:{type:'value',min:0,minInterval:1,max:Math.max(6,...days.map(d=>Math.ceil(d.ms/3_600_000))),splitNumber:3,axisLabel:{color:'#64748b',formatter:v=>v?t('trend.hours',{count:v}):'0'},splitLine:{lineStyle:{color:'#e8edf6'}}},
-    series:[{type:'bar',barMaxWidth:46,itemStyle:{color:'#2875ff',borderRadius:[2,2,0,0]},data:days.map(d=>d.ms/3_600_000)}]};
-  return <Chart option={option} className="trend-chart" label={t('trend.label',{days:days.map(d=>`${formatDate(d.at)} ${duration(d.ms)}`).join(t('trend.separator'))})}/>;
+  const detail=variant==='detail';
+  const unrecorded=day=>day.recorded===false&&!day.ms;
+  const option={animation:false,textStyle:{fontFamily:getComputedStyle(document.documentElement).fontFamily},grid:detail?{left:8,right:8,top:8,bottom:4,containLabel:true}:{left:56,right:10,top:12,bottom:52},
+    tooltip:{trigger:'axis',renderMode:'richText',formatter:p=>{const day=days[p[0]?.dataIndex];if(!day)return '';return `${formatDate(day.at)}\n${unrecorded(day)?t('detail.trend.unrecorded'):t('active',{duration:duration((p[0].value??0)*3_600_000)})}`;}},
+    xAxis:{type:'category',data:days.map(d=>d.at),axisTick:{show:false},axisLine:{lineStyle:{color:'#dfe6f2'}},axisLabel:{color:'#64748b',fontSize:detail?11:12,...(detail?{hideOverlap:true}:{}),interval:days.length>14?4:0,formatter:at=>`${formatDate(Number(at),{month:'numeric',day:'2-digit'})}\n${midnight(Number(at))===midnight(Date.now())?t('range.today'):formatDate(Number(at),{weekday:'short'})}`}},
+    yAxis:{type:'value',min:0,minInterval:1,max:Math.max(6,...days.map(d=>Math.ceil(d.ms/3_600_000))),splitNumber:3,axisLabel:{color:'#64748b',...(detail?{fontSize:11}:{}),formatter:v=>v?t('trend.hours',{count:v}):'0'},splitLine:{lineStyle:{color:'#e8edf6'}}},
+    series:[{type:'bar',barMaxWidth:46,itemStyle:{color:'#2875ff',borderRadius:[2,2,0,0]},data:days.map(d=>unrecorded(d)?null:d.ms/3_600_000)}]};
+  const summary=days.map(d=>`${formatDate(d.at)} ${unrecorded(d)?t('detail.trend.unrecorded'):duration(d.ms)}`).join(t('trend.separator'));
+  return <Chart option={option} className={className} label={label??t('trend.label',{days:summary})}/>;
+}
+export function SiteTrend({days, domain}){
+  const {t}=useTranslation();
+  const item=day=>t('detail.trend.item',{date:formatDate(day.at),duration:day.recorded===false&&!day.ms?t('detail.trend.unrecorded'):duration(day.ms)});
+  return <><Trend days={days} variant="detail" className="detail-trend" label={t('detail.trend.label',{domain,days:days.map(item).join(t('detail.trend.separator'))})}/><ul className="sr-only">{days.map(day=><li key={day.at}>{item(day)}</li>)}</ul></>;
+}
+export function HourChart({hours, dayCount, domain}){
+  const {t}=useTranslation();
+  const average=ms=>duration(dayCount?ms/dayCount:0);
+  const slot=hour=>{const from=new Date(2000,0,1,hour,0,0,0);return t('detail.hours.slot',{from:timeLabel(from),to:timeLabel(from.getTime()+3_600_000)});};
+  const item=row=>t('detail.hours.item',{hour:slot(row.hour),duration:duration(row.ms),average:t('detail.hours.average',{duration:average(row.ms)})});
+  const option={animation:false,textStyle:{fontFamily:getComputedStyle(document.documentElement).fontFamily},grid:{left:4,right:8,top:8,bottom:4,containLabel:true},
+    tooltip:{trigger:'axis',renderMode:'richText',formatter:p=>{const row=hours[p[0]?.dataIndex];if(!row)return '';return `${slot(row.hour)}\n${t('active',{duration:duration(row.ms)})}\n${t('detail.hours.average',{duration:average(row.ms)})}`;}},
+    xAxis:{type:'category',data:hours.map(row=>row.hour),axisTick:{show:false},axisLine:{lineStyle:{color:'#dfe6f2'}},axisLabel:{color:'#64748b',fontSize:11,interval:2,hideOverlap:true}},
+    yAxis:{type:'value',min:0,minInterval:1,max:Math.max(1,...hours.map(row=>Math.ceil(row.ms/3_600_000))),splitNumber:2,axisLabel:{color:'#64748b',fontSize:11,formatter:v=>v?t('trend.hours',{count:v}):'0'},splitLine:{lineStyle:{color:'#e8edf6'}}},
+    series:[{type:'bar',barMaxWidth:14,itemStyle:{color:'#2875ff',borderRadius:[2,2,0,0]},data:hours.map(row=>row.ms/3_600_000)}]};
+  return <><Chart option={option} className="hour-chart" label={t('detail.hours.label',{domain,hours:hours.map(item).join(t('detail.hours.separator'))})}/><ul className="sr-only">{hours.map(row=><li key={row.hour}>{item(row)}</li>)}</ul></>;
 }
 export function Timeline({spans}){
   const {t}=useTranslation();
@@ -47,9 +67,9 @@ export function Breakdown({hosts}){
   const item=host=>t('detail.breakdown.item',{domain:host.domain,duration:duration(host.ms),percent:percent(host)});
   const option={animation:false,textStyle:{fontFamily:getComputedStyle(document.documentElement).fontFamily},grid:{left:8,right:12,top:8,bottom:8,containLabel:true},
     tooltip:{trigger:'axis',axisPointer:{type:'shadow'},renderMode:'richText',formatter:p=>`${hosts[p[0].dataIndex].domain}\n${share(hosts[p[0].dataIndex])}`},
-    xAxis:{type:'value',min:0,max:Math.max(...hosts.map(host=>host.ms),1)*1.9,show:false},
-    yAxis:{type:'category',inverse:true,data:hosts.map(host=>host.domain),axisTick:{show:false},axisLine:{show:false},axisLabel:{color:'#122040',fontSize:12,width:150,overflow:'truncate'}},
-    series:[{type:'bar',barMaxWidth:16,itemStyle:{color:'#2875ff',borderRadius:2},label:{show:true,position:'right',color:'#40577b',fontSize:12,formatter:p=>share(hosts[p.dataIndex])},data:hosts.map(host=>host.ms)}]};
+    xAxis:{type:'value',min:0,max:Math.max(...hosts.map(host=>host.ms),1)*2.8,show:false},
+    yAxis:{type:'category',inverse:true,data:hosts.map(host=>host.domain),axisTick:{show:false},axisLine:{show:false},axisLabel:{color:'#122040',fontSize:12,width:108,overflow:'truncate'}},
+    series:[{type:'bar',barMaxWidth:16,itemStyle:{color:'#2875ff',borderRadius:2},label:{show:true,position:'right',color:'#40577b',fontSize:11,overflow:'truncate',width:120,formatter:p=>share(hosts[p.dataIndex])},data:hosts.map(host=>host.ms)}]};
   return <><Chart option={option} className="breakdown-chart" height={Math.max(96,hosts.length*36+8)} label={t('detail.breakdown.label',{hosts:hosts.map(item).join(t('detail.breakdown.separator'))})}/>
     <ul className="sr-only">{hosts.map(host=><li key={host.domain}>{item(host)}</li>)}</ul></>;
 }

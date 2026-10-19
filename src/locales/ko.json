@@ -91,6 +91,21 @@
     "ignored": "이 사이트는 이미 무시 목록에 있습니다",
     "ignoreConfirm": { "title": "이 사이트를 더 이상 기록하지 않을까요?", "description": "이후 {{domain}} 과 그 하위 도메인의 시간과 방문 횟수를 기록하지 않습니다. 기존 기록은 삭제되지 않습니다.", "confirm": "기록 안 함" },
     "viewVisits": "방문 기록 보기",
+    "trend": {
+      "title": "일별 추세",
+      "label": "{{domain}}의 일별 활성 시간. {{days}}",
+      "item": "{{date}}, {{duration}}",
+      "unrecorded": "기록 없음",
+      "separator": "; "
+    },
+    "hours": {
+      "title": "시간대",
+      "label": "{{domain}}의 시간대별 활성 시간. {{hours}}",
+      "item": "{{hour}}, {{duration}}, {{average}}",
+      "separator": "; ",
+      "slot": "{{from}}–{{to}}",
+      "average": "일평균 {{duration}}"
+    },
     "breakdown": {
       "title": "하위 도메인 구성",
       "label": "하위 도메인 구성. {{hosts}}",

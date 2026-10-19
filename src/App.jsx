@@ -21,7 +21,7 @@ import { HowItWorksDialog } from './HowItWorksDialog.jsx';
 import { command, colorOf, iconForSite, iconHost } from './data.js';
 import { useLedger } from './use-ledger.js';
 import { VISIT_LIST_LIMIT } from './ledger-view.mjs';
-import { Breakdown, Trend, Timeline } from './Charts.jsx';
+import { Breakdown, HourChart, SiteTrend, Trend, Timeline } from './Charts.jsx';
 import { duration, formatDate, languages, timeLabel } from './i18n.js';
 
 function SiteIcon({ domain, site = domain }) {
@@ -42,7 +42,7 @@ export function App() {
   const openHow = event => { howTrigger.current = event.currentTarget; setHowOpen(true); };
   const now = Date.now(), today = midnight(now);
   const start = addDays(today, 1 - range), end = addDays(today, 1);
-  const ledger = useLedger({ start, end, today, search: search.trim().toLowerCase(), site: site.trim(), siteMerge: settings.siteMerge });
+  const ledger = useLedger({ start, end, today, search: search.trim().toLowerCase(), site: site.trim(), siteMerge: settings.siteMerge, detail: selected ?? '' });
   const view = ledger.view, stats = view?.stats, todayStats = view?.todayStats;
   async function act(type = 'snapshot', body) {
     setBusy(true);
@@ -146,11 +146,17 @@ export function App() {
       </div>
     </SidebarProvider>
     <Dialog open={Boolean(selected)} onOpenChange={open => { if (!open) setSelected(null); }}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-[520px] p-7" finalFocus={detailTrigger} showCloseButton={false}>
+      <DialogContent className="site-detail max-h-[85vh] min-w-0 overflow-x-hidden overflow-y-auto sm:max-w-[520px] p-7" finalFocus={detailTrigger} showCloseButton={false}>
         <DialogHeader><DialogTitle className="text-xl">{t('detail.title')}</DialogTitle><DialogDescription>{t('detail.description', { range: rangeLabel(range) })}</DialogDescription></DialogHeader>
         <DialogClose render={<Button variant="ghost" size="icon-sm" className="absolute right-4 top-4" />} aria-label={t('detail.close')}><X /></DialogClose>
         {selected && stats && <><div className="detail-site"><SiteIcon domain={iconForSite(selected, selectedRow?.hosts) || selected} site={iconForSite(selected, selectedRow?.hosts) || selected} /><h3>{selected}</h3></div>
           <div className="detail-stats"><div><strong>{duration(selectedRow?.ms || 0)}</strong><span>{t('ranking.activeTime')}</span></div><div><strong>{t('detail.visits', { count: selectedRow?.visits || 0 })}</strong><span>{t('ranking.visits')}</span></div></div>
+          {ledger.detailSite === selected && ledger.detail && <section className="detail-chart min-w-0">
+            <h3>{t('detail.trend.title')}</h3>
+            <SiteTrend days={ledger.detail.days} domain={selected} />
+            <h3>{t('detail.hours.title')}</h3>
+            <HourChart hours={ledger.detail.hours} dayCount={ledger.detail.days.length} domain={selected} />
+          </section>}
           {(selectedRow?.hosts.length ?? 0) >= 2 && <><h3>{t('detail.breakdown.title')}</h3><Breakdown hosts={selectedRow.hosts} /></>}
           <h3>{t('detail.todaySessions')}</h3>
           {sessions.length ? <ScrollArea className="h-[230px]"><ul className="session-list">{sessions.map((s, i) => <li key={i}><time>{timeLabel(Math.max(today, s.start))} — {timeLabel(Math.min(end, s.end))}</time>{(selectedRow?.hosts.length ?? 0) >= 2 && <span className="session-host">{s.domain}</span>}<span>{duration(Math.min(end, s.end) - Math.max(today, s.start))}</span></li>)}</ul></ScrollArea> : <p className="muted">{t('detail.noSessions')}</p>}

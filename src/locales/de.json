@@ -97,6 +97,21 @@
     "ignored": "Diese Website wird bereits ignoriert",
     "ignoreConfirm": { "title": "Diese Website nicht mehr aufzeichnen?", "description": "{{domain}} und seine Subdomains werden nicht mehr gemessen, und Besuche zählen nicht. Vorhandene Einträge werden nicht gelöscht.", "confirm": "Nicht mehr aufzeichnen" },
     "viewVisits": "Besuche anzeigen",
+    "trend": {
+      "title": "Tagestrend",
+      "label": "Tägliche aktive Zeit für {{domain}}. {{days}}",
+      "item": "{{date}}, {{duration}}",
+      "unrecorded": "Nicht erfasst",
+      "separator": "; "
+    },
+    "hours": {
+      "title": "Tageszeit",
+      "label": "Aktive Zeit nach Stunde für {{domain}}. {{hours}}",
+      "item": "{{hour}}, {{duration}}, {{average}}",
+      "separator": "; ",
+      "slot": "{{from}}–{{to}}",
+      "average": "Tagesdurchschnitt {{duration}}"
+    },
     "breakdown": {
       "title": "Zusammensetzung der Subdomains",
       "label": "Zusammensetzung der Subdomains. {{hosts}}",

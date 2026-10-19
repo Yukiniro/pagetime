@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { IDBFactory, IDBKeyRange } from 'fake-indexeddb';
 import {
   clearLedger, commitTick, daysBetween, hoursBetween, ledgerTx, openLedger, pruneDetail, readDomains, readHead,
-  recentVisits, reopening, siteDays, spansBetween, toggleRecording,
+  recentVisits, reopening, siteDays, siteHours, spansBetween, toggleRecording,
 } from '../src/ledger.mjs';
 import { addDays, dateKey, detailCutoff, DETAIL_DAYS, HOUR, splitByHour } from '../src/model.mjs';
 
@@ -189,6 +189,8 @@ test('date-range and site queries use the compound indexes', async () => {
   const b = await idOf(db, 'b.test');
   const trend = await siteDays(db, b, '2026-10-02', '2026-10-08');
   assert.deepEqual(trend.map(d => [d.date, d.ms, d.visits]), Array.from({ length: 7 }, (_, i) => [`2026-10-0${i + 2}`, 120_000, 1]));
+  const bHours = await siteHours(db, b, '2026-10-02', '2026-10-08');
+  assert.deepEqual(bHours.map(h => [h.date, h.hour, h.ms]), Array.from({ length: 7 }, (_, i) => [`2026-10-0${i + 2}`, 10, 120_000]));
   assert.deepEqual((await hoursBetween(db, '2026-10-04', '2026-10-04')).map(h => h.hour), [9, 10, 11]);
   assert.deepEqual((await spansBetween(db, at(10, 4), at(10, 5))).map(s => s.start), [at(10, 4, 9), at(10, 4, 10), at(10, 4, 11)]);
   const visits = await recentVisits(db, at(10, 1), at(10, 11), new Set([b]), 3);

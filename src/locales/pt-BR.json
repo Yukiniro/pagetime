@@ -103,6 +103,21 @@
     "ignored": "Este site já está ignorado",
     "ignoreConfirm": { "title": "Parar de registrar este site?", "description": "{{domain}} e seus subdomínios deixarão de ter tempo e visitas registrados. Os registros existentes não são apagados.", "confirm": "Parar de registrar" },
     "viewVisits": "Ver visitas",
+    "trend": {
+      "title": "Tendência diária",
+      "label": "Tempo ativo diário de {{domain}}. {{days}}",
+      "item": "{{date}}, {{duration}}",
+      "unrecorded": "Não registrado",
+      "separator": "; "
+    },
+    "hours": {
+      "title": "Hora do dia",
+      "label": "Tempo ativo por hora de {{domain}}. {{hours}}",
+      "item": "{{hour}}, {{duration}}, {{average}}",
+      "separator": "; ",
+      "slot": "{{from}}–{{to}}",
+      "average": "Média diária {{duration}}"
+    },
     "breakdown": {
       "title": "Composição por subdomínio",
       "label": "Composição por subdomínio. {{hosts}}",
