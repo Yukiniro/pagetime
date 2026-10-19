@@ -39,6 +39,17 @@
     "empty": "今天还没有活跃浏览记录",
     "item": "{{domain}}，{{from}} 至 {{to}}"
   },
+  "heatmap": {
+    "title": "活跃时段",
+    "caption": "每格为该时段的平均活跃时长",
+    "legend": "浅色 {{min}}，深色 {{max}}",
+    "label": "按星期和小时统计的活跃时段。{{summary}}",
+    "separator": "；",
+    "empty": "所选范围内还没有活跃浏览",
+    "top": "最活跃的时段",
+    "item": "{{weekday}} {{from}}–{{to}} · 平均 {{duration}} · {{days}}",
+    "days_other": "涉及 {{count}} 天"
+  },
   "ranking": {
     "title": "站点排行",
     "site": "站点",

@@ -8,6 +8,7 @@ export const VISIT_LIST_LIMIT = 200;
 
 const keyFor = siteMerge => domain => siteOf(domain, siteMerge);
 const matches = (domain, search, site, keyOf) => site ? keyOf(domain) === site : !search || domain.includes(search);
+const hourPieces = (start, end) => end > start ? splitByHour(start, end).map(piece => ({ date: piece.date, hour: piece.hour, ms: piece.end - piece.start })) : [];
 
 export function viewFromSnapshot(data, { start, end, today, search = '', site = '', siteMerge = 'prefix' }) {
   const keyOf = keyFor(siteMerge);
@@ -18,13 +19,14 @@ export function viewFromSnapshot(data, { start, end, today, search = '', site = 
     stats: summarize(data, start, end, keyOf),
     todayStats: summarize(data, today, end, keyOf),
     days: daily(data, start, end).map(({ at, ms }) => ({ at, ms, recorded: at >= midnight(data.since) })),
+    hourRows: data.spans.flatMap(span => hourPieces(Math.max(span.start, start), Math.min(span.end, end))),
     spans: data.spans.filter(span => span.end > today && span.start < end).map(span => ({ ...span, site: keyOf(span.domain) })),
     visits: visits.slice(0, VISIT_LIST_LIMIT).map(visit => ({ domain: visit.domain, site: keyOf(visit.domain), at: visit.at })),
     visitCount: visits.length,
   };
 }
 
-export function viewFromLedger({ state, domains, days, spans, visits, cursor = null, lastEnd }, { start, end, today, search = '', site = '', siteMerge = 'prefix', now }) {
+export function viewFromLedger({ state, domains, days, hours = [], spans, visits, cursor = null, lastEnd }, { start, end, today, search = '', site = '', siteMerge = 'prefix', now }) {
   const host = new Map(domains.map(row => [row.id, row.host]));
   const keyOf = keyFor(siteMerge);
   const todayKey = dateKey(today);
@@ -44,7 +46,9 @@ export function viewFromLedger({ state, domains, days, spans, visits, cursor = n
   const segment = enabled ? openCredit(cursor, lastEnd, now) : null;
   const from = segment ? Math.max(segment.start, start) : 0;
   const to = segment ? Math.min(segment.end, end) : 0;
+  const hourRows = hours.map(row => ({ date: row.date, hour: row.hour, ms: row.ms }));
   if (segment && to > from) {
+    hourRows.push(...hourPieces(from, to));
     entries.push({ domain: segment.domain, ms: to - from, visits: 0 });
     for (let at = midnight(from); at < to; at = addDays(at, 1)) {
       const piece = overlapMs(segment, Math.max(from, at), Math.min(to, addDays(at, 1)));
@@ -77,6 +81,7 @@ export function viewFromLedger({ state, domains, days, spans, visits, cursor = n
     stats: groupSites(entries, keyOf),
     todayStats: groupSites(todayEntries, keyOf),
     days: trend,
+    hourRows,
     spans: listedSpans,
     visits: listed,
     visitCount,

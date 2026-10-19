@@ -45,6 +45,19 @@
     "empty": "Aún no hay navegación activa registrada hoy",
     "item": "{{domain}}, de {{from}} a {{to}}"
   },
+  "heatmap": {
+    "title": "Horas activas",
+    "caption": "Cada celda es el tiempo activo medio de esa hora",
+    "legend": "Claro {{min}}, oscuro {{max}}",
+    "label": "Horas activas por día de la semana y hora. {{summary}}",
+    "separator": "; ",
+    "empty": "No hay navegación activa en este periodo",
+    "top": "Horas más activas",
+    "item": "{{weekday}} {{from}}–{{to}} · Media {{duration}} · {{days}}",
+    "days_one": "{{count}} día",
+    "days_many": "{{count}} días",
+    "days_other": "{{count}} días"
+  },
   "ranking": {
     "title": "Sitios principales",
     "site": "Sitio",

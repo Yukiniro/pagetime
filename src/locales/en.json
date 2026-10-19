@@ -42,6 +42,18 @@
     "empty": "No active browsing recorded today yet",
     "item": "{{domain}}, {{from}} to {{to}}"
   },
+  "heatmap": {
+    "title": "Active hours",
+    "caption": "Each cell is the average active time for that hour",
+    "legend": "Light {{min}}, dark {{max}}",
+    "label": "Active hours by weekday and hour. {{summary}}",
+    "separator": "; ",
+    "empty": "No active browsing in this range",
+    "top": "Busiest hours",
+    "item": "{{weekday}} {{from}}–{{to}} · Average {{duration}} · {{days}}",
+    "days_one": "{{count}} day",
+    "days_other": "{{count}} days"
+  },
   "ranking": {
     "title": "Top sites",
     "site": "Site",

@@ -21,7 +21,7 @@ import { HowItWorksDialog } from './HowItWorksDialog.jsx';
 import { command, colorOf, iconForSite, iconHost } from './data.js';
 import { useLedger } from './use-ledger.js';
 import { VISIT_LIST_LIMIT } from './ledger-view.mjs';
-import { Breakdown, HourChart, SiteTrend, Trend, Timeline } from './Charts.jsx';
+import { Breakdown, Heatmap, HourChart, SiteTrend, Trend, Timeline } from './Charts.jsx';
 import { duration, formatDate, languages, timeLabel } from './i18n.js';
 
 function SiteIcon({ domain, site = domain }) {
@@ -110,6 +110,7 @@ export function App() {
           {!shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'overview' ? <>
             <section className="summary" aria-label={t('summary.label')}><div className="total-time">{duration(stats.ms)}</div><p className="flex items-center gap-1"><span>{t('summary.totalTime')}</span><Button variant="ghost" size="icon-sm" aria-label={t('howItWorks.infoButton')} onClick={openHow}><Info /></Button></p><div className="totals"><Trans i18nKey="summary.visits" count={stats.visits} components={{ b: <strong /> }} /><span>·</span><Trans i18nKey="summary.sites" count={stats.rows.length} components={{ b: <strong /> }} /></div></section>
             <Trend days={view.days} />
+            {range !== 1 && <section className="heatmap-section" aria-labelledby="active-hours-title"><h2 id="active-hours-title">{t('heatmap.title')}</h2><p>{t('heatmap.caption')}</p><Heatmap rows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} /></section>}
             <section className="timeline-section"><h2>{t('timeline.title')}</h2><p>{formatDate(now, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(todayStats.ms) })}</p><Timeline spans={view.spans} />
               <div className="legend">{todayStats.rows.filter(r => r.ms).slice(0, 5).map(r => r.domain).map(domain => <Button variant="ghost" size="xs" key={domain} onClick={event => openSite(domain, event)}><i style={{ background: colorOf(domain) }} />{domain}</Button>)}<span className="idle-legend"><i />{t('timeline.idle')}</span></div>
             </section>

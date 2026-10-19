@@ -43,13 +43,22 @@ export function dateKey(at) {
 }
 
 // Local-time pieces of [start, end): one per clock hour, so a piece never crosses an hour or a day.
+// Fall-back snaps setMinutes to the earlier copy of the repeated hour, so +1h can fail to move forward.
 export function splitByHour(start, end) {
   const pieces = [];
   for (let at = start; at < end;) {
     const date = new Date(at);
+    const hour = date.getHours();
     date.setMinutes(0, 0, 0);
-    const next = Math.min(end, date.getTime() + HOUR);
-    pieces.push({ date: dateKey(at), hour: new Date(at).getHours(), start: at, end: next });
+    let next = date.getTime() + HOUR;
+    if (next <= at) {
+      const later = new Date(at);
+      later.setHours(hour + 1, 0, 0, 0);
+      next = later.getTime();
+    }
+    next = Math.min(end, next);
+    if (next <= at) next = Math.min(end, at + HOUR);
+    pieces.push({ date: dateKey(at), hour, start: at, end: next });
     at = next;
   }
   return pieces;

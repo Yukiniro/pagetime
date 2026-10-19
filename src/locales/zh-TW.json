@@ -39,6 +39,17 @@
     "empty": "今天還沒有活躍瀏覽紀錄",
     "item": "{{domain}}，{{from}} 至 {{to}}"
   },
+  "heatmap": {
+    "title": "活躍時段",
+    "caption": "每格為該時段的平均活躍時長",
+    "legend": "淺色 {{min}}，深色 {{max}}",
+    "label": "依星期和小時統計的活躍時段。{{summary}}",
+    "separator": "；",
+    "empty": "所選範圍內還沒有活躍瀏覽",
+    "top": "最活躍的時段",
+    "item": "{{weekday}} {{from}}–{{to}} · 平均 {{duration}} · {{days}}",
+    "days_other": "涉及 {{count}} 天"
+  },
   "ranking": {
     "title": "網站排行",
     "site": "網站",

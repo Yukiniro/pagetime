@@ -11,6 +11,8 @@
 @media(min-width:1101px) and (max-height:1100px){.ranking [data-slot=table-cell]{height:32px;padding-top:4px;padding-bottom:4px}.ranking [data-slot=table-head]{height:30px}}
 @media(max-width:760px){.sidebar-navigation{margin-top:0;flex:0;overflow:visible}.navigation-menu{flex-direction:row;gap:3px}.nav-item{height:36px;gap:5px;padding:9px}.topbar .action-button{height:36px;padding:0 12px;font-size:12px}.setting-row .action-button{height:36px;padding:0 11px;font-size:12px}.ranking [data-slot=table],.records [data-slot=table]{min-width:490px}.brand{letter-spacing:0;gap:7px}.sidebar{padding:14px 12px}.range{height:38px}.table-footer .action-button{padding:0 12px}}
 
+.heatmap-section{margin-top:17px;max-width:100%}.heatmap-section>p{margin-top:2px}.heatmap-scroll{overflow-x:auto;max-width:100%;margin-top:9px}.heatmap-chart{height:268px;min-width:640px}.heatmap-section>.heatmap-legend{display:flex;align-items:center;gap:8px;margin-top:10px;color:#64748b;font-size:12px;line-height:1.5}.heatmap-scale{display:inline-block;width:112px;height:8px;border-radius:999px;background:linear-gradient(90deg,#e4ecf8,#2875ff);flex:0 0 auto}.workspace{min-width:0}
+@media(max-width:760px){.heatmap-chart{height:248px;min-width:560px}.heatmap-legend{flex-wrap:wrap}}
 h1,h2,h3{font-weight:700}.nav-item svg{width:23px;height:23px}@media(max-width:760px){.nav-item svg{width:17px;height:17px}}
 
 @media(max-width:760px){.sidebar{flex-wrap:wrap;gap:12px}.sidebar-navigation{flex:0 1 auto}.nav-item{font-size:12px;padding:8px 6px}.brand{flex-shrink:0}}
