@@ -39,8 +39,8 @@
   "filter": {
     "active": "Filtré : {{domain}}",
     "clear": "Effacer le filtre",
-    "emptyTitle": "Aucune activité pour ce site",
-    "emptyDescription": "Aucun enregistrement pour {{domain}} sur cette période."
+    "emptyTitle": "Aucun temps actif sur ce graphique",
+    "emptyDescription": "{{domain}} n'a pas de temps actif sur ce graphique."
   },
   "chart": { "label": "Graphique principal" },
   "trend": { "label": "Temps de navigation active par jour. {{days}}", "separator": " ; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },

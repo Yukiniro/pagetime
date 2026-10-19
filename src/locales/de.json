@@ -37,8 +37,8 @@
   "filter": {
     "active": "Gefiltert: {{domain}}",
     "clear": "Filter aufheben",
-    "emptyTitle": "Keine Aktivität für diese Website",
-    "emptyDescription": "In diesem Zeitraum gibt es keine Aufzeichnung für {{domain}}."
+    "emptyTitle": "Keine aktive Zeit in diesem Diagramm",
+    "emptyDescription": "{{domain}} hat in diesem Diagramm keine aktive Zeit."
   },
   "chart": { "label": "Hauptdiagramm" },
   "trend": { "label": "Aktive Surfzeit pro Tag. {{days}}", "separator": "; ", "hours_one": "{{count}} Std.", "hours_other": "{{count}} Std." },

@@ -35,8 +35,8 @@
   "filter": {
     "active": "已过滤：{{domain}}",
     "clear": "清除过滤",
-    "emptyTitle": "这个站点没有记录",
-    "emptyDescription": "当前范围内没有 {{domain}} 的活跃记录。"
+    "emptyTitle": "这张图没有活跃时间",
+    "emptyDescription": "{{domain}} 在这张图上没有活跃时间。"
   },
   "chart": { "label": "主图" },
   "trend": { "label": "每日活跃浏览时长。{{days}}", "separator": "；", "hours_other": "{{count}} 小时" },

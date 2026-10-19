@@ -35,8 +35,8 @@
   "filter": {
     "active": "{{domain}} で絞り込み中",
     "clear": "絞り込みを解除",
-    "emptyTitle": "このサイトの記録はありません",
-    "emptyDescription": "この期間に {{domain}} の記録はありません。"
+    "emptyTitle": "このグラフにアクティブ時間はありません",
+    "emptyDescription": "{{domain}} のアクティブ時間はこのグラフにありません。"
   },
   "chart": { "label": "メインのグラフ" },
   "trend": { "label": "日別のアクティブな閲覧時間。{{days}}", "separator": "、", "hours_other": "{{count}} 時間" },
