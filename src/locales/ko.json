@@ -39,6 +39,17 @@
     "empty": "오늘은 아직 활성 브라우징 기록이 없습니다",
     "item": "{{domain}}, {{from}}~{{to}}"
   },
+  "heatmap": {
+    "title": "활성 시간대",
+    "caption": "각 칸은 그 시간대의 평균 활성 시간입니다",
+    "legend": "옅은색 {{min}}, 진한색 {{max}}",
+    "label": "요일과 시간별 활성 시간대. {{summary}}",
+    "separator": ", ",
+    "empty": "이 범위에는 활성 브라우징이 없습니다",
+    "top": "가장 활발한 시간대",
+    "item": "{{weekday}} {{from}}–{{to}} · 평균 {{duration}} · {{days}}",
+    "days_other": "{{count}}일"
+  },
   "ranking": {
     "title": "사이트 순위",
     "site": "사이트",

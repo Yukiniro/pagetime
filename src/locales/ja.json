@@ -39,6 +39,17 @@
     "empty": "今日のアクティブな閲覧記録はまだありません",
     "item": "{{domain}}、{{from}}〜{{to}}"
   },
+  "heatmap": {
+    "title": "アクティブな時間帯",
+    "caption": "各マスはその時間帯の平均アクティブ時間です",
+    "legend": "薄い {{min}}、濃い {{max}}",
+    "label": "曜日と時間ごとのアクティブな時間帯。{{summary}}",
+    "separator": "、",
+    "empty": "この期間にアクティブな閲覧はありません",
+    "top": "もっともアクティブな時間帯",
+    "item": "{{weekday}} {{from}}–{{to}} · 平均 {{duration}} · {{days}}",
+    "days_other": "{{count}} 日"
+  },
   "ranking": {
     "title": "サイトランキング",
     "site": "サイト",

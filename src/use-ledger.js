@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { isExtension, watchLedgerError } from './data.js';
-import { daysBetween, openLedger, readDomains, readHead, recentVisits, siteDays, siteHours, spansBetween } from './ledger.mjs';
+import { daysBetween, hoursBetween, openLedger, readDomains, readHead, recentVisits, siteDays, siteHours, spansBetween } from './ledger.mjs';
 import { siteSeries, siteSeriesFromSnapshot, VISIT_LIST_LIMIT, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
 import { addDays, dateKey } from './model.mjs';
 import { siteOf } from './site.mjs';
@@ -27,6 +27,7 @@ function useExtensionLedger(range) {
         state: head.state,
         domains,
         days: await daysBetween(db, from, to),
+        hours: await hoursBetween(db, from, to),
         spans: await spansBetween(db, range.today, range.end),
         visits: await recentVisits(db, range.start, range.end, ids, VISIT_LIST_LIMIT),
         cursor,

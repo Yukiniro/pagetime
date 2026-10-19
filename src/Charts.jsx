@@ -1,13 +1,14 @@
 import React,{useEffect,useRef} from 'react';
 import {useTranslation} from 'react-i18next';
 import * as echarts from 'echarts/core';
-import {BarChart,CustomChart} from 'echarts/charts';
-import {GridComponent,TooltipComponent} from 'echarts/components';
+import {BarChart,CustomChart,HeatmapChart} from 'echarts/charts';
+import {GridComponent,TooltipComponent,VisualMapComponent} from 'echarts/components';
 import {CanvasRenderer} from 'echarts/renderers';
 import {midnight} from './model.mjs';
+import {weekHourMatrix,weekStartOf} from './heatmap.mjs';
 import {colorOf} from './data.js';
 import {duration,formatDate,timeLabel} from './i18n.js';
-echarts.use([BarChart,CustomChart,GridComponent,TooltipComponent,CanvasRenderer]);
+echarts.use([BarChart,CustomChart,HeatmapChart,GridComponent,TooltipComponent,VisualMapComponent,CanvasRenderer]);
 function Chart({option,label,className,height}){
   const ref=useRef(null);
   useEffect(()=>{const chart=echarts.init(ref.current,null,{renderer:'canvas'});chart.setOption(option);
@@ -43,6 +44,26 @@ export function HourChart({hours, dayCount, domain}){
     yAxis:{type:'value',min:0,minInterval:1,max:Math.max(1,...hours.map(row=>Math.ceil(row.ms/3_600_000))),splitNumber:2,axisLabel:{color:'#64748b',fontSize:11,formatter:v=>v?t('trend.hours',{count:v}):'0'},splitLine:{lineStyle:{color:'#e8edf6'}}},
     series:[{type:'bar',barMaxWidth:14,itemStyle:{color:'#2875ff',borderRadius:[2,2,0,0]},data:hours.map(row=>row.ms/3_600_000)}]};
   return <><Chart option={option} className="hour-chart" label={t('detail.hours.label',{domain,hours:hours.map(item).join(t('detail.hours.separator'))})}/><ul className="sr-only">{hours.map(row=><li key={row.hour}>{item(row)}</li>)}</ul></>;
+}
+const weekdayAt=weekday=>new Date(2026,9,18+weekday).getTime();
+const hourRange=hour=>[`${String(hour).padStart(2,'0')}:00`,hour===23?'24:00':`${String(hour+1).padStart(2,'0')}:00`];
+export function Heatmap({rows,since,start,end,today}){
+  const {t,i18n}=useTranslation();
+  const matrix=weekHourMatrix(rows,start,end,since,weekStartOf(i18n.resolvedLanguage),today);
+  const weekdayName=(weekday,width)=>formatDate(weekdayAt(weekday),{weekday:width});
+  const item=cell=>{const [from,to]=hourRange(cell.hour);return t('heatmap.item',{weekday:weekdayName(cell.weekday,'long'),from,to,duration:duration(cell.average),days:t('heatmap.days',{count:cell.days})});};
+  const top=matrix.cells.filter(cell=>cell.ms>0).sort((a,b)=>b.average-a.average||a.row-b.row||a.hour-b.hour).slice(0,3);
+  const peak=matrix.cells.reduce((max,cell)=>Math.max(max,cell.average),0);
+  const option={animation:false,textStyle:{fontFamily:getComputedStyle(document.documentElement).fontFamily},grid:{left:4,right:8,top:8,bottom:4,containLabel:true},
+    tooltip:{trigger:'item',renderMode:'richText',formatter:params=>item(matrix.cells[params.value[1]*24+params.value[0]])},
+    visualMap:{type:'continuous',min:0,max:peak||1,dimension:2,seriesIndex:0,show:false,inRange:{color:['#e4ecf8','#2875ff']}},
+    xAxis:{type:'category',data:Array.from({length:24},(_,hour)=>String(hour)),axisTick:{show:false},axisLine:{lineStyle:{color:'#dfe6f2'}},axisLabel:{color:'#64748b',fontSize:11,interval:2},splitLine:{show:false}},
+    yAxis:{type:'category',inverse:true,data:matrix.weekdays.map(weekday=>weekdayName(weekday,'short')),axisTick:{show:false},axisLine:{show:false},axisLabel:{color:'#40577b',fontSize:12}},
+    series:[{type:'heatmap',data:matrix.cells.map(cell=>[cell.hour,cell.row,cell.average]),itemStyle:{borderColor:'#fff',borderWidth:3,borderRadius:3},emphasis:{itemStyle:{borderColor:'#2875ff',borderWidth:2}}}]};
+  return <><div className="heatmap-scroll"><Chart option={option} className="heatmap-chart" label={t('heatmap.label',{summary:top.length?top.map(item).join(t('heatmap.separator')):t('heatmap.empty')})}/></div>
+    <p className="heatmap-legend"><i className="heatmap-scale" aria-hidden="true"/>{t('heatmap.legend',{min:duration(0),max:duration(peak)})}</p>
+    <h3 className="sr-only">{t('heatmap.top')}</h3>
+    <ul className="sr-only">{top.length?top.map(cell=><li key={`${cell.weekday}-${cell.hour}`}>{item(cell)}</li>):<li>{t('heatmap.empty')}</li>}</ul></>;
 }
 export function Timeline({spans}){
   const {t}=useTranslation();

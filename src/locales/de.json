@@ -42,6 +42,18 @@
     "empty": "Heute wurde noch keine aktive Nutzung aufgezeichnet",
     "item": "{{domain}}, {{from}} bis {{to}}"
   },
+  "heatmap": {
+    "title": "Aktive Zeiten",
+    "caption": "Jedes Feld ist die durchschnittliche aktive Zeit dieser Stunde",
+    "legend": "Hell {{min}}, dunkel {{max}}",
+    "label": "Aktive Zeiten nach Wochentag und Stunde. {{summary}}",
+    "separator": "; ",
+    "empty": "In diesem Zeitraum gibt es keine aktive Nutzung",
+    "top": "Aktivste Zeiten",
+    "item": "{{weekday}} {{from}}–{{to}} · Durchschnitt {{duration}} · {{days}}",
+    "days_one": "{{count}} Tag",
+    "days_other": "{{count}} Tage"
+  },
   "ranking": {
     "title": "Top-Websites",
     "site": "Website",
