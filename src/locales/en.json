@@ -19,6 +19,10 @@
     "data": "Saved records have an invalid format. They have been kept unchanged. Retry after restoring valid data."
   },
   "loading": "Loading local records…",
+  "empty": {
+    "title": "Your browsing will show up here",
+    "description": "After you visit a page, active time, the timeline, and site rankings appear on this page."
+  },
   "active": "Active {{duration}}",
   "badge": {
     "today": "Today {{duration}}",

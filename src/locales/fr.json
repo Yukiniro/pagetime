@@ -19,6 +19,10 @@
     "data": "Le format des données enregistrées est invalide. Les données originales restent inchangées. Restaurez des données valides, puis réessayez."
   },
   "loading": "Chargement des données locales…",
+  "empty": {
+    "title": "Cela apparaîtra ici après la navigation",
+    "description": "Après avoir visité une page, le temps actif, la chronologie et le classement des sites s’affichent ici."
+  },
   "active": "Actif {{duration}}",
   "badge": {
     "today": "Aujourd’hui {{duration}}",

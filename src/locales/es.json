@@ -19,6 +19,10 @@
     "data": "Los registros guardados tienen un formato no válido. Los datos originales no se han modificado. Restaura datos válidos y vuelve a intentarlo."
   },
   "loading": "Cargando registros locales…",
+  "empty": {
+    "title": "Aparecerá aquí cuando empieces a navegar",
+    "description": "Después de visitar una página, el tiempo activo, la línea de tiempo y el ranking de sitios se muestran en esta página."
+  },
   "active": "Activo {{duration}}",
   "badge": {
     "today": "Hoy {{duration}}",

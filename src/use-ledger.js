@@ -13,6 +13,8 @@ function useExtensionLedger(range) {
   const [attempt, setAttempt] = useState(0);
   const [marker, setMarker] = useState();
   useEffect(() => watchLedgerError(setMarker), []);
+  // Date-range refetches keep the previous result until IndexedDB answers. The key marks that result stale.
+  const rangeKey = `${range.start}|${range.end}|${attempt}`;
   const result = useLiveQuery(async () => {
     try {
       db ??= openLedger();
@@ -64,6 +66,7 @@ function useExtensionLedger(range) {
         now,
       }).days;
       return {
+        rangeKey,
         view: viewFromLedger(rows, { ...range, now }),
         weekDays,
         detail: range.detail ? siteSeries({
@@ -73,15 +76,17 @@ function useExtensionLedger(range) {
       };
     } catch (error) {
       console.error('PageTime could not read the ledger', error);
-      return { error: 'read' };
+      return { rangeKey, error: 'read' };
     }
   }, [range.start, range.end, range.today, range.search, range.site, range.siteMerge, range.detail, range.focus, attempt]);
+  const settled = result?.rangeKey === rangeKey;
   return {
     view: result?.view,
     weekDays: result?.weekDays,
     detail: result?.detail ?? null,
     detailSite: result?.detailSite ?? '',
-    error: result?.error ?? (marker ? 'save' : undefined),
+    pending: !settled,
+    error: (settled ? result?.error : undefined) ?? (marker ? 'save' : undefined),
     apply() {},
     retry: () => setAttempt(n => n + 1),
   };
@@ -93,10 +98,11 @@ function usePreviewLedger(range) {
   const weekStart = addDays(range.today, -6);
   const weekEnd = addDays(range.today, 1);
   return {
-    view: data && viewFromSnapshot(data, range),
+    view: data ? viewFromSnapshot(data, range) : undefined,
     weekDays: data ? viewFromSnapshot(data, { start: weekStart, end: weekEnd, today: range.today, site: range.focus || '', siteMerge: range.siteMerge }).days : undefined,
     detail: data && range.detail ? siteSeriesFromSnapshot(data, { start: range.start, end: range.end, site: range.detail, siteMerge: range.siteMerge, now }) : null,
     detailSite: range.detail || '',
+    pending: !data,
     error: undefined,
     apply: setData,
     retry() {},

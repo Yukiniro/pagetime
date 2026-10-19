@@ -19,6 +19,10 @@
     "data": "Die gespeicherten Aufzeichnungen haben ein ungültiges Format. Die Originaldaten bleiben unverändert. Stelle gültige Daten wieder her und versuche es erneut."
   },
   "loading": "Lokale Daten werden geladen…",
+  "empty": {
+    "title": "Nach dem Surfen erscheint es hier",
+    "description": "Sobald du eine Seite besuchst, erscheinen aktive Zeit, Zeitachse und Seitenrangliste auf dieser Seite."
+  },
   "active": "Aktiv {{duration}}",
   "badge": {
     "today": "Heute {{duration}}",

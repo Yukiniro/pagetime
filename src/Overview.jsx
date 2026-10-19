@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ArrowRight, CaretDown, CaretRight, GlobeHemisphereWest, Info } from '@phosphor-icons/react';
+import { ArrowRight, CaretDown, CaretRight, Info } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@app/components/ui/empty';
 import { useTranslation } from 'react-i18next';
+import { EmptyState, FilterEmpty } from './EmptyState.jsx';
 import { colorOf, iconForSite } from './data.js';
 import { Heatmap, Timeline, Trend } from './Charts.jsx';
 import { SiteIcon } from './SiteIcon.jsx';
@@ -10,11 +10,6 @@ import { duration, formatDate } from './i18n.js';
 import { focusSpans, focusSummary, timelineHasActivity, trendHasActivity } from './site-filter.mjs';
 
 const RANK_LIMIT = 8;
-
-function FilterEmpty({ domain }) {
-  const { t } = useTranslation();
-  return <Empty className="chart-empty"><EmptyHeader><EmptyMedia><GlobeHemisphereWest size={32} /></EmptyMedia><EmptyTitle>{t('filter.emptyTitle')}</EmptyTitle><EmptyDescription>{t('filter.emptyDescription', { domain })}</EmptyDescription></EmptyHeader></Empty>;
-}
 
 function byVisits(rows) {
   return [...rows].sort((a, b) => b.visits - a.visits || b.ms - a.ms || a.domain.localeCompare(b.domain));
@@ -64,7 +59,7 @@ export function Overview({ todayStats, stats, weekDays = [], spans, hourRows, si
   const legend = (kpi?.rows ?? []).filter(row => row.ms).slice(0, 5);
   const tabs = [['timeline', t('timeline.title')], ['trend', t('range.lastDays', { count: 7 })]];
 
-  return <>
+  return <div className="contents" data-status="ready">
     {filtered && <div className="filter-bar" role="status">
       <div className="filter-chip"><span>{t('filter.active', { domain: filterSite })}</span><Button variant="ghost" size="sm" onClick={() => onFilter('')}>{t('filter.clear')}</Button></div>
     </div>}
@@ -94,11 +89,11 @@ export function Overview({ todayStats, stats, weekDays = [], spans, hourRows, si
           <p className="chart-caption">{formatDate(now, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(kpi.ms) })}</p>
           <Timeline spans={chartSpans} className="primary-timeline" lane={36} isDark={isDark} />
           <div className="legend">{legend.map(row => <Button variant="ghost" size="xs" key={row.domain} onClick={event => openSite(row.domain, event)}><i style={{ background: colorOf(row.domain) }} />{row.domain}</Button>)}<span className="idle-legend"><i />{t('timeline.idle')}</span></div>
-        </> : <FilterEmpty domain={filterSite} />) : (showTrend ? <Trend days={weekDays} className="primary-trend" isDark={isDark} /> : <FilterEmpty domain={filterSite} />)}
+        </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />) : (showTrend ? <Trend days={weekDays} className="primary-trend" isDark={isDark} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
       </div>
     </section>
     <section className="rank-section" aria-label={t('ranking.title')}>
-      {!rows.length ? <Empty className="ledger-card"><EmptyHeader><EmptyMedia><GlobeHemisphereWest size={32} /></EmptyMedia><EmptyTitle>{t('ranking.emptyTitle')}</EmptyTitle><EmptyDescription>{t('ranking.emptyDescription')}</EmptyDescription></EmptyHeader></Empty> : <>
+      {!rows.length ? (filtered ? <FilterEmpty className="ledger-card chart-empty" domain={filterSite} onClear={() => onFilter('')} /> : <EmptyState className="ledger-card chart-empty" title={t('ranking.emptyTitle')} description={t('ranking.emptyDescription')} />) : <>
         <div className="rank-grid">
           <div className="rank-card ledger-card">
             <div className="rank-card-head"><h2>{t('ranking.title')}</h2><p>{rangeLabel}</p></div>
@@ -125,5 +120,5 @@ export function Overview({ todayStats, stats, weekDays = [], spans, hourRows, si
       </Button>
       {hoursOpen && <div id="active-hours-panel" className="heatmap-panel"><p>{t('heatmap.caption')}</p>{/* Hour cells are not a filter; filtering by hour is deferred. */}<Heatmap rows={hourRows} since={since} start={start} end={end} today={today} isDark={isDark} /></div>}
     </section>
-  </>;
+  </div>;
 }
