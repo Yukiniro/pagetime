@@ -31,6 +31,8 @@
     "visits_other": "访问 <b>{{count}}</b> 次",
     "sites_other": "<b>{{count}}</b> 个站点"
   },
+  "kpi": { "label": "今日汇总", "sites": "站点数" },
+  "chart": { "label": "主图" },
   "trend": { "label": "每日活跃浏览时长。{{days}}", "separator": "；", "hours_other": "{{count}} 小时" },
   "timeline": {
     "title": "今日时间线",
@@ -52,6 +54,9 @@
   },
   "ranking": {
     "title": "站点排行",
+    "timeTitle": "按时长",
+    "visitsTitle": "按访问次数",
+    "metricLabel": "右侧排行依据",
     "site": "站点",
     "activeTime": "活跃时间",
     "visits": "访问次数",

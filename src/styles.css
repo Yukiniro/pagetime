@@ -17,3 +17,45 @@ h1,h2,h3{font-weight:700}.nav-item svg{width:23px;height:23px}@media(max-width:7
 
 @media(max-width:760px){.sidebar{flex-wrap:wrap;gap:12px}.sidebar-navigation{flex:0 1 auto}.nav-item{font-size:12px;padding:8px 6px}.brand{flex-shrink:0}}
 .detail-chart{min-width:0;max-width:100%}.detail-chart h3{margin-top:16px}.detail-trend,.hour-chart,.breakdown-chart{display:block;width:100%;max-width:100%;min-width:0;overflow:hidden}.detail-trend{height:168px}.hour-chart{height:128px}.detail-trend canvas,.hour-chart canvas,.breakdown-chart canvas{max-width:100%}.site-detail{grid-template-columns:minmax(0,1fr)}
+
+.ledger-card{background:#fff;border:1px solid var(--line);border-radius:12px}
+.kpi{display:grid;grid-template-columns:1.5fr 1fr 1fr;margin-top:18px;overflow:hidden}
+.kpi-item{min-width:0;padding:16px 22px 18px;border-left:1px solid var(--line)}
+.kpi-item:first-child{border-left:0;background:#f4f8ff}
+.kpi-label{display:flex;align-items:center;gap:4px;color:#64748b;font-size:13px;line-height:1.4}.kpi-today{padding:1px 7px;border-radius:999px;background:#e7f0ff;color:#2875ff;font-size:12px;font-weight:650;line-height:1.6}
+.kpi-value{margin-top:6px;color:#10203e;font-size:28px;font-weight:650;letter-spacing:-.4px;line-height:1.15;font-variant-numeric:tabular-nums}
+.kpi-item.primary .kpi-value{font-size:44px;font-weight:750;letter-spacing:-1.2px}
+.chart-card{margin-top:16px;padding:16px 18px 14px}
+.chart-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px}
+.chart-head h2{font-size:16px}
+.chart-tabs,.metric-tabs{display:flex;flex-wrap:wrap;gap:2px;padding:3px;background:#f3f6fb;border-radius:10px}
+.chart-tab{height:32px;border-radius:8px;color:#40577b;font-weight:550}
+.chart-tab[aria-selected="true"],.metric-tabs [aria-pressed="true"]{background:#fff;color:#10203e;box-shadow:0 1px 2px rgba(16,32,62,.08)}
+.chart-caption{margin-top:8px;font-size:13px;line-height:1.5}
+.chart-caption>span{margin:0 8px}
+.chart-panel{position:relative;min-width:0}
+.primary-timeline{height:132px;margin-top:4px}
+.primary-trend{height:248px;margin-top:8px}
+.chart-panel .timeline-empty{position:absolute;left:0;right:0;top:54%;margin:0;text-align:center}
+.rank-section{margin-top:16px}
+.rank-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rank-card{min-width:0;padding:14px 10px 8px}
+.rank-card-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:0 8px 8px}.metric-tabs{flex-shrink:0}
+.rank-card-head h2{font-size:16px}
+.rank-card-head p{font-size:13px;line-height:1.4;white-space:nowrap}
+.rank-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.rank-row{position:relative;width:100%;height:auto;min-height:42px;justify-content:space-between;gap:12px;padding:8px 12px;border-radius:8px;overflow:hidden;font-weight:550;color:#122040}
+.rank-bar{position:absolute;z-index:0;left:0;top:3px;bottom:3px;border-radius:7px;background:#e8f1ff;pointer-events:none}
+.rank-row:hover .rank-bar{background:#d7e6ff}
+.rank-main,.rank-value{position:relative;z-index:1}
+.rank-main{display:flex;align-items:center;gap:10px;min-width:0;flex:1;text-align:left}
+.rank-main>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank-value{flex-shrink:0;color:#40577b;font-variant-numeric:tabular-nums}
+.heatmap-fold{margin-top:16px;overflow:hidden}
+.heatmap-toggle{width:100%;height:52px;justify-content:space-between;padding:0 18px;border-radius:12px;font-size:16px;font-weight:700;color:#122040}
+.heatmap-caret{transition:transform .15s ease}
+.heatmap-caret.open{transform:rotate(180deg)}
+.heatmap-panel{padding:0 18px 16px}
+.heatmap-panel>p{margin-top:0}
+@media(min-width:1101px) and (max-height:1100px){.kpi{margin-top:14px}.kpi-item{padding:12px 18px 14px}.kpi-item.primary .kpi-value{font-size:40px}.primary-trend{height:220px}.primary-timeline{height:120px}}
+@media(max-width:900px){.kpi{grid-template-columns:1fr}.kpi-item{border-left:0;border-top:1px solid var(--line)}.kpi-item:first-child{border-top:0}.kpi-item.primary .kpi-value{font-size:36px}.rank-grid{grid-template-columns:1fr}.chart-head h2{font-size:15px}}

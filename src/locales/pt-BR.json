@@ -35,6 +35,8 @@
     "sites_many": "<b>{{count}}</b> sites",
     "sites_other": "<b>{{count}}</b> sites"
   },
+  "kpi": { "label": "Totais de hoje", "sites": "Sites" },
+  "chart": { "label": "Gráfico principal" },
   "trend": { "label": "Tempo diário de navegação ativa. {{days}}", "separator": "; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },
   "timeline": {
     "title": "Linha do tempo de hoje",
@@ -60,6 +62,9 @@
   },
   "ranking": {
     "title": "Sites mais acessados",
+    "timeTitle": "Por tempo ativo",
+    "visitsTitle": "Por visitas",
+    "metricLabel": "Ordenar a coluna da direita por",
     "site": "Site",
     "activeTime": "Tempo ativo",
     "visits": "Visitas",

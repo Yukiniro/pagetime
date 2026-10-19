@@ -33,6 +33,8 @@
     "sites_one": "<b>{{count}}</b> Website",
     "sites_other": "<b>{{count}}</b> Websites"
   },
+  "kpi": { "label": "Heutige Summen", "sites": "Websites" },
+  "chart": { "label": "Hauptdiagramm" },
   "trend": { "label": "Aktive Surfzeit pro Tag. {{days}}", "separator": "; ", "hours_one": "{{count}} Std.", "hours_other": "{{count}} Std." },
   "timeline": {
     "title": "Heutige Zeitleiste",
@@ -56,6 +58,9 @@
   },
   "ranking": {
     "title": "Top-Websites",
+    "timeTitle": "Nach aktiver Zeit",
+    "visitsTitle": "Nach Besuchen",
+    "metricLabel": "Rechte Spalte ordnen nach",
     "site": "Website",
     "activeTime": "Aktive Zeit",
     "visits": "Besuche",
