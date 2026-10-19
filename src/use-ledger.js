@@ -21,25 +21,50 @@ function useExtensionLedger(range) {
       const ids = new Set(domains.filter(row => range.site ? siteOf(row.host, range.siteMerge) === range.site : row.host.includes(range.search)).map(row => row.id));
       const cursor = head.cursor?.session === stored.session ? head.cursor : null;
       const now = Date.now();
-      const from = dateKey(range.start);
-      const to = dateKey(addDays(range.end, -1));
+      const displayFrom = dateKey(range.start);
+      const displayTo = dateKey(addDays(range.end, -1));
+      // The trend tab is always the last 7 local days, even when the selected range is today.
+      // Those extra day rows stay out of the main view, so rankings and visits keep the selected range.
+      const weekStart = addDays(range.today, -6);
+      const fetchFrom = dateKey(Math.min(range.start, weekStart));
+      const [allDays, hours, spans, visits] = await Promise.all([
+        daysBetween(db, fetchFrom, displayTo),
+        hoursBetween(db, displayFrom, displayTo),
+        spansBetween(db, range.today, range.end),
+        recentVisits(db, range.start, range.end, ids, VISIT_LIST_LIMIT),
+      ]);
       const rows = {
         state: head.state,
         domains,
-        days: await daysBetween(db, from, to),
-        hours: await hoursBetween(db, from, to),
-        spans: await spansBetween(db, range.today, range.end),
-        visits: await recentVisits(db, range.start, range.end, ids, VISIT_LIST_LIMIT),
+        days: allDays.filter(row => row.date >= displayFrom && row.date <= displayTo),
+        hours,
+        spans,
+        visits,
         cursor,
         lastEnd: head.lastEnd,
       };
       const detailIds = range.detail ? domains.filter(row => siteOf(row.host, range.siteMerge) === range.detail).map(row => row.id) : [];
       const [detailDays, detailHours] = range.detail ? await Promise.all([
-        Promise.all(detailIds.map(id => siteDays(db, id, from, to))),
-        Promise.all(detailIds.map(id => siteHours(db, id, from, to))),
+        Promise.all(detailIds.map(id => siteDays(db, id, displayFrom, displayTo))),
+        Promise.all(detailIds.map(id => siteHours(db, id, displayFrom, displayTo))),
       ]) : [[], []];
+      const weekDays = viewFromLedger({
+        ...rows,
+        days: allDays,
+        hours: [],
+        visits: [],
+      }, {
+        start: weekStart,
+        end: addDays(range.today, 1),
+        today: range.today,
+        search: '',
+        site: '',
+        siteMerge: range.siteMerge,
+        now,
+      }).days;
       return {
         view: viewFromLedger(rows, { ...range, now }),
+        weekDays,
         detail: range.detail ? siteSeries({
           domains, days: detailDays.flat(), hours: detailHours.flat(), state: head.state, cursor, lastEnd: head.lastEnd,
         }, { site: range.detail, siteMerge: range.siteMerge, start: range.start, end: range.end, now }) : null,
@@ -52,6 +77,7 @@ function useExtensionLedger(range) {
   }, [range.start, range.end, range.today, range.search, range.site, range.siteMerge, range.detail, attempt]);
   return {
     view: result?.view,
+    weekDays: result?.weekDays,
     detail: result?.detail ?? null,
     detailSite: result?.detailSite ?? '',
     error: result?.error ?? (marker ? 'save' : undefined),
@@ -63,8 +89,11 @@ function useExtensionLedger(range) {
 function usePreviewLedger(range) {
   const [data, setData] = useState(null);
   const now = Date.now();
+  const weekStart = addDays(range.today, -6);
+  const weekEnd = addDays(range.today, 1);
   return {
     view: data && viewFromSnapshot(data, range),
+    weekDays: data ? viewFromSnapshot(data, { start: weekStart, end: weekEnd, today: range.today, siteMerge: range.siteMerge }).days : undefined,
     detail: data && range.detail ? siteSeriesFromSnapshot(data, { start: range.start, end: range.end, site: range.detail, siteMerge: range.siteMerge, now }) : null,
     detailSite: range.detail || '',
     error: undefined,

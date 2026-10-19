@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ChartBar, Clock, GearSix, ShieldCheck, Pause, Play, ArrowRight, GlobeHemisphereWest, MagnifyingGlass, X, Trash, CaretDown, CalendarBlank, Translate, Info } from '@phosphor-icons/react';
+import { ChartBar, Clock, GearSix, ShieldCheck, Pause, Play, ArrowRight, MagnifyingGlass, X, Trash, CaretDown, CalendarBlank, Translate } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from '@app/components/ui/dropdown-menu';
 import { Switch } from '@app/components/ui/switch';
@@ -11,8 +11,7 @@ import { Input } from '@app/components/ui/input';
 import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from '@app/components/ui/input-group';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@app/components/ui/table';
 import { Alert, AlertTitle, AlertDescription } from '@app/components/ui/alert';
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from '@app/components/ui/empty';
-import { Avatar, AvatarImage, AvatarFallback } from '@app/components/ui/avatar';
+import { Empty, EmptyHeader, EmptyTitle } from '@app/components/ui/empty';
 import { ScrollArea } from '@app/components/ui/scroll-area';
 import { Trans, useTranslation } from 'react-i18next';
 import { addDays, dateKey, dateKeyStart, midnight, timingCopy } from './model.mjs';
@@ -20,25 +19,19 @@ import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, MERGE_MODES, isIgnored, 
 import { hostsToDelete } from './site.mjs';
 import { IgnoredSites } from './IgnoredSites.jsx';
 import { HowItWorksDialog } from './HowItWorksDialog.jsx';
-import { command, colorOf, iconForSite, iconHost, isExtension } from './data.js';
+import { command, iconForSite, isExtension } from './data.js';
 import { useDaySummary, useLedger } from './use-ledger.js';
 import { VISIT_LIST_LIMIT } from './ledger-view.mjs';
-import { Breakdown, Heatmap, HourChart, SiteTrend, Trend, Timeline } from './Charts.jsx';
+import { Breakdown, HourChart, SiteTrend } from './Charts.jsx';
+import { SiteIcon } from './SiteIcon.jsx';
+import { Overview } from './Overview.jsx';
 import { duration, formatDate, languages, timeLabel } from './i18n.js';
-
-function SiteIcon({ domain, site = domain }) {
-  const icon = iconHost(domain, site);
-  return <Avatar className="site-icon rounded-none after:hidden">
-    {icon && <AvatarImage className="rounded-none object-contain" src={`./assets/${icon}.svg`} alt="" />}
-    <AvatarFallback className="rounded-none bg-transparent"><GlobeHemisphereWest size={23} /></AvatarFallback>
-  </Avatar>;
-}
 
 export function App() {
   const { t, i18n } = useTranslation();
   const rangeLabel = range => range === 1 ? t('range.today') : t('range.lastDays', { count: range });
   const [settings, setSettings] = useState(DEFAULT_SETTINGS), [ready, setReady] = useState(false), [error, setError] = useState(''), [busy, setBusy] = useState(false);
-  const [page, setPage] = useState('overview'), [range, setRange] = useState(7), [search, setSearch] = useState(''), [site, setSite] = useState(''), [expanded, setExpanded] = useState(false), [selected, setSelected] = useState(null);
+  const [page, setPage] = useState('overview'), [range, setRange] = useState(1), [search, setSearch] = useState(''), [site, setSite] = useState(''), [selected, setSelected] = useState(null);
   const [confirmClear, setConfirmClear] = useState(false), [howOpen, setHowOpen] = useState(false), [ignoreTarget, setIgnoreTarget] = useState(null);
   const [chosenDay, setChosenDay] = useState(''), [dayDone, setDayDone] = useState(''), [confirmDay, setConfirmDay] = useState(false), [deleteTarget, setDeleteTarget] = useState(null);
   const dayQuery = /^\d{4}-\d{2}-\d{2}$/.test(chosenDay) ? chosenDay : '';
@@ -117,21 +110,7 @@ export function App() {
             </DropdownMenu>}
           </div>
           {problem && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => { ledger.retry(); act(); }}>{t('error.retry')}</Button></AlertDescription></Alert>}
-          {!shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'overview' ? <>
-            <section className="summary" aria-label={t('summary.label')}><div className="total-time">{duration(stats.ms)}</div><p className="flex items-center gap-1"><span>{t('summary.totalTime')}</span><Button variant="ghost" size="icon-sm" aria-label={t('howItWorks.infoButton')} onClick={openHow}><Info /></Button></p><div className="totals"><Trans i18nKey="summary.visits" count={stats.visits} components={{ b: <strong /> }} /><span>·</span><Trans i18nKey="summary.sites" count={stats.rows.length} components={{ b: <strong /> }} /></div></section>
-            <Trend days={view.days} />
-            {range !== 1 && <section className="heatmap-section" aria-labelledby="active-hours-title"><h2 id="active-hours-title">{t('heatmap.title')}</h2><p>{t('heatmap.caption')}</p><Heatmap rows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} /></section>}
-            <section className="timeline-section"><h2>{t('timeline.title')}</h2><p>{formatDate(now, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(todayStats.ms) })}</p><Timeline spans={view.spans} />
-              <div className="legend">{todayStats.rows.filter(r => r.ms).slice(0, 5).map(r => r.domain).map(domain => <Button variant="ghost" size="xs" key={domain} onClick={event => openSite(domain, event)}><i style={{ background: colorOf(domain) }} />{domain}</Button>)}<span className="idle-legend"><i />{t('timeline.idle')}</span></div>
-            </section>
-            <section className="ranking"><h2>{t('ranking.title')}</h2>
-              <Table><TableHeader><TableRow><TableHead className="rank-col">#</TableHead><TableHead>{t('ranking.site')}</TableHead><TableHead>{t('ranking.activeTime')}</TableHead><TableHead>{t('ranking.visits')}</TableHead></TableRow></TableHeader><TableBody>
-                {stats.rows.slice(0, expanded ? undefined : 5).map((site, i) => <TableRow key={site.domain}><TableCell>{i + 1}</TableCell><TableCell><Button variant="ghost" className="site-link" onClick={event => openSite(site.domain, event)}><SiteIcon domain={iconForSite(site.domain, site.hosts) || site.domain} site={iconForSite(site.domain, site.hosts) || site.domain} /><span>{site.domain}</span></Button></TableCell><TableCell>{duration(site.ms)}</TableCell><TableCell>{site.visits}</TableCell></TableRow>)}
-              </TableBody></Table>
-              {!stats.rows.length && <Empty><EmptyHeader><EmptyMedia><GlobeHemisphereWest size={32} /></EmptyMedia><EmptyTitle>{t('ranking.emptyTitle')}</EmptyTitle><EmptyDescription>{t('ranking.emptyDescription')}</EmptyDescription></EmptyHeader></Empty>}
-              {!!stats.rows.length && <div className="table-footer"><Button variant="link" className="px-0" onClick={() => setExpanded(!expanded)}>{expanded ? t('ranking.collapse') : t('ranking.showAll', { count: stats.rows.length })}<ArrowRight /></Button><Button className="action-button" onClick={event => openSite(stats.rows[0].domain, event)}>{t('ranking.details')}<ArrowRight /></Button></div>}
-            </section>
-          </> : page === 'records' ? <section className="records">
+          {!shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'overview' ? <Overview todayStats={todayStats} stats={stats} weekDays={ledger.weekDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={rangeLabel(range)} openSite={openSite} openHow={openHow} /> : page === 'records' ? <section className="records">
             <InputGroup className="h-11 max-w-[460px]"><InputGroupInput aria-label={t('records.search')} placeholder={t('records.placeholder')} value={search} onChange={e => { setSearch(e.target.value); setSite(''); }} /><InputGroupAddon><MagnifyingGlass /></InputGroupAddon>{search && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-sm" aria-label={t('records.clearSearch')} onClick={() => { setSearch(''); setSite(''); }}><X /></InputGroupButton></InputGroupAddon>}</InputGroup>
             <p className="muted">{t('records.count', { count: view.visitCount })}{view.visitCount > VISIT_LIST_LIMIT ? t('records.limited') : ''}</p>
             <Table><TableHeader><TableRow><TableHead>{t('ranking.site')}</TableHead><TableHead>{t('records.visitedAt')}</TableHead><TableHead>{t('records.details')}</TableHead></TableRow></TableHeader><TableBody>

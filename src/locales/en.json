@@ -33,6 +33,8 @@
     "sites_one": "<b>{{count}}</b> site",
     "sites_other": "<b>{{count}}</b> sites"
   },
+  "kpi": { "label": "Today's totals", "sites": "Sites" },
+  "chart": { "label": "Primary chart" },
   "trend": { "label": "Daily active browsing time. {{days}}", "separator": "; ", "hours_one": "{{count}} hr", "hours_other": "{{count}} hrs" },
   "timeline": {
     "title": "Today's timeline",
@@ -56,6 +58,9 @@
   },
   "ranking": {
     "title": "Top sites",
+    "timeTitle": "By active time",
+    "visitsTitle": "By visits",
+    "metricLabel": "Rank the right column by",
     "site": "Site",
     "activeTime": "Active time",
     "visits": "Visits",

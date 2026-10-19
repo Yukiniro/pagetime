@@ -31,6 +31,8 @@
     "visits_other": "<b>{{count}}</b> 回訪問",
     "sites_other": "<b>{{count}}</b> サイト"
   },
+  "kpi": { "label": "今日の合計", "sites": "サイト数" },
+  "chart": { "label": "メインのグラフ" },
   "trend": { "label": "日別のアクティブな閲覧時間。{{days}}", "separator": "、", "hours_other": "{{count}} 時間" },
   "timeline": {
     "title": "今日のタイムライン",
@@ -52,6 +54,9 @@
   },
   "ranking": {
     "title": "サイトランキング",
+    "timeTitle": "アクティブ時間順",
+    "visitsTitle": "訪問回数順",
+    "metricLabel": "右の列の順位",
     "site": "サイト",
     "activeTime": "アクティブ時間",
     "visits": "訪問回数",

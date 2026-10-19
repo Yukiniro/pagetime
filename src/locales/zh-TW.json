@@ -31,6 +31,8 @@
     "visits_other": "造訪 <b>{{count}}</b> 次",
     "sites_other": "<b>{{count}}</b> 個網站"
   },
+  "kpi": { "label": "今日摘要", "sites": "網站數" },
+  "chart": { "label": "主圖" },
   "trend": { "label": "每日活躍瀏覽時長。{{days}}", "separator": "；", "hours_other": "{{count}} 小時" },
   "timeline": {
     "title": "今日時間軸",
@@ -52,6 +54,9 @@
   },
   "ranking": {
     "title": "網站排行",
+    "timeTitle": "按時長",
+    "visitsTitle": "按造訪次數",
+    "metricLabel": "右側排行依據",
     "site": "網站",
     "activeTime": "活躍時間",
     "visits": "造訪次數",

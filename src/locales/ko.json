@@ -31,6 +31,8 @@
     "visits_other": "<b>{{count}}</b>회 방문",
     "sites_other": "사이트 <b>{{count}}</b>개"
   },
+  "kpi": { "label": "오늘 합계", "sites": "사이트 수" },
+  "chart": { "label": "기본 차트" },
   "trend": { "label": "일별 활성 브라우징 시간. {{days}}", "separator": ", ", "hours_other": "{{count}}시간" },
   "timeline": {
     "title": "오늘의 타임라인",
@@ -52,6 +54,9 @@
   },
   "ranking": {
     "title": "사이트 순위",
+    "timeTitle": "활성 시간순",
+    "visitsTitle": "방문 횟수순",
+    "metricLabel": "오른쪽 순위 기준",
     "site": "사이트",
     "activeTime": "활성 시간",
     "visits": "방문 횟수",

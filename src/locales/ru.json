@@ -44,6 +44,8 @@
     "sites_many": "<b>{{count}}</b> сайтов",
     "sites_other": "<b>{{count}}</b> сайта"
   },
+  "kpi": { "label": "Итоги за сегодня", "sites": "Сайты" },
+  "chart": { "label": "Основной график" },
   "trend": { "label": "Время активного просмотра по дням. {{days}}", "separator": "; ", "hours_one": "{{count}} ч", "hours_few": "{{count}} ч", "hours_many": "{{count}} ч", "hours_other": "{{count}} ч" },
   "timeline": {
     "title": "Сегодняшняя хронология",
@@ -71,6 +73,9 @@
   },
   "ranking": {
     "title": "Топ сайтов",
+    "timeTitle": "По активному времени",
+    "visitsTitle": "По посещениям",
+    "metricLabel": "Сортировка правого столбца",
     "site": "Сайт",
     "activeTime": "Активное время",
     "visits": "Посещения",
