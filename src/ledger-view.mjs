@@ -1,4 +1,4 @@
-import { addDays, daily, dateKey, groupSites, summarize } from './model.mjs';
+import { addDays, daily, dateKey, groupSites, midnight, openCredit, overlapMs, summarize } from './model.mjs';
 import { siteOf } from './site.mjs';
 
 export const VISIT_LIST_LIMIT = 200;
@@ -24,7 +24,7 @@ export function viewFromSnapshot(data, { start, end, today, search = '', site = 
   };
 }
 
-export function viewFromLedger({ state, domains, days, spans, visits }, { start, end, today, search = '', site = '', siteMerge = 'prefix', now }) {
+export function viewFromLedger({ state, domains, days, spans, visits, cursor = null, lastEnd }, { start, end, today, search = '', site = '', siteMerge = 'prefix', now }) {
   const host = new Map(domains.map(row => [row.id, row.host]));
   const keyOf = keyFor(siteMerge);
   const todayKey = dateKey(today);
@@ -40,6 +40,19 @@ export function viewFromLedger({ state, domains, days, spans, visits }, { start,
     perDay.set(row.date, (perDay.get(row.date) ?? 0) + row.ms);
     if (matches(domain, search, site, keyOf)) visitCount += row.visits;
   }
+  const enabled = state?.enabled ?? true;
+  const segment = enabled ? openCredit(cursor, lastEnd, now) : null;
+  const from = segment ? Math.max(segment.start, start) : 0;
+  const to = segment ? Math.min(segment.end, end) : 0;
+  if (segment && to > from) {
+    entries.push({ domain: segment.domain, ms: to - from, visits: 0 });
+    for (let at = midnight(from); at < to; at = addDays(at, 1)) {
+      const piece = overlapMs(segment, Math.max(from, at), Math.min(to, addDays(at, 1)));
+      if (!piece) continue;
+      perDay.set(dateKey(at), (perDay.get(dateKey(at)) ?? 0) + piece);
+      if (dateKey(at) === todayKey) todayEntries.push({ domain: segment.domain, ms: piece, visits: 0 });
+    }
+  }
   const trend = [];
   for (let at = start; at < end; at = addDays(at, 1)) trend.push({ at, ms: perDay.get(dateKey(at)) ?? 0 });
   const listed = [];
@@ -54,8 +67,11 @@ export function viewFromLedger({ state, domains, days, spans, visits }, { start,
     if (!domain) continue;
     listedSpans.push({ domain, site: keyOf(domain), start: span.start, end: span.end });
   }
+  if (segment && segment.end > today && segment.start < end) {
+    listedSpans.push({ domain: segment.domain, site: keyOf(segment.domain), start: segment.start, end: segment.end });
+  }
   return {
-    enabled: state?.enabled ?? true,
+    enabled,
     since: state?.since ?? now,
     stats: groupSites(entries, keyOf),
     todayStats: groupSites(todayEntries, keyOf),

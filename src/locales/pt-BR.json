@@ -20,6 +20,11 @@
   },
   "loading": "Carregando registros locais…",
   "active": "Ativo {{duration}}",
+  "badge": {
+    "today": "Hoje {{duration}}",
+    "todaySite": "Hoje {{duration}} · {{domain}} {{siteDuration}}",
+    "paused": "Gravação pausada"
+  },
   "summary": {
     "label": "Resumo",
     "totalTime": "Tempo total de navegação ativa",
@@ -82,6 +87,7 @@
       "registrable": "Agrupar por domínio registrável"
     },
     "ignored": { "title": "Sites ignorados", "description": "Estes hosts e seus subdomínios não entram no tempo nem nas visitas, como uma página interna do navegador. example.com também corresponde a a.example.com; mail.example.com não corresponde a example.com. Os registros existentes permanecem e não são ocultados.", "input": "Host a ignorar", "placeholder": "example.com", "add": "Adicionar", "remove": "Remover {{domain}}", "emptyTitle": "Nenhum site ignorado", "emptyDescription": "Adicione um host para deixar de registrá-lo a partir de agora.", "error": "Informe um host como example.com. Protocolo, caminho e porta são removidos. Espaços não são permitidos, e um nome sem ponto só é aceito para localhost.", "limit": "Você pode ignorar até {{count}} hosts." },
+    "badge": { "title": "Selo da barra", "description": "Mostra o tempo de navegação ativo de hoje no ícone da barra." },
     "clear": { "title": "Limpar todos os registros", "description": "Exclui os registros que o PageTime salvou neste dispositivo. Não é possível desfazer.", "button": "Limpar dados" }
   },
   "detail": {

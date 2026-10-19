@@ -20,6 +20,11 @@
   },
   "loading": "Lokale Daten werden geladen…",
   "active": "Aktiv {{duration}}",
+  "badge": {
+    "today": "Heute {{duration}}",
+    "todaySite": "Heute {{duration}} · {{domain}} {{siteDuration}}",
+    "paused": "Aufzeichnung pausiert"
+  },
   "summary": {
     "label": "Zusammenfassung",
     "totalTime": "Aktive Surfzeit gesamt",
@@ -77,6 +82,7 @@
       "registrable": "Nach registrierbarer Domain gruppieren"
     },
     "ignored": { "title": "Ignorierte Websites", "description": "Diese Hosts und ihre Subdomains werden nicht gemessen, und Besuche zählen nicht, wie bei einer internen Browserseite. example.com gilt auch für a.example.com; mail.example.com gilt nicht für example.com. Vorhandene Einträge bleiben erhalten und werden nicht ausgeblendet.", "input": "Zu ignorierender Host", "placeholder": "example.com", "add": "Hinzufügen", "remove": "{{domain}} entfernen", "emptyTitle": "Keine ignorierten Websites", "emptyDescription": "Füge einen Host hinzu, um ihn ab jetzt nicht mehr aufzuzeichnen.", "error": "Gib einen Host wie example.com ein. Protokoll, Pfad und Port werden entfernt. Leerzeichen sind nicht erlaubt, und ein Name ohne Punkt wird nur für localhost akzeptiert.", "limit": "Du kannst höchstens {{count}} Hosts ignorieren." },
+    "badge": { "title": "Symbol-Badge", "description": "Zeigt die heutige aktive Surfzeit auf dem Symbol in der Symbolleiste." },
     "clear": { "title": "Alle Daten löschen", "description": "Löscht die von PageTime auf diesem Gerät gespeicherten Daten. Dies kann nicht rückgängig gemacht werden.", "button": "Daten löschen" }
   },
   "detail": {

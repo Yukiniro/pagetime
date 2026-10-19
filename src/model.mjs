@@ -118,3 +118,17 @@ export function creditUntil(cursor, now) {
   if (now < cursor.since) return cursor.since;
   return Math.min(now, cursor.since + GAP_LIMIT_MS);
 }
+
+// The part of a live cursor that is not in the ledger yet. Same start rule and creditUntil cap as a background tick.
+export function openCredit(cursor, lastEnd, now) {
+  if (!cursor || typeof cursor.since !== 'number' || typeof cursor.domain !== 'string' || !cursor.domain) return null;
+  const start = lastEnd !== undefined && lastEnd > cursor.since ? lastEnd : cursor.since;
+  const end = creditUntil(cursor, now);
+  if (end === undefined || end <= start) return null;
+  return { domain: cursor.domain, start, end };
+}
+
+export function overlapMs(segment, start, end) {
+  if (!segment) return 0;
+  return Math.max(0, Math.min(segment.end, end) - Math.max(segment.start, start));
+}

@@ -20,6 +20,11 @@
   },
   "loading": "正在读取本地记录…",
   "active": "活跃 {{duration}}",
+  "badge": {
+    "today": "今天 {{duration}}",
+    "todaySite": "今天 {{duration}} · {{domain}} {{siteDuration}}",
+    "paused": "已暂停记录"
+  },
   "summary": {
     "label": "汇总",
     "totalTime": "总活跃浏览时间",
@@ -72,6 +77,7 @@
       "registrable": "按可注册域名合并"
     },
     "ignored": { "title": "忽略的站点", "description": "这些域名及其子域名不计时长、不记访问次数，和打开浏览器内部页面一样。例如 example.com 也会匹配 a.example.com；mail.example.com 不会匹配 example.com。已有记录不会删除，也不会从统计里隐藏。", "input": "要忽略的域名", "placeholder": "example.com", "add": "添加", "remove": "移除 {{domain}}", "emptyTitle": "没有忽略的站点", "emptyDescription": "添加后，这些站点之后就不再记入新的时长和访问。", "error": "请输入域名，例如 example.com。系统会去掉协议、路径和端口。不能包含空格；没有点号时只接受 localhost。", "limit": "最多忽略 {{count}} 个站点。" },
+    "badge": { "title": "工具栏角标", "description": "在工具栏图标上显示今天的活跃浏览时长。" },
     "clear": { "title": "清空所有记录", "description": "删除此设备上 PageTime 已保存的记录，删除后无法恢复。", "button": "清空数据" }
   },
   "detail": {

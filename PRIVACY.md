@@ -30,9 +30,10 @@ Timing preferences are a separate `settings` key in `chrome.storage.local`. They
 | `schema` | `1` |
 | `idleSeconds` | `60`, `120`, `300`, or `600`. Seconds without keyboard or mouse input before the browser counts as idle |
 | `countAudible` | When true, idle time still counts if the active tab of the focused window is audible and not muted. The default is true |
+| `badge` | When true, the toolbar icon shows today's active browsing time. The default is true |
 | `ignored` | Up to 500 hostnames the user typed, each at most 253 characters. Stored only in this `settings` key. An entry matches that host and its subdomains. Adding or removing an entry does not delete or hide ledger rows |
 
-`validateSettings` in `src/settings.mjs` replaces an invalid `schema`, `idleSeconds`, or `countAudible` with the default. A missing `ignored` list is `[]`. Invalid entries are dropped, duplicates are removed, and the list is cut at 500. It does not throw and does not change the ledger. If `settings` is missing, the background uses `{ schema: 1, idleSeconds: 60, countAudible: true, ignored: [] }`. `idleSeconds` and `countAudible` are not a browsing history. `ignored` is the list of domains the user entered. The background also reads `tab.audible` and `tab.mutedInfo` to apply `countAudible`. Those flags are not written into the ledger or `settings`.
+`validateSettings` in `src/settings.mjs` replaces an invalid `schema`, `idleSeconds`, or `countAudible` with the default. A missing `ignored` list is `[]`. Invalid entries are dropped, duplicates are removed, and the list is cut at 500. It does not throw and does not change the ledger. If `settings` is missing, the background uses `{ schema: 1, idleSeconds: 60, countAudible: true, ignored: [], badge: true }`. `idleSeconds`, `countAudible`, and `badge` are not a browsing history. The chosen display language is stored in the `language` key of `chrome.storage.local` so the toolbar title can follow it. `ignored` is the list of domains the user entered. The background also reads `tab.audible` and `tab.mutedInfo` to apply `countAudible`. Those flags are not written into the ledger or `settings`.
 
 Titles, full URLs, page content, cookies, and form input are not stored. The extension has no content script and does not call `chrome.scripting`, so it does not read the page DOM.
 

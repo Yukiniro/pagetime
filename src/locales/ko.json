@@ -20,6 +20,11 @@
   },
   "loading": "로컬 기록을 불러오는 중…",
   "active": "활성 {{duration}}",
+  "badge": {
+    "today": "오늘 {{duration}}",
+    "todaySite": "오늘 {{duration}} · {{domain}} {{siteDuration}}",
+    "paused": "기록 일시중지"
+  },
   "summary": {
     "label": "요약",
     "totalTime": "총 활성 브라우징 시간",
@@ -72,6 +77,7 @@
       "registrable": "등록 가능 도메인으로 합치기"
     },
     "ignored": { "title": "무시할 사이트", "description": "이 호스트와 하위 도메인은 브라우저 내부 페이지와 같이 시간도 방문 횟수도 기록하지 않습니다. example.com 은 a.example.com 과도 일치합니다. mail.example.com 은 example.com 과 일치하지 않습니다. 기존 기록은 그대로 남으며 통계에서 숨기지 않습니다.", "input": "무시할 호스트", "placeholder": "example.com", "add": "추가", "remove": "{{domain}} 제거", "emptyTitle": "무시할 사이트가 없습니다", "emptyDescription": "호스트를 추가하면 지금부터 그 사이트를 기록하지 않습니다.", "error": "example.com 같은 호스트를 입력하세요. 프로토콜, 경로, 포트는 제거됩니다. 공백은 허용되지 않으며, 점이 없는 이름은 localhost 만 받습니다.", "limit": "무시할 호스트는 최대 {{count}}개입니다." },
+    "badge": { "title": "도구 모음 배지", "description": "도구 모음 아이콘에 오늘의 활성 탐색 시간을 표시합니다." },
     "clear": { "title": "모든 기록 삭제", "description": "이 기기에 PageTime이 저장한 기록을 삭제합니다. 삭제 후에는 복구할 수 없습니다.", "button": "데이터 삭제" }
   },
   "detail": {

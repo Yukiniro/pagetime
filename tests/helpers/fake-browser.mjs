@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import vm from 'node:vm';
 import ts from 'typescript';
 import { IDBFactory, IDBKeyRange } from 'fake-indexeddb';
+import * as badge from '../../src/badge.mjs';
 import * as ledger from '../../src/ledger.mjs';
 import * as model from '../../src/model.mjs';
 import * as settings from '../../src/settings.mjs';
@@ -50,6 +51,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
   const session = {};
   const detectionIntervals = [];
   const idleQueries = [];
+  const badgeState = { text: '', color: '', title: '', calls: [] };
   let browser = null;
   const factory = new IDBFactory();
   const reader = ledger.openLedger({ indexedDB: factory, IDBKeyRange });
@@ -87,17 +89,35 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
     }
   }
 
-  function area(store) {
+  const clone = value => value === undefined ? undefined : structuredClone(value);
+  function area(name, store) {
     return {
-      async get(key) { return structuredClone({ [key]: store[key] }); },
-      async set(patch) { Object.assign(store, structuredClone(patch)); },
-      async remove(key) { delete store[key]; },
+      async get(key) { return clone({ [key]: store[key] }); },
+      async set(patch) {
+        const changes = {};
+        for (const [key, value] of Object.entries(clone(patch))) {
+          changes[key] = { oldValue: clone(store[key]), newValue: value };
+          store[key] = value;
+        }
+        browser.storage.onChanged.fire(changes, name);
+      },
+      async remove(key) {
+        const changes = { [key]: { oldValue: clone(store[key]) } };
+        delete store[key];
+        browser.storage.onChanged.fire(changes, name);
+      },
     };
+  }
+  function recordBadge(kind, details) {
+    badgeState.calls.push({ kind, ...clone(details) });
+    if (kind === 'text') badgeState.text = details.text;
+    if (kind === 'color') badgeState.color = details.color;
+    if (kind === 'title') badgeState.title = details.title;
   }
 
   function makeBrowser() {
     return {
-      storage: { local: area(local), session: area(session) },
+      storage: { local: area('local', local), session: area('session', session), onChanged: event() },
       idle: {
         queryState: async seconds => { idleQueries.push(seconds); return idle; },
         setDetectionInterval(seconds) { detectionIntervals.push(seconds); },
@@ -129,12 +149,22 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
       webNavigation: { onCommitted: event(), onHistoryStateUpdated: event() },
       alarms: { create: async () => {}, onAlarm: event() },
       runtime: { id: 'jilan', getURL: path => 'chrome-extension://jilan' + path, onStartup: event(), onMessage: event() },
-      action: { onClicked: event() },
+      action: {
+        onClicked: event(),
+        setBadgeText: async details => recordBadge('text', details),
+        setBadgeBackgroundColor: async details => recordBadge('color', details),
+        setTitle: async details => recordBadge('title', details),
+      },
+      i18n: { getUILanguage: () => 'en-US' },
     };
   }
 
   async function boot() {
     for (const db of workerDbs.splice(0)) db.close();
+    badgeState.text = '';
+    badgeState.color = '';
+    badgeState.title = '';
+    badgeState.calls = [];
     browser = makeBrowser();
     const context = {
       exports: {},
@@ -151,6 +181,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
         : name === 'wxt/utils/define-background' ? { defineBackground: fn => fn() }
         : name.endsWith('ledger.mjs') ? workerLedger
         : name.endsWith('settings.mjs') ? settings
+        : name.endsWith('badge.mjs') ? badge
         : model,
     };
     vm.runInNewContext(await backgroundCode(), context, { filename: 'background.ts' });
@@ -271,6 +302,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
     errors,
     db: reader,
     get browser() { return browser; },
+    get badge() { return { text: badgeState.text, color: badgeState.color, title: badgeState.title, calls: badgeState.calls.map(call => ({ ...call })) }; },
     get now() { return now; },
     get ticks() { return ticks; },
     get local() { return structuredClone(local); },

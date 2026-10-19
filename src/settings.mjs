@@ -1,5 +1,5 @@
 export const MERGE_MODES = ['none', 'prefix', 'registrable'];
-export const DEFAULT_SETTINGS = { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', ignored: [] };
+export const DEFAULT_SETTINGS = { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', ignored: [], badge: true };
 export const IDLE_OPTIONS = [60, 120, 300, 600];
 export const HOST_MAX = 253;
 export const IGNORED_LIMIT = 500;
@@ -93,5 +93,6 @@ export function validateSettings(value) {
     countAudible: typeof value?.countAudible === 'boolean' ? value.countAudible : DEFAULT_SETTINGS.countAudible,
     siteMerge: MERGE_MODES.includes(value?.siteMerge) ? value.siteMerge : DEFAULT_SETTINGS.siteMerge,
     ignored: ignoredList(value?.ignored),
+    badge: typeof value?.badge === 'boolean' ? value.badge : DEFAULT_SETTINGS.badge,
   };
 }

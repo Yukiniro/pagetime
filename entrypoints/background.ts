@@ -1,7 +1,8 @@
 import { browser } from 'wxt/browser';
 import { defineBackground } from 'wxt/utils/define-background';
-import { CHECKPOINT_SECONDS, creditUntil, dateKey, detailCutoff, domainOf } from '../src/model.mjs';
-import { clearLedger, commitTick, LEDGER_ERROR_KEY, openLedger, pruneDetail, readHead, reopening, toggleRecording } from '../src/ledger.mjs';
+import { badgeLabels, resolveLocale, todayFigures } from '../src/badge.mjs';
+import { CHECKPOINT_SECONDS, dateKey, detailCutoff, domainOf, openCredit } from '../src/model.mjs';
+import { clearLedger, commitTick, daysBetween, LEDGER_ERROR_KEY, openLedger, pruneDetail, readDomains, readHead, reopening, toggleRecording } from '../src/ledger.mjs';
 import { isIgnored, validateSettings } from '../src/settings.mjs';
 
 // `session` ties the cursor to one storage.session lifetime, so a browser restart or extension reload starts without it.
@@ -80,29 +81,65 @@ export default defineBackground(() => {
     const now = Date.now();
     const { state, cursor, lastEnd, id, enabled, live } = await head();
     const next = enabled ? await active(focusedId, trustId) : null;
-    const start = live && lastEnd !== undefined && lastEnd > live.since ? lastEnd : live?.since;
     // A backward clock must not move the cursor into the past, or the catch-up span overlaps stored time.
     const since = live && now < live.since ? live.since : now;
     await commitTick(db, {
       expect: { state, cursor, lastEnd },
       now,
-      span: enabled && live && start !== undefined ? { domain: live.domain, start, end: creditUntil(live, now) } : null,
+      span: enabled && live ? openCredit(live, lastEnd, now) : null,
       visit: enabled ? visit : null,
       cursor: next ? { tabId: next.id, domain: next.domain, since, session: id } : null,
     });
     if (next) clearRechecks();
     return now;
   });
+  async function readLanguage() {
+    const stored = (await browser.storage.local.get('language')).language;
+    if (typeof stored === 'string' && stored) return stored;
+    return browser.i18n?.getUILanguage?.();
+  }
+  // Global badge (no tabId). Today's total matches the overview: today's day rows plus the still-open cursor, same creditUntil cap.
+  async function refreshBadge() {
+    try {
+      const settings = await readSettings();
+      if (!settings.badge) {
+        await browser.action.setBadgeText({ text: '' });
+        await browser.action.setTitle({ title: '' });
+        return;
+      }
+      const { enabled, live, lastEnd } = await head();
+      const locale = resolveLocale(await readLanguage());
+      if (!enabled) {
+        const paused = badgeLabels({ locale, total: 0, domain: null, siteMs: 0, paused: true });
+        await browser.action.setBadgeText({ text: paused.text });
+        await browser.action.setBadgeBackgroundColor({ color: paused.color });
+        await browser.action.setTitle({ title: paused.title });
+        return;
+      }
+      const now = Date.now();
+      const key = dateKey(now);
+      const [rows, domains] = await reopening(db, () => Promise.all([daysBetween(db, key, key), readDomains(db)]));
+      const figures = todayFigures({ rows, domains, cursor: live, lastEnd, now, enabled });
+      const label = badgeLabels({ locale, ...figures, paused: false });
+      await browser.action.setBadgeText({ text: label.text });
+      await browser.action.setBadgeBackgroundColor({ color: label.color });
+      await browser.action.setTitle({ title: label.title });
+    } catch (error) {
+      console.error('PageTime badge failed', error);
+    }
+  }
   const update = async (focusedId?: number, trustId = false, visit?: { domain: string; at: number }) => {
     const now = await tick(focusedId, trustId, visit);
-    if (prunedOn === dateKey(now)) return;
-    // Pruning only removes old detail, so a failure is logged and retried on the next write instead of marking the ledger.
-    try {
-      await pruneDetail(db, detailCutoff(now));
-      prunedOn = dateKey(now);
-    } catch (error) {
-      console.error('PageTime prune failed', error);
+    if (prunedOn !== dateKey(now)) {
+      // Pruning only removes old detail, so a failure is logged and retried on the next write instead of marking the ledger.
+      try {
+        await pruneDetail(db, detailCutoff(now));
+        prunedOn = dateKey(now);
+      } catch (error) {
+        console.error('PageTime prune failed', error);
+      }
     }
+    await refreshBadge();
   };
 
   browser.tabs.onActivated.addListener(({ windowId }) => { void run(() => update(windowId)); });
@@ -137,6 +174,9 @@ export default defineBackground(() => {
     if (details.frameId === 0) void run(() => update());
   });
   browser.alarms.onAlarm.addListener(alarm => { if (alarm.name === 'checkpoint') void run(() => update()); });
+  browser.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && Object.prototype.hasOwnProperty.call(changes, 'language')) void run(() => refreshBadge());
+  });
   browser.runtime.onStartup.addListener(() => { void run(async () => { applyIdle(await readSettings()); await update(); }); });
   browser.action.onClicked.addListener(() => { void browser.tabs.create({ url: browser.runtime.getURL('/dashboard.html') }); });
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
