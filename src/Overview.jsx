@@ -46,7 +46,7 @@ function RankRows({ rows, metric, filterSite, onFilter, onOpen }) {
   </ol>;
 }
 
-export function Overview({ todayStats, stats, weekDays = [], spans, hourRows, since, start, end, today, now, rangeLabel, filterSite = '', onFilter, openSite, openHow }) {
+export function Overview({ todayStats, stats, weekDays = [], spans, hourRows, since, start, end, today, now, rangeLabel, filterSite = '', onFilter, openSite, openHow, isDark = false }) {
   const { t } = useTranslation();
   const [chart, setChart] = useState('timeline');
   const [metric, setMetric] = useState('visits');
@@ -92,9 +92,9 @@ export function Overview({ todayStats, stats, weekDays = [], spans, hourRows, si
       <div id="primary-chart" role="tabpanel" aria-labelledby={`chart-tab-${chart}`} className="chart-panel">
         {chart === 'timeline' ? (showTimeline ? <>
           <p className="chart-caption">{formatDate(now, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(kpi.ms) })}</p>
-          <Timeline spans={chartSpans} className="primary-timeline" lane={36} />
+          <Timeline spans={chartSpans} className="primary-timeline" lane={36} isDark={isDark} />
           <div className="legend">{legend.map(row => <Button variant="ghost" size="xs" key={row.domain} onClick={event => openSite(row.domain, event)}><i style={{ background: colorOf(row.domain) }} />{row.domain}</Button>)}<span className="idle-legend"><i />{t('timeline.idle')}</span></div>
-        </> : <FilterEmpty domain={filterSite} />) : (showTrend ? <Trend days={weekDays} className="primary-trend" /> : <FilterEmpty domain={filterSite} />)}
+        </> : <FilterEmpty domain={filterSite} />) : (showTrend ? <Trend days={weekDays} className="primary-trend" isDark={isDark} /> : <FilterEmpty domain={filterSite} />)}
       </div>
     </section>
     <section className="rank-section" aria-label={t('ranking.title')}>
@@ -123,7 +123,7 @@ export function Overview({ todayStats, stats, weekDays = [], spans, hourRows, si
         <span id="active-hours-title">{t('heatmap.title')}</span>
         <CaretDown className={hoursOpen ? 'heatmap-caret open' : 'heatmap-caret'} />
       </Button>
-      {hoursOpen && <div id="active-hours-panel" className="heatmap-panel"><p>{t('heatmap.caption')}</p>{/* Hour cells are not a filter; filtering by hour is deferred. */}<Heatmap rows={hourRows} since={since} start={start} end={end} today={today} /></div>}
+      {hoursOpen && <div id="active-hours-panel" className="heatmap-panel"><p>{t('heatmap.caption')}</p>{/* Hour cells are not a filter; filtering by hour is deferred. */}<Heatmap rows={hourRows} since={since} start={start} end={end} today={today} isDark={isDark} /></div>}
     </section>
   </>;
 }

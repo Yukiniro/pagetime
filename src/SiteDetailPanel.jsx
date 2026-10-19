@@ -51,7 +51,7 @@ function DetailActions({ busy, listField, alreadyListed, scopeHost, listLimit, o
   </SheetFooter>;
 }
 
-export function SiteDetailPanel({ siteKey, row, detail, sessions, today, end, ...actions }) {
+export function SiteDetailPanel({ siteKey, row, detail, sessions, today, end, isDark = false, ...actions }) {
   const { t } = useTranslation();
   const icon = iconForSite(siteKey, row?.hosts) || siteKey;
   const hosts = row?.hosts ?? [];
@@ -65,11 +65,11 @@ export function SiteDetailPanel({ siteKey, row, detail, sessions, today, end, ..
       </div>
       {detail && <section className="detail-chart min-w-0">
         <h3>{t('detail.trend.title')}</h3>
-        <SiteTrend days={detail.days} domain={siteKey} />
+        <SiteTrend days={detail.days} domain={siteKey} isDark={isDark} />
         <h3>{t('detail.hours.title')}</h3>
-        <HourChart hours={detail.hours} dayCount={detail.days.length} domain={siteKey} />
+        <HourChart hours={detail.hours} dayCount={detail.days.length} domain={siteKey} isDark={isDark} />
       </section>}
-      {merged && <><h3>{t('detail.breakdown.title')}</h3><Breakdown hosts={hosts} /></>}
+      {merged && <><h3>{t('detail.breakdown.title')}</h3><Breakdown hosts={hosts} isDark={isDark} /></>}
       <h3>{t('detail.todaySessions')}</h3>
       <SessionList sessions={sessions} merged={merged} today={today} end={end} />
     </div>

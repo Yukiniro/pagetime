@@ -93,6 +93,7 @@
   },
   "settings": {
     "language": { "title": "Sprache", "description": "Wähle die Anzeigesprache von PageTime.", "label": "Anzeigesprache: {{language}}" },
+    "theme": { "title": "Darstellung", "description": "Hell, dunkel oder wie das System. Die Auswahl bleibt auf diesem Gerät.", "label": "Darstellung: {{mode}}", "system": "System", "light": "Hell", "dark": "Dunkel" },
     "recording": { "title": "Aufzeichnung", "description": "Zählt Seitenbesuche und misst nur die Zeit im aktiven Tab des fokussierten Fensters." },
     "privacy": { "title": "Lokal und privat", "description": "Speichert nur Domains, Zeiten und Besuchszahlen – niemals Seiteninhalte, Titel oder vollständige URLs.<br/>Inkognito-Fenster und interne Browserseiten werden ignoriert, und es werden keine Daten an einen Server gesendet.<br/>Du kannst eine Website oder einen Tag löschen. Damit werden diese Einträge aus der Datenbank auf diesem Gerät entfernt." },
     "method": { "title": "So wird gemessen", "description": "Jedes Laden oder Neuladen einer Seite zählt als ein Besuch; Tab-Wechsel und Navigation innerhalb von Single-Page-Apps zählen nicht.<br/>{{idle}} Sekunden ohne Systemeingabe gelten als Leerlauf; der Fortschritt wird alle {{checkpoint}} Sekunden gespeichert.<br/>Besuche und aktive Sitzungen werden {{days}} Tage aufbewahrt; Tages- und Stundensummen bleiben, bis du sie löschst oder diese Website oder diesen Tag entfernst.", "audible": "Ein Tab mit nicht stummgeschaltetem Ton zählt nicht als Leerlauf." },

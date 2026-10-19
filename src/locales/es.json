@@ -99,6 +99,7 @@
   },
   "settings": {
     "language": { "title": "Idioma", "description": "Elige el idioma de la interfaz de PageTime.", "label": "Idioma de la interfaz: {{language}}" },
+    "theme": { "title": "Apariencia", "description": "Claro, oscuro o según el sistema. La elección se queda en este dispositivo.", "label": "Apariencia: {{mode}}", "system": "Según el sistema", "light": "Claro", "dark": "Oscuro" },
     "recording": { "title": "Registro de navegación", "description": "Cuenta las visitas a páginas y solo mide el tiempo en la pestaña activa de la ventana enfocada." },
     "privacy": { "title": "Local y privado", "description": "Solo guarda dominios, horas y número de visitas; nunca el contenido, los títulos ni las URL completas.<br/>Ignora las ventanas de incógnito y las páginas internas del navegador, y nunca envía datos a un servidor.<br/>Puedes eliminar un sitio o un día. Eso quita esos registros de la base de datos de este dispositivo." },
     "method": { "title": "Cómo se mide", "description": "Cada carga o recarga de página cuenta como una visita; cambiar de pestaña o navegar dentro de una aplicación de una sola página no suma visitas.<br/>{{idle}} segundos sin actividad del sistema se consideran inactividad; el progreso se guarda cada {{checkpoint}} segundos.<br/>Conserva las visitas y sesiones activas durante {{days}} días; los totales diarios y por hora se mantienen hasta que los borres o elimines ese sitio o ese día.", "audible": "Una pestaña que reproduce sonido sin silenciar no cuenta como inactividad." },

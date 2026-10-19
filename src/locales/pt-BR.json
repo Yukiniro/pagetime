@@ -99,6 +99,7 @@
   },
   "settings": {
     "language": { "title": "Idioma", "description": "Escolha o idioma de exibição do PageTime.", "label": "Idioma de exibição: {{language}}" },
+    "theme": { "title": "Aparência", "description": "Claro, escuro ou seguir o sistema. A escolha fica neste dispositivo.", "label": "Aparência: {{mode}}", "system": "Seguir o sistema", "light": "Claro", "dark": "Escuro" },
     "recording": { "title": "Registro de navegação", "description": "Conta as visitas às páginas e mede apenas o tempo na guia ativa da janela em foco." },
     "privacy": { "title": "Local e privado", "description": "Armazena apenas domínios, horários e número de visitas — nunca o conteúdo, os títulos ou os URLs completos.<br/>Ignora janelas anônimas e páginas internas do navegador, e nunca envia dados para um servidor.<br/>Você pode apagar um site ou um dia. Isso remove esses registros do banco de dados deste dispositivo." },
     "method": { "title": "Como é medido", "description": "Cada carregamento ou recarga de página conta como uma visita; trocar de guia ou navegar dentro de aplicativos de página única não adiciona visitas.<br/>{{idle}} segundos sem atividade no sistema contam como ociosidade; o progresso é salvo a cada {{checkpoint}} segundos.<br/>Mantém visitas e sessões ativas por {{days}} dias; os totais diários e por hora ficam até você apagá-los ou excluir esse site ou esse dia.", "audible": "Uma guia que reproduz som sem silenciar não conta como ociosidade." },
