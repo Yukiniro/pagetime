@@ -152,6 +152,51 @@ test('deleting another site leaves the cursor so the next tick still credits tha
   assert.equal(credit.domain, 'a.test');
 });
 
+test('a cursor that crosses midnight keeps only the time outside the deleted day', async () => {
+  const msOn = async (db, date) => (await db.days.toArray()).filter(row => row.date === date).reduce((sum, row) => sum + row.ms, 0);
+  const hourOn = async (db, date) => (await db.hours.toArray()).filter(row => row.date === date).reduce((sum, row) => sum + row.ms, 0);
+  const boundary = at(10, 19);
+  const since = boundary - 40_000;
+  const now = boundary + 25_000;
+  const seedCursor = async db => tick(db, {
+    now: since,
+    span: { domain: 'a.test', start: since - 20_000, end: since },
+    cursor: cursorFor('a.test', since),
+  });
+
+  const yesterday = fresh();
+  await seedCursor(yesterday);
+  await deleteDay(yesterday, '2026-10-18', now);
+  let head = await readHead(yesterday);
+  assert.equal(head.cursor.domain, 'a.test');
+  assert.equal(head.cursor.since, now);
+  assert.equal(await msOn(yesterday, '2026-10-18'), 0);
+  assert.equal(await msOn(yesterday, '2026-10-19'), 25_000);
+  assert.equal(await hourOn(yesterday, '2026-10-19'), 25_000);
+  assert.deepEqual((await yesterday.spans.toArray()).map(span => [span.start, span.end]), [[boundary, now]]);
+  const next = now + 10_000;
+  let credit = openCredit(head.cursor, head.lastEnd, next);
+  assert.equal(credit.start, now);
+  await tick(yesterday, { now: next, span: credit, cursor: { ...head.cursor, since: next } });
+  assert.equal(await msOn(yesterday, '2026-10-18'), 0);
+  assert.equal(await msOn(yesterday, '2026-10-19'), 35_000);
+
+  const today = fresh();
+  await seedCursor(today);
+  await deleteDay(today, '2026-10-19', now);
+  head = await readHead(today);
+  assert.equal(head.cursor.since, now);
+  assert.equal(await msOn(today, '2026-10-18'), 60_000);
+  assert.equal(await hourOn(today, '2026-10-18'), 60_000);
+  assert.equal(await msOn(today, '2026-10-19'), 0);
+  assert.deepEqual((await today.spans.toArray()).map(span => [span.start, span.end]), [[since - 20_000, boundary]]);
+  credit = openCredit(head.cursor, head.lastEnd, next);
+  assert.equal(credit.start, now);
+  await tick(today, { now: next, span: credit, cursor: { ...head.cursor, since: next } });
+  assert.equal(await msOn(today, '2026-10-18'), 60_000);
+  assert.equal(await msOn(today, '2026-10-19'), 10_000);
+});
+
 test('deleting today resets the cursor; deleting another day does not', async () => {
   const db = fresh();
   const since = at(10, 19, 11, 50);
