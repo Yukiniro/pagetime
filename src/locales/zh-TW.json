@@ -63,6 +63,14 @@
     "method": { "title": "統計方式", "description": "頁面載入與重新整理各計一次造訪；切換分頁不增加次數，單頁應用程式內部跳轉不重複計數。<br/>連續 {{idle}} 秒無系統操作視為閒置，每 {{checkpoint}} 秒儲存一次。<br/>造訪紀錄和活躍時段保留 {{days}} 天，按日和按小時的彙總會一直保留，直到你清除。", "audible": "正在播放未靜音聲音的分頁不會被算作閒置。" },
     "audible": { "title": "播放音訊時繼續計時", "description": "前景視窗的目前分頁正在播放未靜音聲音時，系統閒置也繼續計時。聲音停止或分頁靜音後立即停止。" },
     "idle": { "title": "閒置判定時間", "description": "多久沒有鍵盤或滑鼠操作後，把瀏覽器視為閒置。", "label": "閒置判定時間：{{duration}}", "option_other": "{{count}} 分鐘" },
+    "siteMerge": {
+      "title": "網站合併方式",
+      "description": "只改變總覽和網站詳情的分組。紀錄裡仍保存原始主機名稱，可以隨時切換。",
+      "label": "網站合併方式：{{mode}}",
+      "none": "不合併",
+      "prefix": "合併 www、m、mobile",
+      "registrable": "按可註冊網域合併"
+    },
     "clear": { "title": "清除所有紀錄", "description": "刪除此裝置上 PageTime 已儲存的紀錄，刪除後無法復原。", "button": "清除資料" }
   },
   "detail": {
@@ -72,7 +80,14 @@
     "visits_other": "{{count}} 次",
     "todaySessions": "今日活躍時段",
     "noSessions": "今天暫無活躍時段",
-    "viewVisits": "查看造訪紀錄"
+    "viewVisits": "查看造訪紀錄",
+    "breakdown": {
+      "title": "子網域組成",
+      "label": "子網域組成。{{hosts}}",
+      "item": "{{domain}}，{{duration}}，{{percent}}%",
+      "separator": "；",
+      "share": "{{duration}} · {{percent}}%"
+    }
   },
   "confirm": {
     "title": "清除所有瀏覽紀錄？",
@@ -119,6 +134,13 @@
       "save_other": "每 {{count}} 秒儲存一次；意外關閉時最多遺失最近這段時間。"
     },
     "limits": { "title": "已知誤差", "audible": "瀏覽器判斷聲音開始或停止可能晚 2–3 秒。", "threshold": "閒置判定時間設為 10 分鐘時，離開後最多還會多計 10 分鐘。" },
+    "merge": {
+      "title": "網站如何合併",
+      "storage": "帳本仍按原始主機名稱保存。合併只改變總覽的呈現，不會改寫已有紀錄，也可以隨時關閉。",
+      "none": "不合併：每個主機名稱單獨統計。",
+      "prefix": "合併常見前綴：去掉開頭的 www.、m.、mobile.。www.youtube.com 與 m.youtube.com 會顯示為 youtube.com；gist.github.com 仍單獨統計。",
+      "registrable": "按可註冊網域：使用 Public Suffix List 的 ICANN 部分。a.b.example.co.uk 會顯示為 example.co.uk。IP 位址、localhost，以及無法得到可註冊網域的主機保持原樣。github.io 這類私有後綴不當作公共後綴，因此 user.github.io 會併入 github.io。"
+    },
     "close": "關閉"
   }
 }

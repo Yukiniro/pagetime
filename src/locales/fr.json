@@ -73,6 +73,14 @@
     "method": { "title": "Mode de calcul", "description": "Chaque chargement ou rechargement de page compte comme une visite ; changer d’onglet ou naviguer dans une application monopage n’ajoute pas de visite.<br/>{{idle}} secondes sans activité système sont considérées comme de l’inactivité ; la progression est enregistrée toutes les {{checkpoint}} secondes.<br/>Conserve les visites et sessions actives pendant {{days}} jours ; les totaux par jour et par heure restent jusqu’à ce que vous les effaciez.", "audible": "Un onglet qui lit un son non coupé n’est pas compté comme inactif." },
     "audible": { "title": "Continuer à compter pendant la lecture audio", "description": "Si l’onglet actif de la fenêtre au premier plan lit un son non coupé, le temps d’inactivité compte aussi. Le décompte s’arrête dès que le son s’arrête ou que l’onglet est coupé." },
     "idle": { "title": "Seuil d’inactivité", "description": "Durée sans clavier ni souris avant que ce navigateur soit considéré comme inactif.", "label": "Seuil d’inactivité : {{duration}}", "option_one": "{{count}} minute", "option_many": "{{count}} minutes", "option_other": "{{count}} minutes" },
+    "siteMerge": {
+      "title": "Regrouper les sous-domaines",
+      "description": "Change uniquement le regroupement de l’aperçu et des détails du site. Les enregistrements gardent le nom d’hôte d’origine, et le choix peut être modifié à tout moment.",
+      "label": "Regroupement des sous-domaines : {{mode}}",
+      "none": "Ne pas regrouper",
+      "prefix": "Regrouper www, m et mobile",
+      "registrable": "Regrouper par domaine enregistrable"
+    },
     "clear": { "title": "Effacer tous les enregistrements", "description": "Supprime les données enregistrées par PageTime sur cet appareil. Action irréversible.", "button": "Effacer les données" }
   },
   "detail": {
@@ -84,7 +92,14 @@
     "visits_other": "{{count}}",
     "todaySessions": "Sessions actives du jour",
     "noSessions": "Aucune session active aujourd’hui",
-    "viewVisits": "Voir les visites"
+    "viewVisits": "Voir les visites",
+    "breakdown": {
+      "title": "Répartition par sous-domaine",
+      "label": "Répartition par sous-domaine. {{hosts}}",
+      "item": "{{domain}}, {{duration}}, {{percent}} %",
+      "separator": " ; ",
+      "share": "{{duration}} · {{percent}} %"
+    }
   },
   "confirm": {
     "title": "Effacer tous les enregistrements de navigation ?",
@@ -141,6 +156,13 @@
       "save_other": "Enregistre toutes les {{count}} secondes. En cas de fermeture inattendue, seule cette période récente peut être perdue."
     },
     "limits": { "title": "Limites connues", "audible": "Le navigateur peut mettre 2–3 secondes à remarquer que le son a commencé ou s’est arrêté.", "threshold": "Avec un seuil d’inactivité de 10 minutes, jusqu’à 10 minutes supplémentaires peuvent être comptées après votre départ." },
+    "merge": {
+      "title": "Comment les sites sont regroupés",
+      "storage": "Le registre conserve le nom d’hôte d’origine. Le regroupement ne change que l’affichage : il ne réécrit pas les lignes enregistrées et peut être désactivé.",
+      "none": "Ne pas regrouper : chaque nom d’hôte est compté séparément.",
+      "prefix": "Préfixes courants : un www., m. ou mobile. en tête est retiré. www.youtube.com et m.youtube.com deviennent youtube.com. Les autres noms, comme gist.github.com, restent séparés.",
+      "registrable": "Domaine enregistrable : regroupement selon la partie ICANN de la Public Suffix List. a.b.example.co.uk devient example.co.uk. Les adresses IP, localhost et les hôtes sans domaine enregistrable restent inchangés. Les suffixes privés comme github.io ne sont pas traités comme des suffixes publics : user.github.io est donc regroupé sous github.io."
+    },
     "close": "Fermer"
   }
 }

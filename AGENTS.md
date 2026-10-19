@@ -6,7 +6,9 @@ The UI is localized with react-i18next in Simplified Chinese, Traditional Chines
 
 Use the official shadcn Base UI components for available primitives. Prefer DropdownMenu for dropdown choices; avoid Select and native select. Keep the WXT extension and local preview on the same component and theme foundation.
 
-The user selected the light blue analytics design and added today's browsing timeline. Preserve this design. Deliver a real WXT Chrome/Edge extension as well as a local preview using the same React components. The preview starts empty: do not seed sample browsing records, and do not add demo-mode labels or a control that restores sample data. `npm run build` builds WXT; `npm run build:preview` builds the Sites-ready preview. Keep the starter's preview runtime intact.
+The user selected the light blue analytics design and added today's browsing timeline. Preserve this design.
+
+Site grouping defaults to `prefix` (strip a leading `www.` / `m.` / `mobile.`). The other settings are `none` and `registrable`. Grouping is a query view: Dexie keeps the raw hostname, and switching modes must not rewrite stored rows. Registrable mode uses offline `tldts` with ICANN suffixes only (`allowPrivateDomains: false`), so a private suffix such as `github.io` groups under the ICANN name. Deliver a real WXT Chrome/Edge extension as well as a local preview using the same React components. The preview starts empty: do not seed sample browsing records, and do not add demo-mode labels or a control that restores sample data. `npm run build` builds WXT; `npm run build:preview` builds the Sites-ready preview. Keep the starter's preview runtime intact.
 
 Run the local server yourself and open the preview in the browser available to this environment. Do not give the user server-start instructions when you can run it.
 

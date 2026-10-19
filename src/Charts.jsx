@@ -8,12 +8,12 @@ import {midnight} from './model.mjs';
 import {colorOf} from './data.js';
 import {duration,formatDate,timeLabel} from './i18n.js';
 echarts.use([BarChart,CustomChart,GridComponent,TooltipComponent,CanvasRenderer]);
-function Chart({option,label,className}){
+function Chart({option,label,className,height}){
   const ref=useRef(null);
   useEffect(()=>{const chart=echarts.init(ref.current,null,{renderer:'canvas'});chart.setOption(option);
     const observer=new ResizeObserver(()=>chart.resize());observer.observe(ref.current);
     return()=>{observer.disconnect();chart.dispose();};},[option]);
-  return <div ref={ref} role="img" aria-label={label} className={className}/>;
+  return <div ref={ref} role="img" aria-label={label} className={className} style={height?{height}:undefined}/>;
 }
 export function Trend({days}){
   const {t}=useTranslation();
@@ -33,9 +33,23 @@ export function Timeline({spans}){
   const min=Math.max(start,Math.min(start+8*3_600_000,Math.floor(earliest/3_600_000)*3_600_000));
   const max=Math.min(end.getTime(),Math.max(start+20*3_600_000,Math.ceil(latest/3_600_000)*3_600_000));
   const option={animation:false,textStyle:{fontFamily:getComputedStyle(document.documentElement).fontFamily},grid:{left:14,right:16,top:30,bottom:10,show:true,backgroundColor:'#f2f5fa',borderWidth:0},
-    tooltip:{renderMode:'richText',formatter:p=>{const s=today[p.dataIndex];return `${s.domain}\n${timeLabel(Math.max(s.start,start))}–${timeLabel(Math.min(s.end,end.getTime()))}\n${duration(Math.min(s.end,end.getTime())-Math.max(s.start,start))}`;}},
+    tooltip:{renderMode:'richText',formatter:p=>{const s=today[p.dataIndex];const name=s.site||s.domain;return `${name}\n${timeLabel(Math.max(s.start,start))}–${timeLabel(Math.min(s.end,end.getTime()))}\n${duration(Math.min(s.end,end.getTime())-Math.max(s.start,start))}`;}},
     xAxis:{type:'value',min,max,interval:((max-min)/3_600_000>16?4:2)*3_600_000,position:'top',axisLine:{show:false},axisTick:{show:false},splitLine:{show:false},axisLabel:{color:'#64748b',fontSize:12,formatter:timeLabel}},
     yAxis:{show:false,min:0,max:1},
-    series:[{type:'custom',data:today.map(s=>[Math.max(s.start,start),Math.min(s.end,end.getTime())]),renderItem:(params,api)=>{const from=api.coord([api.value(0),.5]),to=api.coord([api.value(1),.5]);return{type:'rect',shape:{x:from[0],y:from[1]-11,width:Math.max(1,to[0]-from[0]),height:22,r:3},style:{fill:colorOf(today[params.dataIndex].domain)}};}}]};
-  return <><Chart option={option} className="timeline-chart" label={t('timeline.label',{count:today.length})}/>{!today.length&&<p className="timeline-empty">{t('timeline.empty')}</p>}<ul className="sr-only">{today.map((s,i)=><li key={i}>{t('timeline.item',{domain:s.domain,from:timeLabel(s.start),to:timeLabel(s.end)})}</li>)}</ul></>;
+    series:[{type:'custom',data:today.map(s=>[Math.max(s.start,start),Math.min(s.end,end.getTime())]),renderItem:(params,api)=>{const from=api.coord([api.value(0),.5]),to=api.coord([api.value(1),.5]);const name=today[params.dataIndex].site||today[params.dataIndex].domain;return{type:'rect',shape:{x:from[0],y:from[1]-11,width:Math.max(1,to[0]-from[0]),height:22,r:3},style:{fill:colorOf(name)}};}}]};
+  return <><Chart option={option} className="timeline-chart" label={t('timeline.label',{count:today.length})}/>{!today.length&&<p className="timeline-empty">{t('timeline.empty')}</p>}<ul className="sr-only">{today.map((s,i)=><li key={i}>{t('timeline.item',{domain:s.site||s.domain,from:timeLabel(s.start),to:timeLabel(s.end)})}</li>)}</ul></>;
+}
+export function Breakdown({hosts}){
+  const {t}=useTranslation();
+  const total=hosts.reduce((sum,host)=>sum+host.ms,0);
+  const percent=host=>total?Math.round(host.ms*100/total):0;
+  const share=host=>t('detail.breakdown.share',{duration:duration(host.ms),percent:percent(host)});
+  const item=host=>t('detail.breakdown.item',{domain:host.domain,duration:duration(host.ms),percent:percent(host)});
+  const option={animation:false,textStyle:{fontFamily:getComputedStyle(document.documentElement).fontFamily},grid:{left:8,right:12,top:8,bottom:8,containLabel:true},
+    tooltip:{trigger:'axis',axisPointer:{type:'shadow'},renderMode:'richText',formatter:p=>`${hosts[p[0].dataIndex].domain}\n${share(hosts[p[0].dataIndex])}`},
+    xAxis:{type:'value',min:0,max:Math.max(...hosts.map(host=>host.ms),1)*1.9,show:false},
+    yAxis:{type:'category',inverse:true,data:hosts.map(host=>host.domain),axisTick:{show:false},axisLine:{show:false},axisLabel:{color:'#122040',fontSize:12,width:150,overflow:'truncate'}},
+    series:[{type:'bar',barMaxWidth:16,itemStyle:{color:'#2875ff',borderRadius:2},label:{show:true,position:'right',color:'#40577b',fontSize:12,formatter:p=>share(hosts[p.dataIndex])},data:hosts.map(host=>host.ms)}]};
+  return <><Chart option={option} className="breakdown-chart" height={Math.max(96,hosts.length*36+8)} label={t('detail.breakdown.label',{hosts:hosts.map(item).join(t('detail.breakdown.separator'))})}/>
+    <ul className="sr-only">{hosts.map(host=><li key={host.domain}>{item(host)}</li>)}</ul></>;
 }

@@ -36,8 +36,9 @@ test('preview settings are stored apart from records and invalid values fall bac
   assert.deepEqual(await command('settings'), DEFAULT_SETTINGS);
   assert.equal(values.has('pagetime-preview-settings'), false);
   const saved = await command('settings', { settings: { schema: 1, idleSeconds: 300, countAudible: false } });
-  assert.deepEqual(saved, { schema: 1, idleSeconds: 300, countAudible: false });
+  assert.deepEqual(saved, { schema: 1, idleSeconds: 300, countAudible: false, siteMerge: 'prefix' });
   assert.deepEqual(await command('settings'), saved);
+  assert.equal((await command('settings', { settings: { ...saved, siteMerge: 'none' } })).siteMerge, 'none');
   assert.equal(values.has('pagetime-preview'), false);
   values.set('pagetime-preview-settings', '{');
   assert.deepEqual(await command('settings'), DEFAULT_SETTINGS);

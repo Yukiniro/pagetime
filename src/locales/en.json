@@ -68,6 +68,14 @@
     "method": { "title": "How it's measured", "description": "Each page load or reload counts as one visit; switching tabs or in-app navigation in single-page apps doesn't add visits.<br/>{{idle}} seconds without system input counts as idle; progress is saved every {{checkpoint}} seconds.<br/>Keeps visits and active sessions for {{days}} days; daily and hourly totals stay until you clear them.", "audible": "A tab playing unmuted sound isn't counted as idle." },
     "audible": { "title": "Keep counting while audio plays", "description": "If the active tab in the focused window is playing unmuted sound, idle time still counts. Timing stops as soon as the sound stops or the tab is muted." },
     "idle": { "title": "Idle threshold", "description": "How long without keyboard or mouse input before this browser counts as idle.", "label": "Idle threshold: {{duration}}", "option_one": "{{count}} minute", "option_other": "{{count}} minutes" },
+    "siteMerge": {
+      "title": "Group subdomains",
+      "description": "Changes how the overview and site details are grouped. Saved records keep the original hostname, and you can switch at any time.",
+      "label": "Subdomain grouping: {{mode}}",
+      "none": "Don't group",
+      "prefix": "Group www, m, and mobile",
+      "registrable": "Group by registrable domain"
+    },
     "clear": { "title": "Clear all records", "description": "Deletes the records PageTime has saved on this device. This can't be undone.", "button": "Clear data" }
   },
   "detail": {
@@ -78,7 +86,14 @@
     "visits_other": "{{count}}",
     "todaySessions": "Today's active sessions",
     "noSessions": "No active sessions today",
-    "viewVisits": "View visits"
+    "viewVisits": "View visits",
+    "breakdown": {
+      "title": "Subdomain breakdown",
+      "label": "Subdomain breakdown. {{hosts}}",
+      "item": "{{domain}}, {{duration}}, {{percent}}%",
+      "separator": "; ",
+      "share": "{{duration}} · {{percent}}%"
+    }
   },
   "confirm": {
     "title": "Clear all browsing records?",
@@ -130,6 +145,13 @@
       "save_other": "Saves every {{count}} seconds. If the browser closes unexpectedly, at most that recent interval can be lost."
     },
     "limits": { "title": "Known limits", "audible": "The browser can take 2–3 seconds to notice that sound started or stopped.", "threshold": "With a 10-minute idle threshold, up to 10 extra minutes can be counted after you leave." },
+    "merge": {
+      "title": "How sites are grouped",
+      "storage": "Records keep the original hostname. Grouping only changes what the overview shows; it never rewrites saved rows, and you can turn it off.",
+      "none": "Don't group: each hostname is counted on its own.",
+      "prefix": "Common prefixes: a leading www., m., or mobile. is removed. www.youtube.com and m.youtube.com become youtube.com. Other names, such as gist.github.com, stay separate.",
+      "registrable": "Registrable domain: grouped with the ICANN section of the Public Suffix List. a.b.example.co.uk becomes example.co.uk. IP addresses, localhost, and hosts with no registrable domain stay unchanged. Private suffixes such as github.io are not treated as public suffixes, so user.github.io is grouped under github.io."
+    },
     "close": "Close"
   }
 }

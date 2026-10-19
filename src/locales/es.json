@@ -73,6 +73,14 @@
     "method": { "title": "Cómo se mide", "description": "Cada carga o recarga de página cuenta como una visita; cambiar de pestaña o navegar dentro de una aplicación de una sola página no suma visitas.<br/>{{idle}} segundos sin actividad del sistema se consideran inactividad; el progreso se guarda cada {{checkpoint}} segundos.<br/>Conserva las visitas y sesiones activas durante {{days}} días; los totales diarios y por hora se mantienen hasta que los borres.", "audible": "Una pestaña que reproduce sonido sin silenciar no cuenta como inactividad." },
     "audible": { "title": "Seguir contando mientras hay audio", "description": "Si la pestaña activa de la ventana enfocada reproduce sonido sin silenciar, el tiempo de inactividad también cuenta. El conteo se detiene en cuanto el sonido para o la pestaña se silencia." },
     "idle": { "title": "Umbral de inactividad", "description": "Cuánto tiempo sin teclado ni ratón debe pasar para considerar inactivo este navegador.", "label": "Umbral de inactividad: {{duration}}", "option_one": "{{count}} minuto", "option_many": "{{count}} minutos", "option_other": "{{count}} minutos" },
+    "siteMerge": {
+      "title": "Agrupar subdominios",
+      "description": "Solo cambia cómo se agrupan el resumen y los detalles del sitio. Los registros guardan el hostname original y puedes cambiarlo cuando quieras.",
+      "label": "Agrupación de subdominios: {{mode}}",
+      "none": "No agrupar",
+      "prefix": "Agrupar www, m y mobile",
+      "registrable": "Agrupar por dominio registrable"
+    },
     "clear": { "title": "Borrar todos los registros", "description": "Elimina los registros que PageTime ha guardado en este dispositivo. No se puede deshacer.", "button": "Borrar datos" }
   },
   "detail": {
@@ -84,7 +92,14 @@
     "visits_other": "{{count}}",
     "todaySessions": "Sesiones activas de hoy",
     "noSessions": "Hoy no hay sesiones activas",
-    "viewVisits": "Ver visitas"
+    "viewVisits": "Ver visitas",
+    "breakdown": {
+      "title": "Desglose por subdominio",
+      "label": "Desglose por subdominio. {{hosts}}",
+      "item": "{{domain}}, {{duration}}, {{percent}}%",
+      "separator": "; ",
+      "share": "{{duration}} · {{percent}}%"
+    }
   },
   "confirm": {
     "title": "¿Borrar todos los registros de navegación?",
@@ -141,6 +156,13 @@
       "save_other": "Se guarda cada {{count}} segundos. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente."
     },
     "limits": { "title": "Límites conocidos", "audible": "El navegador puede tardar 2–3 segundos en notar que el sonido empezó o se detuvo.", "threshold": "Con un umbral de inactividad de 10 minutos, se pueden contar hasta 10 minutos de más después de que te vayas." },
+    "merge": {
+      "title": "Cómo se agrupan los sitios",
+      "storage": "El registro sigue guardando el hostname original. La agrupación solo cambia la vista, no reescribe los datos guardados y se puede desactivar.",
+      "none": "No agrupar: cada hostname se cuenta por separado.",
+      "prefix": "Prefijos habituales: se quita un www., m. o mobile. inicial. www.youtube.com y m.youtube.com pasan a youtube.com. Otros nombres, como gist.github.com, siguen separados.",
+      "registrable": "Dominio registrable: se agrupa con la sección ICANN de la Public Suffix List. a.b.example.co.uk pasa a example.co.uk. Las direcciones IP, localhost y los hosts sin dominio registrable no cambian. Los sufijos privados como github.io no se tratan como sufijos públicos, así que user.github.io se agrupa en github.io."
+    },
     "close": "Cerrar"
   }
 }

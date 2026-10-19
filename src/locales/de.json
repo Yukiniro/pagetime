@@ -68,6 +68,14 @@
     "method": { "title": "So wird gemessen", "description": "Jedes Laden oder Neuladen einer Seite zählt als ein Besuch; Tab-Wechsel und Navigation innerhalb von Single-Page-Apps zählen nicht.<br/>{{idle}} Sekunden ohne Systemeingabe gelten als Leerlauf; der Fortschritt wird alle {{checkpoint}} Sekunden gespeichert.<br/>Besuche und aktive Sitzungen werden {{days}} Tage aufbewahrt; Tages- und Stundensummen bleiben, bis du sie löschst.", "audible": "Ein Tab mit nicht stummgeschaltetem Ton zählt nicht als Leerlauf." },
     "audible": { "title": "Bei Audiowiedergabe weiterzählen", "description": "Wenn der aktive Tab im fokussierten Fenster nicht stummgeschalteten Ton abspielt, zählt auch Leerlaufzeit. Die Zählung stoppt, sobald der Ton endet oder der Tab stummgeschaltet wird." },
     "idle": { "title": "Leerlaufschwelle", "description": "Wie lange ohne Tastatur- oder Mauseingabe dieser Browser als im Leerlauf gilt.", "label": "Leerlaufschwelle: {{duration}}", "option_one": "{{count}} Minute", "option_other": "{{count}} Minuten" },
+    "siteMerge": {
+      "title": "Subdomains gruppieren",
+      "description": "Ändert nur die Gruppierung in der Übersicht und den Website-Details. Gespeicherte Einträge behalten den ursprünglichen Hostnamen. Die Auswahl lässt sich jederzeit ändern.",
+      "label": "Subdomain-Gruppierung: {{mode}}",
+      "none": "Nicht gruppieren",
+      "prefix": "www, m und mobile gruppieren",
+      "registrable": "Nach registrierbarer Domain gruppieren"
+    },
     "clear": { "title": "Alle Daten löschen", "description": "Löscht die von PageTime auf diesem Gerät gespeicherten Daten. Dies kann nicht rückgängig gemacht werden.", "button": "Daten löschen" }
   },
   "detail": {
@@ -78,7 +86,14 @@
     "visits_other": "{{count}}",
     "todaySessions": "Heutige aktive Sitzungen",
     "noSessions": "Heute keine aktiven Sitzungen",
-    "viewVisits": "Besuche anzeigen"
+    "viewVisits": "Besuche anzeigen",
+    "breakdown": {
+      "title": "Zusammensetzung der Subdomains",
+      "label": "Zusammensetzung der Subdomains. {{hosts}}",
+      "item": "{{domain}}, {{duration}}, {{percent}} %",
+      "separator": "; ",
+      "share": "{{duration}} · {{percent}} %"
+    }
   },
   "confirm": {
     "title": "Alle Surfdaten löschen?",
@@ -130,6 +145,13 @@
       "save_other": "Speichert alle {{count}} Sekunden. Beim unerwarteten Schließen kann höchstens dieses Intervall verloren gehen."
     },
     "limits": { "title": "Bekannte Ungenauigkeiten", "audible": "Der Browser kann 2–3 Sekunden brauchen, bis er merkt, dass Ton begonnen oder aufgehört hat.", "threshold": "Bei einer Leerlaufschwelle von 10 Minuten können nach dem Verlassen bis zu 10 zusätzliche Minuten gezählt werden." },
+    "merge": {
+      "title": "Wie Websites gruppiert werden",
+      "storage": "Das Konto speichert weiter den ursprünglichen Hostnamen. Die Gruppierung ändert nur die Ansicht, schreibt keine Einträge um und lässt sich jederzeit ausschalten.",
+      "none": "Nicht gruppieren: Jeder Hostname wird einzeln gezählt.",
+      "prefix": "Häufige Präfixe: Ein führendes www., m. oder mobile. wird entfernt. www.youtube.com und m.youtube.com werden zu youtube.com. Andere Namen wie gist.github.com bleiben getrennt.",
+      "registrable": "Registrierbare Domain: Gruppierung nach dem ICANN-Teil der Public Suffix List. a.b.example.co.uk wird zu example.co.uk. IP-Adressen, localhost und Hosts ohne registrierbare Domain bleiben unverändert. Private Suffixe wie github.io gelten nicht als öffentliche Suffixe, daher wird user.github.io unter github.io zusammengefasst."
+    },
     "close": "Schließen"
   }
 }

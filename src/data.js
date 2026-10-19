@@ -1,11 +1,23 @@
 import { LEDGER_ERROR_KEY } from './ledger.mjs';
 import { blankData } from './model.mjs';
+import { siteOf } from './site.mjs';
 import { DEFAULT_SETTINGS, validateSettings } from './settings.mjs';
 import { validateData } from './validate-data.mjs';
 export const isExtension = ['chrome-extension:', 'moz-extension:'].includes(location.protocol);
 export const palette = ['#2875ff','#20bfa5','#ffb32c','#8870ff','#20b5c7','#8d9ab2'];
 export const knownSites = ['github.com','wxt.dev','developer.mozilla.org','youtube.com','notion.so'];
 export const colorOf = domain => palette[knownSites.includes(domain)?knownSites.indexOf(domain):[...domain].reduce((n,c)=>(n+c.charCodeAt(0))%palette.length,0)];
+export function iconHost(domain, site = siteOf(domain, 'prefix')) {
+  if (typeof site === 'string' && knownSites.includes(site)) return site;
+  if (typeof domain === 'string' && knownSites.includes(domain)) return domain;
+  return '';
+}
+export function iconForSite(site, hosts = []) {
+  const direct = iconHost(site, site);
+  if (direct) return direct;
+  const known = hosts.filter(host => knownSites.includes(host.domain));
+  return known.length === 1 ? known[0].domain : '';
+}
 const previewKey = 'pagetime-preview';
 const previewSettingsKey = 'pagetime-preview-settings';
 function readPreviewSettings() {

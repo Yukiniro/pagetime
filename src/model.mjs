@@ -58,18 +58,43 @@ export function splitByHour(start, end) {
 // Detail rows (spans, visits) that start before this local midnight are removed. Today counts as one of DETAIL_DAYS.
 export const detailCutoff = now => addDays(now, 1 - DETAIL_DAYS);
 
-export function summarize(data, start, end) {
-  const sites = new Map();
-  const get = domain => {
-    if (!sites.has(domain)) sites.set(domain, { domain, ms: 0, visits: 0 });
-    return sites.get(domain);
-  };
-  for (const visit of data.visits) if (visit.at >= start && visit.at < end) get(visit.domain).visits++;
+// keyOf maps a stored hostname to the query-view site. The default keeps one row per hostname.
+export function summarize(data, start, end, keyOf = domain => domain) {
+  const entries = [];
+  for (const visit of data.visits) if (visit.at >= start && visit.at < end) entries.push({ domain: visit.domain, ms: 0, visits: 1 });
   for (const span of data.spans) {
     const ms = Math.max(0, Math.min(span.end, end) - Math.max(span.start, start));
-    if (ms) get(span.domain).ms += ms;
+    if (ms) entries.push({ domain: span.domain, ms, visits: 0 });
   }
-  return rank([...sites.values()]);
+  return groupSites(entries, keyOf);
+}
+
+export function groupSites(entries, keyOf = domain => domain) {
+  const sites = new Map();
+  for (const entry of entries) {
+    if (typeof entry.domain !== 'string') continue;
+    const key = keyOf(entry.domain);
+    let site = sites.get(key);
+    if (!site) sites.set(key, site = { domain: key, ms: 0, visits: 0, hosts: new Map() });
+    site.ms += entry.ms || 0;
+    site.visits += entry.visits || 0;
+    let host = site.hosts.get(entry.domain);
+    if (!host) site.hosts.set(entry.domain, host = { domain: entry.domain, ms: 0, visits: 0 });
+    host.ms += entry.ms || 0;
+    host.visits += entry.visits || 0;
+  }
+  const rows = [...sites.values()].map(site => ({
+    domain: site.domain,
+    ms: site.ms,
+    visits: site.visits,
+    hosts: [...site.hosts.values()].sort((a, b) => b.ms - a.ms || b.visits - a.visits || a.domain.localeCompare(b.domain)),
+  }));
+  return rank(rows);
+}
+
+export function breakdown(data, start, end, site, keyOf = domain => domain) {
+  const row = summarize(data, start, end, keyOf).rows.find(item => item.domain === site);
+  return { domain: site, rows: row?.hosts ?? [], ms: row?.ms ?? 0, visits: row?.visits ?? 0 };
 }
 
 export function rank(rows) {
