@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { LEDGER_ERROR_KEY } from '../src/ledger.mjs';
+import { dateKey } from '../src/model.mjs';
 import { createHarness } from './helpers/fake-browser.mjs';
 
 const total = data => data.spans.reduce((sum, span) => sum + span.end - span.start, 0);
@@ -122,6 +123,62 @@ test('a failed prune is logged without marking the ledger, and the tick is still
   h.advance(5_000);
   assert.deepEqual({ ...await h.message('snapshot') }, { ok: true });
   assert.equal(total(await h.read()), 15_000);
+  assert.equal(LEDGER_ERROR_KEY in h.local, false);
+});
+
+test('deleteSite drops the current site and the next tick does not restore unflushed time', async () => {
+  const h = await createHarness({ url: 'https://a.com/' });
+  await h.advance(10_000);
+  await h.fireAlarm();
+  assert.equal(total(await h.read()), 10_000);
+  await h.advance(20_000);
+  assert.deepEqual({ ...await h.message('deleteSite', { host: 'a.com' }) }, { ok: true });
+  assert.equal(total(await h.read()), 0);
+  await h.advance(5_000);
+  await h.fireAlarm();
+  assert.equal(total(await h.read()), 5_000);
+  assert.equal((await h.read()).spans.at(-1).domain, 'a.com');
+});
+
+test('deleteDay removes today, and a later tick records only the time after the delete', async () => {
+  const h = await createHarness({ url: 'https://a.com/' });
+  await h.advance(10_000);
+  await h.fireAlarm();
+  assert.deepEqual({ ...await h.message('deleteDay', { date: dateKey(h.now) }) }, { ok: true });
+  assert.equal(total(await h.read()), 0);
+  await h.advance(4_000);
+  await h.fireAlarm();
+  assert.equal(total(await h.read()), 4_000);
+});
+
+test('deleteSite removes only the hostnames the dashboard lists', async () => {
+  const h = await createHarness({ url: 'https://www.youtube.com/' });
+  await h.advance(8_000);
+  await h.navigate(1, 'https://gist.github.com/');
+  await h.advance(6_000);
+  await h.navigate(1, 'about:blank');
+  assert.deepEqual({ ...await h.message('deleteSite', { host: 'youtube.com', hosts: ['www.youtube.com', 'youtube.com'] }) }, { ok: true });
+  const data = await h.read();
+  assert.equal(data.spans.some(span => span.domain === 'www.youtube.com'), false);
+  assert.equal(data.visits.some(visit => visit.domain === 'www.youtube.com'), false);
+  assert.equal(data.spans.some(span => span.domain === 'gist.github.com'), true);
+});
+
+test('an outside page cannot delete, and an invalid date leaves the ledger unmarked', async () => {
+  const h = await createHarness({ url: 'https://a.com/' });
+  await h.advance(10_000);
+  await h.fireAlarm();
+  const before = total(await h.read());
+  const ignored = h.browser.runtime.onMessage.listeners[0](
+    { type: 'deleteSite', host: 'a.com' },
+    { id: 'other', url: 'https://evil.test/dashboard.html' },
+    () => { throw new Error('responded'); },
+  );
+  assert.equal(ignored, undefined);
+  await h.settle();
+  assert.equal(total(await h.read()), before);
+  assert.deepEqual({ ...await h.message('deleteDay', { date: '2026-02-31' }) }, { error: 'save' });
+  assert.equal(total(await h.read()), before);
   assert.equal(LEDGER_ERROR_KEY in h.local, false);
 });
 

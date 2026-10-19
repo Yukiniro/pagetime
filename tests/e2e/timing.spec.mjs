@@ -481,6 +481,41 @@ test('S16 reloading the extension drops at most the unflushed tail', async () =>
   }
 });
 
+test('deleting a site from the dashboard removes it from the ranking and the detail list', async () => {
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    const pageA = await context.newPage();
+    await pageA.goto(pageUrl('a.test'));
+    await waitForDomain(context, 'a.test');
+    await pageA.waitForTimeout(2_000);
+    const pageB = await context.newPage();
+    await pageB.goto(pageUrl('b.test'));
+    await waitForDomain(context, 'b.test');
+    await pageB.waitForTimeout(2_000);
+    await pageB.goto('about:blank');
+    await waitForSpan(context, 'b.test', 1_000);
+    const dashboard = await context.newPage();
+    await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
+    await dashboard.evaluate(() => localStorage.setItem('pagetime-language', 'en'));
+    await dashboard.reload();
+    await expect(dashboard.getByRole('button', { name: 'a.test' }).first()).toBeVisible();
+    await dashboard.getByRole('button', { name: 'a.test' }).first().click();
+    await dashboard.getByRole('button', { name: "Delete this site's records", exact: true }).click();
+    const confirm = dashboard.getByRole('alertdialog');
+    await expect(confirm).toContainText("can't be undone");
+    await expect(confirm).toContainText('ignored sites');
+    await confirm.getByRole('button', { name: 'Delete records', exact: true }).click();
+    await expect(dashboard.getByRole('button', { name: 'a.test' })).toHaveCount(0);
+    await expect(dashboard.getByRole('button', { name: 'b.test' }).first()).toBeVisible();
+    await dashboard.getByRole('button', { name: 'b.test' }).first().click();
+    await expect(dashboard.getByRole('dialog')).toContainText('b.test');
+    const data = await readData(await worker(context));
+    expect(data.spans.some(span => span.domain === 'a.test')).toBe(false);
+    expect(data.visits.some(visit => visit.domain === 'a.test')).toBe(false);
+    expect(domainMs(data, 'b.test')).toBeGreaterThan(0);
+  });
+});
+
 test('an open dashboard shows background writes without a reload', async () => {
   await withBrowser(async context => {
     const sw = await worker(context);

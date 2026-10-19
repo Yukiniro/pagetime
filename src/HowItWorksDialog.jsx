@@ -61,6 +61,7 @@ export function HowItWorksDialog({ open, onOpenChange, finalFocus, settings }) {
         <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-muted-foreground">
           <li>{t('howItWorks.privacy.fields')}</li>
           <li>{t('howItWorks.privacy.local')}</li>
+          <li>{t('howItWorks.privacy.delete')}</li>
           <li>{t('howItWorks.privacy.retention', { count: copy.days })}</li>
           <li>{t('howItWorks.privacy.save', { count: copy.checkpoint })}</li>
         </ul>
