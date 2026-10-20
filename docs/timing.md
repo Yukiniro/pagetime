@@ -13,7 +13,7 @@ The numbers below are constants in `src/model.mjs`, except the idle threshold, w
 
 - **Idle.** Recording stops when the idle threshold passes without keyboard or mouse input, and the stretch before that point still counts. The default is 60 seconds (`IDLE_SECONDS`). Settings offers 1, 2, 5, and 10 minutes. This includes watching a video or listening to audio, unless the next item applies.
 - **Audio.** By default (Settings, Browsing records, keep counting while audio plays), idle time keeps counting while the active tab of the focused window plays unmuted sound. Timing stops as soon as the sound stops or the tab is muted. Turn the switch off to treat that tab like any idle tab.
-- A locked screen, a sleeping computer, or a closed browser.
+- A locked screen, a sleeping computer, or a closed browser. The whole stretch is not counted, except that when timing resumes, at most 90 seconds (`GAP_LIMIT_MS`) of it is credited, the same cap as the checkpoint gap below.
 - A minimized window, another app in front, or focused DevTools.
 - Browser internal pages, extension pages, and local files.
 - Incognito windows. The extension is not allowed in them.

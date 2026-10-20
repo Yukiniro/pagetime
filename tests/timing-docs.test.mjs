@@ -21,6 +21,12 @@ for (const [file, [seconds, days]] of Object.entries(docs)) {
     for (const option of IDLE_OPTIONS) assert.match(idleLine, new RegExp(`\\b${option / 60}\\b`), `idle option ${option}s`);
   });
 
+  test(`${file} says the sleep and lock stretch is credited at most GAP_LIMIT_MS`, () => {
+    const line = read(file).split('\n').find(l => l.includes(seconds === 'seconds' ? 'sleeping computer' : '电脑休眠'));
+    assert.ok(line, 'sleep bullet exists');
+    assert.match(line, new RegExp(`\\b${GAP_LIMIT_MS / 1000}\\s*${seconds}.{1,3}\`GAP_LIMIT_MS\``));
+  });
+
   test(`${file} names every grouping mode and the raw-hostname rule`, () => {
     const text = read(file);
     assert.equal(MERGE_MODES.length, 3);
