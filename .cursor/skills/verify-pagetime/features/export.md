@@ -22,7 +22,7 @@ Fresh preview context or fresh extension profile. English. Listen for downloads 
 2. Record network requests. Click `Export JSON` with `page.waitForEvent('download')` already waiting. The suggested filename matches `/^pagetime-\d{4}-\d{2}-\d{2}\.json$/`. The status text is `Saved <that filename>.`
 3. Parse the file. `format` is `pagetime-ledger`, `schemaVersion` is `1`, `tables` keys are `domains`, `days`, `hours`, `spans`, `visits` in that order. On an empty preview every table is `[]`, `recording.enabled` is true, and `settings.recordMode` is `blacklist`. The body has no `http://` URL.
 4. Click `Export CSV` the same way. The filename ends in `.csv`. The first three bytes are `EF BB BF`. The first line is `date,host,active_ms,visits`. An empty ledger has no further data row.
-5. Assert that no request started by those clicks has a URL outside the page origin (preview `http://127.0.0.1:4173`, or `chrome-extension://` for the dashboard). The download is a blob URL, not a navigation.
+5. Assert that no request started by those clicks has a URL outside the page origin (the preview origin `launch` printed, or `chrome-extension://` for the dashboard). The download is a blob URL, not a navigation.
 6. Screenshot the status line. Do not add an import control, and do not click `Clear data`.
 
 ## Gotchas

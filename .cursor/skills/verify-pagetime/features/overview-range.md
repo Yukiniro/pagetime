@@ -15,7 +15,7 @@ Open the extension toolbar button, or the preview at `http://127.0.0.1:4173/`. T
 
 ## Driving it with Playwright
 
-Preview origin `http://127.0.0.1:4173/`, or the extension `dashboard.html`. Language is already English.
+Preview origin is the URL `launch` printed (default `http://127.0.0.1:4173/`), or the extension `dashboard.html`. Language is already English.
 
 1. Wait until `[data-status="empty"]` or `[data-status="ready"]` exists. On `empty`, assert the status text `Your browsing will show up here` and that `[data-status="ready"]` is absent. Continue with the range steps. The KPI and chart steps apply only when the status is `ready`; on `empty` they are the Gotcha, not a selector to hunt for.
 2. The trigger's accessible name is `Date range: Today`. Click `getByRole('button', { name: /^Date range/ })`.

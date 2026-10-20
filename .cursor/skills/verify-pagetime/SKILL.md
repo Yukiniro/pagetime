@@ -24,11 +24,17 @@ From the repo root:
 node .cursor/skills/verify-pagetime/scripts/session.mjs launch
 ```
 
-The helper spawns `npm run dev -- --host 127.0.0.1 --port 4173` in its own process group, records the pid in `/tmp/pagetime-verify/preview.pid`, and logs to `/tmp/pagetime-verify/preview.log`.
+The helper spawns `npm run dev -- --host 127.0.0.1 --port 4173` in its own process group, records `{ pid, port }` in `/tmp/pagetime-verify/preview.json`, and logs to `/tmp/pagetime-verify/preview.log`.
 
 Ready when stdout is `PageTime preview ready http://127.0.0.1:4173/ pid <pid>` and the log contains `Local:   http://127.0.0.1:4173/`. The document is the shell (`id="root"`). Usable means Doctor, below, sees the heading `Browsing overview` and `[data-status="empty"]` or `[data-status="ready"]`. An empty preview is usable: `dashboardStatus` in `src/dashboard-status.mjs` returns `empty` when the ledger has no hosts, spans, visits, or hour rows. Do not seed `pagetime-preview`.
 
-If launch says the port is already open, stop that owner yourself, then launch again. The helper does not signal a pid it did not start.
+If launch says the port is already open, leave that pid alone. A dev machine often already has this repo's Vite on 4173 (`vite --host 0.0.0.0 --port 4173`). Start the verification instance on a free port:
+
+```bash
+PAGETIME_PREVIEW_PORT=4174 node .cursor/skills/verify-pagetime/scripts/session.mjs launch
+```
+
+Doctor and cleanup read `preview.json`. Set `PAGETIME_PREVIEW_PORT` only when it is the same port launch recorded. Two previews can run on different ports; their `localStorage` is per origin. Do not launch a second process onto a port you already recorded.
 
 ### Extension
 
@@ -81,7 +87,7 @@ Extension, read-only, on the context you opened:
 
 Import `chromium` from `@playwright/test`. Viewport `1280×800`. Pin English in `addInitScript` before `goto` on the preview (`localStorage.setItem('pagetime-language', 'en')`). On the extension, set it and reload, as Launch says.
 
-Preview origin is `http://127.0.0.1:4173/`. Extension origin is the service worker's `dashboard.html`.
+Preview origin is the URL launch printed (`http://127.0.0.1:4173/` unless `PAGETIME_PREVIEW_PORT` moved it). Extension origin is the service worker's `dashboard.html`.
 
 Stable handles, from `src/App.jsx`, `src/Overview.jsx`, `src/RangeControl.jsx`, and the e2e file:
 
@@ -124,7 +130,7 @@ Proof bar:
 node .cursor/skills/verify-pagetime/scripts/session.mjs cleanup
 ```
 
-That signals the recorded preview process group (`SIGTERM`, then `SIGKILL` if it is still alive) and deletes `/tmp/pagetime-verify/preview.pid` and `preview.log`. It refuses a pid whose command line is not the preview, and it never deletes `/tmp/pagetime-verify-evidence`.
+That signals the recorded preview process group (`SIGTERM`, then `SIGKILL` if it is still alive) and deletes `/tmp/pagetime-verify/preview.json` and `preview.log`. It refuses a pid whose command line is not this preview's port, and it never deletes `/tmp/pagetime-verify-evidence`.
 
 Extension: `await context.close()` on the context you launched, then `fs.rmSync(userDataDir, { recursive: true, force: true })` for the directory in `extension.json`, then delete `extension.json`. Do not signal Chromium by name.
 
@@ -142,7 +148,7 @@ node .cursor/skills/verify-pagetime/scripts/session.mjs doctor
 node .cursor/skills/verify-pagetime/scripts/session.mjs cleanup
 ```
 
-`launch` prints `PageTime preview ready http://127.0.0.1:4173/ pid <pid>`. `doctor` prints `PageTime preview doctor ok version <version> ...`. `cleanup` prints `PageTime preview stopped pid <pid>. Evidence remains at /tmp/pagetime-verify-evidence`.
+`launch` prints `PageTime preview ready http://127.0.0.1:<port>/ pid <pid>`. `doctor` prints `PageTime preview doctor ok version <version> ...`. `cleanup` prints `PageTime preview stopped pid <pid>. Evidence remains at /tmp/pagetime-verify-evidence`. Pass `PAGETIME_PREVIEW_PORT` on all three when the instance is not on 4173. `PAGETIME_CHROME_CHANNEL=chrome` uses system Chrome for the preview Doctor and the drive when Playwright's Chromium is not installed.
 
 There is no drive helper. Drive from `features/` so a new journey is a new file, not a new flag.
 
