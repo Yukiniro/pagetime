@@ -306,5 +306,21 @@ export const recentVisits = (db, start, end, domainIds, limit) =>
 /** @param {Dexie} db */
 export const readState = async db => (await db.table('meta').get('state'))?.value;
 
+/**
+ * Read-only figures for the settings data overview: row count per table, the earliest day total,
+ * the earliest span and visit start, and the recording `since`. Missing values are undefined.
+ * @param {Dexie} db
+ */
+export async function readLedgerStats(db) {
+  const [counts, firstDay, firstSpan, firstVisit, state] = await Promise.all([
+    Promise.all(db.tables.map(async table => [table.name, await table.count()])),
+    db.table('days').orderBy(':id').first(),
+    db.table('spans').orderBy('start').first(),
+    db.table('visits').orderBy('at').first(),
+    readState(db),
+  ]);
+  return { counts: Object.fromEntries(counts), firstDay: firstDay?.date, firstSpan: firstSpan?.start, firstVisit: firstVisit?.at, since: state?.since };
+}
+
 /** @param {Dexie} db */
 export const readDomains = db => db.table('domains').toArray();
