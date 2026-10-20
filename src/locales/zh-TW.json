@@ -126,6 +126,8 @@
     "visits_other": "{{count}} 次",
     "todaySessions": "今日活躍時段",
     "noSessions": "今天暫無活躍時段",
+    "daySessions": "{{date}} 活躍時段",
+    "noDaySessions": "{{date}} 暫無活躍時段",
     "ignore": "不再記錄此網站",
     "ignored": "此網站已在忽略清單中",
     "allow": "加入白名單",

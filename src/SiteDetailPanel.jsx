@@ -6,9 +6,10 @@ import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle }
 import { useTranslation } from 'react-i18next';
 import { Breakdown, HourChart, SiteTrend } from './Charts.jsx';
 import { iconForSite } from './data.js';
+import { clipDaySessions, daySessionCopy } from './day-sessions.mjs';
 import { duration, timeLabel } from './i18n.js';
-import { addDays } from './model.mjs';
 import { IGNORED_LIMIT } from './settings.mjs';
+import { singleDayLabel } from './range-label.mjs';
 import { SiteIcon } from './SiteIcon.jsx';
 
 const NARROW_DRAWER = '(max-width: 760px)';
@@ -25,19 +26,12 @@ function useNarrowDrawer() {
   return narrow;
 }
 
-function SessionList({ sessions, merged, today }) {
-  const { t } = useTranslation();
-  const dayEnd = addDays(today, 1);
-  if (!sessions.length) return <p className="muted">{t('detail.noSessions')}</p>;
-  return <ScrollArea className="h-[230px]"><ul className="session-list">{sessions.map(session => {
-    const from = Math.max(today, session.start);
-    const to = Math.min(dayEnd, session.end);
-    return <li key={`${session.domain}-${session.start}-${session.end}`}>
-      <time>{timeLabel(from)} — {timeLabel(to)}</time>
-      {merged && <span className="session-host">{session.domain}</span>}
-      <span>{duration(to - from)}</span>
-    </li>;
-  })}</ul></ScrollArea>;
+function SessionList({ pieces, merged }) {
+  return <ScrollArea className="h-[230px]"><ul className="session-list">{pieces.map(piece => <li key={`${piece.domain}-${piece.start}-${piece.end}`}>
+    <time>{timeLabel(piece.from)} — {timeLabel(piece.to)}</time>
+    {merged && <span className="session-host">{piece.domain}</span>}
+    <span>{duration(piece.to - piece.from)}</span>
+  </li>)}</ul></ScrollArea>;
 }
 
 function DetailActions({ busy, listField, alreadyListed, scopeHost, listLimit, onListAdd, onViewVisits, onDelete }) {
@@ -53,11 +47,14 @@ function DetailActions({ busy, listField, alreadyListed, scopeHost, listLimit, o
   </SheetFooter>;
 }
 
-export function SiteDetailPanel({ siteKey, row, detail, sessions, today, isDark = false, ...actions }) {
+export function SiteDetailPanel({ siteKey, row, detail, sessions, day, now, isDark = false, ...actions }) {
   const { t } = useTranslation();
   const icon = iconForSite(siteKey, row?.hosts) || siteKey;
   const hosts = row?.hosts ?? [];
   const merged = hosts.length >= 2;
+  const copy = daySessionCopy(day, now);
+  const pieces = copy ? clipDaySessions(sessions, day) : [];
+  const date = copy && !copy.today ? singleDayLabel(day) : '';
   return <>
     <div className="site-detail-scroll">
       <div className="detail-site"><SiteIcon domain={icon} site={icon} /><h3>{siteKey}</h3></div>
@@ -72,8 +69,10 @@ export function SiteDetailPanel({ siteKey, row, detail, sessions, today, isDark 
         <HourChart hours={detail.hours} dayCount={detail.days.length} domain={siteKey} isDark={isDark} />
       </section>}
       {merged && <><h3>{t('detail.breakdown.title')}</h3><Breakdown hosts={hosts} isDark={isDark} /></>}
-      <h3>{t('detail.todaySessions')}</h3>
-      <SessionList sessions={sessions} merged={merged} today={today} />
+      {copy && <>
+        <h3>{t(copy.titleKey, { date })}</h3>
+        {pieces.length ? <SessionList pieces={pieces} merged={merged} /> : <p className="muted">{t(copy.emptyKey, { date })}</p>}
+      </>}
     </div>
     <DetailActions {...actions} />
   </>;

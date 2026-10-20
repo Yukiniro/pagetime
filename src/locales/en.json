@@ -132,6 +132,8 @@
     "visits_other": "{{count}}",
     "todaySessions": "Today's active sessions",
     "noSessions": "No active sessions today",
+    "daySessions": "Active sessions on {{date}}",
+    "noDaySessions": "No active sessions on {{date}}",
     "ignore": "Stop recording this site",
     "ignored": "This site is already ignored",
     "allow": "Add to whitelist",

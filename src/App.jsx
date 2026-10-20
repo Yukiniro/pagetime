@@ -14,7 +14,7 @@ import { Alert, AlertTitle, AlertDescription } from '@app/components/ui/alert';
 import { Empty, EmptyHeader, EmptyTitle } from '@app/components/ui/empty';
 import { Trans, useTranslation } from 'react-i18next';
 import { dateKey, dateKeyStart, midnight } from './model.mjs';
-import { activeRange, defaultChart } from './range.mjs';
+import { activeRange, defaultChart, timelineDay } from './range.mjs';
 import { RangeControl } from './RangeControl.jsx';
 import { rangeChip, trendLabel as trendTitle } from './range-label.mjs';
 import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, MERGE_MODES, RECORD_MODES, THEME_MODES, isAllowed, isIgnored, normalizeHost, validateSettings } from './settings.mjs';
@@ -214,7 +214,8 @@ export function App() {
     detail={ledger.detailSite === selected ? ledger.detail : null}
     sessions={sessions}
     isDark={isDark}
-    today={today}
+    day={timelineDay(active, today)}
+    now={now}
     busy={busy}
     listField={listField}
     alreadyListed={alreadyListed}
