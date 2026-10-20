@@ -327,3 +327,33 @@ export async function readLedgerStats(db) {
 
 /** @param {Dexie} db */
 export const readDomains = db => db.table('domains').toArray();
+
+export const SNAPSHOT_BATCH = 5_000;
+const SNAPSHOT_TABLES = ['domains', 'days', 'hours', 'spans', 'visits'];
+
+// Pages by primary key inside the caller's transaction, so each batch resumes after the last key read.
+async function readByKey(table, batch) {
+  const path = table.schema.primKey.keyPath;
+  const keyOf = row => Array.isArray(path) ? path.map(field => row[field]) : row[path];
+  const rows = [];
+  let page = await table.orderBy(':id').limit(batch).toArray();
+  while (page.length) {
+    for (const row of page) rows.push(row);
+    if (page.length < batch) break;
+    page = await table.where(':id').above(keyOf(page[page.length - 1])).limit(batch).toArray();
+  }
+  return rows;
+}
+
+/**
+ * Recording state and every row of the five data tables, read in one read-only transaction:
+ * a write commits wholly before or after it. Rows are in primary-key order. The cursor is not included.
+ * @param {Dexie} db
+ */
+export function readLedgerSnapshot(db, batch = SNAPSHOT_BATCH) {
+  return db.transaction('r', db.tables, async tx => {
+    const snapshot = { state: (await tx.table('meta').get('state'))?.value };
+    for (const name of SNAPSHOT_TABLES) snapshot[name] = await readByKey(tx.table(name), batch);
+    return snapshot;
+  });
+}

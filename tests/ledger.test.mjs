@@ -62,11 +62,12 @@ test('ledgerTx: an asynchronous write phase is refused and its first write is ro
   assert.equal(await db.meta.count(), 0);
 });
 
-test('source guard: only ledgerTx opens a transaction, and the background never touches Dexie or liveQuery', () => {
+test('source guard: only ledgerTx opens a write transaction, the export snapshot is the only read-only one, and the background never touches Dexie or liveQuery', () => {
   const ledger = readFileSync(new URL('../src/ledger.mjs', import.meta.url), 'utf8');
   const background = readFileSync(new URL('../entrypoints/background.ts', import.meta.url), 'utf8');
-  assert.equal(ledger.match(/\.transaction\(/g).length, 1);
+  assert.equal(ledger.match(/\.transaction\(/g).length, 2);
   assert.match(ledger, /export function ledgerTx\(db, \{ read = \(\) => undefined, write \}\) \{\n {2}return db\.transaction\('rw'/);
+  assert.match(ledger, /export function readLedgerSnapshot\(db, batch = SNAPSHOT_BATCH\) \{\n {2}return db\.transaction\('r', db\.tables,/);
   assert.doesNotMatch(ledger, /\b(browser|chrome)\.|setTimeout|liveQuery|Dexie\.waitFor|fetch\(/);
   assert.doesNotMatch(background, /from 'dexie'|\.transaction\(|ledgerTx|liveQuery|\bdb\.table\(/);
 });
