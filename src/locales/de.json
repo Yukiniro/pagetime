@@ -9,7 +9,7 @@
     "records": { "title": "Besuchsverlauf" },
     "settings": { "title": "Einstellungen" }
   },
-  "range": { "today": "Heute", "last7": "Letzte 7 Tage", "last30": "Letzte 30 Tage", "custom": "Benutzerdefiniert", "start": "Startdatum", "end": "Enddatum", "apply": "Übernehmen", "cancel": "Abbrechen", "invalid": "Das Enddatum darf nicht vor dem Startdatum liegen", "lastDays_one": "{{count}} vergangener Tag", "lastDays_other": "Letzte {{count}} Tage", "label": "Zeitraum: {{range}}" },
+  "range": { "today": "Heute", "last7": "Letzte 7 Tage", "last30": "Letzte 30 Tage", "custom": "Benutzerdefiniert", "start": "Startdatum", "end": "Enddatum", "apply": "Übernehmen", "cancel": "Abbrechen", "invalid": "Das Enddatum darf nicht vor dem Startdatum liegen", "lastDays_one": "{{count}} vergangener Tag", "lastDays_other": "Letzte {{count}} Tage", "label": "Zeitraum: {{range}}", "previous": "Vorheriger Zeitraum", "next": "Nächster Zeitraum" },
   "error": {
     "title": "Daten konnten nicht geladen oder gespeichert werden",
     "retry": "Erneut versuchen",

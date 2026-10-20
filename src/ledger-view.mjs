@@ -1,5 +1,5 @@
 import { addDays, daily, dateKey, dateKeyStart, groupSites, midnight, openCredit, overlapMs, splitByHour, summarize } from './model.mjs';
-import { compareBlocks, compareSummary, previousWindow } from './range.mjs';
+import { compareBlocks, compareSummary, previousWindow, timelineDay } from './range.mjs';
 import { focusSummary } from './site-filter.mjs';
 import { siteOf } from './site.mjs';
 
@@ -42,6 +42,7 @@ export function daySummary({ domains, days, segment = null, date, siteMerge = 'p
 
 export function viewFromSnapshot(data, { start, end, today, search = '', site = '', siteMerge = 'prefix', day = '' }) {
   const keyOf = keyFor(siteMerge);
+  const chartDay = timelineDay({ start, end }, today);
   const visits = data.visits.filter(visit => visit.at >= start && visit.at < end && matches(visit.domain, search, site, keyOf)).sort((a, b) => b.at - a.at);
   const trendData = site ? {
     visits: data.visits.filter(visit => keyOf(visit.domain) === site),
@@ -53,9 +54,9 @@ export function viewFromSnapshot(data, { start, end, today, search = '', site = 
     stats: summarize(data, start, end, keyOf),
     todayStats: summarize(data, today, addDays(today, 1), keyOf),
     days: daily(trendData, start, end).map(({ at, ms }) => ({ at, ms, recorded: at >= midnight(data.since) })),
-    hourRows: data.spans.flatMap(span => hourPieces(Math.max(span.start, start), Math.min(span.end, end))),
-    // Timeline sessions stay on the local day of `today`, including when the query range is earlier.
-    spans: data.spans.filter(span => span.end > today && span.start < addDays(today, 1)).map(span => ({ ...span, site: keyOf(span.domain) })),
+    hourRows: data.spans.flatMap(span => hourPieces(Math.max(span.start, start), Math.min(span.end, end)).map(piece => ({ ...piece, site: keyOf(span.domain) }))),
+    // A single day shows that day's sessions. A longer range keeps today's timeline.
+    spans: data.spans.filter(span => span.end > chartDay && span.start < addDays(chartDay, 1)).map(span => ({ ...span, site: keyOf(span.domain) })),
     visits: visits.slice(0, VISIT_LIST_LIMIT).map(visit => ({ domain: visit.domain, site: keyOf(visit.domain), at: visit.at })),
     visitCount: visits.length,
     hosts: [...new Set([...data.visits.map(visit => visit.domain), ...data.spans.map(span => span.domain)])],
@@ -73,7 +74,9 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
   const perDay = new Map();
   const includeInTrend = domain => !site || keyOf(domain) === site;
   let visitCount = 0;
-  // Day rows may include today even when the query range is earlier, so the timeline total stays on today.
+  // Day rows may include today even when the query range is earlier. `todayStats` stays on today.
+  // A single-day chart reads that range's `stats` instead.
+  const chartDay = timelineDay({ start, end }, today);
   for (const row of days) {
     const domain = host.get(row.domainId);
     if (!domain) continue;
@@ -88,9 +91,13 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
   const segment = enabled ? openCredit(cursor, lastEnd, now) : null;
   const from = segment ? Math.max(segment.start, start) : 0;
   const to = segment ? Math.min(segment.end, end) : 0;
-  const hourRows = hours.map(row => ({ date: row.date, hour: row.hour, ms: row.ms }));
+  const hourRows = [];
+  for (const row of hours) {
+    const domain = host.get(row.domainId);
+    hourRows.push({ date: row.date, hour: row.hour, ms: row.ms, site: domain ? keyOf(domain) : '' });
+  }
   if (segment && to > from) {
-    hourRows.push(...hourPieces(from, to));
+    hourRows.push(...hourPieces(from, to).map(piece => ({ ...piece, site: keyOf(segment.domain) })));
     entries.push({ domain: segment.domain, ms: to - from, visits: 0 });
     for (let at = midnight(from); at < to; at = addDays(at, 1)) {
       const piece = overlapMs(segment, Math.max(from, at), Math.min(to, addDays(at, 1)));
@@ -109,13 +116,14 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
     if (!domain || !matches(domain, search, site, keyOf)) continue;
     listed.push({ domain, site: keyOf(domain), at: visit.at });
   }
+  const chartEnd = addDays(chartDay, 1);
   const listedSpans = [];
   for (const span of spans) {
     const domain = host.get(span.domainId);
-    if (!domain) continue;
+    if (!domain || span.end <= chartDay || span.start >= chartEnd) continue;
     listedSpans.push({ domain, site: keyOf(domain), start: span.start, end: span.end });
   }
-  if (segment && segment.end > today && segment.start < addDays(today, 1)) {
+  if (segment && segment.end > chartDay && segment.start < addDays(chartDay, 1)) {
     listedSpans.push({ domain: segment.domain, site: keyOf(segment.domain), start: segment.start, end: segment.end });
   }
   return {
@@ -135,6 +143,17 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
 }
 
 const inRange = (date, start, end) => date >= dateKey(start) && date <= dateKey(addDays(end, -1));
+
+// 24 hour buckets for one local date. `site` keeps the merged ranking key; an empty site sums every row.
+export function dayHourTotals(rows, date, site = '') {
+  const totals = Array.from({ length: 24 }, (_, hour) => ({ hour, ms: 0 }));
+  for (const row of rows ?? []) {
+    if (!row || row.date !== date || !Number.isInteger(row.hour) || row.hour < 0 || row.hour > 23) continue;
+    if (site && row.site !== site) continue;
+    totals[row.hour].ms += row.ms || 0;
+  }
+  return totals;
+}
 
 // Daily bars and 0–23 totals for one merged site. Missing days stay in the list as 0.
 // Days before `since` are marked unrecorded. Open credit uses the same rule as viewFromLedger, so the two sums match that site's header.

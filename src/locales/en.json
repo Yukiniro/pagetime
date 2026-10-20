@@ -9,7 +9,7 @@
     "records": { "title": "Visit history" },
     "settings": { "title": "Settings" }
   },
-  "range": { "today": "Today", "last7": "Last 7 days", "last30": "Last 30 days", "custom": "Custom", "start": "Start date", "end": "End date", "apply": "Apply", "cancel": "Cancel", "invalid": "The end date must be on or after the start date", "lastDays_one": "Last {{count}} day", "lastDays_other": "Last {{count}} days", "label": "Date range: {{range}}" },
+  "range": { "today": "Today", "last7": "Last 7 days", "last30": "Last 30 days", "custom": "Custom", "start": "Start date", "end": "End date", "apply": "Apply", "cancel": "Cancel", "invalid": "The end date must be on or after the start date", "lastDays_one": "Last {{count}} day", "lastDays_other": "Last {{count}} days", "label": "Date range: {{range}}", "previous": "Previous period", "next": "Next period" },
   "error": {
     "title": "Couldn't load or save data",
     "retry": "Retry",
