@@ -12,6 +12,7 @@ A single day past detail retention draws 24 hour bars in that timeline slot. The
 - Disabled next while the range ends today; disabled previous at the `since` day.
 - Arrow keys do nothing while focus is in a field, or while a drawer, dialog, or menu is open. Arrow keys in the custom date inputs do not turn the page.
 - A custom single day shows one date on the trigger, not a `start–end` span.
+- Narrow screens: at 320px and 375px wide the page has no horizontal scroll with `Last 30 days`, in every language. Below 480px the trigger shows the label and the date span on two lines and hides the calendar icon; the arrow buttons keep their size and labels.
 - Site filter (#37) stays selected across a page. Multi-day ranges still default to the trend.
 
 ## How to get to it (user POV)
@@ -30,6 +31,7 @@ Preview origin is the URL `launch` printed (default `http://127.0.0.1:4173/`), o
 6. Open Settings. `Previous period` and `Next period` are absent.
 7. Return to Overview and reload. The trigger is `Date range: Today`. `localStorage` has no range key.
 8. When status is `ready`: click `Previous period`. The trigger's accessible name no longer starts with `Date range: Today`, the selected tab is `Today's timeline`, and the caption date is not today's date. The KPI active time matches the caption's `Active` duration. Click the trend tab and assert it is `Last 7 days`. Open the date menu, choose `Last 7 days`, and assert the selected tab is not `Today's timeline`. Page back once with ArrowLeft while focus is on `document.body` and assert the trigger changed and the ranking filter chip, if one was active, is still there.
+9. Narrow check: set the viewport to `320×700`, then `375×700`. Choose `Last 30 days` and assert `document.documentElement.scrollWidth <= window.innerWidth` and that `Previous period`, the trigger and `Next period` all sit inside `0..innerWidth`. Repeat with `pagetime-language` set to `de` and `ru` (the longest labels). Screenshot the top of the page. The extension journey `the date control fits a 320px and a 375px page` in `tests/e2e/timing.spec.mjs` also clicks the arrows at those widths.
 
 ## Gotchas
 
