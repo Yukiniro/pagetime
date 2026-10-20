@@ -4,7 +4,7 @@
 
 `storage`、`tabs`、`webNavigation`、`idle`、`alarms`
 
-没有 `host_permissions`（没有 host permission）。没有 `content_scripts`（没有 content script）。没有 `optional_permissions`。`incognito` 是 `not_allowed`。扩展入口只有 `entrypoints/background.ts` 和 `entrypoints/dashboard/`。英文版见 [permissions.md](permissions.md)。
+没有 `host_permissions`（没有 host permission）。没有 `content_scripts`（没有 content script）。没有 `optional_permissions`。`incognito` 是 `not_allowed`。扩展入口只有 `entrypoints/background.ts`、`entrypoints/dashboard/` 和 `entrypoints/popup/`。工具栏 popup 用已有的 `tabs` 权限读取当前标签的主机名，不新增权限，不注入 content script，也不保存网址。英文版见 [permissions.md](permissions.md)。
 
 ## 安装时浏览器怎么说
 

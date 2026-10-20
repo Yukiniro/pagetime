@@ -17,7 +17,7 @@ import { dateKey, dateKeyStart, midnight } from './model.mjs';
 import { activeRange, defaultChart } from './range.mjs';
 import { RangeControl } from './RangeControl.jsx';
 import { rangeChip, trendLabel as trendTitle } from './range-label.mjs';
-import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, MERGE_MODES, RECORD_MODES, THEME_MODES, isAllowed, isIgnored, normalizeHost } from './settings.mjs';
+import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, MERGE_MODES, RECORD_MODES, THEME_MODES, isAllowed, isIgnored, normalizeHost, validateSettings } from './settings.mjs';
 import { hostsToDelete } from './site.mjs';
 import { IgnoredSites } from './IgnoredSites.jsx';
 import { ExportData } from './ExportData.jsx';
@@ -62,6 +62,20 @@ export function App() {
     finally { setBusy(false); }
   }
   useEffect(() => { act(); }, []);
+  useEffect(() => {
+    if (!isExtension) return undefined;
+    let stop = () => {};
+    let live = true;
+    import('wxt/browser').then(({ browser }) => {
+      if (!live) return;
+      const onChange = (changes, area) => {
+        if (area === 'local' && changes.settings) setSettings(validateSettings(changes.settings.newValue));
+      };
+      browser.storage.onChanged.addListener(onChange);
+      stop = () => browser.storage.onChanged.removeListener(onChange);
+    }).catch(loadError => console.error('PageTime could not watch settings', loadError));
+    return () => { live = false; stop(); };
+  }, []);
   const shown = ready && view;
   const enabled = view?.enabled ?? true;
   const goRecords = (domain = '') => { setSite(domain); setSearch(domain); setPage('records'); };

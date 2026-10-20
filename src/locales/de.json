@@ -29,6 +29,18 @@
     "todaySite": "Heute {{duration}} · {{domain}} {{siteDuration}}",
     "paused": "Aufzeichnung pausiert"
   },
+  "popup": {
+    "totalOnly": "Heute insgesamt",
+    "total": "Heute insgesamt {{duration}}",
+    "siteToday": "Heute {{duration}}",
+    "ignore": "Diese Website nicht aufzeichnen",
+    "unignore": "Diese Website wieder aufzeichnen",
+    "allow": "Diese Website aufzeichnen",
+    "unallow": "Diese Website nicht mehr aufzeichnen",
+    "pause": "Aufzeichnung pausieren",
+    "resume": "Aufzeichnung fortsetzen",
+    "open": "Dashboard öffnen"
+  },
   "summary": {
     "sites_one": "<b>{{count}}</b> Website",
     "sites_other": "<b>{{count}}</b> Websites"

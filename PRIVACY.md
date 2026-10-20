@@ -67,7 +67,7 @@ The detail tables have no count cap. The public timing rules are the README sect
 
 ## No network, telemetry, or account
 
-The manifest permissions are `storage`, `tabs`, `webNavigation`, `idle`, and `alarms`. Configurable idle time and audio counting add no new permission. There is no host permission and no content script. `incognito` is `not_allowed`, so incognito windows are not recorded. The extension declares no telemetry, analytics, or account API. The dashboard may send only `snapshot`, `toggle`, `clear`, `deleteSite`, `deleteDay`, and `settings`, and the background accepts those messages only from this extension's own `dashboard.html`. Deleting records adds no permission.
+The manifest permissions are `storage`, `tabs`, `webNavigation`, `idle`, and `alarms`. Configurable idle time and audio counting add no new permission. There is no host permission and no content script. `incognito` is `not_allowed`, so incognito windows are not recorded. The extension declares no telemetry, analytics, or account API. The dashboard may send only `snapshot`, `toggle`, `clear`, `deleteSite`, `deleteDay`, and `settings`. The toolbar popup may send only `snapshot`, `toggle`, and `settings`. The background accepts those messages only from this extension's own `dashboard.html` and `popup.html`. The popup cannot clear or delete records. Deleting records adds no permission.
 
 ## How to delete it
 

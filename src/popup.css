@@ -1,0 +1,20 @@
+html, body, #root { width: 320px; max-width: 320px; }
+body { overflow: hidden; background: var(--background); }
+.popup { display: flex; flex-direction: column; gap: 10px; width: 320px; padding: 14px 14px 10px; background: var(--background); color: var(--foreground); }
+.popup-status { display: flex; align-items: center; gap: 8px; color: var(--ink); font-size: 13px; line-height: 1.3; }
+.popup-status strong { font-weight: 650; }
+.popup-host { overflow: hidden; color: var(--ink-mid); font-size: 14px; font-weight: 650; letter-spacing: 0; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
+.popup-figure { color: var(--ink-strong); font-size: 32px; font-weight: 750; letter-spacing: -0.6px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.popup[data-paused="true"] .popup-figure,
+.popup[data-paused="true"] .popup-total { color: var(--paused); }
+.popup-total { color: var(--ink-soft); font-size: 13px; line-height: 1.4; }
+.popup-actions { display: flex; flex-direction: column; gap: 8px; }
+.popup-actions [data-slot="button"] { width: 100%; height: auto; min-height: 36px; justify-content: center; white-space: normal; text-align: center; }
+.popup-badge { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--ink); font-size: 14px; font-weight: 650; }
+.popup-badge span { min-width: 0; }
+.popup-open { align-self: flex-start; height: 32px; padding-left: 0; }
+.popup-skeleton { min-height: 248px; }
+.popup-skel-status { height: 14px; width: 62%; }
+.popup-skel-figure { height: 36px; width: 48%; }
+.popup-skel-line { height: 14px; width: 72%; }
+.popup-skel-button { height: 36px; width: 100%; }

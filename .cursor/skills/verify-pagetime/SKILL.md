@@ -1,6 +1,6 @@
 ---
 name: verify-pagetime
-description: "Drive PageTime the way a user does and keep proof. Use when verifying the WXT dashboard or the Vite preview: the one-page ledger and date range, site detail drawer and ranking filter, settings recording scope, the settings docs links, or JSON/CSV export. Launch, doctor, drive, evidence, then cleanup."
+description: "Drive PageTime the way a user does and keep proof. Use when verifying the WXT dashboard or the Vite preview: the one-page ledger and date range, site detail drawer and ranking filter, settings recording scope, the settings docs links, JSON/CSV export, or the toolbar popup. Launch, doctor, drive, evidence, then cleanup."
 ---
 
 # Verify PageTime
@@ -63,6 +63,8 @@ await dashboard.reload();
 ```
 
 A journey that must accrue time also needs the e2e window focus path (`xdotool`, and `openbox` when `xprop -root _NET_ACTIVE_WINDOW` is missing). Run that under `xvfb-run -a` when `DISPLAY` is unset. Dashboard clicks that do not accrue time do not need `xdotool`.
+
+The toolbar popup is `popup.html` on that same origin. Open it from the service worker with `chrome.action.openPopup()`, then use the page whose URL ends in `popup.html`. That leaves the browser tab underneath active, which is the tab the popup reads. Do not `goto` `popup.html` in the active tab: that tab would become the current page, and the site row would stay hidden.
 
 Playwright's Chromium is the browser `npx playwright install chromium` installs (the `e2e` CI job). For the preview only, if that executable is missing and `google-chrome` is on `PATH`, set `PAGETIME_CHROME_CHANNEL=chrome` for Doctor and for the drive. Extension loading stays on Playwright's Chromium.
 
