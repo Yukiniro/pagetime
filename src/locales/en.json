@@ -38,7 +38,7 @@
     "sites_other": "<b>{{count}}</b> sites"
   },
   "kpi": { "label": "{{range}} totals", "sites": "Sites" },
-  "compare": {"yesterday": "vs yesterday", "previous7": "vs previous 7 days", "previous30": "vs previous 30 days", "previousPeriod": "vs previous period", "asOf": "{{period}}, as of {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "No change", "underMinute": "{{sign}}under 1 min", "basis": "Previous period: {{range}}", "basisAsOf": "Previous period: {{range}}. Both periods are counted up to {{time}} on their last day.", "reason": {"since": "Recording started on {{date}}, after this previous period began.", "retention": "Visit records for the previous period have expired, so this can't be compared.", "notStarted": "No completed hour to compare yet."}},
+  "compare": {"yesterday": "vs yesterday", "previous7": "vs previous 7 days", "previous30": "vs previous 30 days", "previousPeriod": "vs previous period", "asOf": "{{period}}, as of {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "No change", "underMinute": "{{sign}}under 1 min", "basis": "Previous period: {{range}}", "basisAsOf": "Previous period: {{range}}. Both periods are counted up to {{time}} on their last day.", "unavailable": "Not enough recorded data to compare."},
   "filter": {
     "active": "Filtered to {{domain}}",
     "clear": "Clear filter",
@@ -102,8 +102,6 @@
     "language": { "title": "Language", "description": "Choose the display language for PageTime.", "label": "Display language: {{language}}" },
     "theme": { "title": "Appearance", "description": "Use light, dark, or follow the system. This choice stays on this device.", "label": "Appearance: {{mode}}", "system": "Follow system", "light": "Light", "dark": "Dark" },
     "recording": { "title": "Browsing records", "description": "Counts page visits and only tracks time on the active tab of the focused window." },
-    "privacy": { "title": "Local and private", "description": "Stores only site domains, times, and visit counts — never page content, titles, or full URLs.<br/>Ignores incognito windows and internal browser pages, and never sends data to a server.<br/>You can delete one site or one day. That removes those records from this device." },
-    "method": { "title": "How it's measured", "description": "Each page load or reload counts as one visit; switching tabs or in-app navigation in single-page apps doesn't add visits.<br/>{{idle}} seconds without system input counts as idle; progress is saved every {{checkpoint}} seconds.<br/>Keeps visits and active sessions for {{days}} days; daily and hourly totals stay until you clear them or delete that site or day.", "audible": "A tab playing unmuted sound isn't counted as idle." },
     "audible": { "title": "Keep counting while audio plays", "description": "If the active tab in the focused window is playing unmuted sound, idle time still counts. Timing stops as soon as the sound stops or the tab is muted." },
     "idle": { "title": "Idle threshold", "description": "How long without keyboard or mouse input before this browser counts as idle.", "label": "Idle threshold: {{duration}}", "option_one": "{{count}} minute", "option_other": "{{count}} minutes" },
     "siteMerge": {
@@ -118,7 +116,7 @@
     "ignored": { "title": "Ignored sites", "description": "These hosts and their subdomains are not timed and visits are not counted, the same as an internal browser page. example.com also matches a.example.com; mail.example.com does not match example.com. Existing records stay in the ledger and are not hidden.", "input": "Host to ignore", "placeholder": "example.com", "add": "Add", "remove": "Remove {{domain}}", "emptyTitle": "No ignored sites", "emptyDescription": "Add a host to stop recording it from now on.", "error": "Enter a host such as example.com. The protocol, path, and port are removed. Spaces are not allowed, and a name without a dot is only accepted for localhost.", "limit": "You can ignore up to {{count}} hosts." },
     "allowed": { "title": "Allowed sites", "description": "Only these hosts and their subdomains are timed and counted as visits. example.com also matches a.example.com; mail.example.com does not match example.com. Existing records stay in the ledger and are not hidden.", "input": "Host to allow", "placeholder": "example.com", "add": "Add", "remove": "Remove {{domain}}", "emptyTitle": "No allowed sites", "emptyDescription": "Add a host to record it from now on. Until you do, nothing is recorded.", "limit": "You can allow up to {{count}} hosts.", "emptyWarningTitle": "An empty whitelist records nothing", "emptyWarning": "No hosts are allowed, so PageTime will not record time or visits for any site. An empty list does not mean record every site. Add at least one host before anything is recorded. Existing records stay and are not hidden.", "error": "Enter a host such as example.com. The protocol, path, and port are removed. Spaces are not allowed, and a name without a dot is only accepted for localhost." },
     "badge": { "title": "Toolbar badge", "description": "Show today's active browsing time on the toolbar icon." },
-    "localData": {"title": "Local data", "description": "What the ledger on this device holds right now. Read only; it updates as soon as PageTime records, deletes, or clears.", "location": "Stored on this device in IndexedDB (<code>{{name}}</code>) and never uploaded.", "since": "Recording since", "firstDay": "Earliest daily total", "detail": "Visit and session detail", "detailValue_one": "Kept for {{count}} day, from {{date}}", "detailValue_other": "Kept for {{count}} days, from {{date}}", "detailNote": "Daily and hourly totals are kept long term.", "firstDetail": "Earliest detail still stored: {{date}}", "sites": "Sites", "sitesValue_one": "{{n}} hostname", "sitesValue_other": "{{n}} hostnames", "rows": "Rows per table", "table": {"days": "Daily totals", "hours": "Hourly totals", "spans": "Active sessions", "visits": "Visits"}, "usage": "Space used (estimate)", "about": "About {{size}}", "usageNote": "The browser's estimate for all of this extension's site storage, such as IndexedDB, not only the ledger. chrome.storage is not included.", "legacy": "Older version data", "legacyNote": "The <code>data</code> key an older version left in chrome.storage.local is still there. PageTime only shows its size; it does not read, change, or delete it.", "none": "No records yet"},
+    "docs": { "timing": "Timing rules and privacy notes", "privacy": "Privacy policy" },
     "export": { "title": "Export data", "description": "Download this device's ledger as a file. JSON holds every table plus your recording state and settings. CSV has one row per day and hostname for spreadsheets.", "note": "The file is saved only on your computer. It contains hostnames and durations, never URLs or titles.", "json": "Export JSON", "csv": "Export CSV", "exporting": "Exporting…", "done": "Saved {{file}}.", "errorTitle": "Export failed", "error": "Nothing was downloaded. Try again." },
     "deleteDay": { "title": "Delete one day's records", "description": "Removes one day's active time, visits, and sessions from this device. This can't be undone.", "label": "Date to delete", "button": "Delete this day", "done": "Deleted records for {{date}}.", "confirmTitle": "Delete records for {{date}}?", "confirmDescription": "This removes that day's active time, visits, and sessions from this device. It can't be undone.", "confirm": "Delete this day", "deleting": "Deleting…" },
     "clear": { "title": "Clear all records", "description": "Deletes the records PageTime has saved on this device. This can't be undone.", "button": "Clear data" }
@@ -175,55 +173,5 @@
     "minutes_one": "{{count}} min",
     "minutes_other": "{{count}} min",
     "hours": "{{hours}} hr {{minutes}} min"
-  },
-  "howItWorks": {
-    "open": "How time is counted",
-    "infoButton": "How is this time counted?",
-    "title": "How PageTime counts time",
-    "intro": "PageTime only counts time you actually spend looking at a page. The rules are below.",
-    "counted": {
-      "title": "What counts",
-      "focus": "The selected tab in a focused foreground window",
-      "web": "Only http and https pages, totaled by domain",
-      "navigation": "When the same tab navigates to another site, time on the new site starts at that navigation"
-    },
-    "notCounted": {
-      "title": "What doesn't count",
-      "idle_one": "{{count}} second in a row without keyboard or mouse input (including watching video or listening to audio)",
-      "idle_other": "{{count}} seconds in a row without keyboard or mouse input (including watching video or listening to audio)",
-      "locked": "While the screen is locked, the computer is asleep, or the browser is closed",
-      "unfocused": "A minimized window, another app in front, or focused DevTools",
-      "internal": "Browser internal pages, extension pages, and local files",
-      "incognito": "Incognito windows",
-      "paused": "While recording is paused",
-      "gap_one": "When checks are more than {{count}} second apart, at most {{count}} second of that gap is counted (for example, while the system is suspended)",
-      "gap_other": "When checks are more than {{count}} seconds apart, at most {{count}} seconds of that gap are counted (for example, while the system is suspended)",
-      "ignored": "Blacklist mode: sites you chose to ignore ({{count}}), and their subdomains, are not timed or counted as visits. An entry of example.com matches that host and every subdomain; an entry of mail.example.com does not match example.com. Existing records are not deleted or hidden.",
-      "whitelist": "Whitelist mode: only allowed sites ({{count}}) and their subdomains are timed and counted as visits. An empty list records nothing. An entry of example.com matches that host and every subdomain; an entry of mail.example.com does not match example.com. Existing records are not deleted or hidden."
-    },
-    "visits": {
-      "title": "How visits are counted",
-      "description": "A page load or reload counts as 1 visit. Switching tabs and in-app navigation in single-page apps do not."
-    },
-    "privacy": {
-      "title": "Privacy and storage",
-      "fields": "Only the domain, times, and visit counts are saved — never the title, page text, or full URL.",
-      "local": "Data stays in this browser on this device and is never uploaded to a server.",
-      "delete": "You can delete one site or one day. Those records are removed from this device's database and can't be undone.",
-      "retention_one": "Keeps visit records and time spans for the last {{count}} day. Daily and hourly totals stay until you clear them or delete that site or day.",
-      "retention_other": "Keeps visit records and time spans for the last {{count}} days. Daily and hourly totals stay until you clear them or delete that site or day.",
-      "save_one": "Saves every {{count}} second. If the browser closes unexpectedly, at most that recent interval can be lost.",
-      "save_other": "Saves every {{count}} seconds. If the browser closes unexpectedly, at most that recent interval can be lost."
-    },
-    "limits": { "title": "Known limits", "audible": "The browser can take 2–3 seconds to notice that sound started or stopped.", "threshold": "With a 10-minute idle threshold, up to 10 extra minutes can be counted after you leave." },
-    "compare": {"title": "Comparing with the previous period", "description": "Each figure is compared with the period of equal length right before the range. While the range includes today, both periods are counted only up to the current whole hour. When the earlier period isn't fully recorded, a dash is shown instead of a number."},
-    "merge": {
-      "title": "How sites are grouped",
-      "storage": "Records keep the original hostname. Grouping only changes what the overview shows; it never rewrites saved rows, and you can turn it off.",
-      "none": "Don't group: each hostname is counted on its own.",
-      "prefix": "Common prefixes: a leading www., m., or mobile. is removed. www.youtube.com and m.youtube.com become youtube.com. Other names, such as gist.github.com, stay separate.",
-      "registrable": "Registrable domain: grouped with the ICANN section of the Public Suffix List. a.b.example.co.uk becomes example.co.uk. IP addresses, localhost, and hosts with no registrable domain stay unchanged. Private suffixes such as github.io are not treated as public suffixes, so user.github.io is grouped under github.io."
-    },
-    "close": "Close"
   }
 }

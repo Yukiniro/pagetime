@@ -340,11 +340,11 @@ test('site daily bars and the 24 hour bars equal the detail header for merged ho
 });
 
 test('timing notes and the readme describe the three groupings and raw storage', () => {
-  const en = JSON.parse(readFileSync(new URL('../src/locales/en.json', import.meta.url), 'utf8'));
-  assert.match(en.howItWorks.merge.storage, /original hostname/);
-  assert.match(en.howItWorks.merge.prefix, /www/);
-  assert.match(en.howItWorks.merge.registrable, /example\.co\.uk/);
-  assert.match(en.howItWorks.merge.registrable, /github\.io/);
+  const timing = readFileSync(new URL('../docs/timing.md', import.meta.url), 'utf8');
+  assert.match(timing, /original hostname/);
+  assert.match(timing, /www\./);
+  assert.match(timing, /example\.co\.uk/);
+  assert.match(timing, /github\.io/);
   const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
   const changelog = readFileSync(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
   for (const text of [readme, changelog]) {

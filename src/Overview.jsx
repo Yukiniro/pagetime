@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, CaretDown, CaretRight, Info } from '@phosphor-icons/react';
+import { ArrowRight, CaretDown, CaretRight } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { EmptyState, FilterEmpty } from './EmptyState.jsx';
@@ -43,7 +43,7 @@ function RankRows({ rows, metric, filterSite, onFilter, onOpen }) {
   </ol>;
 }
 
-export function Overview({ compare, preset, todayStats, stats, trendDays = [], spans, hourRows, since, start, end, today, now, rangeLabel, chartMode = 'timeline', trendLabel, filterSite = '', onFilter, openSite, openHow, isDark = false }) {
+export function Overview({ compare, preset, todayStats, stats, trendDays = [], spans, hourRows, since, start, end, today, now, rangeLabel, chartMode = 'timeline', trendLabel, filterSite = '', onFilter, openSite, isDark = false }) {
   const { t } = useTranslation();
   const [chart, setChart] = useState(chartMode);
   const [metric, setMetric] = useState('visits');
@@ -70,19 +70,19 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
     </div>}
     <section className="kpi ledger-card" aria-label={t('kpi.label', { range: rangeLabel })}>
       <div className="kpi-item primary">
-        <div className="kpi-label"><span>{t('ranking.activeTime')}</span><span className="kpi-today">{rangeLabel}</span><Button variant="ghost" size="icon-sm" aria-label={t('howItWorks.infoButton')} onClick={openHow}><Info /></Button></div>
+        <div className="kpi-label"><span>{t('ranking.activeTime')}</span><span className="kpi-today">{rangeLabel}</span></div>
         <div className="kpi-value">{duration(kpi.ms)}</div>
-        <KpiCompare metric="ms" compare={compare} preset={preset} since={since} />
+        <KpiCompare metric="ms" compare={compare} preset={preset} />
       </div>
       <div className="kpi-item">
         <div className="kpi-label">{t('ranking.visits')}</div>
         <div className="kpi-value">{kpi.visits}</div>
-        <KpiCompare metric="visits" compare={compare} preset={preset} since={since} />
+        <KpiCompare metric="visits" compare={compare} preset={preset} />
       </div>
       <div className="kpi-item">
         <div className="kpi-label">{t('kpi.sites')}</div>
         <div className="kpi-value">{kpi.rows.length}</div>
-        <KpiCompare metric="sites" compare={compare} preset={preset} since={since} />
+        <KpiCompare metric="sites" compare={compare} preset={preset} />
       </div>
     </section>
     <section className="chart-card ledger-card" aria-label={t('chart.label')}>

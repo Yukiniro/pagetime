@@ -1,21 +1,9 @@
-import { validateSettings } from './settings.mjs';
-
 export const HOUR = 3_600_000;
 export const DAY = 86_400_000;
 export const GAP_LIMIT_MS = 90_000;
 export const IDLE_SECONDS = 60;
 export const CHECKPOINT_SECONDS = 30;
 export const DETAIL_DAYS = 31;
-export function timingCopy(settings) {
-  const valid = validateSettings(settings);
-  return {
-    idle: valid.idleSeconds,
-    checkpoint: CHECKPOINT_SECONDS,
-    gap: GAP_LIMIT_MS / 1000,
-    days: DETAIL_DAYS,
-    countAudible: valid.countAudible,
-  };
-}
 export const blankData = () => ({ visits: [], spans: [], enabled: true, since: Date.now() });
 
 export function domainOf(url) {

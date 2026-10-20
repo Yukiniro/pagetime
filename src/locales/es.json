@@ -40,7 +40,7 @@
     "sites_other": "<b>{{count}}</b> sitios"
   },
   "kpi": { "label": "Totales de {{range}}", "sites": "Sitios" },
-  "compare": {"yesterday": "frente a ayer", "previous7": "frente a los 7 días anteriores", "previous30": "frente a los 30 días anteriores", "previousPeriod": "frente al periodo anterior", "asOf": "{{period}}, hasta las {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "Sin cambios", "underMinute": "{{sign}}menos de 1 min", "basis": "Periodo anterior: {{range}}", "basisAsOf": "Periodo anterior: {{range}}. Ambos periodos se cuentan solo hasta las {{time}} de su último día.", "reason": {"since": "El registro empezó el {{date}}, después del inicio del periodo anterior.", "retention": "Las visitas del periodo anterior ya caducaron, así que no se pueden comparar.", "notStarted": "Aún no hay una hora completa para comparar."}},
+  "compare": {"yesterday": "frente a ayer", "previous7": "frente a los 7 días anteriores", "previous30": "frente a los 30 días anteriores", "previousPeriod": "frente al periodo anterior", "asOf": "{{period}}, hasta las {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "Sin cambios", "underMinute": "{{sign}}menos de 1 min", "basis": "Periodo anterior: {{range}}", "basisAsOf": "Periodo anterior: {{range}}. Ambos periodos se cuentan solo hasta las {{time}} de su último día.", "unavailable": "No hay suficientes datos registrados para comparar."},
   "filter": {
     "active": "Filtrado: {{domain}}",
     "clear": "Quitar filtro",
@@ -108,8 +108,6 @@
     "language": { "title": "Idioma", "description": "Elige el idioma de la interfaz de PageTime.", "label": "Idioma de la interfaz: {{language}}" },
     "theme": { "title": "Apariencia", "description": "Claro, oscuro o según el sistema. La elección se queda en este dispositivo.", "label": "Apariencia: {{mode}}", "system": "Según el sistema", "light": "Claro", "dark": "Oscuro" },
     "recording": { "title": "Registro de navegación", "description": "Cuenta las visitas a páginas y solo mide el tiempo en la pestaña activa de la ventana enfocada." },
-    "privacy": { "title": "Local y privado", "description": "Solo guarda dominios, horas y número de visitas; nunca el contenido, los títulos ni las URL completas.<br/>Ignora las ventanas de incógnito y las páginas internas del navegador, y nunca envía datos a un servidor.<br/>Puedes eliminar un sitio o un día. Eso quita esos registros de la base de datos de este dispositivo." },
-    "method": { "title": "Cómo se mide", "description": "Cada carga o recarga de página cuenta como una visita; cambiar de pestaña o navegar dentro de una aplicación de una sola página no suma visitas.<br/>{{idle}} segundos sin actividad del sistema se consideran inactividad; el progreso se guarda cada {{checkpoint}} segundos.<br/>Conserva las visitas y sesiones activas durante {{days}} días; los totales diarios y por hora se mantienen hasta que los borres o elimines ese sitio o ese día.", "audible": "Una pestaña que reproduce sonido sin silenciar no cuenta como inactividad." },
     "audible": { "title": "Seguir contando mientras hay audio", "description": "Si la pestaña activa de la ventana enfocada reproduce sonido sin silenciar, el tiempo de inactividad también cuenta. El conteo se detiene en cuanto el sonido para o la pestaña se silencia." },
     "idle": { "title": "Umbral de inactividad", "description": "Cuánto tiempo sin teclado ni ratón debe pasar para considerar inactivo este navegador.", "label": "Umbral de inactividad: {{duration}}", "option_one": "{{count}} minuto", "option_many": "{{count}} minutos", "option_other": "{{count}} minutos" },
     "siteMerge": {
@@ -124,7 +122,7 @@
     "ignored": { "title": "Sitios ignorados", "description": "Estos hosts y sus subdominios no se miden y las visitas no se cuentan, igual que una página interna del navegador. example.com también coincide con a.example.com; mail.example.com no coincide con example.com. Los registros existentes siguen en el libro y no se ocultan.", "input": "Host a ignorar", "placeholder": "example.com", "add": "Añadir", "remove": "Quitar {{domain}}", "emptyTitle": "No hay sitios ignorados", "emptyDescription": "Añade un host para dejar de registrarlo a partir de ahora.", "error": "Escribe un host como example.com. Se quitan el protocolo, la ruta y el puerto. No se permiten espacios, y un nombre sin punto solo se acepta para localhost.", "limit": "Puedes ignorar hasta {{count}} hosts." },
     "allowed": { "title": "Sitios permitidos", "description": "Solo estos hosts y sus subdominios se miden y las visitas se cuentan. example.com también coincide con a.example.com; mail.example.com no coincide con example.com. Los registros existentes siguen en el libro y no se ocultan.", "input": "Host a permitir", "placeholder": "example.com", "add": "Añadir", "remove": "Quitar {{domain}}", "emptyTitle": "No hay sitios permitidos", "emptyDescription": "Añade un host para registrarlo a partir de ahora. Mientras la lista esté vacía, no se registra nada.", "limit": "Puedes permitir hasta {{count}} hosts.", "emptyWarningTitle": "Una lista blanca vacía no registra nada", "emptyWarning": "No hay ningún host permitido, así que PageTime no registrará tiempo ni visitas de ningún sitio. Una lista vacía no significa registrar todos los sitios. Añade al menos un host antes de que se registre algo. Los registros existentes siguen y no se ocultan.", "error": "Escribe un host como example.com. Se quitan el protocolo, la ruta y el puerto. No se permiten espacios, y un nombre sin punto solo se acepta para localhost." },
     "badge": { "title": "Insignia de la barra", "description": "Muestra el tiempo de navegación activo de hoy en el icono de la barra." },
-    "localData": {"title": "Datos locales", "description": "Lo que contiene ahora el registro de este dispositivo. Solo lectura; se actualiza en cuanto PageTime registra, elimina o borra.", "location": "Se guarda en este dispositivo en IndexedDB (<code>{{name}}</code>) y nunca se sube.", "since": "Registrando desde", "firstDay": "Primer total diario", "detail": "Detalle de visitas y sesiones", "detailValue_one": "Se conserva {{count}} día, desde el {{date}}", "detailValue_many": "Se conservan {{count}} días, desde el {{date}}", "detailValue_other": "Se conservan {{count}} días, desde el {{date}}", "detailNote": "Los totales diarios y por hora se conservan a largo plazo.", "firstDetail": "Detalle más antiguo que queda: {{date}}", "sites": "Sitios", "sitesValue_one": "{{n}} nombre de host", "sitesValue_many": "{{n}} nombres de host", "sitesValue_other": "{{n}} nombres de host", "rows": "Filas por tabla", "table": {"days": "Totales diarios", "hours": "Totales por hora", "spans": "Sesiones activas", "visits": "Visitas"}, "usage": "Espacio usado (estimado)", "about": "Unos {{size}}", "usageNote": "Estimación del navegador para todo el almacenamiento de sitio de esta extensión, como IndexedDB, no solo el registro. No incluye chrome.storage.", "legacy": "Datos de una versión anterior", "legacyNote": "La clave <code>data</code> que dejó una versión anterior en chrome.storage.local sigue ahí. PageTime solo muestra su tamaño; no la lee, ni la cambia, ni la elimina.", "none": "Aún no hay registros"},
+    "docs": { "timing": "Reglas de medición y privacidad", "privacy": "Política de privacidad" },
     "export": { "title": "Exportar datos", "description": "Descarga el registro de este dispositivo como archivo. JSON incluye todas las tablas, el estado de la grabación y los ajustes. CSV tiene una fila por día y nombre de host para hojas de cálculo.", "note": "El archivo solo se guarda en tu equipo. Contiene nombres de host y duraciones, nunca URL ni títulos.", "json": "Exportar JSON", "csv": "Exportar CSV", "exporting": "Exportando…", "done": "Se guardó {{file}}.", "errorTitle": "No se pudo exportar", "error": "No se descargó nada. Inténtalo de nuevo." },
     "deleteDay": { "title": "Eliminar los registros de un día", "description": "Quita de este dispositivo el tiempo activo, las visitas y las sesiones de un día. No se puede deshacer.", "label": "Fecha que se eliminará", "button": "Eliminar este día", "done": "Se eliminaron los registros del {{date}}.", "confirmTitle": "¿Eliminar los registros del {{date}}?", "confirmDescription": "Se quitarán de este dispositivo el tiempo activo, las visitas y las sesiones de ese día. No se puede deshacer.", "confirm": "Eliminar este día", "deleting": "Eliminando…" },
     "clear": { "title": "Borrar todos los registros", "description": "Elimina los registros que PageTime ha guardado en este dispositivo. No se puede deshacer.", "button": "Borrar datos" }
@@ -183,59 +181,5 @@
     "minutes_many": "{{count}} min",
     "minutes_other": "{{count}} min",
     "hours": "{{hours}} h {{minutes}} min"
-  },
-  "howItWorks": {
-    "open": "Cómo se cuenta el tiempo",
-    "infoButton": "¿Cómo se calcula este tiempo?",
-    "title": "Cómo cuenta el tiempo PageTime",
-    "intro": "PageTime solo cuenta el tiempo que realmente pasas mirando una página. Las reglas están abajo.",
-    "counted": {
-      "title": "Qué cuenta",
-      "focus": "La pestaña seleccionada en una ventana en primer plano y enfocada",
-      "web": "Solo páginas http y https, sumadas por dominio",
-      "navigation": "Si la misma pestaña pasa a otro sitio, el sitio nuevo empieza en el momento del cambio"
-    },
-    "notCounted": {
-      "title": "Qué no cuenta",
-      "idle_one": "{{count}} segundo seguido sin teclado ni ratón (incluso al ver un vídeo o escuchar audio)",
-      "idle_many": "{{count}} segundos seguidos sin teclado ni ratón (incluso al ver un vídeo o escuchar audio)",
-      "idle_other": "{{count}} segundos seguidos sin teclado ni ratón (incluso al ver un vídeo o escuchar audio)",
-      "locked": "Con la pantalla bloqueada, el equipo en suspensión o el navegador cerrado",
-      "unfocused": "Ventana minimizada, otra aplicación delante o las herramientas de desarrollo enfocadas",
-      "internal": "Páginas internas del navegador, páginas de extensiones y archivos locales",
-      "incognito": "Ventanas de incógnito",
-      "paused": "Mientras la grabación está en pausa",
-      "gap_one": "Si entre comprobaciones pasa más de {{count}} segundo, ese intervalo cuenta como máximo {{count}} segundo (por ejemplo, si el sistema está suspendido)",
-      "gap_many": "Si entre comprobaciones pasan más de {{count}} segundos, ese intervalo cuenta como máximo {{count}} segundos (por ejemplo, si el sistema está suspendido)",
-      "gap_other": "Si entre comprobaciones pasan más de {{count}} segundos, ese intervalo cuenta como máximo {{count}} segundos (por ejemplo, si el sistema está suspendido)",
-      "ignored": "Lista negra: los sitios que elegiste ignorar ({{count}}) y sus subdominios no se miden y las visitas no se cuentan. La entrada example.com coincide con ese host y cada subdominio; la entrada mail.example.com no coincide con example.com. Los registros existentes no se eliminan ni se ocultan.",
-      "whitelist": "Lista blanca: solo los sitios permitidos ({{count}}) y sus subdominios se miden y las visitas se cuentan. Una lista vacía no registra nada. La entrada example.com coincide con ese host y cada subdominio; la entrada mail.example.com no coincide con example.com. Los registros existentes no se eliminan ni se ocultan."
-    },
-    "visits": {
-      "title": "Cómo se cuentan las visitas",
-      "description": "Una carga o recarga cuenta como 1 visita. Cambiar de pestaña y la navegación interna de una aplicación de una sola página no cuentan."
-    },
-    "privacy": {
-      "title": "Privacidad y almacenamiento",
-      "fields": "Solo se guardan el dominio, los tiempos y el número de visitas; nunca el título, el texto de la página ni la URL completa.",
-      "local": "Los datos permanecen en el navegador de este dispositivo y no se suben a ningún servidor.",
-      "delete": "Puedes eliminar un sitio o un día. Esos registros se quitan de la base de datos de este dispositivo y no se puede deshacer.",
-      "retention_one": "Se conservan las visitas e intervalos del último {{count}} día. Los totales diarios y por hora se mantienen hasta que los borres o elimines ese sitio o ese día.",
-      "retention_many": "Se conservan las visitas e intervalos de los últimos {{count}} días. Los totales diarios y por hora se mantienen hasta que los borres o elimines ese sitio o ese día.",
-      "retention_other": "Se conservan las visitas e intervalos de los últimos {{count}} días. Los totales diarios y por hora se mantienen hasta que los borres o elimines ese sitio o ese día.",
-      "save_one": "Se guarda cada {{count}} segundo. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente.",
-      "save_many": "Se guarda cada {{count}} segundos. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente.",
-      "save_other": "Se guarda cada {{count}} segundos. Si el navegador se cierra de forma inesperada, como máximo se pierde ese intervalo reciente."
-    },
-    "limits": { "title": "Límites conocidos", "audible": "El navegador puede tardar 2–3 segundos en notar que el sonido empezó o se detuvo.", "threshold": "Con un umbral de inactividad de 10 minutos, se pueden contar hasta 10 minutos de más después de que te vayas." },
-    "compare": {"title": "Comparación con el periodo anterior", "description": "Cada cifra se compara con el periodo de la misma duración justo anterior al rango. Si el rango incluye hoy, ambos periodos se cuentan solo hasta la hora en punto actual. Si el periodo anterior no está registrado por completo, se muestra un guion en lugar de una cifra."},
-    "merge": {
-      "title": "Cómo se agrupan los sitios",
-      "storage": "El registro sigue guardando el hostname original. La agrupación solo cambia la vista, no reescribe los datos guardados y se puede desactivar.",
-      "none": "No agrupar: cada hostname se cuenta por separado.",
-      "prefix": "Prefijos habituales: se quita un www., m. o mobile. inicial. www.youtube.com y m.youtube.com pasan a youtube.com. Otros nombres, como gist.github.com, siguen separados.",
-      "registrable": "Dominio registrable: se agrupa con la sección ICANN de la Public Suffix List. a.b.example.co.uk pasa a example.co.uk. Las direcciones IP, localhost y los hosts sin dominio registrable no cambian. Los sufijos privados como github.io no se tratan como sufijos públicos, así que user.github.io se agrupa en github.io."
-    },
-    "close": "Cerrar"
   }
 }

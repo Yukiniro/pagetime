@@ -38,7 +38,7 @@
     "sites_other": "<b>{{count}}</b> Websites"
   },
   "kpi": { "label": "Summen für {{range}}", "sites": "Websites" },
-  "compare": {"yesterday": "ggü. gestern", "previous7": "ggü. den 7 Tagen davor", "previous30": "ggü. den 30 Tagen davor", "previousPeriod": "ggü. dem Zeitraum davor", "asOf": "{{period}}, Stand {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "Keine Änderung", "underMinute": "{{sign}}unter 1 Min.", "basis": "Vorheriger Zeitraum: {{range}}", "basisAsOf": "Vorheriger Zeitraum: {{range}}. Beide Zeiträume werden am letzten Tag nur bis {{time}} gezählt.", "reason": {"since": "Die Aufzeichnung begann am {{date}}, nach dem Beginn des vorherigen Zeitraums.", "retention": "Die Besuche des vorherigen Zeitraums sind abgelaufen, daher ist kein Vergleich möglich.", "notStarted": "Noch keine volle Stunde zum Vergleichen."}},
+  "compare": {"yesterday": "ggü. gestern", "previous7": "ggü. den 7 Tagen davor", "previous30": "ggü. den 30 Tagen davor", "previousPeriod": "ggü. dem Zeitraum davor", "asOf": "{{period}}, Stand {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "Keine Änderung", "underMinute": "{{sign}}unter 1 Min.", "basis": "Vorheriger Zeitraum: {{range}}", "basisAsOf": "Vorheriger Zeitraum: {{range}}. Beide Zeiträume werden am letzten Tag nur bis {{time}} gezählt.", "unavailable": "Für einen Vergleich sind nicht genug Daten aufgezeichnet."},
   "filter": {
     "active": "Gefiltert: {{domain}}",
     "clear": "Filter aufheben",
@@ -102,8 +102,6 @@
     "language": { "title": "Sprache", "description": "Wähle die Anzeigesprache von PageTime.", "label": "Anzeigesprache: {{language}}" },
     "theme": { "title": "Darstellung", "description": "Hell, dunkel oder wie das System. Die Auswahl bleibt auf diesem Gerät.", "label": "Darstellung: {{mode}}", "system": "System", "light": "Hell", "dark": "Dunkel" },
     "recording": { "title": "Aufzeichnung", "description": "Zählt Seitenbesuche und misst nur die Zeit im aktiven Tab des fokussierten Fensters." },
-    "privacy": { "title": "Lokal und privat", "description": "Speichert nur Domains, Zeiten und Besuchszahlen – niemals Seiteninhalte, Titel oder vollständige URLs.<br/>Inkognito-Fenster und interne Browserseiten werden ignoriert, und es werden keine Daten an einen Server gesendet.<br/>Du kannst eine Website oder einen Tag löschen. Damit werden diese Einträge aus der Datenbank auf diesem Gerät entfernt." },
-    "method": { "title": "So wird gemessen", "description": "Jedes Laden oder Neuladen einer Seite zählt als ein Besuch; Tab-Wechsel und Navigation innerhalb von Single-Page-Apps zählen nicht.<br/>{{idle}} Sekunden ohne Systemeingabe gelten als Leerlauf; der Fortschritt wird alle {{checkpoint}} Sekunden gespeichert.<br/>Besuche und aktive Sitzungen werden {{days}} Tage aufbewahrt; Tages- und Stundensummen bleiben, bis du sie löschst oder diese Website oder diesen Tag entfernst.", "audible": "Ein Tab mit nicht stummgeschaltetem Ton zählt nicht als Leerlauf." },
     "audible": { "title": "Bei Audiowiedergabe weiterzählen", "description": "Wenn der aktive Tab im fokussierten Fenster nicht stummgeschalteten Ton abspielt, zählt auch Leerlaufzeit. Die Zählung stoppt, sobald der Ton endet oder der Tab stummgeschaltet wird." },
     "idle": { "title": "Leerlaufschwelle", "description": "Wie lange ohne Tastatur- oder Mauseingabe dieser Browser als im Leerlauf gilt.", "label": "Leerlaufschwelle: {{duration}}", "option_one": "{{count}} Minute", "option_other": "{{count}} Minuten" },
     "siteMerge": {
@@ -118,7 +116,7 @@
     "ignored": { "title": "Ignorierte Websites", "description": "Diese Hosts und ihre Subdomains werden nicht gemessen, und Besuche zählen nicht, wie bei einer internen Browserseite. example.com gilt auch für a.example.com; mail.example.com gilt nicht für example.com. Vorhandene Einträge bleiben erhalten und werden nicht ausgeblendet.", "input": "Zu ignorierender Host", "placeholder": "example.com", "add": "Hinzufügen", "remove": "{{domain}} entfernen", "emptyTitle": "Keine ignorierten Websites", "emptyDescription": "Füge einen Host hinzu, um ihn ab jetzt nicht mehr aufzuzeichnen.", "error": "Gib einen Host wie example.com ein. Protokoll, Pfad und Port werden entfernt. Leerzeichen sind nicht erlaubt, und ein Name ohne Punkt wird nur für localhost akzeptiert.", "limit": "Du kannst höchstens {{count}} Hosts ignorieren." },
     "allowed": { "title": "Erlaubte Websites", "description": "Nur diese Hosts und ihre Subdomains werden gemessen, und Besuche zählen. example.com gilt auch für a.example.com; mail.example.com gilt nicht für example.com. Vorhandene Einträge bleiben erhalten und werden nicht ausgeblendet.", "input": "Zu erlaubender Host", "placeholder": "example.com", "add": "Hinzufügen", "remove": "{{domain}} entfernen", "emptyTitle": "Keine erlaubten Websites", "emptyDescription": "Füge einen Host hinzu, damit er ab jetzt aufgezeichnet wird. Solange die Liste leer ist, wird nichts aufgezeichnet.", "limit": "Du kannst höchstens {{count}} Hosts erlauben.", "emptyWarningTitle": "Eine leere weiße Liste zeichnet nichts auf", "emptyWarning": "Es ist kein Host erlaubt, deshalb zeichnet PageTime für keine Website Zeit oder Besuche auf. Eine leere Liste bedeutet nicht, dass alles aufgezeichnet wird. Füge mindestens einen Host hinzu. Vorhandene Einträge bleiben und werden nicht ausgeblendet.", "error": "Gib einen Host wie example.com ein. Protokoll, Pfad und Port werden entfernt. Leerzeichen sind nicht erlaubt, und ein Name ohne Punkt wird nur für localhost akzeptiert." },
     "badge": { "title": "Symbol-Badge", "description": "Zeigt die heutige aktive Surfzeit auf dem Symbol in der Symbolleiste." },
-    "localData": {"title": "Lokale Daten", "description": "Was das Protokoll auf diesem Gerät gerade enthält. Nur lesend; es aktualisiert sich, sobald PageTime aufzeichnet, löscht oder leert.", "location": "Auf diesem Gerät in IndexedDB (<code>{{name}}</code>) gespeichert und nie hochgeladen.", "since": "Aufzeichnung seit", "firstDay": "Früheste Tagessumme", "detail": "Besuche und Sitzungen im Detail", "detailValue_one": "{{count}} Tag aufbewahrt, ab {{date}}", "detailValue_other": "{{count}} Tage aufbewahrt, ab {{date}}", "detailNote": "Tages- und Stundensummen werden langfristig aufbewahrt.", "firstDetail": "Frühestes noch gespeichertes Detail: {{date}}", "sites": "Websites", "sitesValue_one": "{{n}} Hostname", "sitesValue_other": "{{n}} Hostnamen", "rows": "Zeilen pro Tabelle", "table": {"days": "Tagessummen", "hours": "Stundensummen", "spans": "Aktive Sitzungen", "visits": "Besuche"}, "usage": "Belegter Speicher (Schätzung)", "about": "Etwa {{size}}", "usageNote": "Schätzung des Browsers für den gesamten Website-Speicher dieser Erweiterung, etwa IndexedDB, nicht nur das Protokoll. chrome.storage ist nicht enthalten.", "legacy": "Daten einer älteren Version", "legacyNote": "Der Schlüssel <code>data</code>, den eine ältere Version in chrome.storage.local hinterlassen hat, ist noch vorhanden. PageTime zeigt nur seine Größe an; es liest, ändert oder löscht ihn nicht.", "none": "Noch keine Aufzeichnungen"},
+    "docs": { "timing": "Zeitmessung und Datenschutz", "privacy": "Datenschutzerklärung" },
     "export": { "title": "Daten exportieren", "description": "Lädt das Protokoll dieses Geräts als Datei herunter. JSON enthält alle Tabellen sowie Aufzeichnungsstatus und Einstellungen. CSV hat pro Tag und Hostname eine Zeile für Tabellenkalkulationen.", "note": "Die Datei wird nur auf deinem Computer gespeichert. Sie enthält Hostnamen und Dauern, niemals URLs oder Titel.", "json": "JSON exportieren", "csv": "CSV exportieren", "exporting": "Wird exportiert…", "done": "{{file}} gespeichert.", "errorTitle": "Export fehlgeschlagen", "error": "Es wurde nichts heruntergeladen. Versuche es erneut." },
     "deleteDay": { "title": "Aufzeichnungen eines Tages löschen", "description": "Entfernt die aktive Zeit, Besuche und Sitzungen eines Tages von diesem Gerät. Das kann nicht rückgängig gemacht werden.", "label": "Zu löschendes Datum", "button": "Diesen Tag löschen", "done": "Aufzeichnungen vom {{date}} wurden gelöscht.", "confirmTitle": "Aufzeichnungen vom {{date}} löschen?", "confirmDescription": "Damit werden die aktive Zeit, Besuche und Sitzungen dieses Tages von diesem Gerät entfernt. Das kann nicht rückgängig gemacht werden.", "confirm": "Diesen Tag löschen", "deleting": "Wird gelöscht…" },
     "clear": { "title": "Alle Daten löschen", "description": "Löscht die von PageTime auf diesem Gerät gespeicherten Daten. Dies kann nicht rückgängig gemacht werden.", "button": "Daten löschen" }
@@ -175,55 +173,5 @@
     "minutes_one": "{{count}} Min.",
     "minutes_other": "{{count}} Min.",
     "hours": "{{hours}} Std. {{minutes}} Min."
-  },
-  "howItWorks": {
-    "open": "So wird die Zeit gezählt",
-    "infoButton": "Wie wird diese Zeit gezählt?",
-    "title": "Wie PageTime Zeit zählt",
-    "intro": "PageTime zählt nur die Zeit, in der du eine Seite wirklich ansiehst. Die Regeln stehen unten.",
-    "counted": {
-      "title": "Was zählt",
-      "focus": "Der ausgewählte Tab in einem fokussierten Vordergrundfenster",
-      "web": "Nur http- und https-Seiten, summiert nach Domain",
-      "navigation": "Wechselt derselbe Tab zu einer anderen Website, beginnt die neue Website zum Zeitpunkt des Wechsels"
-    },
-    "notCounted": {
-      "title": "Was nicht zählt",
-      "idle_one": "{{count}} Sekunde am Stück ohne Tastatur oder Maus (auch beim Ansehen von Videos oder Hören von Audio)",
-      "idle_other": "{{count}} Sekunden am Stück ohne Tastatur oder Maus (auch beim Ansehen von Videos oder Hören von Audio)",
-      "locked": "Während der Bildschirm gesperrt ist, der Computer schläft oder der Browser geschlossen ist",
-      "unfocused": "Minimiertes Fenster, eine andere App im Vordergrund oder fokussierte Entwicklertools",
-      "internal": "Interne Browserseiten, Erweiterungsseiten und lokale Dateien",
-      "incognito": "Inkognito-Fenster",
-      "paused": "Während die Aufzeichnung pausiert ist",
-      "gap_one": "Liegen Prüfungen mehr als {{count}} Sekunde auseinander, zählt diese Lücke höchstens {{count}} Sekunde (zum Beispiel bei Systemruhe)",
-      "gap_other": "Liegen Prüfungen mehr als {{count}} Sekunden auseinander, zählt diese Lücke höchstens {{count}} Sekunden (zum Beispiel bei Systemruhe)",
-      "ignored": "Schwarze Liste: Websites, die du ignorierst ({{count}}), und ihre Subdomains werden nicht gemessen, und Besuche zählen nicht. Der Eintrag example.com gilt für diesen Host und jede Subdomain; der Eintrag mail.example.com gilt nicht für example.com. Vorhandene Einträge werden weder gelöscht noch ausgeblendet.",
-      "whitelist": "Weiße Liste: Nur erlaubte Websites ({{count}}) und ihre Subdomains werden gemessen, und Besuche zählen. Eine leere Liste zeichnet nichts auf. Der Eintrag example.com gilt für diesen Host und jede Subdomain; der Eintrag mail.example.com gilt nicht für example.com. Vorhandene Einträge werden weder gelöscht noch ausgeblendet."
-    },
-    "visits": {
-      "title": "Wie Besuche gezählt werden",
-      "description": "Jedes Laden oder Neuladen zählt als 1 Besuch. Tab-Wechsel und Navigation in Single-Page-Apps zählen nicht."
-    },
-    "privacy": {
-      "title": "Privatsphäre und Speicherung",
-      "fields": "Gespeichert werden nur Domain, Zeiten und Besuchszahlen — nie Titel, Seitentext oder die vollständige URL.",
-      "local": "Die Daten bleiben im Browser auf diesem Gerät und werden nie hochgeladen.",
-      "delete": "Du kannst eine Website oder einen Tag löschen. Diese Einträge werden aus der Datenbank auf diesem Gerät entfernt und können nicht wiederhergestellt werden.",
-      "retention_one": "Besuche und Zeitspannen werden für den letzten {{count}} Tag aufbewahrt. Tages- und Stundensummen bleiben, bis du sie löschst oder diese Website oder diesen Tag entfernst.",
-      "retention_other": "Besuche und Zeitspannen werden für die letzten {{count}} Tage aufbewahrt. Tages- und Stundensummen bleiben, bis du sie löschst oder diese Website oder diesen Tag entfernst.",
-      "save_one": "Speichert alle {{count}} Sekunde. Beim unerwarteten Schließen kann höchstens dieses Intervall verloren gehen.",
-      "save_other": "Speichert alle {{count}} Sekunden. Beim unerwarteten Schließen kann höchstens dieses Intervall verloren gehen."
-    },
-    "limits": { "title": "Bekannte Ungenauigkeiten", "audible": "Der Browser kann 2–3 Sekunden brauchen, bis er merkt, dass Ton begonnen oder aufgehört hat.", "threshold": "Bei einer Leerlaufschwelle von 10 Minuten können nach dem Verlassen bis zu 10 zusätzliche Minuten gezählt werden." },
-    "compare": {"title": "Vergleich mit dem vorherigen Zeitraum", "description": "Jede Zahl wird mit dem gleich langen Zeitraum direkt vor dem gewählten Bereich verglichen. Enthält der Bereich heute, werden beide Zeiträume nur bis zur aktuellen vollen Stunde gezählt. Ist der frühere Zeitraum nicht vollständig aufgezeichnet, erscheint statt einer Zahl ein Strich."},
-    "merge": {
-      "title": "Wie Websites gruppiert werden",
-      "storage": "Das Konto speichert weiter den ursprünglichen Hostnamen. Die Gruppierung ändert nur die Ansicht, schreibt keine Einträge um und lässt sich jederzeit ausschalten.",
-      "none": "Nicht gruppieren: Jeder Hostname wird einzeln gezählt.",
-      "prefix": "Häufige Präfixe: Ein führendes www., m. oder mobile. wird entfernt. www.youtube.com und m.youtube.com werden zu youtube.com. Andere Namen wie gist.github.com bleiben getrennt.",
-      "registrable": "Registrierbare Domain: Gruppierung nach dem ICANN-Teil der Public Suffix List. a.b.example.co.uk wird zu example.co.uk. IP-Adressen, localhost und Hosts ohne registrierbare Domain bleiben unverändert. Private Suffixe wie github.io gelten nicht als öffentliche Suffixe, daher wird user.github.io unter github.io zusammengefasst."
-    },
-    "close": "Schließen"
   }
 }

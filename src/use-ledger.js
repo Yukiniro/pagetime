@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { isExtension, watchLedgerError } from './data.js';
-import { daysBetween, hoursBetween, openLedger, readDomains, readHead, readLedgerStats, recentVisits, siteDays, siteHours, spansBetween } from './ledger.mjs';
+import { daysBetween, hoursBetween, openLedger, readDomains, readHead, recentVisits, siteDays, siteHours, spansBetween } from './ledger.mjs';
 import { readComparison } from './compare.mjs';
-import { localDataOverview } from './local-data.mjs';
 import { compareFromSnapshot, siteSeries, siteSeriesFromSnapshot, VISIT_LIST_LIMIT, daySummary, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
 import { addDays, dateKey, openCredit } from './model.mjs';
 import { trendWindow } from './range.mjs';
@@ -140,38 +139,3 @@ export function useDaySummary(date, siteMerge) {
 }
 
 export const useLedger = isExtension ? useExtensionLedger : usePreviewLedger;
-
-const positive = value => typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null;
-
-// The settings data overview. Null outside the extension: the preview has no IndexedDB ledger.
-// `usage` is null when storage.estimate() is missing or fails; `legacy` is null when the old `data` key is gone.
-export function useLocalData() {
-  const stats = useLiveQuery(async () => {
-    if (!isExtension) return null;
-    try {
-      db ??= openLedger();
-      return await readLedgerStats(db);
-    } catch (error) {
-      console.error('PageTime could not read the data overview', error);
-      return null;
-    }
-  }, []);
-  const [usage, setUsage] = useState(null);
-  const [legacy, setLegacy] = useState(null);
-  const version = stats ? JSON.stringify(stats) : '';
-  useEffect(() => {
-    if (!version) return;
-    let live = true;
-    Promise.resolve().then(() => navigator.storage.estimate()).then(estimate => { if (live) setUsage(positive(estimate?.usage)); }, () => { if (live) setUsage(null); });
-    return () => { live = false; };
-  }, [version]);
-  useEffect(() => {
-    if (!isExtension) return;
-    let live = true;
-    // getBytesInUse sizes the key without reading its contents.
-    import('wxt/browser').then(({ browser }) => browser.storage.local.getBytesInUse('data')).then(bytes => { if (live) setLegacy(positive(bytes)); }, () => {});
-    return () => { live = false; };
-  }, []);
-  if (!stats) return null;
-  return { overview: localDataOverview(stats, Date.now()), usage, legacy };
-}
