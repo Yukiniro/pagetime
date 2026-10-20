@@ -621,6 +621,7 @@ test('a one-year ledger of 200 sites exports with a progress state and the page 
   test.setTimeout(180_000);
   await withBrowser(async context => {
     const sw = await worker(context);
+    await expect.poll(async () => (await readData(sw))?.enabled).toBe(true);
     const seeded = await sw.evaluate(async () => {
       const db = await new Promise((resolve, reject) => {
         const request = indexedDB.open('pagetime-ledger');
