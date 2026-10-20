@@ -67,7 +67,7 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 
 ## 没有网络、遥测或账号
 
-清单权限只有 `storage`、`tabs`、`webNavigation`、`idle`、`alarms`。可调空闲时间和音频计时没有新增权限。没有 host permission，没有 content script，`incognito` 为 `not_allowed`。无痕窗口不记录。扩展不申报遥测、分析或账号接口。统计页可以发的消息只有 `snapshot`、`toggle`、`clear`、`deleteSite`、`deleteDay`、`settings`，而且后台只接受来自本扩展自己的 `dashboard.html`。删除记录不新增权限。
+清单权限只有 `storage`、`tabs`、`webNavigation`、`idle`、`alarms`。可调空闲时间和音频计时没有新增权限。没有 host permission，没有 content script，`incognito` 为 `not_allowed`。无痕窗口不记录。扩展不申报遥测、分析或账号接口。统计页可以发的消息只有 `snapshot`、`toggle`、`clear`、`deleteSite`、`deleteDay`、`settings`。工具栏 popup 可以发的消息只有 `snapshot`、`toggle`、`settings`。后台只接受来自本扩展自己的 `dashboard.html` 和 `popup.html`。popup 不能清空或删除记录。删除记录不新增权限。
 
 ## 如何删除
 

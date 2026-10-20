@@ -29,6 +29,18 @@
     "todaySite": "오늘 {{duration}} · {{domain}} {{siteDuration}}",
     "paused": "기록 일시중지"
   },
+  "popup": {
+    "totalOnly": "오늘 총 시간",
+    "total": "오늘 합계 {{duration}}",
+    "siteToday": "오늘 {{duration}}",
+    "ignore": "이 사이트 기록 안 함",
+    "unignore": "이 사이트 다시 기록",
+    "allow": "이 사이트 기록",
+    "unallow": "이 사이트 기록 중지",
+    "pause": "기록 일시중지",
+    "resume": "기록 다시 시작",
+    "open": "대시보드 열기"
+  },
   "summary": {
     "sites_other": "사이트 <b>{{count}}</b>개"
   },

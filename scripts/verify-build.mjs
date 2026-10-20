@@ -23,7 +23,7 @@ export function verifyFiles(read, { version, locales }) {
   assert.deepEqual([...manifest.permissions].sort(), ['alarms', 'idle', 'storage', 'tabs', 'webNavigation'].sort());
   assert.equal(manifest.host_permissions?.length ?? 0, 0, 'No host permissions');
   assert.equal(manifest.content_scripts?.length ?? 0, 0, 'No content scripts');
-  assert.equal(manifest.action.default_popup, undefined);
+  assert.equal(manifest.action.default_popup, 'popup.html');
   assert.ok(manifest.background.service_worker);
 
   const file = path => {
@@ -33,8 +33,10 @@ export function verifyFiles(read, { version, locales }) {
     return bytes;
   };
   assert.doesNotMatch(file(manifest.background.service_worker).toString('utf8'), NETWORK_API, 'The background makes no network request');
-  const html = file('dashboard.html').toString('utf8');
-  for (const [, path] of html.matchAll(/(?:src|href)="([^"]+)"/g)) file(path.replace(/^\//, ''));
+  for (const page of ['dashboard.html', 'popup.html']) {
+    const html = file(page).toString('utf8');
+    for (const [, path] of html.matchAll(/(?:src|href)="([^"]+)"/g)) file(path.replace(/^\//, ''));
+  }
   assert.deepEqual(Object.keys(manifest.icons).sort(), ['16', '32', '48', '96', '128'].sort());
   for (const [size, path] of Object.entries(manifest.icons)) {
     const png = file(path);

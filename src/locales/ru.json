@@ -46,6 +46,18 @@
     "todaySite": "Сегодня {{duration}} · {{domain}} {{siteDuration}}",
     "paused": "Запись на паузе"
   },
+  "popup": {
+    "totalOnly": "Всего за сегодня",
+    "total": "Сегодня всего {{duration}}",
+    "siteToday": "Сегодня {{duration}}",
+    "ignore": "Не записывать этот сайт",
+    "unignore": "Снова записывать этот сайт",
+    "allow": "Записывать этот сайт",
+    "unallow": "Больше не записывать этот сайт",
+    "pause": "Приостановить запись",
+    "resume": "Возобновить запись",
+    "open": "Открыть панель"
+  },
   "summary": {
     "sites_one": "<b>{{count}}</b> сайт",
     "sites_few": "<b>{{count}}</b> сайта",

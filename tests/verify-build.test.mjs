@@ -12,7 +12,7 @@ test('artifact contract accepts a complete extension and rejects wrong versions,
     value.files['manifest.json'] = Buffer.from(JSON.stringify(value.manifest));
     assert.throws(() => check(value));
   }
-  for (const file of ['background.js', 'dashboard.js', 'dashboard.css', 'icon/128.png', '_locales/ru/messages.json']) {
+  for (const file of ['background.js', 'dashboard.js', 'dashboard.css', 'popup.js', 'popup.css', 'icon/128.png', '_locales/ru/messages.json']) {
     const value = artifact();
     delete value.files[file];
     assert.throws(() => check(value), /Missing/);

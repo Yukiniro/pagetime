@@ -4,7 +4,7 @@ The permissions are `manifest.permissions` in `wxt.config.ts`. `scripts/verify-b
 
 `storage`, `tabs`, `webNavigation`, `idle`, `alarms`
 
-There is no `host_permissions` entry (no host permission). There is no `content_scripts` entry (no content script). There is no `optional_permissions` entry. `incognito` is `not_allowed`. The only extension entrypoints are `entrypoints/background.ts` and `entrypoints/dashboard/`. 中文版见 [permissions.zh-CN.md](permissions.zh-CN.md).
+There is no `host_permissions` entry (no host permission). There is no `content_scripts` entry (no content script). There is no `optional_permissions` entry. `incognito` is `not_allowed`. The only extension entrypoints are `entrypoints/background.ts`, `entrypoints/dashboard/`, and `entrypoints/popup/`. The toolbar popup reads the active tab's hostname with the existing `tabs` permission. It does not add a permission, a content script, or a stored URL. 中文版见 [permissions.zh-CN.md](permissions.zh-CN.md).
 
 ## What the browser says at install
 

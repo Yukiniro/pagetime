@@ -29,6 +29,18 @@
     "todaySite": "Today {{duration}} · {{domain}} {{siteDuration}}",
     "paused": "Recording paused"
   },
+  "popup": {
+    "totalOnly": "Today's total",
+    "total": "Today {{duration}} total",
+    "siteToday": "Today {{duration}}",
+    "ignore": "Don't record this site",
+    "unignore": "Record this site again",
+    "allow": "Record this site",
+    "unallow": "Stop recording this site",
+    "pause": "Pause recording",
+    "resume": "Resume recording",
+    "open": "Open dashboard"
+  },
   "summary": {
     "sites_one": "<b>{{count}}</b> site",
     "sites_other": "<b>{{count}}</b> sites"
