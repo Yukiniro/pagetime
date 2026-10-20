@@ -51,13 +51,15 @@ export function release({ directory = root, expectedSha = process.env.RELEASE_SH
     return sha;
   };
   checkTag();
-  let existing;
-  try { existing = JSON.parse(gh('api', `repos/${repository}/releases/tags/${tag}`)); }
-  catch (error) {
-    let status;
-    try { status = JSON.parse(String(error.stdout)).status; } catch { /* Keep network/auth errors fatal. */ }
-    if (String(status) !== '404') throw error;
-  }
+  // GET /releases/tags/{tag} omits drafts, so list releases (drafts included) and match tag_name.
+  // Any API failure is fatal; absence means the list has no such tag.
+  const findRelease = () => {
+    const pages = JSON.parse(gh('api', '--paginate', '--slurp', `repos/${repository}/releases?per_page=100`));
+    const matches = pages.flat().filter(item => item.tag_name === tag);
+    assert.ok(matches.length <= 1, `Multiple releases use ${tag}; resolve the duplicates before releasing`);
+    return matches[0];
+  };
+  const existing = findRelease();
   if (existing) assert.ok(checkTag(), 'Existing release must have a verified remote tag');
 
   for (const script of ['typecheck', 'build:preview', 'test', 'zip']) {
@@ -104,7 +106,8 @@ export function release({ directory = root, expectedSha = process.env.RELEASE_SH
     }
     if (!zipAsset) gh('release', 'upload', tag, zipPath, '--repo', repository);
     if (!sumsAsset) gh('release', 'upload', tag, sumsPath, '--repo', repository);
-    const complete = JSON.parse(gh('api', `repos/${repository}/releases/tags/${tag}`));
+    const complete = findRelease();
+    assert.ok(complete, `Release ${tag} must exist before publication`);
     for (const name of [asset, sumsName]) {
       assert.ok(complete.assets.some(item => item.name === name && item.state === 'uploaded' && item.size > 0), `${name} must be uploaded before publication`);
     }

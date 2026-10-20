@@ -11,7 +11,7 @@ import { artifact } from './helpers/artifact-fixture.mjs';
 const sha = 'a'.repeat(40);
 const name = 'pagetime-1.0.1-chrome.zip';
 
-function harness(t, { tag, existing = null, buildFails = false, uploadFails = false, failSums = false, wrongArchive = false, apiFails = false, badSums = null } = {}) {
+function harness(t, { tag, existing = null, buildFails = false, uploadFails = false, failSums = false, wrongArchive = false, apiFails = false, badSums = null, duplicateDraft = false } = {}) {
   t.mock.method(console, 'log', () => {});
   const directory = mkdtempSync(join(tmpdir(), 'pagetime-release-test-'));
   t.after(() => rmSync(directory, { recursive: true, force: true }));
@@ -25,7 +25,7 @@ function harness(t, { tag, existing = null, buildFails = false, uploadFails = fa
   }
   put(`.output/${name}`, zipSync(fixture.files));
   const calls = [];
-  const state = { tag, existing, buildFails, uploadFails, failSums, wrongArchive, apiFails, badSums, blobs: {} };
+  const state = { tag, existing, buildFails, uploadFails, failSums, wrongArchive, apiFails, badSums, duplicateDraft, blobs: {} };
   let served;
   const servedZip = () => {
     if (state.blobs[name]) return state.blobs[name];
@@ -50,8 +50,19 @@ function harness(t, { tag, existing = null, buildFails = false, uploadFails = fa
     if (command === 'gh') {
       if (args[0] === 'api') {
         if (state.apiFails) throw Error('network failed');
-        if (!state.existing) throw Object.assign(Error('not found'), { stdout: '{"status":"404"}' });
-        return JSON.stringify(state.existing);
+        const endpoint = args.find(arg => arg.startsWith('repos/'));
+        const notFound = () => Object.assign(Error('not found'), { stdout: '{"status":"404"}' });
+        // Like the real API: get-release-by-tag only returns published releases.
+        if (endpoint.endsWith('/releases/tags/v1.0.1')) {
+          if (!state.existing || state.existing.draft) throw notFound();
+          return JSON.stringify(state.existing);
+        }
+        if (endpoint.endsWith('/releases?per_page=100') && args.includes('--paginate') && args.includes('--slurp')) {
+          const others = [{ tag_name: 'v0.9.0', draft: false, assets: [] }];
+          const mine = state.existing ? [{ tag_name: 'v1.0.1', ...state.existing }, ...(state.duplicateDraft ? [{ tag_name: 'v1.0.1', draft: true, assets: [] }] : [])] : [];
+          return JSON.stringify([others, mine]);
+        }
+        throw Error(`Unexpected api call: ${args.join(' ')}`);
       }
       if (args[1] === 'create') state.existing = { draft: true, assets: [] };
       if (args[1] === 'upload') {
@@ -123,6 +134,26 @@ test('failed upload leaves a draft and rerun completes it without creating anoth
   h.publish();
   assert.deepEqual(mutations(h.calls).map(([, , action]) => action), ['upload', 'upload', 'edit']);
   assert.equal(h.state.existing.draft, false);
+});
+
+const draftWith = names => ({ draft: true, assets: names.map(item => ({ name: item, state: 'uploaded', size: 100 })) });
+const creations = calls => calls.filter(call => call[0] === 'gh' && call[1] === 'release' && call[2] === 'create');
+
+test('an existing draft is found without creating another, and rerun fills missing assets before publishing', t => {
+  for (const [assets, uploads] of [[[], ['upload', 'upload']], [[name], ['upload']], [[name, sumsName], []]]) {
+    const h = harness(t, { tag: sha, existing: draftWith(assets) });
+    h.publish();
+    assert.deepEqual(creations(h.calls), []);
+    assert.deepEqual(mutations(h.calls).map(([, , action]) => action), [...uploads, 'edit']);
+    assert.equal(h.state.existing.draft, false);
+    assert.deepEqual(h.state.existing.assets.map(item => item.name).sort(), [name, sumsName].sort());
+  }
+});
+
+test('an existing draft with a duplicate draft is ambiguous and is not published', t => {
+  const h = harness(t, { tag: sha, existing: draftWith([name, sumsName]), duplicateDraft: true });
+  assert.throws(h.publish, /Multiple releases/);
+  assert.deepEqual(mutations(h.calls), []);
 });
 
 test('complete releases are verified without mutations; incomplete public releases recover the ZIP and checksum', t => {
