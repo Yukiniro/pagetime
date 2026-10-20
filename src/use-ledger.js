@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { isExtension, watchLedgerError } from './data.js';
 import { daysBetween, hoursBetween, openLedger, readDomains, readHead, readLedgerStats, recentVisits, siteDays, siteHours, spansBetween } from './ledger.mjs';
+import { readComparison } from './compare.mjs';
 import { localDataOverview } from './local-data.mjs';
-import { siteSeries, siteSeriesFromSnapshot, VISIT_LIST_LIMIT, daySummary, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
+import { compareFromSnapshot, siteSeries, siteSeriesFromSnapshot, VISIT_LIST_LIMIT, daySummary, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
 import { addDays, dateKey, openCredit } from './model.mjs';
 import { trendWindow } from './range.mjs';
 import { siteOf } from './site.mjs';
@@ -68,8 +69,13 @@ function useExtensionLedger(range) {
         siteMerge: range.siteMerge,
         now,
       }).days;
+      const compare = await readComparison(db, {
+        range, now, since: head.state?.since ?? now, domains, days: allDays,
+        segment: (head.state?.enabled ?? true) ? openCredit(cursor, head.lastEnd, now) : null,
+      });
       return {
         rangeKey,
+        compare,
         view: viewFromLedger(rows, { ...range, now }),
         trendDays,
         detail: range.detail ? siteSeries({
@@ -85,6 +91,7 @@ function useExtensionLedger(range) {
   const settled = result?.rangeKey === rangeKey;
   return {
     view: result?.view,
+    compare: result?.compare,
     trendDays: result?.trendDays,
     detail: result?.detail ?? null,
     detailSite: result?.detailSite ?? '',
@@ -101,6 +108,7 @@ function usePreviewLedger(range) {
   const trend = trendWindow(range, range.today);
   return {
     view: data ? viewFromSnapshot(data, range) : undefined,
+    compare: data ? compareFromSnapshot(data, range, now) : undefined,
     trendDays: data ? viewFromSnapshot(data, { start: trend.start, end: trend.end, today: range.today, site: range.focus || '', siteMerge: range.siteMerge }).days : undefined,
     detail: data && range.detail ? siteSeriesFromSnapshot(data, { start: range.start, end: range.end, site: range.detail, siteMerge: range.siteMerge, now }) : null,
     detailSite: range.detail || '',

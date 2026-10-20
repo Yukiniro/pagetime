@@ -40,6 +40,7 @@
     "sites_other": "<b>{{count}}</b> sites"
   },
   "kpi": { "label": "Totaux pour {{range}}", "sites": "Sites" },
+  "compare": {"yesterday": "par rapport à hier", "previous7": "par rapport aux 7 jours précédents", "previous30": "par rapport aux 30 jours précédents", "previousPeriod": "par rapport à la période précédente", "asOf": "{{period}}, jusqu’à {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "Aucun changement", "underMinute": "{{sign}}moins de 1 min", "basis": "Période précédente : {{range}}", "basisAsOf": "Période précédente : {{range}}. Les deux périodes sont comptées jusqu’à {{time}} le dernier jour.", "reason": {"since": "L’enregistrement a commencé le {{date}}, après le début de la période précédente.", "retention": "Les visites de la période précédente ont expiré : comparaison impossible.", "notStarted": "Pas encore d’heure complète à comparer."}},
   "filter": {
     "active": "Filtré : {{domain}}",
     "clear": "Effacer le filtre",
@@ -226,6 +227,7 @@
       "save_other": "Enregistre toutes les {{count}} secondes. En cas de fermeture inattendue, seule cette période récente peut être perdue."
     },
     "limits": { "title": "Limites connues", "audible": "Le navigateur peut mettre 2–3 secondes à remarquer que le son a commencé ou s’est arrêté.", "threshold": "Avec un seuil d’inactivité de 10 minutes, jusqu’à 10 minutes supplémentaires peuvent être comptées après votre départ." },
+    "compare": {"title": "Comparaison avec la période précédente", "description": "Chaque chiffre est comparé à la période de même durée située juste avant la plage. Si la plage inclut aujourd’hui, les deux périodes sont comptées jusqu’à l’heure pleine actuelle. Si la période précédente n’est pas entièrement enregistrée, un tiret remplace le chiffre."},
     "merge": {
       "title": "Comment les sites sont regroupés",
       "storage": "Le registre conserve le nom d’hôte d’origine. Le regroupement ne change que l’affichage : il ne réécrit pas les lignes enregistrées et peut être désactivé.",

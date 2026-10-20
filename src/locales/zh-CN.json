@@ -36,6 +36,7 @@
     "sites_other": "<b>{{count}}</b> 个站点"
   },
   "kpi": { "label": "{{range}}汇总", "sites": "站点数" },
+  "compare": {"yesterday": "较昨天", "previous7": "较前 7 天", "previous30": "较前 30 天", "previousPeriod": "较上一周期", "asOf": "{{period}}（截至 {{time}}）", "change": "{{diff}}（{{percent}}）", "unchanged": "无变化", "underMinute": "{{sign}}不足 1 分钟", "basis": "上一周期：{{range}}", "basisAsOf": "上一周期：{{range}}。两个周期都只统计到最后一天的 {{time}}。", "reason": {"since": "记录从 {{date}} 才开始，晚于上一周期的起点。", "retention": "上一周期的访问记录已过保留期，无法比较。", "notStarted": "还没有可比较的整点。"}},
   "filter": {
     "active": "已过滤：{{domain}}",
     "clear": "清除过滤",
@@ -202,6 +203,7 @@
       "save_other": "每 {{count}} 秒保存一次；意外关闭时最多丢失最近这段时间。"
     },
     "limits": { "title": "已知误差", "audible": "浏览器判断声音开始或停止可能晚 2–3 秒。", "threshold": "空闲判定时间设为 10 分钟时，离开后最多还会多计 10 分钟。" },
+    "compare": {"title": "与上一周期比较", "description": "每项数字都和紧挨在所选范围之前、长度相同的一段时间比较。范围包含今天时，两个周期都只统计到当前整点。上一周期没有完整记录时，显示短横线而不是数字。"},
     "merge": {
       "title": "站点如何合并",
       "storage": "账本仍按原始主机名保存。合并只改变概览的呈现，不会改写已有记录，也可以随时关闭。",

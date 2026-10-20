@@ -12,9 +12,9 @@ export function DashboardSkeleton() {
   const { t } = useTranslation();
   return <div className="dashboard-skeleton" data-status="loading" aria-busy="true" aria-live="polite" aria-label={t('loading')}>
     <section className="kpi ledger-card" aria-hidden="true">
-      <div className="kpi-item primary"><Skeleton className="skel-label" /><Skeleton className="skel-kpi" /></div>
-      <div className="kpi-item"><Skeleton className="skel-label" /><Skeleton className="skel-kpi" /></div>
-      <div className="kpi-item"><Skeleton className="skel-label" /><Skeleton className="skel-kpi" /></div>
+      <div className="kpi-item primary"><Skeleton className="skel-label" /><Skeleton className="skel-kpi" /><Skeleton className="skel-compare" /></div>
+      <div className="kpi-item"><Skeleton className="skel-label" /><Skeleton className="skel-kpi" /><Skeleton className="skel-compare" /></div>
+      <div className="kpi-item"><Skeleton className="skel-label" /><Skeleton className="skel-kpi" /><Skeleton className="skel-compare" /></div>
     </section>
     <section className="chart-card ledger-card" aria-hidden="true">
       <div className="chart-head"><Skeleton className="skel-title" /><Skeleton className="skel-tabs" /></div>

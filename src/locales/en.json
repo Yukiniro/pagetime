@@ -38,6 +38,7 @@
     "sites_other": "<b>{{count}}</b> sites"
   },
   "kpi": { "label": "{{range}} totals", "sites": "Sites" },
+  "compare": {"yesterday": "vs yesterday", "previous7": "vs previous 7 days", "previous30": "vs previous 30 days", "previousPeriod": "vs previous period", "asOf": "{{period}}, as of {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "No change", "underMinute": "{{sign}}under 1 min", "basis": "Previous period: {{range}}", "basisAsOf": "Previous period: {{range}}. Both periods are counted up to {{time}} on their last day.", "reason": {"since": "Recording started on {{date}}, after this previous period began.", "retention": "Visit records for the previous period have expired, so this can't be compared.", "notStarted": "No completed hour to compare yet."}},
   "filter": {
     "active": "Filtered to {{domain}}",
     "clear": "Clear filter",
@@ -214,6 +215,7 @@
       "save_other": "Saves every {{count}} seconds. If the browser closes unexpectedly, at most that recent interval can be lost."
     },
     "limits": { "title": "Known limits", "audible": "The browser can take 2–3 seconds to notice that sound started or stopped.", "threshold": "With a 10-minute idle threshold, up to 10 extra minutes can be counted after you leave." },
+    "compare": {"title": "Comparing with the previous period", "description": "Each figure is compared with the period of equal length right before the range. While the range includes today, both periods are counted only up to the current whole hour. When the earlier period isn't fully recorded, a dash is shown instead of a number."},
     "merge": {
       "title": "How sites are grouped",
       "storage": "Records keep the original hostname. Grouping only changes what the overview shows; it never rewrites saved rows, and you can turn it off.",

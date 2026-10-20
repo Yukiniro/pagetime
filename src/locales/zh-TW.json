@@ -36,6 +36,7 @@
     "sites_other": "<b>{{count}}</b> 個網站"
   },
   "kpi": { "label": "{{range}}彙總", "sites": "網站數" },
+  "compare": {"yesterday": "較昨天", "previous7": "較前 7 天", "previous30": "較前 30 天", "previousPeriod": "較上一週期", "asOf": "{{period}}（截至 {{time}}）", "change": "{{diff}}（{{percent}}）", "unchanged": "無變化", "underMinute": "{{sign}}不足 1 分鐘", "basis": "上一週期：{{range}}", "basisAsOf": "上一週期：{{range}}。兩個週期都只統計到最後一天的 {{time}}。", "reason": {"since": "紀錄從 {{date}} 才開始，晚於上一週期的起點。", "retention": "上一週期的造訪紀錄已超過保留期，無法比較。", "notStarted": "還沒有可比較的整點。"}},
   "filter": {
     "active": "已篩選：{{domain}}",
     "clear": "清除篩選",
@@ -202,6 +203,7 @@
       "save_other": "每 {{count}} 秒儲存一次；意外關閉時最多遺失最近這段時間。"
     },
     "limits": { "title": "已知誤差", "audible": "瀏覽器判斷聲音開始或停止可能晚 2–3 秒。", "threshold": "閒置判定時間設為 10 分鐘時，離開後最多還會多計 10 分鐘。" },
+    "compare": {"title": "與上一週期比較", "description": "每項數字都和緊接在所選範圍之前、長度相同的一段時間比較。範圍包含今天時，兩個週期都只統計到目前整點。上一週期沒有完整紀錄時，顯示短橫線而不是數字。"},
     "merge": {
       "title": "網站如何合併",
       "storage": "帳本仍按原始主機名稱保存。合併只改變總覽的呈現，不會改寫已有紀錄，也可以隨時關閉。",
