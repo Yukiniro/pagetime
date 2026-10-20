@@ -299,6 +299,9 @@ export const hoursBetween = (db, from, to) =>
 /** Spans that start in [start, end). @param {Dexie} db */
 export const spansBetween = (db, start, end) => db.table('spans').where('start').between(start, end, true, false).toArray();
 
+/** Every visit in [start, end). @param {Dexie} db */
+export const visitsBetween = (db, start, end) => db.table('visits').where('at').between(start, end, true, false).toArray();
+
 /** Newest visits in [start, end) for the given domain ids. @param {Dexie} db */
 export const recentVisits = (db, start, end, domainIds, limit) =>
   db.table('visits').where('at').between(start, end, true, false).reverse().filter(visit => domainIds.has(visit.domainId)).limit(limit).toArray();

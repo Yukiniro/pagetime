@@ -53,6 +53,10 @@ export function HowItWorksDialog({ open, onOpenChange, finalFocus, settings }) {
         <p>{t('howItWorks.visits.description')}</p>
       </section>
       <section className="flex flex-col gap-1">
+        <h3>{t('howItWorks.compare.title')}</h3>
+        <p>{t('howItWorks.compare.description')}</p>
+      </section>
+      <section className="flex flex-col gap-1">
         <h3>{t('howItWorks.merge.title')}</h3>
         <p>{t('howItWorks.merge.storage')}</p>
         <ul className="flex list-disc flex-col gap-1 pl-5 text-sm text-muted-foreground">

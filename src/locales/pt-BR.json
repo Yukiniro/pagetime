@@ -40,6 +40,7 @@
     "sites_other": "<b>{{count}}</b> sites"
   },
   "kpi": { "label": "Totais de {{range}}", "sites": "Sites" },
+  "compare": {"yesterday": "em relação a ontem", "previous7": "em relação aos 7 dias anteriores", "previous30": "em relação aos 30 dias anteriores", "previousPeriod": "em relação ao período anterior", "asOf": "{{period}}, até {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "Sem alteração", "underMinute": "{{sign}}menos de 1 min", "basis": "Período anterior: {{range}}", "basisAsOf": "Período anterior: {{range}}. Os dois períodos são contados só até {{time}} no último dia.", "reason": {"since": "O registro começou em {{date}}, depois do início do período anterior.", "retention": "As visitas do período anterior expiraram, então não dá para comparar.", "notStarted": "Ainda não há uma hora completa para comparar."}},
   "filter": {
     "active": "Filtrado: {{domain}}",
     "clear": "Limpar filtro",
@@ -226,6 +227,7 @@
       "save_other": "Salva a cada {{count}} segundos. Se o navegador fechar de forma inesperada, no máximo esse intervalo recente pode ser perdido."
     },
     "limits": { "title": "Limites conhecidos", "audible": "O navegador pode levar 2–3 segundos para perceber que o som começou ou parou.", "threshold": "Com um limite de ociosidade de 10 minutos, até 10 minutos a mais podem ser contados depois que você sair." },
+    "compare": {"title": "Comparação com o período anterior", "description": "Cada número é comparado com o período de mesma duração logo antes do intervalo. Se o intervalo inclui hoje, os dois períodos são contados só até a hora cheia atual. Se o período anterior não foi totalmente registrado, aparece um traço no lugar do número."},
     "merge": {
       "title": "Como os sites são agrupados",
       "storage": "O registro continua com o hostname original. O agrupamento só muda a consulta exibida, não reescreve as linhas salvas e pode ser desligado.",

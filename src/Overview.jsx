@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { EmptyState, FilterEmpty } from './EmptyState.jsx';
 import { colorOf, iconForSite } from './data.js';
 import { Heatmap, Timeline, Trend } from './Charts.jsx';
+import { KpiCompare } from './KpiCompare.jsx';
 import { SiteIcon } from './SiteIcon.jsx';
 import { duration, formatDate } from './i18n.js';
 import { addDays } from './model.mjs';
@@ -42,7 +43,7 @@ function RankRows({ rows, metric, filterSite, onFilter, onOpen }) {
   </ol>;
 }
 
-export function Overview({ todayStats, stats, trendDays = [], spans, hourRows, since, start, end, today, now, rangeLabel, chartMode = 'timeline', trendLabel, filterSite = '', onFilter, openSite, openHow, isDark = false }) {
+export function Overview({ compare, preset, todayStats, stats, trendDays = [], spans, hourRows, since, start, end, today, now, rangeLabel, chartMode = 'timeline', trendLabel, filterSite = '', onFilter, openSite, openHow, isDark = false }) {
   const { t } = useTranslation();
   const [chart, setChart] = useState(chartMode);
   const [metric, setMetric] = useState('visits');
@@ -71,14 +72,17 @@ export function Overview({ todayStats, stats, trendDays = [], spans, hourRows, s
       <div className="kpi-item primary">
         <div className="kpi-label"><span>{t('ranking.activeTime')}</span><span className="kpi-today">{rangeLabel}</span><Button variant="ghost" size="icon-sm" aria-label={t('howItWorks.infoButton')} onClick={openHow}><Info /></Button></div>
         <div className="kpi-value">{duration(kpi.ms)}</div>
+        <KpiCompare metric="ms" compare={compare} preset={preset} since={since} />
       </div>
       <div className="kpi-item">
         <div className="kpi-label">{t('ranking.visits')}</div>
         <div className="kpi-value">{kpi.visits}</div>
+        <KpiCompare metric="visits" compare={compare} preset={preset} since={since} />
       </div>
       <div className="kpi-item">
         <div className="kpi-label">{t('kpi.sites')}</div>
         <div className="kpi-value">{kpi.rows.length}</div>
+        <KpiCompare metric="sites" compare={compare} preset={preset} since={since} />
       </div>
     </section>
     <section className="chart-card ledger-card" aria-label={t('chart.label')}>

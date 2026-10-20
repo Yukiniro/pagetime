@@ -53,6 +53,15 @@ export function formatBytes(bytes) {
   return new Intl.NumberFormat(i18n.resolvedLanguage, { style: 'unit', unit: BYTE_UNITS[unit], unitDisplay: 'short', maximumFractionDigits: unit ? 1 : 0 }).format(value);
 }
 
+// A change that rounds to zero keeps its direction.
+export function signedPercent(percent) {
+  const abs = Math.abs(percent);
+  const digits = abs < 1 ? 1 : 0;
+  const rounded = Number(abs.toFixed(digits));
+  const text = new Intl.NumberFormat(i18n.resolvedLanguage, { style: 'percent', maximumFractionDigits: digits }).format(rounded / 100);
+  return `${percent < 0 ? '−' : '+'}${text}`;
+}
+
 export function duration(ms) {
   return formatDuration(ms, (key, options) => i18n.t(key, options));
 }

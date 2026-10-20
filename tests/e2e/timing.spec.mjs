@@ -617,3 +617,57 @@ test('the data overview hides the space estimate when storage.estimate() is miss
     }
   });
 });
+
+// Writes ledger rows the way the background would have, for days that already passed, so the dashboard has a previous period to read.
+async function seedOldDays(sw) {
+  await sw.evaluate(async () => {
+    const day = offset => {
+      const date = new Date();
+      date.setDate(date.getDate() + offset);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    };
+    const db = await new Promise((resolve, reject) => {
+      const request = indexedDB.open('pagetime-ledger');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const done = tx => new Promise((resolve, reject) => { tx.oncomplete = resolve; tx.onerror = () => reject(tx.error); });
+    const tx = db.transaction(['meta', 'domains', 'days'], 'readwrite');
+    const since = new Date();
+    since.setDate(since.getDate() - 14);
+    tx.objectStore('meta').put({ key: 'state', value: { enabled: true, since: since.getTime() } });
+    const added = tx.objectStore('domains').add({ host: 'old.test' });
+    added.onsuccess = () => {
+      const domainId = added.result;
+      tx.objectStore('days').put({ date: day(-3), domainId, ms: 30 * 60_000, visits: 2 });
+      tx.objectStore('days').put({ date: day(-10), domainId, ms: 20 * 60_000, visits: 1 });
+    };
+    await done(tx);
+    db.close();
+  });
+}
+
+test('the overview compares each KPI with the previous period and says when it cannot', async () => {
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    await expect.poll(async () => (await readData(sw))?.enabled).toBe(true);
+    await seedOldDays(sw);
+    const dashboard = await context.newPage();
+    await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
+    await dashboard.evaluate(() => localStorage.setItem('pagetime-language', 'en'));
+    await dashboard.reload();
+    const lines = dashboard.locator('[data-compare]');
+    await dashboard.getByRole('button', { name: /^Date range/ }).click();
+    await dashboard.getByRole('menuitemradio', { name: 'Last 7 days' }).click();
+    await expect(dashboard.locator('[data-compare="ms"]')).toContainText('vs previous 7 days');
+    await expect(dashboard.locator('[data-compare="ms"]')).toContainText('+10 min (+50%)');
+    await expect(dashboard.locator('[data-compare="visits"]')).toContainText('+1 (+100%)');
+    await expect(dashboard.locator('[data-compare="sites"]')).toContainText('No change');
+    await dashboard.locator('[data-compare="ms"]').hover();
+    await expect(dashboard.getByText(/^Previous period: \d\d\/\d\d–\d\d\/\d\d/)).toBeVisible();
+
+    await dashboard.getByRole('button', { name: /^Date range/ }).click();
+    await dashboard.getByRole('menuitemradio', { name: 'Last 30 days' }).click();
+    for (const line of await lines.all()) await expect(line).toContainText('Recording started on');
+  });
+});
