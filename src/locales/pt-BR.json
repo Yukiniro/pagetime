@@ -138,6 +138,8 @@
     "visits_other": "{{count}}",
     "todaySessions": "Sessões ativas de hoje",
     "noSessions": "Nenhuma sessão ativa hoje",
+    "daySessions": "Sessões ativas em {{date}}",
+    "noDaySessions": "Nenhuma sessão ativa em {{date}}",
     "ignore": "Parar de registrar este site",
     "ignored": "Este site já está ignorado",
     "allow": "Adicionar à lista branca",

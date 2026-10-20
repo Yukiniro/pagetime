@@ -132,6 +132,8 @@
     "visits_other": "{{count}}",
     "todaySessions": "Heutige aktive Sitzungen",
     "noSessions": "Heute keine aktiven Sitzungen",
+    "daySessions": "Aktive Sitzungen am {{date}}",
+    "noDaySessions": "Keine aktiven Sitzungen am {{date}}",
     "ignore": "Diese Website nicht mehr aufzeichnen",
     "ignored": "Diese Website wird bereits ignoriert",
     "allow": "Zur weißen Liste hinzufügen",

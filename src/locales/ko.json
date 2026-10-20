@@ -126,6 +126,8 @@
     "visits_other": "{{count}}회",
     "todaySessions": "오늘의 활성 구간",
     "noSessions": "오늘은 활성 구간이 없습니다",
+    "daySessions": "{{date}} 활성 구간",
+    "noDaySessions": "{{date}}에는 활성 구간이 없습니다",
     "ignore": "이 사이트 기록 안 함",
     "ignored": "이 사이트는 이미 무시 목록에 있습니다",
     "allow": "화이트리스트에 추가",

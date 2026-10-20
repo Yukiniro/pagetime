@@ -126,6 +126,8 @@
     "visits_other": "{{count}} 回",
     "todaySessions": "今日のアクティブな時間帯",
     "noSessions": "今日のアクティブな時間帯はありません",
+    "daySessions": "{{date}}のアクティブな時間帯",
+    "noDaySessions": "{{date}}のアクティブな時間帯はありません",
     "ignore": "このサイトを記録しない",
     "ignored": "このサイトはすでに無視リストにあります",
     "allow": "ホワイトリストに追加",
