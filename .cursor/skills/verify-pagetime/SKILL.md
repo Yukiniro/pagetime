@@ -1,6 +1,6 @@
 ---
 name: verify-pagetime
-description: "Drive PageTime the way a user does and keep proof. Use when verifying the WXT dashboard or the Vite preview: the one-page ledger and date range, site detail drawer and ranking filter, settings recording scope, local data overview, or JSON/CSV export. Launch, doctor, drive, evidence, then cleanup."
+description: "Drive PageTime the way a user does and keep proof. Use when verifying the WXT dashboard or the Vite preview: the one-page ledger and date range, site detail drawer and ranking filter, settings recording scope, the settings docs links, or JSON/CSV export. Launch, doctor, drive, evidence, then cleanup."
 ---
 
 # Verify PageTime
@@ -9,7 +9,7 @@ PageTime is a WXT Chrome/Edge extension plus a Vite preview that mounts the same
 
 Two surfaces. Pick the one the feature file names.
 
-- **Preview** is the default. `npm run dev -- --host 127.0.0.1 --port 4173` serves `index.html`. Storage is `localStorage` keys `pagetime-preview` and `pagetime-preview-settings` inside the Playwright context. A fresh context is an empty ledger. There is no IndexedDB `pagetime-ledger`, so the Local data section is absent.
+- **Preview** is the default. `npm run dev -- --host 127.0.0.1 --port 4173` serves `index.html`. Storage is `localStorage` keys `pagetime-preview` and `pagetime-preview-settings` inside the Playwright context. A fresh context is an empty ledger. There is no IndexedDB `pagetime-ledger`.
 - **Extension** is the installed dashboard. `npm run build` writes `.output/chrome-mv3`. Playwright loads it with the persistent-context arguments in `tests/e2e/timing.spec.mjs`. The page is `dashboard.html` on the service worker origin. The ledger is IndexedDB `pagetime-ledger` in that profile.
 
 Do not start a second copy of the surface you are driving. The preview helper refuses when `127.0.0.1:4173` is already open. The extension helper in the e2e file finds every Chromium window by class `Chromium-browser`, and `playwright.config.mjs` sets `workers: 1`. One extension context at a time.
@@ -105,7 +105,7 @@ Stable handles, from `src/App.jsx`, `src/Overview.jsx`, `src/RangeControl.jsx`, 
 | Site drawer | `getByRole('button', { name: 'Details for <domain>' })`, then `getByRole('dialog')` titled `Site details`, close `Close details` |
 | Recording scope | `getByRole('radiogroup', { name: 'Recording scope' })`, radios whose names start with `Blacklist` and `Whitelist` |
 | Ignore / allow | textbox `Host to ignore` or `Host to allow`, button `Add`, remove `Remove <domain>` |
-| Local data | `getByRole('region', { name: 'Local data' })` — extension only |
+| Docs links | `getByRole('link', { name: 'Timing rules and privacy notes' })` and `getByRole('link', { name: 'Privacy policy' })`, last row of Settings |
 | Export | heading `Export data`, buttons `Export JSON` and `Export CSV`, `status` `Saved pagetime-<date>.json.` or `.csv.` |
 
 One feature per drive. The steps live in `features/`. A missing precondition is a failed journey; the reason is already in that file's Gotchas. Do not write sample rows into `pagetime-preview` or IndexedDB to make a journey pass.

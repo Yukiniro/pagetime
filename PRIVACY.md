@@ -17,7 +17,7 @@ The durable ledger is the IndexedDB database `pagetime-ledger` in the extension'
 
 Each timing event updates `days`, `hours`, `spans`, `visits`, and `cursor` in one IndexedDB transaction, so they are all written or none is. The dashboard reads the same database directly and refreshes when it changes. `domainOf` in `src/model.mjs` keeps only the `hostname` of an `http:` or `https:` URL. Path, query, fragment, port, and userinfo are dropped.
 
-Versions before the IndexedDB ledger kept their records in the `data` key of `chrome.storage.local`. This version never reads, writes, or deletes that key, so records saved by an older version stay there unchanged and are not shown. The local data overview in Settings shows only whether the key is still there and its size, from `getBytesInUse`, without reading its contents. The new ledger starts empty.
+Versions before the IndexedDB ledger kept their records in the `data` key of `chrome.storage.local`. This version never reads, writes, or deletes that key, so records saved by an older version stay there unchanged and are not shown. The new ledger starts empty.
 
 If a ledger write fails, the background stores `ledgerError` in `chrome.storage.local`: `{ at, name }`, the time and the error name. The dashboard shows a save error while it is present. The next successful write removes it. A failed cleanup of old detail is only logged and does not set it.
 
@@ -54,7 +54,7 @@ On this device only:
 
 ## How long it is kept
 
-The numbers are the constants in `src/model.mjs`. The in-extension explainer reads them through `timingCopy(settings)`, so the idle number follows the stored threshold:
+The numbers are the constants in `src/model.mjs`. `docs/timing.md` states the same numbers, and `tests/timing-docs.test.mjs` checks that it does. The idle number below is the default; the stored threshold may differ:
 
 | Constant | Value | Effect |
 | --- | --- | --- |
@@ -63,7 +63,7 @@ The numbers are the constants in `src/model.mjs`. The in-extension explainer rea
 | `IDLE_SECONDS` | 60 | Default idle threshold. The stored `settings.idleSeconds` may instead be 120, 300, or 600. Recording stops after that many seconds without keyboard or mouse input, unless `countAudible` is on and the active tab of the focused window is audible and not muted. A locked screen never counts |
 | `GAP_LIMIT_MS` | 90000 | A gap between checkpoints is credited at most 90 seconds |
 
-The detail tables have no count cap. The public timing rules are the README section on what is counted, the in-extension "How time is counted" dialog, `tests/model.test.mjs`, `tests/timing.test.mjs`, `tests/timing-copy.test.mjs`, and `docs/timing-qa.md`.
+The detail tables have no count cap. The public timing rules are the README section on what is counted, [docs/timing.md](docs/timing.md), `tests/model.test.mjs`, `tests/timing.test.mjs`, `tests/timing-docs.test.mjs`, and `docs/timing-qa.md`.
 
 ## No network, telemetry, or account
 
