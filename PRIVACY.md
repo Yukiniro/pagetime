@@ -17,7 +17,7 @@ The durable ledger is the IndexedDB database `pagetime-ledger` in the extension'
 
 Each timing event updates `days`, `hours`, `spans`, `visits`, and `cursor` in one IndexedDB transaction, so they are all written or none is. The dashboard reads the same database directly and refreshes when it changes. `domainOf` in `src/model.mjs` keeps only the `hostname` of an `http:` or `https:` URL. Path, query, fragment, port, and userinfo are dropped.
 
-Versions before the IndexedDB ledger kept their records in the `data` key of `chrome.storage.local`. This version never reads, writes, or deletes that key, so records saved by an older version stay there unchanged and are not shown. The new ledger starts empty.
+Versions before the IndexedDB ledger kept their records in the `data` key of `chrome.storage.local`. This version never reads, writes, or deletes that key, so records saved by an older version stay there unchanged and are not shown. The local data overview in Settings shows only whether the key is still there and its size, from `getBytesInUse`, without reading its contents. The new ledger starts empty.
 
 If a ledger write fails, the background stores `ledgerError` in `chrome.storage.local`: `{ at, name }`, the time and the error name. The dashboard shows a save error while it is present. The next successful write removes it. A failed cleanup of old detail is only logged and does not set it.
 
@@ -78,4 +78,8 @@ The manifest permissions are `storage`, `tabs`, `webNavigation`, `idle`, and `al
 - Removing the extension from the browser deletes that extension's IndexedDB and `chrome.storage`, including an old `data` key.
 - Pausing recording sets `enabled` in `meta.state` to false. It does not delete the ledger.
 
-Deleting, clearing, and uninstalling cannot be undone. This version has no backup, recycle bin, sync, import, or export command. What makes the ledger portable is the table shape above: it stays in local storage on this device and is not locked to an account.
+Deleting, clearing, and uninstalling cannot be undone. This version has no backup, recycle bin, sync, or import command.
+
+## How to export it
+
+Settings → Export data saves a copy of the ledger as a file. The dashboard reads `meta.state` and every row of `domains`, `days`, `hours`, `spans`, and `visits` in one read-only IndexedDB transaction (`readLedgerSnapshot` in `src/ledger.mjs`), builds the file in the page (`src/export.mjs`), and saves it through a `Blob` URL and an `<a download>` link. Nothing is sent over the network, no message is added, and no `downloads` permission is used. Export JSON writes `pagetime-YYYY-MM-DD.json` with `format: "pagetime-ledger"`, `schemaVersion`, `exportedAt`, `timeZone`, `appVersion`, `recording` (`meta.state`), the whole `settings` record including `ignored`, `allowed`, `recordMode`, and `siteMerge`, and the five tables with rows sorted by primary key. The `cursor` row is not exported. Export CSV writes `pagetime-YYYY-MM-DD.csv`, UTF-8 with a byte order mark, with the columns `date,host,active_ms,visits`: one row per stored local date and raw hostname from `days`, not grouped by `siteMerge`. Neither file contains a URL, title, or page content. The saved file is outside the extension, so deleting, clearing, or uninstalling does not remove it. In the local preview, export uses the `pagetime-preview` object.

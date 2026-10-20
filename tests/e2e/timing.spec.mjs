@@ -529,6 +529,164 @@ test('deleting a site from the dashboard removes it from the ranking and the det
   });
 });
 
+async function openSettings(context, sw) {
+  const dashboard = await context.newPage();
+  await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
+  await dashboard.evaluate(() => localStorage.setItem('pagetime-language', 'en'));
+  await dashboard.reload();
+  await dashboard.getByRole('button', { name: 'Settings', exact: true }).click();
+  await expect(dashboard.getByRole('heading', { name: 'Export data' })).toBeVisible();
+  return dashboard;
+}
+
+async function exportFile(dashboard, name) {
+  const started = dashboard.waitForEvent('download');
+  await dashboard.getByRole('button', { name, exact: true }).click();
+  const download = await started;
+  return { name: download.suggestedFilename(), bytes: fs.readFileSync(await download.path()) };
+}
+
+async function readRows(sw, names) {
+  return sw.evaluate(async names => {
+    const db = await new Promise((resolve, reject) => {
+      const request = indexedDB.open('pagetime-ledger');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    try {
+      const tx = db.transaction(names, 'readonly');
+      return Object.fromEntries(await Promise.all(names.map(name => new Promise((resolve, reject) => {
+        const request = tx.objectStore(name).getAll();
+        request.onsuccess = () => resolve([name, request.result]);
+        request.onerror = () => reject(request.error);
+      }))));
+    } finally {
+      db.close();
+    }
+  }, names);
+}
+
+test('exporting from settings downloads the ledger as JSON and as a daily CSV', async () => {
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    const page = await context.newPage();
+    await page.goto(pageUrl('a.test'));
+    await waitForDomain(context, 'a.test');
+    await page.waitForTimeout(2_000);
+    await page.goto('about:blank');
+    await waitForSpan(context, 'a.test', 1_000);
+    const dashboard = await openSettings(context, sw);
+    await expect(dashboard.getByText('The file is saved only on your computer. It contains hostnames and durations, never URLs or titles.')).toBeVisible();
+    const stored = await readRows(sw, ['domains', 'days', 'hours', 'spans', 'visits']);
+
+    const json = await exportFile(dashboard, 'Export JSON');
+    const today = await dashboard.evaluate(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; });
+    expect(json.name).toBe(`pagetime-${today}.json`);
+    const document = JSON.parse(json.bytes.toString('utf8'));
+    expect(document.format).toBe('pagetime-ledger');
+    expect(document.schemaVersion).toBe(1);
+    expect(Date.parse(document.exportedAt)).toBeGreaterThan(Date.now() - 60_000);
+    expect(document.timeZone).toBe(await dashboard.evaluate(() => Intl.DateTimeFormat().resolvedOptions().timeZone));
+    expect(document.appVersion).toBe(JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version);
+    expect(document.recording.enabled).toBe(true);
+    expect(document.settings).toMatchObject({ recordMode: 'blacklist', siteMerge: 'prefix', ignored: [], allowed: [] });
+    expect(Object.keys(document.tables)).toEqual(['domains', 'days', 'hours', 'spans', 'visits']);
+    const id = document.tables.domains.find(row => row.host === 'a.test').id;
+    expect(document.tables.days).toEqual(stored.days.map(({ date, domainId, ms, visits }) => ({ date, domainId, ms, visits })));
+    expect(document.tables.spans.length).toBe(stored.spans.length);
+    expect(document.tables.visits.length).toBe(stored.visits.length);
+    expect(document.tables.hours.filter(row => row.domainId === id).reduce((sum, row) => sum + row.ms, 0))
+      .toBe(document.tables.days.filter(row => row.domainId === id).reduce((sum, row) => sum + row.ms, 0));
+    expect(json.bytes.toString('utf8')).not.toMatch(/http:\/\/|<title>|pagetime<\/title>/);
+    await expect(dashboard.getByRole('status')).toHaveText(`Saved pagetime-${today}.json.`);
+
+    const csv = await exportFile(dashboard, 'Export CSV');
+    expect(csv.name).toBe(`pagetime-${today}.csv`);
+    expect(csv.bytes.subarray(0, 3).toString('hex')).toBe('efbbbf');
+    const lines = csv.bytes.toString('utf8').slice(1).split('\r\n');
+    expect(lines[0]).toBe('date,host,active_ms,visits');
+    expect(lines.at(-1)).toBe('');
+    const row = stored.days.find(day => day.domainId === id && day.date === today);
+    expect(lines).toContain(`${today},a.test,${row.ms},${row.visits}`);
+
+    await dashboard.evaluate(() => { URL.createObjectURL = () => { throw new Error('blocked'); }; });
+    await dashboard.getByRole('button', { name: 'Export CSV', exact: true }).click();
+    await expect(dashboard.getByRole('alert')).toContainText('Export failed');
+    await expect(dashboard.getByRole('alert')).toContainText('Nothing was downloaded. Try again.');
+    await expect(dashboard.getByRole('button', { name: 'Export JSON', exact: true })).toBeEnabled();
+  });
+});
+
+test('a one-year ledger of 200 sites exports with a progress state and the page keeps painting', async () => {
+  test.setTimeout(180_000);
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    const seeded = await sw.evaluate(async () => {
+      const db = await new Promise((resolve, reject) => {
+        const request = indexedDB.open('pagetime-ledger');
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      const first = new Date();
+      first.setHours(0, 0, 0, 0);
+      first.setDate(first.getDate() - 364);
+      const key = at => { const d = new Date(at); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+      let days = 0, hours = 0;
+      try {
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(['meta', 'domains', 'days', 'hours'], 'readwrite');
+          tx.oncomplete = resolve;
+          tx.onerror = () => reject(tx.error);
+          tx.objectStore('meta').put({ key: 'state', value: { enabled: true, since: first.getTime() } });
+          for (let id = 1; id <= 200; id++) tx.objectStore('domains').put({ id, host: `site-${id}.example.com` });
+          for (let d = 0; d < 365; d++) {
+            const at = new Date(first);
+            at.setDate(at.getDate() + d);
+            const date = key(at.getTime());
+            for (let id = 1; id <= 200; id++) {
+              tx.objectStore('days').put({ date, domainId: id, ms: 4 * 600_000, visits: 3 });
+              days++;
+              for (const hour of [9, 11, 14, 20]) { tx.objectStore('hours').put({ date, hour, domainId: id, ms: 600_000 }); hours++; }
+            }
+          }
+        });
+      } finally {
+        db.close();
+      }
+      return { days, hours };
+    });
+    expect(seeded).toEqual({ days: 73_000, hours: 292_000 });
+    const dashboard = await openSettings(context, sw);
+    await dashboard.evaluate(() => {
+      window.PAGETIME_LONGEST = 0;
+      new PerformanceObserver(list => {
+        for (const entry of list.getEntries()) window.PAGETIME_LONGEST = Math.max(window.PAGETIME_LONGEST, entry.duration);
+      }).observe({ type: 'longtask' });
+      window.PAGETIME_FRAMES = 0;
+      const frame = () => { window.PAGETIME_FRAMES++; requestAnimationFrame(frame); };
+      requestAnimationFrame(frame);
+    });
+    const started = Date.now();
+    const downloaded = dashboard.waitForEvent('download', { timeout: 120_000 });
+    const framesBefore = await dashboard.evaluate(() => window.PAGETIME_FRAMES);
+    await dashboard.getByRole('button', { name: 'Export JSON', exact: true }).click();
+    await expect(dashboard.getByRole('status')).toHaveText('Exporting…');
+    await expect(dashboard.getByRole('button', { name: 'Export CSV', exact: true })).toBeDisabled();
+    const download = await downloaded;
+    const elapsed = Date.now() - started;
+    const { longest, frames } = await dashboard.evaluate(() => ({ longest: window.PAGETIME_LONGEST, frames: window.PAGETIME_FRAMES }));
+    const document = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
+    console.log(`large export: ${elapsed} ms, ${frames - framesBefore} frames painted, longest main-thread task ${Math.round(longest)} ms, ${(fs.statSync(await download.path()).size / 1e6).toFixed(1)} MB`);
+    expect(document.tables.days).toHaveLength(73_000);
+    expect(document.tables.hours).toHaveLength(292_000);
+    expect(document.tables.domains).toHaveLength(200);
+    expect(frames - framesBefore).toBeGreaterThan(5);
+    expect(longest).toBeLessThan(1_000);
+    await expect(dashboard.getByRole('status')).toHaveText(/^Saved pagetime-\d{4}-\d{2}-\d{2}\.json\.$/);
+    await expect(dashboard.getByRole('button', { name: 'Export CSV', exact: true })).toBeEnabled();
+  });
+});
+
 test('an open dashboard shows background writes without a reload', async () => {
   await withBrowser(async context => {
     const sw = await worker(context);
@@ -546,5 +704,128 @@ test('an open dashboard shows background writes without a reload', async () => {
     await waitForSpan(context, 'a.test', 1_000);
     await expect(dashboard.getByText('a.test').first()).toBeAttached();
     expect(await dashboard.evaluate(() => window.PAGETIME_MARKER)).toBe('kept');
+  });
+});
+
+test('the settings data overview reads the ledger live, and clearing empties it without a reload', async () => {
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    const dashboard = await context.newPage();
+    await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
+    await dashboard.evaluate(() => localStorage.setItem('pagetime-language', 'en'));
+    await dashboard.reload();
+    await dashboard.getByRole('button', { name: 'Settings', exact: true }).click();
+    const overview = dashboard.getByRole('region', { name: 'Local data' });
+    const item = label => overview.locator('dl > div', { has: dashboard.locator('dt', { hasText: label }) });
+    await expect(overview).toContainText('IndexedDB (pagetime-ledger)');
+    await expect(overview).toContainText('0 hostnames');
+    await expect(item('Earliest daily total')).toContainText('No records yet');
+    await expect(overview).toContainText('Kept for 31 days, from');
+    await expect(overview).toContainText('Space used (estimate)');
+    await expect(overview).not.toContainText('Older version data');
+    await dashboard.evaluate(() => { window.PAGETIME_MARKER = 'kept'; });
+    const page = await context.newPage();
+    await page.goto(pageUrl('a.test'));
+    await waitForDomain(context, 'a.test');
+    await page.waitForTimeout(2_000);
+    await page.goto('about:blank');
+    await waitForSpan(context, 'a.test', 1_000);
+    await dashboard.bringToFront();
+    await expect(overview).toContainText('1 hostname');
+    await expect(overview.getByRole('listitem').filter({ hasText: 'visits' })).toHaveText(/^1\s*Visits/);
+    await expect(overview.getByRole('listitem').filter({ hasText: 'spans' })).not.toHaveText(/^0\s/);
+    await expect(item('Earliest daily total')).not.toContainText('No records yet');
+    await expect(overview).not.toContainText('Invalid Date');
+    await dashboard.getByRole('button', { name: 'Clear data', exact: true }).click();
+    await dashboard.getByRole('alertdialog').getByRole('button', { name: 'Clear', exact: true }).click();
+    await expect(overview).toContainText('0 hostnames');
+    await expect(item('Earliest daily total')).toContainText('No records yet');
+    await expect(overview.getByRole('listitem').filter({ hasText: 'visits' })).toHaveText(/^0\s*Visits/);
+    expect(await dashboard.evaluate(() => window.PAGETIME_MARKER)).toBe('kept');
+    await sw.evaluate(() => chrome.storage.local.set({ data: { visits: [{ domain: 'old.test', at: 1 }], spans: [], enabled: true, since: 1 } }));
+    await dashboard.reload();
+    await dashboard.getByRole('button', { name: 'Settings', exact: true }).click();
+    await expect(overview).toContainText('Older version data');
+    expect((await sw.evaluate(() => chrome.storage.local.get('data'))).data.visits).toHaveLength(1);
+  });
+});
+
+test('the data overview hides the space estimate when storage.estimate() is missing or fails', async () => {
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    for (const patch of ['missing', 'rejects']) {
+      const dashboard = await context.newPage();
+      const errors = [];
+      dashboard.on('pageerror', error => errors.push(error));
+      await dashboard.addInitScript(mode => {
+        Object.defineProperty(StorageManager.prototype, 'estimate', {
+          configurable: true,
+          value: mode === 'missing' ? undefined : () => Promise.reject(new Error('blocked')),
+        });
+        localStorage.setItem('pagetime-language', 'en');
+      }, patch);
+      await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
+      await dashboard.getByRole('button', { name: 'Settings', exact: true }).click();
+      const overview = dashboard.getByRole('region', { name: 'Local data' });
+      await expect(overview).toContainText('Kept for 31 days, from');
+      await dashboard.waitForTimeout(500);
+      await expect(overview).not.toContainText('Space used (estimate)');
+      expect(errors, patch).toEqual([]);
+      await dashboard.close();
+    }
+  });
+});
+
+// Writes ledger rows the way the background would have, for days that already passed, so the dashboard has a previous period to read.
+async function seedOldDays(sw) {
+  await sw.evaluate(async () => {
+    const day = offset => {
+      const date = new Date();
+      date.setDate(date.getDate() + offset);
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    };
+    const db = await new Promise((resolve, reject) => {
+      const request = indexedDB.open('pagetime-ledger');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const done = tx => new Promise((resolve, reject) => { tx.oncomplete = resolve; tx.onerror = () => reject(tx.error); });
+    const tx = db.transaction(['meta', 'domains', 'days'], 'readwrite');
+    const since = new Date();
+    since.setDate(since.getDate() - 14);
+    tx.objectStore('meta').put({ key: 'state', value: { enabled: true, since: since.getTime() } });
+    const added = tx.objectStore('domains').add({ host: 'old.test' });
+    added.onsuccess = () => {
+      const domainId = added.result;
+      tx.objectStore('days').put({ date: day(-3), domainId, ms: 30 * 60_000, visits: 2 });
+      tx.objectStore('days').put({ date: day(-10), domainId, ms: 20 * 60_000, visits: 1 });
+    };
+    await done(tx);
+    db.close();
+  });
+}
+
+test('the overview compares each KPI with the previous period and says when it cannot', async () => {
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    await expect.poll(async () => (await readData(sw))?.enabled).toBe(true);
+    await seedOldDays(sw);
+    const dashboard = await context.newPage();
+    await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
+    await dashboard.evaluate(() => localStorage.setItem('pagetime-language', 'en'));
+    await dashboard.reload();
+    const lines = dashboard.locator('[data-compare]');
+    await dashboard.getByRole('button', { name: /^Date range/ }).click();
+    await dashboard.getByRole('menuitemradio', { name: 'Last 7 days' }).click();
+    await expect(dashboard.locator('[data-compare="ms"]')).toContainText('vs previous 7 days');
+    await expect(dashboard.locator('[data-compare="ms"]')).toContainText('+10 min (+50%)');
+    await expect(dashboard.locator('[data-compare="visits"]')).toContainText('+1 (+100%)');
+    await expect(dashboard.locator('[data-compare="sites"]')).toContainText('No change');
+    await dashboard.locator('[data-compare="ms"]').hover();
+    await expect(dashboard.getByText(/^Previous period: \d\d\/\d\d–\d\d\/\d\d/)).toBeVisible();
+
+    await dashboard.getByRole('button', { name: /^Date range/ }).click();
+    await dashboard.getByRole('menuitemradio', { name: 'Last 30 days' }).click();
+    for (const line of await lines.all()) await expect(line).toContainText('Recording started on');
   });
 });

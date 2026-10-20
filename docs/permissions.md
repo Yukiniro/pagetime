@@ -49,3 +49,4 @@ It can wake this extension's background on a schedule. By itself it cannot read 
 - **No host permission.** The manifest does not grant a host pattern, so the extension cannot inject into pages or use a host permission to read them.
 - **No content script.** The repository has no content-script entrypoint, and the build check requires `content_scripts` to be absent or empty.
 - **No `history`, `scripting`, `cookies`, `webRequest`, or `identity`.** The extension cannot read or change the browser history database, run page scripts, read cookies, inspect request bodies, or use an account.
+- **No `downloads`.** Settings → Export data builds the file in the dashboard page and saves it through a `Blob` URL and an `<a download>` link, which needs no permission. The extension cannot list, open, or delete the user's downloads.

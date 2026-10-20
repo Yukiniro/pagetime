@@ -36,6 +36,7 @@
     "sites_other": "<b>{{count}}</b> 個網站"
   },
   "kpi": { "label": "{{range}}彙總", "sites": "網站數" },
+  "compare": {"yesterday": "較昨天", "previous7": "較前 7 天", "previous30": "較前 30 天", "previousPeriod": "較上一週期", "asOf": "{{period}}（截至 {{time}}）", "change": "{{diff}}（{{percent}}）", "unchanged": "無變化", "underMinute": "{{sign}}不足 1 分鐘", "basis": "上一週期：{{range}}", "basisAsOf": "上一週期：{{range}}。兩個週期都只統計到最後一天的 {{time}}。", "reason": {"since": "紀錄從 {{date}} 才開始，晚於上一週期的起點。", "retention": "上一週期的造訪紀錄已超過保留期，無法比較。", "notStarted": "還沒有可比較的整點。"}},
   "filter": {
     "active": "已篩選：{{domain}}",
     "clear": "清除篩選",
@@ -111,6 +112,8 @@
     "ignored": { "title": "忽略的網站", "description": "這些網域及其子網域不計時長、不記造訪次數，和開啟瀏覽器內部頁面一樣。例如 example.com 也會符合 a.example.com；mail.example.com 不會符合 example.com。已有紀錄不會刪除，也不會從統計中隱藏。", "input": "要忽略的網域", "placeholder": "example.com", "add": "新增", "remove": "移除 {{domain}}", "emptyTitle": "沒有忽略的網站", "emptyDescription": "新增後，這些網站之後就不會再記入新的時長和造訪。", "error": "請輸入網域，例如 example.com。系統會去掉協定、路徑和連接埠。不能包含空格；沒有點號時只接受 localhost。", "limit": "最多忽略 {{count}} 個網站。" },
     "allowed": { "title": "允許的網站", "description": "只有這些網域及其子網域會計入時長和造訪次數。例如 example.com 也會符合 a.example.com；mail.example.com 不會符合 example.com。已有紀錄不會刪除，也不會從統計中隱藏。", "input": "要允許的網域", "placeholder": "example.com", "add": "新增", "remove": "移除 {{domain}}", "emptyTitle": "沒有允許的網站", "emptyDescription": "新增後，只有這些網站之後會計入新的時長和造訪。清單為空時不會記錄任何網站。", "limit": "最多允許 {{count}} 個網站。", "emptyWarningTitle": "空白名單不會記錄任何網站", "emptyWarning": "允許清單是空的，所以不會記錄任何網站的時長和造訪。空白名單不等於記錄全部網站。請先新增至少一個網域。已有紀錄會保留，也不會被隱藏。", "error": "請輸入網域，例如 example.com。系統會去掉協定、路徑和連接埠。不能包含空格；沒有點號時只接受 localhost。" },
     "badge": { "title": "工具列角標", "description": "在工具列圖示上顯示今天的活躍瀏覽時間。" },
+    "localData": {"title": "本機資料概況", "description": "這台裝置上帳本目前的實際狀態。唯讀；記錄、刪除或清除後會立即更新。", "location": "儲存在本機 IndexedDB（<code>{{name}}</code>）中，不會上傳。", "since": "記錄開始於", "firstDay": "最早一天的每日彙總", "detail": "造訪紀錄與活躍時段明細", "detailValue_other": "保留 {{count}} 天：{{date}} 起", "detailNote": "按日和按小時的彙總長期保留。", "firstDetail": "現存最早明細：{{date}}", "sites": "網站", "sitesValue_other": "{{n}} 個主機名稱", "rows": "各表列數", "table": {"days": "每日彙總", "hours": "每小時彙總", "spans": "活躍時段", "visits": "造訪紀錄"}, "usage": "本機占用（估計）", "about": "約 {{size}}", "usageNote": "瀏覽器提供的估計值，包含本擴充功能的 IndexedDB 等全部網站儲存空間，不只是帳本；不含 chrome.storage。", "legacy": "舊版資料", "legacyNote": "舊版本留在 chrome.storage.local 的 <code>data</code> 仍在。這裡只顯示大小，不讀取、不修改，也不刪除它。", "none": "還沒有紀錄"},
+    "export": { "title": "匯出資料", "description": "把這台裝置上的帳本下載成檔案。JSON 包含全部資料表、記錄狀態和設定；CSV 每天每個主機名稱一列，方便用試算表分析。", "note": "檔案只會儲存在你的電腦上，包含主機名稱和時長，不含網址和標題。", "json": "匯出 JSON", "csv": "匯出 CSV", "exporting": "正在匯出…", "done": "已儲存 {{file}}。", "errorTitle": "匯出失敗", "error": "沒有下載任何檔案，請再試一次。" },
     "deleteDay": { "title": "刪除某一天的紀錄", "description": "從這台裝置上刪除某一天的活躍時長、造訪次數和時段，刪除後無法復原。", "label": "要刪除的日期", "button": "刪除這一天", "done": "已刪除 {{date}} 的紀錄。", "confirmTitle": "刪除 {{date}} 的紀錄？", "confirmDescription": "將從這台裝置上刪除這一天的活躍時長、造訪次數和時段，無法復原。", "confirm": "刪除這一天", "deleting": "正在刪除…" },
     "clear": { "title": "清除所有紀錄", "description": "刪除此裝置上 PageTime 已儲存的紀錄，刪除後無法復原。", "button": "清除資料" }
   },
@@ -201,6 +204,7 @@
       "save_other": "每 {{count}} 秒儲存一次；意外關閉時最多遺失最近這段時間。"
     },
     "limits": { "title": "已知誤差", "audible": "瀏覽器判斷聲音開始或停止可能晚 2–3 秒。", "threshold": "閒置判定時間設為 10 分鐘時，離開後最多還會多計 10 分鐘。" },
+    "compare": {"title": "與上一週期比較", "description": "每項數字都和緊接在所選範圍之前、長度相同的一段時間比較。範圍包含今天時，兩個週期都只統計到目前整點。上一週期沒有完整紀錄時，顯示短橫線而不是數字。"},
     "merge": {
       "title": "網站如何合併",
       "storage": "帳本仍按原始主機名稱保存。合併只改變總覽的呈現，不會改寫已有紀錄，也可以隨時關閉。",

@@ -299,6 +299,9 @@ export const hoursBetween = (db, from, to) =>
 /** Spans that start in [start, end). @param {Dexie} db */
 export const spansBetween = (db, start, end) => db.table('spans').where('start').between(start, end, true, false).toArray();
 
+/** Every visit in [start, end). @param {Dexie} db */
+export const visitsBetween = (db, start, end) => db.table('visits').where('at').between(start, end, true, false).toArray();
+
 /** Newest visits in [start, end) for the given domain ids. @param {Dexie} db */
 export const recentVisits = (db, start, end, domainIds, limit) =>
   db.table('visits').where('at').between(start, end, true, false).reverse().filter(visit => domainIds.has(visit.domainId)).limit(limit).toArray();
@@ -306,5 +309,51 @@ export const recentVisits = (db, start, end, domainIds, limit) =>
 /** @param {Dexie} db */
 export const readState = async db => (await db.table('meta').get('state'))?.value;
 
+/**
+ * Read-only figures for the settings data overview: row count per table, the earliest day total,
+ * the earliest span and visit start, and the recording `since`. Missing values are undefined.
+ * @param {Dexie} db
+ */
+export async function readLedgerStats(db) {
+  const [counts, firstDay, firstSpan, firstVisit, state] = await Promise.all([
+    Promise.all(db.tables.map(async table => [table.name, await table.count()])),
+    db.table('days').orderBy(':id').first(),
+    db.table('spans').orderBy('start').first(),
+    db.table('visits').orderBy('at').first(),
+    readState(db),
+  ]);
+  return { counts: Object.fromEntries(counts), firstDay: firstDay?.date, firstSpan: firstSpan?.start, firstVisit: firstVisit?.at, since: state?.since };
+}
+
 /** @param {Dexie} db */
 export const readDomains = db => db.table('domains').toArray();
+
+export const SNAPSHOT_BATCH = 5_000;
+const SNAPSHOT_TABLES = ['domains', 'days', 'hours', 'spans', 'visits'];
+
+// Pages by primary key inside the caller's transaction, so each batch resumes after the last key read.
+async function readByKey(table, batch) {
+  const path = table.schema.primKey.keyPath;
+  const keyOf = row => Array.isArray(path) ? path.map(field => row[field]) : row[path];
+  const rows = [];
+  let page = await table.orderBy(':id').limit(batch).toArray();
+  while (page.length) {
+    for (const row of page) rows.push(row);
+    if (page.length < batch) break;
+    page = await table.where(':id').above(keyOf(page[page.length - 1])).limit(batch).toArray();
+  }
+  return rows;
+}
+
+/**
+ * Recording state and every row of the five data tables, read in one read-only transaction:
+ * a write commits wholly before or after it. Rows are in primary-key order. The cursor is not included.
+ * @param {Dexie} db
+ */
+export function readLedgerSnapshot(db, batch = SNAPSHOT_BATCH) {
+  return db.transaction('r', db.tables, async tx => {
+    const snapshot = { state: (await tx.table('meta').get('state'))?.value };
+    for (const name of SNAPSHOT_TABLES) snapshot[name] = await readByKey(tx.table(name), batch);
+    return snapshot;
+  });
+}

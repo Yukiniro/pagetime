@@ -1,4 +1,4 @@
-import { addDays, dateKeyStart, midnight } from './model.mjs';
+import { addDays, dateKeyStart, detailCutoff, midnight } from './model.mjs';
 
 // Query windows are local midnights with an exclusive end, so a closed day interval
 // [first, last] is stored as [midnight(first), midnight(last) + 1 day).
@@ -44,4 +44,63 @@ export function trendWindow(range, today) {
   const startOfToday = midnight(today);
   if (defaultChart(range, startOfToday) === 'timeline') return { start: addDays(startOfToday, -6), end: addDays(startOfToday, 1) };
   return { start: midnight(range.start), end: midnight(range.end) };
+}
+
+// Same wall-clock time `days` calendar days away. addDays only handles midnights.
+function shiftDays(at, days) {
+  const date = new Date(at);
+  date.setDate(date.getDate() + days);
+  return date.getTime();
+}
+
+function floorHour(at) {
+  const date = new Date(at);
+  date.setMinutes(0, 0, 0);
+  return date.getTime();
+}
+
+// The comparison windows for a range: the previous period has the same number of calendar days and ends where the range starts.
+// A range that has not ended yet is cut at the current whole hour, and the previous period at the same wall-clock hour,
+// so "today so far" is never set against all of yesterday. `period` is the whole previous period, for labels.
+// `cutoff` is the shared cut-off hour of the current window, or null when nothing is cut.
+export function previousWindow(range, now) {
+  const days = dayCount(range.start, range.end);
+  const currentEnd = Math.max(range.start, Math.min(range.end, floorHour(now)));
+  const truncated = currentEnd < range.end;
+  const start = addDays(range.start, -days);
+  return {
+    days,
+    truncated,
+    cutoff: truncated ? currentEnd : null,
+    empty: currentEnd <= range.start,
+    current: { start: range.start, end: currentEnd },
+    previous: { start, end: truncated ? shiftDays(currentEnd, -days) : range.start },
+    period: { start, end: range.start },
+  };
+}
+
+// Why a metric cannot be compared, or null when it can. Totals come from day rows and hour buckets, which only exist from
+// the first recorded day on. Visit counts inside a cut day need visit rows, and those are pruned after DETAIL_DAYS.
+// Site counts use visits too, so they share that limit.
+export function compareBlocks(window, { since, now }) {
+  const none = { ms: null, visits: null, sites: null };
+  if (window.empty) return { ms: 'notStarted', visits: 'notStarted', sites: 'notStarted' };
+  if (window.previous.start < midnight(since)) return { ms: 'since', visits: 'since', sites: 'since' };
+  const cutDay = midnight(window.previous.end);
+  if (window.truncated && cutDay < window.previous.end && cutDay < detailCutoff(now)) return { ms: null, visits: 'retention', sites: 'retention' };
+  return none;
+}
+
+// { diff, percent } per metric, or { reason } when blocked. `percent` is null when the previous value is 0: only the absolute difference is meaningful.
+export function compareSummary(current, previous, blocks) {
+  const out = {};
+  for (const key of ['ms', 'visits', 'sites']) {
+    if (blocks[key]) {
+      out[key] = { reason: blocks[key] };
+      continue;
+    }
+    const diff = current[key] - previous[key];
+    out[key] = { diff, percent: previous[key] === 0 ? null : diff * 100 / previous[key] };
+  }
+  return out;
 }

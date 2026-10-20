@@ -37,24 +37,38 @@ test('the ledger has no sync or cloud package', () => {
   for (const path of ['package.json', 'package-lock.json']) assert.doesNotMatch(text(path), /dexie-cloud/i, path);
 });
 
+async function bundle(entry) {
+  const output = await build({
+    configFile: false,
+    root,
+    logLevel: 'silent',
+    build: {
+      write: false,
+      minify: true,
+      lib: { entry: join(root, entry), formats: ['es'], fileName: 'bundle' },
+      rollupOptions: { external: [/^react(-dom)?(\/|$)/] },
+    },
+  });
+  return [output].flat().flatMap(result => result.output).map(chunk => chunk.code ?? '').join('\n');
+}
+
 test('the bundled storage layer makes no network request', async () => {
   for (const entry of ['entrypoints/background.ts', 'src/use-ledger.js']) {
-    const output = await build({
-      configFile: false,
-      root,
-      logLevel: 'silent',
-      build: {
-        write: false,
-        minify: true,
-        lib: { entry: join(root, entry), formats: ['es'], fileName: 'bundle' },
-        rollupOptions: { external: [/^react(-dom)?(\/|$)/] },
-      },
-    });
-    const code = [output].flat().flatMap(result => result.output).map(chunk => chunk.code ?? '').join('\n');
+    const code = await bundle(entry);
     assert.match(code, new RegExp(LEDGER_NAME), `${entry} bundles the ledger`);
     assert.match(code, /DatabaseClosed/, `${entry} bundles Dexie`);
     assert.doesNotMatch(code, NETWORK_API, entry);
   }
+});
+
+test('the bundled export path builds the file in the page: no network request and no downloads API', async () => {
+  const code = await bundle('src/export-file.js');
+  assert.match(code, new RegExp(LEDGER_NAME), 'the export path bundles the ledger');
+  assert.match(code, /DatabaseClosed/, 'the export path bundles Dexie');
+  assert.match(code, /createObjectURL/, 'the file is a local blob URL');
+  assert.match(code, /\bdownload\b/, 'the file is saved through a download link');
+  assert.doesNotMatch(code, NETWORK_API);
+  assert.doesNotMatch(code, /\.downloads\b|\bdownloads\.download\b/);
 });
 
 test('permission notes match wxt.config.ts and state the install warning', () => {

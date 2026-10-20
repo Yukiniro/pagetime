@@ -6,7 +6,7 @@ The UI is localized with react-i18next in Simplified Chinese, Traditional Chines
 
 Use the official shadcn Base UI components for available primitives. Prefer DropdownMenu for dropdown choices; avoid Select and native select. Keep the WXT extension and local preview on the same component and theme foundation.
 
-The user selected the light blue analytics design. Theme defaults to system (`prefers-color-scheme`), with light and dark overrides stored in the existing settings record. The overview is a one-page ledger. The top-bar range is today, the last 7 days, the last 30 days, or a custom closed local-day interval; the default is today. Last 7 and last 30 include today and split on local midnights. A custom range whose end day is before its start day cannot be applied: the previous range stays, and the panel explains why. The KPI bar's largest figure is active time for the selected range, plus visit count and site count, with no productivity score; while the range is today those figures are today's. One primary chart is visible at a time. Today opens on today's timeline, and the other tab stays the last 7 days. A multi-day range opens on that range's daily trend, and the timeline tab remains today. A site filter key stays put and is recomputed for the new range. Site rankings sit in two columns with a light relative bar. The activity heatmap stays collapsed until it is opened, then uses the selected range. Settings, the ignore list, merge, and clear stay in settings. The toolbar badge defaults to on and shows today's total active browsing time only; the current site's time for today is only in the toolbar hover title. Range selection is not stored.
+The user selected the light blue analytics design. Theme defaults to system (`prefers-color-scheme`), with light and dark overrides stored in the existing settings record. The overview is a one-page ledger. The top-bar range is today, the last 7 days, the last 30 days, or a custom closed local-day interval; the default is today. Last 7 and last 30 include today and split on local midnights. A custom range whose end day is before its start day cannot be applied: the previous range stays, and the panel explains why. The KPI bar's largest figure is active time for the selected range, plus visit count and site count, with no productivity score; while the range is today those figures are today's. Each KPI carries a neutral change line against the previous period of equal length right before the range (no red/green, no better/worse wording); a range that includes today is compared up to the current whole hour on both sides, and a previous period that starts before the first recorded day, or whose visit rows have passed the 31-day retention, shows a dash with its reason instead of a number or percent. One primary chart is visible at a time. Today opens on today's timeline, and the other tab stays the last 7 days. A multi-day range opens on that range's daily trend, and the timeline tab remains today. A site filter key stays put and is recomputed for the new range. Site rankings sit in two columns with a light relative bar. The activity heatmap stays collapsed until it is opened, then uses the selected range. Settings, the ignore list, merge, and clear stay in settings. Settings also has a read-only local data overview read live from the IndexedDB ledger: `since`, the earliest day total, the detail retention boundary from `detailCutoff` (the same cutoff as `pruneDetail`), site and per-table row counts, the `navigator.storage.estimate()` figure (hidden when unavailable), and the old `data` key's size only while it exists. It has no delete or cleanup control, and the preview, which has no IndexedDB ledger, does not show it. Export data also lives in settings: JSON is the whole ledger plus recording state and settings, CSV is one row per local date and raw hostname. The file is built in the page and saved through a Blob download link, with no `downloads` permission, no network, and no import. The toolbar badge defaults to on and shows today's total active browsing time only; the current site's time for today is only in the toolbar hover title. Range selection is not stored.
 
 Site grouping defaults to `prefix` (strip a leading `www.` / `m.` / `mobile.`). The other settings are `none` and `registrable`. Grouping is a query view: Dexie keeps the raw hostname, and switching modes must not rewrite stored rows. Registrable mode uses offline `tldts` with ICANN suffixes only (`allowPrivateDomains: false`), so a private suffix such as `github.io` groups under the ICANN name. Deliver a real WXT Chrome/Edge extension as well as a local preview using the same React components. The preview starts empty: do not seed sample browsing records, and do not add demo-mode labels or a control that restores sample data. `npm run build` builds WXT; `npm run build:preview` builds the Sites-ready preview. Keep the starter's preview runtime intact.
 
@@ -17,6 +17,18 @@ Before making substantial visual changes, use the Product Design plugin's `get-c
 When implementing from a selected generated mock, treat that image as the source of truth for layout, component anatomy, density, spacing, color, typography, visible content, and hierarchy.
 
 Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local prototype can be handed to Sites. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
+
+## 贡献与 PR（Agent / 维护者）
+
+- **Changeset**：每个 PR 都必须带 changeset。用户可见变更按 patch / minor 选型；纯文档、工程类或免发布改动用空 changeset：`npx changeset --empty`。发版流程见 `docs/releasing.md`；下方「Release policy」不再重复选型细则。
+- **测试顺序**：跑 `npm test` 前先 `npm run build:preview`（与 CI 一致）。
+- **PR 正文**：只贴验证的通过数与日志尾部几行，不要贴完整输出（GitHub 正文上限约 32K 字符）。
+- **常用验证命令**：
+  - `npm run typecheck`
+  - `npm run build:preview && npm test`
+  - `npm run build`
+  - `npm run verify-build`
+  - `xvfb-run -a npm run test:e2e`
 
 ## 工程设计原则
 
@@ -33,7 +45,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 ### Release policy
 
-用户可见变更附 changeset：修复为 patch，完整新功能为 minor，major 需维护者确认；免发布改动附空 changeset。修改版本发布、产物校验或恢复流程时，先读 `docs/releasing.md`。使用 npm，保留现有 CI；发版由维护者手动创建版本 PR，合并后发布 GitHub ZIP。
+Changeset 与 PR 要求见上文「贡献与 PR」。修改版本发布、产物校验或恢复流程时，先读 `docs/releasing.md`。使用 npm，保留现有 CI；发版由维护者手动创建版本 PR，合并后发布 GitHub ZIP。
 
 ### 浏览器插件
 

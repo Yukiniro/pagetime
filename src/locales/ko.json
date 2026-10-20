@@ -36,6 +36,7 @@
     "sites_other": "사이트 <b>{{count}}</b>개"
   },
   "kpi": { "label": "{{range}} 합계", "sites": "사이트 수" },
+  "compare": {"yesterday": "어제 대비", "previous7": "이전 7일 대비", "previous30": "이전 30일 대비", "previousPeriod": "이전 기간 대비", "asOf": "{{period}} ({{time}} 기준)", "change": "{{diff}} ({{percent}})", "unchanged": "변화 없음", "underMinute": "{{sign}}1분 미만", "basis": "이전 기간: {{range}}", "basisAsOf": "이전 기간: {{range}}. 두 기간 모두 마지막 날 {{time}}까지만 집계합니다.", "reason": {"since": "기록이 {{date}}에 시작되어 이전 기간의 시작보다 늦습니다.", "retention": "이전 기간의 방문 기록이 보관 기간을 넘어 비교할 수 없습니다.", "notStarted": "비교할 수 있는 정각이 아직 없습니다."}},
   "filter": {
     "active": "{{domain}} 필터 적용 중",
     "clear": "필터 지우기",
@@ -111,6 +112,8 @@
     "ignored": { "title": "무시할 사이트", "description": "이 호스트와 하위 도메인은 브라우저 내부 페이지와 같이 시간도 방문 횟수도 기록하지 않습니다. example.com 은 a.example.com 과도 일치합니다. mail.example.com 은 example.com 과 일치하지 않습니다. 기존 기록은 그대로 남으며 통계에서 숨기지 않습니다.", "input": "무시할 호스트", "placeholder": "example.com", "add": "추가", "remove": "{{domain}} 제거", "emptyTitle": "무시할 사이트가 없습니다", "emptyDescription": "호스트를 추가하면 지금부터 그 사이트를 기록하지 않습니다.", "error": "example.com 같은 호스트를 입력하세요. 프로토콜, 경로, 포트는 제거됩니다. 공백은 허용되지 않으며, 점이 없는 이름은 localhost 만 받습니다.", "limit": "무시할 호스트는 최대 {{count}}개입니다." },
     "allowed": { "title": "허용할 사이트", "description": "이 호스트와 하위 도메인만 시간과 방문 횟수를 기록합니다. example.com 은 a.example.com 과도 일치합니다. mail.example.com 은 example.com 과 일치하지 않습니다. 기존 기록은 그대로 남으며 통계에서 숨기지 않습니다.", "input": "허용할 호스트", "placeholder": "example.com", "add": "추가", "remove": "{{domain}} 제거", "emptyTitle": "허용할 사이트가 없습니다", "emptyDescription": "호스트를 추가하면 지금부터 그 사이트를 기록합니다. 목록이 비어 있는 동안에는 아무것도 기록하지 않습니다.", "limit": "허용할 호스트는 최대 {{count}}개입니다.", "emptyWarningTitle": "빈 화이트리스트는 아무것도 기록하지 않습니다", "emptyWarning": "허용된 호스트가 없어서 어떤 사이트의 시간도 방문 횟수도 기록하지 않습니다. 빈 목록은 모든 사이트를 기록한다는 뜻이 아닙니다. 기록을 시작하려면 호스트를 하나 이상 추가하세요. 기존 기록은 남고 숨겨지지 않습니다.", "error": "example.com 같은 호스트를 입력하세요. 프로토콜, 경로, 포트는 제거됩니다. 공백은 허용되지 않으며, 점이 없는 이름은 localhost 만 받습니다." },
     "badge": { "title": "도구 모음 배지", "description": "도구 모음 아이콘에 오늘의 활성 탐색 시간을 표시합니다." },
+    "localData": {"title": "로컬 데이터 개요", "description": "이 기기의 기록부에 지금 들어 있는 내용입니다. 읽기 전용이며, 기록·삭제·지우기 후 바로 업데이트됩니다.", "location": "이 기기의 IndexedDB(<code>{{name}}</code>)에 저장되며 업로드되지 않습니다.", "since": "기록 시작", "firstDay": "가장 오래된 일별 합계", "detail": "방문 기록 및 활성 구간 세부 정보", "detailValue_other": "{{count}}일간 보관: {{date}}부터", "detailNote": "일별·시간별 합계는 장기간 보관됩니다.", "firstDetail": "남아 있는 가장 오래된 세부 정보: {{date}}", "sites": "사이트", "sitesValue_other": "호스트 이름 {{n}}개", "rows": "테이블별 행 수", "table": {"days": "일별 합계", "hours": "시간별 합계", "spans": "활성 구간", "visits": "방문 기록"}, "usage": "사용 공간(추정)", "about": "약 {{size}}", "usageNote": "브라우저가 추정한 값으로, 기록부뿐 아니라 이 확장 프로그램의 IndexedDB 등 모든 사이트 저장소를 포함합니다. chrome.storage는 포함하지 않습니다.", "legacy": "이전 버전 데이터", "legacyNote": "이전 버전이 chrome.storage.local에 남긴 <code>data</code>가 아직 있습니다. 여기서는 크기만 표시하며 읽거나 변경하거나 삭제하지 않습니다.", "none": "아직 기록이 없습니다"},
+    "export": { "title": "데이터 내보내기", "description": "이 기기의 기록을 파일로 내려받습니다. JSON에는 모든 테이블과 기록 상태, 설정이 들어 있고, CSV는 날짜와 호스트 이름마다 한 행이라 스프레드시트에서 분석할 수 있습니다.", "note": "파일은 내 컴퓨터에만 저장됩니다. 호스트 이름과 시간만 들어 있고 URL이나 제목은 없습니다.", "json": "JSON 내보내기", "csv": "CSV 내보내기", "exporting": "내보내는 중…", "done": "{{file}} 파일을 저장했습니다.", "errorTitle": "내보내지 못했습니다", "error": "아무 파일도 내려받지 않았습니다. 다시 시도해 주세요." },
     "deleteDay": { "title": "하루 기록 삭제", "description": "이 기기에서 선택한 날의 활성 시간, 방문 횟수, 시간 구간을 삭제합니다. 되돌릴 수 없습니다.", "label": "삭제할 날짜", "button": "이 날짜 삭제", "done": "{{date}} 기록을 삭제했습니다.", "confirmTitle": "{{date}} 기록을 삭제할까요?", "confirmDescription": "이 기기에서 그날의 활성 시간, 방문 횟수, 시간 구간을 삭제합니다. 되돌릴 수 없습니다.", "confirm": "이 날짜 삭제", "deleting": "삭제하는 중…" },
     "clear": { "title": "모든 기록 삭제", "description": "이 기기에 PageTime이 저장한 기록을 삭제합니다. 삭제 후에는 복구할 수 없습니다.", "button": "데이터 삭제" }
   },
@@ -201,6 +204,7 @@
       "save_other": "{{count}}초마다 저장합니다. 예기치 않게 닫히면 최근 이 간격까지만 잃을 수 있습니다."
     },
     "limits": { "title": "알려진 오차", "audible": "브라우저가 소리의 시작이나 정지를 알아채기까지 2–3초 늦을 수 있습니다.", "threshold": "유휴 판정을 10분으로 두면, 자리를 비운 뒤에도 최대 10분이 더 집계될 수 있습니다." },
+    "compare": {"title": "이전 기간과 비교", "description": "각 수치는 선택한 기간 바로 앞에 있는 같은 길이의 기간과 비교합니다. 기간에 오늘이 포함되면 두 기간 모두 현재 정각까지만 집계합니다. 이전 기간이 충분히 기록되지 않았으면 숫자 대신 대시를 표시합니다."},
     "merge": {
       "title": "사이트를 합치는 방법",
       "storage": "원장은 원래 호스트 이름 그대로 저장합니다. 합치기는 표시용 집계이며 저장된 기록을 고치지 않고, 언제든 끌 수 있습니다.",

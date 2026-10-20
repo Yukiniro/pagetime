@@ -17,7 +17,7 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 
 每次计时事件都在同一个 IndexedDB 事务里更新 `days`、`hours`、`spans`、`visits` 和 `cursor`，要么全部写入，要么一条也不写。统计页直接读取同一个数据库，数据变化时自动刷新。`domain` 只接受主机名：`src/model.mjs` 的 `domainOf` 只从 `http:` / `https:` 网址取出 `hostname`，路径、查询、片段、端口和账号都丢掉。
 
-改用 IndexedDB 之前的版本把记录放在 `chrome.storage.local` 的 `data` 键。这一版不读、不写、也不删除这个键，旧版本存下的记录原样留在那里，但不会显示。新账本从空开始。
+改用 IndexedDB 之前的版本把记录放在 `chrome.storage.local` 的 `data` 键。这一版不读、不写、也不删除这个键，旧版本存下的记录原样留在那里，但不会显示。「设置」里的本地数据概况只用 `getBytesInUse` 显示这个键是否还在、约占多大，不读取其内容。新账本从空开始。
 
 账本写入失败时，后台在 `chrome.storage.local` 写入 `ledgerError`：`{ at, name }`，即失败时间和错误名。它存在期间统计页显示保存错误，下一次写入成功后删除。清理旧明细失败只记日志，不会写入它。
 
@@ -78,4 +78,8 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 - 从浏览器里移除扩展后，浏览器会删掉该扩展的 IndexedDB 和 `chrome.storage`，包括旧的 `data` 键。
 - 暂停记录只把 `meta.state` 的 `enabled` 设为 false，不删除已有账本。
 
-删除、清空或卸载后不能恢复。这一版没有备份、回收站、同步、导入或导出命令。账本可以带走的方式，就是上面这份公开的表结构：它留在本机存储里，不绑在账号上。
+删除、清空或卸载后不能恢复。这一版没有备份、回收站、同步或导入命令。
+
+## 如何导出
+
+「设置 → 导出数据」把账本存成一份文件。统计页在一个只读 IndexedDB 事务里读取 `meta.state` 和 `domains`、`days`、`hours`、`spans`、`visits` 的全部行（`src/ledger.mjs` 的 `readLedgerSnapshot`），在页面里生成文件（`src/export.mjs`），再通过 `Blob` 网址和 `<a download>` 链接保存。不联网、不新增消息，也不使用 `downloads` 权限。「导出 JSON」生成 `pagetime-YYYY-MM-DD.json`，含 `format: "pagetime-ledger"`、`schemaVersion`、`exportedAt`、`timeZone`、`appVersion`、`recording`（即 `meta.state`）、完整的 `settings`（含 `ignored`、`allowed`、`recordMode`、`siteMerge`），以及按主键排序的五张表；`cursor` 行不导出。「导出 CSV」生成 `pagetime-YYYY-MM-DD.csv`，UTF-8 带 BOM，列为 `date,host,active_ms,visits`：`days` 里每个本地日期、每个原始主机名一行，不按 `siteMerge` 合并。两种文件都不含网址、标题或页面内容。保存下来的文件在扩展之外，删除、清空或卸载都不会删掉它。本地预览导出的是 `pagetime-preview` 里的那份对象。
