@@ -29,6 +29,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
   - `npm run build`
   - `npm run verify-build`
   - `xvfb-run -a npm run test:e2e`
+- **界面验证**：按 [`.cursor/skills/verify-pagetime/SKILL.md`](.cursor/skills/verify-pagetime/SKILL.md) 启动预览或扩展，先跑 Doctor，再按 `features/` 里的用户路径驱动并留下证据。地图过期时用 `/maintain-verification-skill`。
 
 ## 工程设计原则
 
