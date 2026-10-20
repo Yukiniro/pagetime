@@ -267,12 +267,11 @@ test('scale: one year × 200 sites builds in many short parts, so the page can p
   const first = at(1, 1);
   const domains = Array.from({ length: SITES }, (_, i) => ({ id: i + 1, host: `site-${i}.example.com` }));
   const days = [], hours = [], spans = [], visits = [];
+  // Rows arrive in primary-key order, as readLedgerSnapshot returns them.
   for (let d = 0; d < DAYS; d++) {
     const date = dateKey(addDays(first, d));
-    for (const { id } of domains) {
-      days.push({ date, domainId: id, ms: HOURS * 600_000, visits: 4 });
-      for (let h = 0; h < HOURS; h++) hours.push({ date, hour: h * 4, domainId: id, ms: 600_000 });
-    }
+    for (const { id } of domains) days.push({ date, domainId: id, ms: HOURS * 600_000, visits: 4 });
+    for (let h = 0; h < HOURS; h++) for (const { id } of domains) hours.push({ date, hour: h * 4, domainId: id, ms: 600_000 });
   }
   for (let i = 0; i < 31 * SITES * 5; i++) {
     spans.push({ id: i + 1, domainId: (i % SITES) + 1, start: first + i * 1_000, end: first + i * 1_000 + 500 });
@@ -299,7 +298,7 @@ test('scale: one year × 200 sites builds in many short parts, so the page can p
   assert.ok(json.count > 100, 'JSON is split into many parts');
   assert.ok(json.total < 10_000, `JSON took ${json.total} ms`);
   assert.ok(csv.total < 5_000, `CSV took ${csv.total} ms`);
-  assert.ok(json.slowest < 1_000, `slowest JSON part ${json.slowest} ms`);
-  assert.ok(csv.slowest < 1_000, `slowest CSV part ${csv.slowest} ms`);
+  assert.ok(json.slowest < 500, `slowest JSON part ${json.slowest} ms`);
+  assert.ok(csv.slowest < 500, `slowest CSV part ${csv.slowest} ms`);
   assert.equal(csvRecords(toDailyCsv(snapshot)).length, days.length);
 });
