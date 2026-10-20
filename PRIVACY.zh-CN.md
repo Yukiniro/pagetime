@@ -78,4 +78,8 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 - 从浏览器里移除扩展后，浏览器会删掉该扩展的 IndexedDB 和 `chrome.storage`，包括旧的 `data` 键。
 - 暂停记录只把 `meta.state` 的 `enabled` 设为 false，不删除已有账本。
 
-删除、清空或卸载后不能恢复。这一版没有备份、回收站、同步、导入或导出命令。账本可以带走的方式，就是上面这份公开的表结构：它留在本机存储里，不绑在账号上。
+删除、清空或卸载后不能恢复。这一版没有备份、回收站、同步或导入命令。
+
+## 如何导出
+
+「设置 → 导出数据」把账本存成一份文件。统计页在一个只读 IndexedDB 事务里读取 `meta.state` 和 `domains`、`days`、`hours`、`spans`、`visits` 的全部行（`src/ledger.mjs` 的 `readLedgerSnapshot`），在页面里生成文件（`src/export.mjs`），再通过 `Blob` 网址和 `<a download>` 链接保存。不联网、不新增消息，也不使用 `downloads` 权限。「导出 JSON」生成 `pagetime-YYYY-MM-DD.json`，含 `format: "pagetime-ledger"`、`schemaVersion`、`exportedAt`、`timeZone`、`appVersion`、`recording`（即 `meta.state`）、完整的 `settings`（含 `ignored`、`allowed`、`recordMode`、`siteMerge`），以及按主键排序的五张表；`cursor` 行不导出。「导出 CSV」生成 `pagetime-YYYY-MM-DD.csv`，UTF-8 带 BOM，列为 `date,host,active_ms,visits`：`days` 里每个本地日期、每个原始主机名一行，不按 `siteMerge` 合并。两种文件都不含网址、标题或页面内容。保存下来的文件在扩展之外，删除、清空或卸载都不会删掉它。本地预览导出的是 `pagetime-preview` 里的那份对象。
