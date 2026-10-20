@@ -14,14 +14,9 @@ export function EmptyState({ title, description, action, className = '', status 
   </Empty>;
 }
 
-export function LedgerEmpty({ onOpenHow }) {
+export function LedgerEmpty() {
   const { t } = useTranslation();
-  return <EmptyState
-    className="ledger-empty"
-    title={t('empty.title')}
-    description={t('empty.description')}
-    action={<Button variant="link" onClick={onOpenHow}>{t('howItWorks.open')}</Button>}
-  />;
+  return <EmptyState className="ledger-empty" title={t('empty.title')} description={t('empty.description')} />;
 }
 
 export function FilterEmpty({ domain, onClear, className = 'chart-empty', title, description }) {

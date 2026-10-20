@@ -22,12 +22,19 @@ function changeText(t, metric, { diff, percent }) {
 }
 
 // Neutral by design: one ink colour, no direction colouring, no wording about better or worse.
-export function KpiCompare({ metric, compare, preset, since }) {
+export function KpiCompare({ metric, compare, preset }) {
   const { t } = useTranslation();
   if (!compare) return null;
   const { window, summary } = compare;
   const change = summary[metric];
   const name = periodName(t, preset);
+  if (change.reason) return <Tooltip>
+    <TooltipTrigger render={<p className="kpi-compare" tabIndex={0} data-compare={metric} />}>
+      <span className="kpi-compare-label">{name}</span>
+      <span className="kpi-compare-change">—</span>
+    </TooltipTrigger>
+    <TooltipContent>{t('compare.unavailable')}</TooltipContent>
+  </Tooltip>;
   const label = window.cutoff === null ? name : t('compare.asOf', { period: name, time: timeLabel(window.cutoff) });
   const first = window.period.start;
   const last = addDays(window.period.end, -1);
@@ -35,12 +42,10 @@ export function KpiCompare({ metric, compare, preset, since }) {
   const basis = window.cutoff === null
     ? t('compare.basis', { range })
     : t('compare.basisAsOf', { range, time: timeLabel(window.cutoff) });
-  const reason = change.reason && t(`compare.reason.${change.reason}`, { date: formatDate(since, { month: '2-digit', day: '2-digit' }) });
   return <Tooltip>
     <TooltipTrigger render={<p className="kpi-compare" tabIndex={0} data-compare={metric} />}>
       <span className="kpi-compare-label">{label}</span>
-      <span className="kpi-compare-change">{change.reason ? '—' : changeText(t, metric, change)}</span>
-      {reason && <span className="kpi-compare-reason">{reason}</span>}
+      <span className="kpi-compare-change">{changeText(t, metric, change)}</span>
     </TooltipTrigger>
     <TooltipContent>{basis}</TooltipContent>
   </Tooltip>;

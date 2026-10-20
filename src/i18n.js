@@ -44,15 +44,6 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
 export const formatDate = (at, options) => new Date(at).toLocaleDateString(i18n.resolvedLanguage, options);
 export const timeLabel = at => new Date(at).toLocaleTimeString(i18n.resolvedLanguage, { hour: '2-digit', minute: '2-digit', hour12: false });
 
-export const formatNumber = value => new Intl.NumberFormat(i18n.resolvedLanguage).format(value);
-
-const BYTE_UNITS = ['byte', 'kilobyte', 'megabyte', 'gigabyte'];
-export function formatBytes(bytes) {
-  let value = bytes, unit = 0;
-  while (value >= 1024 && unit < BYTE_UNITS.length - 1) { value /= 1024; unit += 1; }
-  return new Intl.NumberFormat(i18n.resolvedLanguage, { style: 'unit', unit: BYTE_UNITS[unit], unitDisplay: 'short', maximumFractionDigits: unit ? 1 : 0 }).format(value);
-}
-
 // A change that rounds to zero keeps its direction.
 export function signedPercent(percent) {
   const abs = Math.abs(percent);

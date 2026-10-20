@@ -40,7 +40,7 @@
     "sites_other": "<b>{{count}}</b> sites"
   },
   "kpi": { "label": "Totaux pour {{range}}", "sites": "Sites" },
-  "compare": {"yesterday": "par rapport à hier", "previous7": "par rapport aux 7 jours précédents", "previous30": "par rapport aux 30 jours précédents", "previousPeriod": "par rapport à la période précédente", "asOf": "{{period}}, jusqu’à {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "Aucun changement", "underMinute": "{{sign}}moins de 1 min", "basis": "Période précédente : {{range}}", "basisAsOf": "Période précédente : {{range}}. Les deux périodes sont comptées jusqu’à {{time}} le dernier jour.", "reason": {"since": "L’enregistrement a commencé le {{date}}, après le début de la période précédente.", "retention": "Les visites de la période précédente ont expiré : comparaison impossible.", "notStarted": "Pas encore d’heure complète à comparer."}},
+  "compare": {"yesterday": "par rapport à hier", "previous7": "par rapport aux 7 jours précédents", "previous30": "par rapport aux 30 jours précédents", "previousPeriod": "par rapport à la période précédente", "asOf": "{{period}}, jusqu’à {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "Aucun changement", "underMinute": "{{sign}}moins de 1 min", "basis": "Période précédente : {{range}}", "basisAsOf": "Période précédente : {{range}}. Les deux périodes sont comptées jusqu’à {{time}} le dernier jour.", "unavailable": "Pas assez de données enregistrées pour comparer."},
   "filter": {
     "active": "Filtré : {{domain}}",
     "clear": "Effacer le filtre",
@@ -108,8 +108,6 @@
     "language": { "title": "Langue", "description": "Choisissez la langue d’affichage de PageTime.", "label": "Langue d’affichage : {{language}}" },
     "theme": { "title": "Apparence", "description": "Clair, sombre ou selon le système. Le choix reste sur cet appareil.", "label": "Apparence : {{mode}}", "system": "Système", "light": "Clair", "dark": "Sombre" },
     "recording": { "title": "Enregistrement", "description": "Compte les visites de pages et ne mesure que le temps passé sur l’onglet actif de la fenêtre au premier plan." },
-    "privacy": { "title": "Local et privé", "description": "Seuls les domaines, horaires et nombres de visites sont enregistrés — jamais le contenu, les titres ni les URL complètes.<br/>Les fenêtres de navigation privée et les pages internes du navigateur sont ignorées, et aucune donnée n’est envoyée à un serveur.<br/>Vous pouvez supprimer un site ou un jour. Ces enregistrements sont alors retirés de la base de données de cet appareil." },
-    "method": { "title": "Mode de calcul", "description": "Chaque chargement ou rechargement de page compte comme une visite ; changer d’onglet ou naviguer dans une application monopage n’ajoute pas de visite.<br/>{{idle}} secondes sans activité système sont considérées comme de l’inactivité ; la progression est enregistrée toutes les {{checkpoint}} secondes.<br/>Conserve les visites et sessions actives pendant {{days}} jours ; les totaux par jour et par heure restent jusqu’à ce que vous les effaciez ou supprimiez ce site ou ce jour.", "audible": "Un onglet qui lit un son non coupé n’est pas compté comme inactif." },
     "audible": { "title": "Continuer à compter pendant la lecture audio", "description": "Si l’onglet actif de la fenêtre au premier plan lit un son non coupé, le temps d’inactivité compte aussi. Le décompte s’arrête dès que le son s’arrête ou que l’onglet est coupé." },
     "idle": { "title": "Seuil d’inactivité", "description": "Durée sans clavier ni souris avant que ce navigateur soit considéré comme inactif.", "label": "Seuil d’inactivité : {{duration}}", "option_one": "{{count}} minute", "option_many": "{{count}} minutes", "option_other": "{{count}} minutes" },
     "siteMerge": {
@@ -124,7 +122,7 @@
     "ignored": { "title": "Sites ignorés", "description": "Ces hôtes et leurs sous-domaines ne sont pas mesurés et les visites ne sont pas comptées, comme une page interne du navigateur. example.com correspond aussi à a.example.com ; mail.example.com ne correspond pas à example.com. Les enregistrements existants restent et ne sont pas masqués.", "input": "Hôte à ignorer", "placeholder": "example.com", "add": "Ajouter", "remove": "Retirer {{domain}}", "emptyTitle": "Aucun site ignoré", "emptyDescription": "Ajoutez un hôte pour ne plus l’enregistrer à partir de maintenant.", "error": "Saisissez un hôte tel que example.com. Le protocole, le chemin et le port sont retirés. Les espaces ne sont pas admis, et un nom sans point n’est accepté que pour localhost.", "limit": "Vous pouvez ignorer au plus {{count}} hôtes." },
     "allowed": { "title": "Sites autorisés", "description": "Seuls ces hôtes et leurs sous-domaines sont mesurés et les visites sont comptées. example.com correspond aussi à a.example.com ; mail.example.com ne correspond pas à example.com. Les enregistrements existants restent et ne sont pas masqués.", "input": "Hôte à autoriser", "placeholder": "example.com", "add": "Ajouter", "remove": "Retirer {{domain}}", "emptyTitle": "Aucun site autorisé", "emptyDescription": "Ajoutez un hôte pour l’enregistrer à partir de maintenant. Tant que la liste est vide, rien n’est enregistré.", "limit": "Vous pouvez autoriser au plus {{count}} hôtes.", "emptyWarningTitle": "Une liste blanche vide n’enregistre rien", "emptyWarning": "Aucun hôte n’est autorisé, donc PageTime n’enregistre ni le temps ni les visites d’aucun site. Une liste vide ne signifie pas tout enregistrer. Ajoutez au moins un hôte avant qu’un enregistrement commence. Les enregistrements existants restent et ne sont pas masqués.", "error": "Saisissez un hôte tel que example.com. Le protocole, le chemin et le port sont retirés. Les espaces ne sont pas admis, et un nom sans point n’est accepté que pour localhost." },
     "badge": { "title": "Badge de la barre d’outils", "description": "Affiche le temps de navigation actif d’aujourd’hui sur l’icône de la barre d’outils." },
-    "localData": {"title": "Données locales", "description": "Ce que contient actuellement le registre de cet appareil. Lecture seule ; il se met à jour dès que PageTime enregistre, supprime ou efface.", "location": "Stockées sur cet appareil dans IndexedDB (<code>{{name}}</code>) et jamais envoyées.", "since": "Enregistrement depuis", "firstDay": "Premier total journalier", "detail": "Détail des visites et sessions", "detailValue_one": "Conservé {{count}} jour, depuis le {{date}}", "detailValue_many": "Conservé {{count}} jours, depuis le {{date}}", "detailValue_other": "Conservé {{count}} jours, depuis le {{date}}", "detailNote": "Les totaux par jour et par heure sont conservés à long terme.", "firstDetail": "Détail le plus ancien encore stocké : {{date}}", "sites": "Sites", "sitesValue_one": "{{n}} nom d’hôte", "sitesValue_many": "{{n}} noms d’hôte", "sitesValue_other": "{{n}} noms d’hôte", "rows": "Lignes par table", "table": {"days": "Totaux par jour", "hours": "Totaux par heure", "spans": "Sessions actives", "visits": "Visites"}, "usage": "Espace utilisé (estimation)", "about": "Environ {{size}}", "usageNote": "Estimation du navigateur pour tout le stockage de site de cette extension, comme IndexedDB, pas seulement le registre. chrome.storage n’est pas inclus.", "legacy": "Données d’une ancienne version", "legacyNote": "La clé <code>data</code> laissée par une ancienne version dans chrome.storage.local est toujours là. PageTime affiche seulement sa taille ; il ne la lit pas, ne la modifie pas et ne la supprime pas.", "none": "Aucun enregistrement pour l’instant"},
+    "docs": { "timing": "Règles de mesure et confidentialité", "privacy": "Politique de confidentialité" },
     "export": { "title": "Exporter les données", "description": "Télécharge le registre de cet appareil sous forme de fichier. Le JSON contient toutes les tables, l’état de l’enregistrement et les réglages. Le CSV a une ligne par jour et par nom d’hôte, pour les tableurs.", "note": "Le fichier est enregistré uniquement sur votre ordinateur. Il contient des noms d’hôte et des durées, jamais d’URL ni de titres.", "json": "Exporter en JSON", "csv": "Exporter en CSV", "exporting": "Exportation…", "done": "{{file}} enregistré.", "errorTitle": "Échec de l’exportation", "error": "Rien n’a été téléchargé. Réessayez." },
     "deleteDay": { "title": "Supprimer les enregistrements d’un jour", "description": "Retire de cet appareil le temps actif, les visites et les sessions d’un jour. Cette action est irréversible.", "label": "Date à supprimer", "button": "Supprimer ce jour", "done": "Enregistrements du {{date}} supprimés.", "confirmTitle": "Supprimer les enregistrements du {{date}} ?", "confirmDescription": "Le temps actif, les visites et les sessions de ce jour seront retirés de cet appareil. Cette action est irréversible.", "confirm": "Supprimer ce jour", "deleting": "Suppression…" },
     "clear": { "title": "Effacer tous les enregistrements", "description": "Supprime les données enregistrées par PageTime sur cet appareil. Action irréversible.", "button": "Effacer les données" }
@@ -183,59 +181,5 @@
     "minutes_many": "{{count}} min",
     "minutes_other": "{{count}} min",
     "hours": "{{hours}} h {{minutes}} min"
-  },
-  "howItWorks": {
-    "open": "Comment le temps est compté",
-    "infoButton": "Comment ce temps est-il compté ?",
-    "title": "Comment PageTime compte le temps",
-    "intro": "PageTime ne compte que le temps où vous regardez vraiment une page. Les règles sont ci-dessous.",
-    "counted": {
-      "title": "Ce qui compte",
-      "focus": "L’onglet sélectionné dans une fenêtre au premier plan et active",
-      "web": "Uniquement les pages http et https, totalisées par domaine",
-      "navigation": "Quand le même onglet passe sur un autre site, le nouveau site commence au moment de la navigation"
-    },
-    "notCounted": {
-      "title": "Ce qui ne compte pas",
-      "idle_one": "{{count}} seconde d’affilée sans clavier ni souris (y compris en regardant une vidéo ou en écoutant de l’audio)",
-      "idle_many": "{{count}} secondes d’affilée sans clavier ni souris (y compris en regardant une vidéo ou en écoutant de l’audio)",
-      "idle_other": "{{count}} secondes d’affilée sans clavier ni souris (y compris en regardant une vidéo ou en écoutant de l’audio)",
-      "locked": "Écran verrouillé, ordinateur en veille ou navigateur fermé",
-      "unfocused": "Fenêtre réduite, une autre application au premier plan, ou les outils de développement actifs",
-      "internal": "Pages internes du navigateur, pages d’extensions et fichiers locaux",
-      "incognito": "Fenêtres de navigation privée",
-      "paused": "Pendant que l’enregistrement est en pause",
-      "gap_one": "Si plus de {{count}} seconde sépare deux vérifications, cet intervalle compte au plus {{count}} seconde (par exemple si le système est suspendu)",
-      "gap_many": "Si plus de {{count}} secondes séparent deux vérifications, cet intervalle compte au plus {{count}} secondes (par exemple si le système est suspendu)",
-      "gap_other": "Si plus de {{count}} secondes séparent deux vérifications, cet intervalle compte au plus {{count}} secondes (par exemple si le système est suspendu)",
-      "ignored": "Liste noire : les sites que vous avez choisi d’ignorer ({{count}}) et leurs sous-domaines ne sont pas mesurés et les visites ne sont pas comptées. L’entrée example.com correspond à cet hôte et à chaque sous-domaine ; l’entrée mail.example.com ne correspond pas à example.com. Les enregistrements existants ne sont ni supprimés ni masqués.",
-      "whitelist": "Liste blanche : seuls les sites autorisés ({{count}}) et leurs sous-domaines sont mesurés et les visites sont comptées. Une liste vide n’enregistre rien. L’entrée example.com correspond à cet hôte et à chaque sous-domaine ; l’entrée mail.example.com ne correspond pas à example.com. Les enregistrements existants ne sont ni supprimés ni masqués."
-    },
-    "visits": {
-      "title": "Comment les visites sont comptées",
-      "description": "Un chargement ou un rechargement compte pour 1 visite. Changer d’onglet et la navigation interne d’une application monopage ne comptent pas."
-    },
-    "privacy": {
-      "title": "Confidentialité et stockage",
-      "fields": "Seuls le domaine, les horaires et le nombre de visites sont enregistrés — jamais le titre, le texte de la page ni l’URL complète.",
-      "local": "Les données restent dans le navigateur de cet appareil et ne sont jamais envoyées à un serveur.",
-      "delete": "Vous pouvez supprimer un site ou un jour. Ces enregistrements sont retirés de la base de données de cet appareil et cette action est irréversible.",
-      "retention_one": "Conserve les visites et intervalles du dernier {{count}} jour. Les totaux par jour et par heure restent jusqu’à ce que vous les effaciez ou supprimiez ce site ou ce jour.",
-      "retention_many": "Conserve les visites et intervalles des {{count}} derniers jours. Les totaux par jour et par heure restent jusqu’à ce que vous les effaciez ou supprimiez ce site ou ce jour.",
-      "retention_other": "Conserve les visites et intervalles des {{count}} derniers jours. Les totaux par jour et par heure restent jusqu’à ce que vous les effaciez ou supprimiez ce site ou ce jour.",
-      "save_one": "Enregistre toutes les {{count}} seconde. En cas de fermeture inattendue, seule cette période récente peut être perdue.",
-      "save_many": "Enregistre toutes les {{count}} secondes. En cas de fermeture inattendue, seule cette période récente peut être perdue.",
-      "save_other": "Enregistre toutes les {{count}} secondes. En cas de fermeture inattendue, seule cette période récente peut être perdue."
-    },
-    "limits": { "title": "Limites connues", "audible": "Le navigateur peut mettre 2–3 secondes à remarquer que le son a commencé ou s’est arrêté.", "threshold": "Avec un seuil d’inactivité de 10 minutes, jusqu’à 10 minutes supplémentaires peuvent être comptées après votre départ." },
-    "compare": {"title": "Comparaison avec la période précédente", "description": "Chaque chiffre est comparé à la période de même durée située juste avant la plage. Si la plage inclut aujourd’hui, les deux périodes sont comptées jusqu’à l’heure pleine actuelle. Si la période précédente n’est pas entièrement enregistrée, un tiret remplace le chiffre."},
-    "merge": {
-      "title": "Comment les sites sont regroupés",
-      "storage": "Le registre conserve le nom d’hôte d’origine. Le regroupement ne change que l’affichage : il ne réécrit pas les lignes enregistrées et peut être désactivé.",
-      "none": "Ne pas regrouper : chaque nom d’hôte est compté séparément.",
-      "prefix": "Préfixes courants : un www., m. ou mobile. en tête est retiré. www.youtube.com et m.youtube.com deviennent youtube.com. Les autres noms, comme gist.github.com, restent séparés.",
-      "registrable": "Domaine enregistrable : regroupement selon la partie ICANN de la Public Suffix List. a.b.example.co.uk devient example.co.uk. Les adresses IP, localhost et les hôtes sans domaine enregistrable restent inchangés. Les suffixes privés comme github.io ne sont pas traités comme des suffixes publics : user.github.io est donc regroupé sous github.io."
-    },
-    "close": "Fermer"
   }
 }
