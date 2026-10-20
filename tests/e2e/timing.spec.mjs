@@ -515,8 +515,8 @@ test('deleting a site from the dashboard removes it from the ranking and the det
     await dashboard.getByRole('button', { name: 'a.test' }).first().click();
     await dashboard.getByRole('button', { name: "Delete this site's records", exact: true }).click();
     const confirm = dashboard.getByRole('alertdialog');
+    await expect(confirm).toContainText('Delete records for a.test?');
     await expect(confirm).toContainText("can't be undone");
-    await expect(confirm).toContainText('ignored sites');
     await confirm.getByRole('button', { name: 'Delete records', exact: true }).click();
     await expect(dashboard.getByRole('button', { name: 'a.test' })).toHaveCount(0);
     await expect(dashboard.getByRole('button', { name: 'b.test' }).first()).toBeVisible();

@@ -16,23 +16,23 @@ test('non-other plural branches cannot drop placeholders or closing tags', async
   const ru = await read('src/locales/ru.json');
   for (const category of ['one', 'few', 'many']) {
     const broken = structuredClone(ru);
-    broken.summary[`visits_${category}`] = '<b>1</b>';
+    broken.summary[`sites_${category}`] = '<b>1</b>';
     assert.throws(() => validateLocale('ru', broken, en), /placeholders\/tags/);
   }
   const broken = structuredClone(en);
-  broken.summary.visits_one = '<b>{{count}} visit';
+  broken.summary.sites_one = '<b>{{count}} visit';
   assert.throws(() => validateLocale('en', broken, en), /placeholders\/tags/);
-  broken.summary.visits_one = '';
+  broken.summary.sites_one = '';
   assert.throws(() => validateLocale('en', broken, en), /empty/);
 });
 
 test('required plural branches and optional zero branches are validated', async () => {
   const ru = await read('src/locales/ru.json');
-  delete ru.summary.visits_few;
-  assert.throws(() => validateLocale('ru', ru, en), /visits_few/);
+  delete ru.summary.sites_few;
+  assert.throws(() => validateLocale('ru', ru, en), /sites_few/);
   const broken = structuredClone(en);
-  broken.summary.visits_zero = '<b>zero</b> visits';
-  assert.throws(() => validateLocale('en', broken, en), /visits_zero/);
+  broken.summary.sites_zero = '<b>zero</b> sites';
+  assert.throws(() => validateLocale('en', broken, en), /sites_zero/);
 });
 
 test('every UI locale has matching non-empty manifest messages', async () => {

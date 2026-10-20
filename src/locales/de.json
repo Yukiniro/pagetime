@@ -5,9 +5,9 @@
   "status": { "recording": "Surfaktivität wird aufgezeichnet", "paused": "Aufzeichnung pausiert", "since": "Seit {{date}}" },
   "actions": { "pause": "Pausieren", "resume": "Fortsetzen", "enable": "Aufzeichnung starten" },
   "pages": {
-    "overview": { "title": "Surf-Übersicht", "subtitle": "Sieh, wie du deine Zeit im Web verbringst" },
-    "records": { "title": "Besuchsverlauf", "subtitle": "Jeder Besuch nachvollziehbar" },
-    "settings": { "title": "Einstellungen", "subtitle": "Behalte die Kontrolle über deine Daten und die Aufzeichnung" }
+    "overview": { "title": "Surf-Übersicht" },
+    "records": { "title": "Besuchsverlauf" },
+    "settings": { "title": "Einstellungen" }
   },
   "range": { "today": "Heute", "last7": "Letzte 7 Tage", "last30": "Letzte 30 Tage", "custom": "Benutzerdefiniert", "start": "Startdatum", "end": "Enddatum", "apply": "Übernehmen", "cancel": "Abbrechen", "invalid": "Das Enddatum darf nicht vor dem Startdatum liegen", "lastDays_one": "{{count}} vergangener Tag", "lastDays_other": "Letzte {{count}} Tage", "label": "Zeitraum: {{range}}" },
   "error": {
@@ -30,10 +30,6 @@
     "paused": "Aufzeichnung pausiert"
   },
   "summary": {
-    "label": "Zusammenfassung",
-    "totalTime": "Aktive Surfzeit gesamt",
-    "visits_one": "<b>{{count}}</b> Besuch",
-    "visits_other": "<b>{{count}}</b> Besuche",
     "sites_one": "<b>{{count}}</b> Website",
     "sites_other": "<b>{{count}}</b> Websites"
   },
@@ -51,7 +47,6 @@
   "trend": { "label": "Aktive Surfzeit pro Tag. {{days}}", "separator": "; ", "hours_one": "{{count}} Std.", "hours_other": "{{count}} Std." },
   "timeline": {
     "title": "Heutige Zeitleiste",
-    "idle": "Leerlauf",
     "label_one": "Heutige Zeitleiste der aktiven Nutzung, {{count}} Sitzung; leere Bereiche enthalten keine aufgezeichnete Aktivität.",
     "label_other": "Heutige Zeitleiste der aktiven Nutzung, {{count}} Sitzungen; leere Bereiche enthalten keine aufgezeichnete Aktivität.",
     "empty": "Heute wurde noch keine aktive Nutzung aufgezeichnet",
@@ -59,7 +54,6 @@
   },
   "heatmap": {
     "title": "Aktive Zeiten",
-    "caption": "Jedes Feld ist die durchschnittliche aktive Zeit dieser Stunde",
     "legend": "Hell {{min}}, dunkel {{max}}",
     "label": "Aktive Zeiten nach Wochentag und Stunde. {{summary}}",
     "separator": "; ",
@@ -82,7 +76,6 @@
     "collapse": "Weniger anzeigen",
     "showAll_one": "{{count}} Website anzeigen",
     "showAll_other": "Alle {{count}} Websites anzeigen",
-    "details": "Website-Details",
     "filterSite": "Nach {{domain}} filtern",
     "openDetail": "Details zu {{domain}}"
   },
@@ -99,31 +92,29 @@
     "empty": "Keine passenden Besuche"
   },
   "settings": {
-    "language": { "title": "Sprache", "description": "Wähle die Anzeigesprache von PageTime.", "label": "Anzeigesprache: {{language}}" },
-    "theme": { "title": "Darstellung", "description": "Hell, dunkel oder wie das System. Die Auswahl bleibt auf diesem Gerät.", "label": "Darstellung: {{mode}}", "system": "System", "light": "Hell", "dark": "Dunkel" },
-    "recording": { "title": "Aufzeichnung", "description": "Zählt Seitenbesuche und misst nur die Zeit im aktiven Tab des fokussierten Fensters." },
-    "audible": { "title": "Bei Audiowiedergabe weiterzählen", "description": "Wenn der aktive Tab im fokussierten Fenster nicht stummgeschalteten Ton abspielt, zählt auch Leerlaufzeit. Die Zählung stoppt, sobald der Ton endet oder der Tab stummgeschaltet wird." },
-    "idle": { "title": "Leerlaufschwelle", "description": "Wie lange ohne Tastatur- oder Mauseingabe dieser Browser als im Leerlauf gilt.", "label": "Leerlaufschwelle: {{duration}}", "option_one": "{{count}} Minute", "option_other": "{{count}} Minuten" },
+    "language": { "title": "Sprache", "label": "Anzeigesprache: {{language}}" },
+    "theme": { "title": "Darstellung", "label": "Darstellung: {{mode}}", "system": "System", "light": "Hell", "dark": "Dunkel" },
+    "recording": { "title": "Aufzeichnung" },
+    "audible": { "title": "Bei Audiowiedergabe weiterzählen" },
+    "idle": { "title": "Leerlaufschwelle", "description": "Keine Eingabe länger als diese Zeit gilt als Leerlauf.", "label": "Leerlaufschwelle: {{duration}}", "option_one": "{{count}} Minute", "option_other": "{{count}} Minuten" },
     "siteMerge": {
       "title": "Subdomains gruppieren",
-      "description": "Ändert nur die Gruppierung in der Übersicht und den Website-Details. Gespeicherte Einträge behalten den ursprünglichen Hostnamen. Die Auswahl lässt sich jederzeit ändern.",
       "label": "Subdomain-Gruppierung: {{mode}}",
       "none": "Nicht gruppieren",
       "prefix": "www, m und mobile gruppieren",
       "registrable": "Nach registrierbarer Domain gruppieren"
     },
-    "recordMode": { "title": "Aufzeichnungsbereich", "description": "Lege fest, welche Websites ab jetzt gemessen werden. Die schwarze und die weiße Liste werden getrennt gespeichert. Ein Wechsel löscht die andere Liste nicht und löscht oder verbirgt auch keine vorhandenen Einträge. example.com gilt für diesen Host und seine Subdomains; mail.example.com gilt nicht für example.com.", "blacklist": "Schwarze Liste", "whitelist": "Weiße Liste", "blacklistHint": "Alle Websites außer den unten genannten werden aufgezeichnet.", "whitelistHint": "Nur die unten genannten Websites werden aufgezeichnet." },
-    "ignored": { "title": "Ignorierte Websites", "description": "Diese Hosts und ihre Subdomains werden nicht gemessen, und Besuche zählen nicht, wie bei einer internen Browserseite. example.com gilt auch für a.example.com; mail.example.com gilt nicht für example.com. Vorhandene Einträge bleiben erhalten und werden nicht ausgeblendet.", "input": "Zu ignorierender Host", "placeholder": "example.com", "add": "Hinzufügen", "remove": "{{domain}} entfernen", "emptyTitle": "Keine ignorierten Websites", "emptyDescription": "Füge einen Host hinzu, um ihn ab jetzt nicht mehr aufzuzeichnen.", "error": "Gib einen Host wie example.com ein. Protokoll, Pfad und Port werden entfernt. Leerzeichen sind nicht erlaubt, und ein Name ohne Punkt wird nur für localhost akzeptiert.", "limit": "Du kannst höchstens {{count}} Hosts ignorieren." },
-    "allowed": { "title": "Erlaubte Websites", "description": "Nur diese Hosts und ihre Subdomains werden gemessen, und Besuche zählen. example.com gilt auch für a.example.com; mail.example.com gilt nicht für example.com. Vorhandene Einträge bleiben erhalten und werden nicht ausgeblendet.", "input": "Zu erlaubender Host", "placeholder": "example.com", "add": "Hinzufügen", "remove": "{{domain}} entfernen", "emptyTitle": "Keine erlaubten Websites", "emptyDescription": "Füge einen Host hinzu, damit er ab jetzt aufgezeichnet wird. Solange die Liste leer ist, wird nichts aufgezeichnet.", "limit": "Du kannst höchstens {{count}} Hosts erlauben.", "emptyWarningTitle": "Eine leere weiße Liste zeichnet nichts auf", "emptyWarning": "Es ist kein Host erlaubt, deshalb zeichnet PageTime für keine Website Zeit oder Besuche auf. Eine leere Liste bedeutet nicht, dass alles aufgezeichnet wird. Füge mindestens einen Host hinzu. Vorhandene Einträge bleiben und werden nicht ausgeblendet.", "error": "Gib einen Host wie example.com ein. Protokoll, Pfad und Port werden entfernt. Leerzeichen sind nicht erlaubt, und ein Name ohne Punkt wird nur für localhost akzeptiert." },
-    "badge": { "title": "Symbol-Badge", "description": "Zeigt die heutige aktive Surfzeit auf dem Symbol in der Symbolleiste." },
+    "recordMode": { "title": "Aufzeichnungsbereich", "blacklist": "Schwarze Liste", "whitelist": "Weiße Liste", "blacklistHint": "Alle Websites außer den unten genannten werden aufgezeichnet.", "whitelistHint": "Nur die unten genannten Websites werden aufgezeichnet." },
+    "ignored": { "title": "Ignorierte Websites", "input": "Zu ignorierender Host", "placeholder": "example.com (inkl. Subdomains)", "add": "Hinzufügen", "remove": "{{domain}} entfernen", "emptyTitle": "Keine ignorierten Websites", "error": "Gib einen gültigen Host ein, z. B. example.com", "limit": "Du kannst höchstens {{count}} Hosts ignorieren." },
+    "allowed": { "title": "Erlaubte Websites", "input": "Zu erlaubender Host", "placeholder": "example.com (inkl. Subdomains)", "add": "Hinzufügen", "remove": "{{domain}} entfernen", "emptyTitle": "Keine erlaubten Websites", "limit": "Du kannst höchstens {{count}} Hosts erlauben.", "emptyWarning": "Die weiße Liste ist leer, daher wird keine Website aufgezeichnet", "error": "Gib einen gültigen Host ein, z. B. example.com" },
+    "badge": { "title": "Symbol-Badge" },
     "docs": { "timing": "Zeitmessung und Datenschutz", "privacy": "Datenschutzerklärung" },
-    "export": { "title": "Daten exportieren", "description": "Lädt das Protokoll dieses Geräts als Datei herunter. JSON enthält alle Tabellen sowie Aufzeichnungsstatus und Einstellungen. CSV hat pro Tag und Hostname eine Zeile für Tabellenkalkulationen.", "note": "Die Datei wird nur auf deinem Computer gespeichert. Sie enthält Hostnamen und Dauern, niemals URLs oder Titel.", "json": "JSON exportieren", "csv": "CSV exportieren", "exporting": "Wird exportiert…", "done": "{{file}} gespeichert.", "errorTitle": "Export fehlgeschlagen", "error": "Es wurde nichts heruntergeladen. Versuche es erneut." },
-    "deleteDay": { "title": "Aufzeichnungen eines Tages löschen", "description": "Entfernt die aktive Zeit, Besuche und Sitzungen eines Tages von diesem Gerät. Das kann nicht rückgängig gemacht werden.", "label": "Zu löschendes Datum", "button": "Diesen Tag löschen", "done": "Aufzeichnungen vom {{date}} wurden gelöscht.", "confirmTitle": "Aufzeichnungen vom {{date}} löschen?", "confirmDescription": "Damit werden die aktive Zeit, Besuche und Sitzungen dieses Tages von diesem Gerät entfernt. Das kann nicht rückgängig gemacht werden.", "confirm": "Diesen Tag löschen", "deleting": "Wird gelöscht…" },
-    "clear": { "title": "Alle Daten löschen", "description": "Löscht die von PageTime auf diesem Gerät gespeicherten Daten. Dies kann nicht rückgängig gemacht werden.", "button": "Daten löschen" }
+    "export": { "title": "Daten exportieren", "description": "Alle Aufzeichnungen dieses Geräts herunterladen.", "note": "Die Datei wird nur auf deinem Computer gespeichert. Sie enthält Hostnamen und Dauern, niemals URLs oder Titel.", "json": "JSON exportieren", "csv": "CSV exportieren", "exporting": "Wird exportiert…", "done": "{{file}} gespeichert.", "errorTitle": "Export fehlgeschlagen", "error": "Es wurde nichts heruntergeladen. Versuche es erneut." },
+    "deleteDay": { "title": "Aufzeichnungen eines Tages löschen", "label": "Zu löschendes Datum", "button": "Diesen Tag löschen", "done": "Aufzeichnungen vom {{date}} wurden gelöscht.", "confirmTitle": "Aufzeichnungen vom {{date}} löschen?", "confirmDescription": "Das kann nicht rückgängig gemacht werden.", "confirm": "Diesen Tag löschen", "deleting": "Wird gelöscht…" },
+    "clear": { "title": "Alle Daten löschen", "button": "Daten löschen" }
   },
   "detail": {
     "title": "Website-Details",
-    "description": "{{range}} · Website-Statistik und heutige aktive Sitzungen",
     "close": "Details schließen",
     "visits_one": "{{count}}",
     "visits_other": "{{count}}",
@@ -133,10 +124,10 @@
     "ignored": "Diese Website wird bereits ignoriert",
     "allow": "Zur weißen Liste hinzufügen",
     "allowed": "Diese Website ist bereits erlaubt",
-    "allowConfirm": { "title": "Diese Website zur weißen Liste hinzufügen?", "description": "{{domain}} und seine Subdomains werden ab jetzt gemessen, und Besuche zählen. Vorhandene Einträge werden nicht gelöscht und nicht ausgeblendet.", "confirm": "Zur weißen Liste hinzufügen" },
-    "ignoreConfirm": { "title": "Diese Website nicht mehr aufzeichnen?", "description": "{{domain}} und seine Subdomains werden nicht mehr gemessen, und Besuche zählen nicht. Vorhandene Einträge werden nicht gelöscht.", "confirm": "Nicht mehr aufzeichnen" },
+    "allowConfirm": { "title": "Diese Website zur weißen Liste hinzufügen?", "description": "{{domain}} und seine Subdomains werden ab jetzt aufgezeichnet.", "confirm": "Zur weißen Liste hinzufügen" },
+    "ignoreConfirm": { "title": "Diese Website nicht mehr aufzeichnen?", "description": "{{domain}} und seine Subdomains werden nicht mehr aufgezeichnet.", "confirm": "Nicht mehr aufzeichnen" },
     "delete": "Aufzeichnungen dieser Website löschen",
-    "deleteConfirm": { "title": "Aufzeichnungen dieser Website löschen?", "description": "Damit werden aktive Zeit, Besuchszahlen und Sitzungen von {{domain}} für alle Tage entfernt. Das kann nicht rückgängig gemacht werden. Wenn die Website auch künftig nicht aufgezeichnet werden soll, füge sie zur Ignorierliste hinzu.", "confirm": "Aufzeichnungen löschen", "deleting": "Wird gelöscht…" },
+    "deleteConfirm": { "title": "Aufzeichnungen von {{domain}} löschen?", "description": "Das kann nicht rückgängig gemacht werden.", "confirm": "Aufzeichnungen löschen", "deleting": "Wird gelöscht…" },
     "viewVisits": "Besuche anzeigen",
     "trend": {
       "title": "Tagestrend",
@@ -163,7 +154,7 @@
   },
   "confirm": {
     "title": "Alle Surfdaten löschen?",
-    "description": "Es werden nur die lokalen Daten von PageTime gelöscht. Dies kann nicht rückgängig gemacht werden.",
+    "description": "Das kann nicht rückgängig gemacht werden.",
     "cancel": "Abbrechen",
     "clearing": "Wird gelöscht…",
     "confirm": "Löschen"

@@ -5,9 +5,9 @@
   "status": { "recording": "Recording browsing activity", "paused": "Recording paused", "since": "Since {{date}}" },
   "actions": { "pause": "Pause recording", "resume": "Resume recording", "enable": "Turn on recording" },
   "pages": {
-    "overview": { "title": "Browsing overview", "subtitle": "See how your time on the web is spent" },
-    "records": { "title": "Visit history", "subtitle": "Every visit, accounted for" },
-    "settings": { "title": "Settings", "subtitle": "Control your data and how it is recorded" }
+    "overview": { "title": "Browsing overview" },
+    "records": { "title": "Visit history" },
+    "settings": { "title": "Settings" }
   },
   "range": { "today": "Today", "last7": "Last 7 days", "last30": "Last 30 days", "custom": "Custom", "start": "Start date", "end": "End date", "apply": "Apply", "cancel": "Cancel", "invalid": "The end date must be on or after the start date", "lastDays_one": "Last {{count}} day", "lastDays_other": "Last {{count}} days", "label": "Date range: {{range}}" },
   "error": {
@@ -30,10 +30,6 @@
     "paused": "Recording paused"
   },
   "summary": {
-    "label": "Summary",
-    "totalTime": "Total active browsing time",
-    "visits_one": "<b>{{count}}</b> visit",
-    "visits_other": "<b>{{count}}</b> visits",
     "sites_one": "<b>{{count}}</b> site",
     "sites_other": "<b>{{count}}</b> sites"
   },
@@ -51,7 +47,6 @@
   "trend": { "label": "Daily active browsing time. {{days}}", "separator": "; ", "hours_one": "{{count}} hr", "hours_other": "{{count}} hrs" },
   "timeline": {
     "title": "Today's timeline",
-    "idle": "Idle time",
     "label_one": "Today's active browsing timeline, {{count}} session; blank areas have no recorded activity.",
     "label_other": "Today's active browsing timeline, {{count}} sessions; blank areas have no recorded activity.",
     "empty": "No active browsing recorded today yet",
@@ -59,7 +54,6 @@
   },
   "heatmap": {
     "title": "Active hours",
-    "caption": "Each cell is the average active time for that hour",
     "legend": "Light {{min}}, dark {{max}}",
     "label": "Active hours by weekday and hour. {{summary}}",
     "separator": "; ",
@@ -82,7 +76,6 @@
     "collapse": "Show less",
     "showAll_one": "View all {{count}} site",
     "showAll_other": "View all {{count}} sites",
-    "details": "View site details",
     "filterSite": "Filter to {{domain}}",
     "openDetail": "Details for {{domain}}"
   },
@@ -99,31 +92,29 @@
     "empty": "No matching visits"
   },
   "settings": {
-    "language": { "title": "Language", "description": "Choose the display language for PageTime.", "label": "Display language: {{language}}" },
-    "theme": { "title": "Appearance", "description": "Use light, dark, or follow the system. This choice stays on this device.", "label": "Appearance: {{mode}}", "system": "Follow system", "light": "Light", "dark": "Dark" },
-    "recording": { "title": "Browsing records", "description": "Counts page visits and only tracks time on the active tab of the focused window." },
-    "audible": { "title": "Keep counting while audio plays", "description": "If the active tab in the focused window is playing unmuted sound, idle time still counts. Timing stops as soon as the sound stops or the tab is muted." },
-    "idle": { "title": "Idle threshold", "description": "How long without keyboard or mouse input before this browser counts as idle.", "label": "Idle threshold: {{duration}}", "option_one": "{{count}} minute", "option_other": "{{count}} minutes" },
+    "language": { "title": "Language", "label": "Display language: {{language}}" },
+    "theme": { "title": "Appearance", "label": "Appearance: {{mode}}", "system": "Follow system", "light": "Light", "dark": "Dark" },
+    "recording": { "title": "Browsing records" },
+    "audible": { "title": "Keep counting while audio plays" },
+    "idle": { "title": "Idle threshold", "description": "Stop counting after this long without input.", "label": "Idle threshold: {{duration}}", "option_one": "{{count}} minute", "option_other": "{{count}} minutes" },
     "siteMerge": {
       "title": "Group subdomains",
-      "description": "Changes how the overview and site details are grouped. Saved records keep the original hostname, and you can switch at any time.",
       "label": "Subdomain grouping: {{mode}}",
       "none": "Don't group",
       "prefix": "Group www, m, and mobile",
       "registrable": "Group by registrable domain"
     },
-    "recordMode": { "title": "Recording scope", "description": "Choose which sites are timed from now on. The blacklist and the whitelist are stored separately. Switching mode does not clear the other list, and it does not delete or hide existing records. example.com matches that host and its subdomains; mail.example.com does not match example.com.", "blacklist": "Blacklist", "whitelist": "Whitelist", "blacklistHint": "Record every site except the ones listed below.", "whitelistHint": "Record only the sites listed below." },
-    "ignored": { "title": "Ignored sites", "description": "These hosts and their subdomains are not timed and visits are not counted, the same as an internal browser page. example.com also matches a.example.com; mail.example.com does not match example.com. Existing records stay in the ledger and are not hidden.", "input": "Host to ignore", "placeholder": "example.com", "add": "Add", "remove": "Remove {{domain}}", "emptyTitle": "No ignored sites", "emptyDescription": "Add a host to stop recording it from now on.", "error": "Enter a host such as example.com. The protocol, path, and port are removed. Spaces are not allowed, and a name without a dot is only accepted for localhost.", "limit": "You can ignore up to {{count}} hosts." },
-    "allowed": { "title": "Allowed sites", "description": "Only these hosts and their subdomains are timed and counted as visits. example.com also matches a.example.com; mail.example.com does not match example.com. Existing records stay in the ledger and are not hidden.", "input": "Host to allow", "placeholder": "example.com", "add": "Add", "remove": "Remove {{domain}}", "emptyTitle": "No allowed sites", "emptyDescription": "Add a host to record it from now on. Until you do, nothing is recorded.", "limit": "You can allow up to {{count}} hosts.", "emptyWarningTitle": "An empty whitelist records nothing", "emptyWarning": "No hosts are allowed, so PageTime will not record time or visits for any site. An empty list does not mean record every site. Add at least one host before anything is recorded. Existing records stay and are not hidden.", "error": "Enter a host such as example.com. The protocol, path, and port are removed. Spaces are not allowed, and a name without a dot is only accepted for localhost." },
-    "badge": { "title": "Toolbar badge", "description": "Show today's active browsing time on the toolbar icon." },
+    "recordMode": { "title": "Recording scope", "blacklist": "Blacklist", "whitelist": "Whitelist", "blacklistHint": "Record every site except the ones listed below.", "whitelistHint": "Record only the sites listed below." },
+    "ignored": { "title": "Ignored sites", "input": "Host to ignore", "placeholder": "example.com (includes subdomains)", "add": "Add", "remove": "Remove {{domain}}", "emptyTitle": "No ignored sites", "error": "Enter a valid host, such as example.com", "limit": "You can ignore up to {{count}} hosts." },
+    "allowed": { "title": "Allowed sites", "input": "Host to allow", "placeholder": "example.com (includes subdomains)", "add": "Add", "remove": "Remove {{domain}}", "emptyTitle": "No allowed sites", "limit": "You can allow up to {{count}} hosts.", "emptyWarning": "The whitelist is empty, so no sites are recorded", "error": "Enter a valid host, such as example.com" },
+    "badge": { "title": "Toolbar badge" },
     "docs": { "timing": "Timing rules and privacy notes", "privacy": "Privacy policy" },
-    "export": { "title": "Export data", "description": "Download this device's ledger as a file. JSON holds every table plus your recording state and settings. CSV has one row per day and hostname for spreadsheets.", "note": "The file is saved only on your computer. It contains hostnames and durations, never URLs or titles.", "json": "Export JSON", "csv": "Export CSV", "exporting": "Exporting…", "done": "Saved {{file}}.", "errorTitle": "Export failed", "error": "Nothing was downloaded. Try again." },
-    "deleteDay": { "title": "Delete one day's records", "description": "Removes one day's active time, visits, and sessions from this device. This can't be undone.", "label": "Date to delete", "button": "Delete this day", "done": "Deleted records for {{date}}.", "confirmTitle": "Delete records for {{date}}?", "confirmDescription": "This removes that day's active time, visits, and sessions from this device. It can't be undone.", "confirm": "Delete this day", "deleting": "Deleting…" },
-    "clear": { "title": "Clear all records", "description": "Deletes the records PageTime has saved on this device. This can't be undone.", "button": "Clear data" }
+    "export": { "title": "Export data", "description": "Download all records on this device.", "note": "The file is saved only on your computer. It contains hostnames and durations, never URLs or titles.", "json": "Export JSON", "csv": "Export CSV", "exporting": "Exporting…", "done": "Saved {{file}}.", "errorTitle": "Export failed", "error": "Nothing was downloaded. Try again." },
+    "deleteDay": { "title": "Delete one day's records", "label": "Date to delete", "button": "Delete this day", "done": "Deleted records for {{date}}.", "confirmTitle": "Delete records for {{date}}?", "confirmDescription": "This can't be undone.", "confirm": "Delete this day", "deleting": "Deleting…" },
+    "clear": { "title": "Clear all records", "button": "Clear data" }
   },
   "detail": {
     "title": "Site details",
-    "description": "{{range}} · site stats and today's active sessions",
     "close": "Close details",
     "visits_one": "{{count}}",
     "visits_other": "{{count}}",
@@ -133,10 +124,10 @@
     "ignored": "This site is already ignored",
     "allow": "Add to whitelist",
     "allowed": "This site is already allowed",
-    "allowConfirm": { "title": "Add this site to the whitelist?", "description": "{{domain}} and its subdomains will be timed and counted as visits from now on. Existing records are not deleted or hidden.", "confirm": "Add to whitelist" },
-    "ignoreConfirm": { "title": "Stop recording this site?", "description": "{{domain}} and its subdomains will no longer be timed or counted as visits. Existing records are not deleted.", "confirm": "Stop recording" },
+    "allowConfirm": { "title": "Add this site to the whitelist?", "description": "{{domain}} and its subdomains will be recorded from now on.", "confirm": "Add to whitelist" },
+    "ignoreConfirm": { "title": "Stop recording this site?", "description": "{{domain}} and its subdomains will no longer be recorded.", "confirm": "Stop recording" },
     "delete": "Delete this site's records",
-    "deleteConfirm": { "title": "Delete this site's records?", "description": "This removes {{domain}}'s active time, visit counts, and sessions for every date. It can't be undone. To stop recording it from now on, add it to the ignored sites list.", "confirm": "Delete records", "deleting": "Deleting…" },
+    "deleteConfirm": { "title": "Delete records for {{domain}}?", "description": "This can't be undone.", "confirm": "Delete records", "deleting": "Deleting…" },
     "viewVisits": "View visits",
     "trend": {
       "title": "Daily trend",
@@ -163,7 +154,7 @@
   },
   "confirm": {
     "title": "Clear all browsing records?",
-    "description": "This deletes only PageTime's local data and can't be undone.",
+    "description": "This can't be undone.",
     "cancel": "Cancel",
     "clearing": "Clearing…",
     "confirm": "Clear"

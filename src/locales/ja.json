@@ -5,9 +5,9 @@
   "status": { "recording": "閲覧データを記録中", "paused": "記録を一時停止中", "since": "{{date}} から記録" },
   "actions": { "pause": "記録を一時停止", "resume": "記録を再開", "enable": "記録をオン" },
   "pages": {
-    "overview": { "title": "閲覧の概要", "subtitle": "ウェブ上での時間の使い方と訪問状況を確認できます" },
-    "records": { "title": "訪問履歴", "subtitle": "すべての訪問をたどれます" },
-    "settings": { "title": "設定", "subtitle": "データと記録方法を管理します" }
+    "overview": { "title": "閲覧の概要" },
+    "records": { "title": "訪問履歴" },
+    "settings": { "title": "設定" }
   },
   "range": { "today": "今日", "last7": "過去 7 日間", "last30": "過去 30 日間", "custom": "カスタム", "start": "開始日", "end": "終了日", "apply": "適用", "cancel": "キャンセル", "invalid": "終了日は開始日以降にしてください", "lastDays_other": "過去 {{count}} 日間", "label": "集計期間：{{range}}" },
   "error": {
@@ -30,9 +30,6 @@
     "paused": "記録を一時停止中"
   },
   "summary": {
-    "label": "サマリー",
-    "totalTime": "アクティブな閲覧時間の合計",
-    "visits_other": "<b>{{count}}</b> 回訪問",
     "sites_other": "<b>{{count}}</b> サイト"
   },
   "kpi": { "label": "{{range}}の合計", "sites": "サイト数" },
@@ -49,14 +46,12 @@
   "trend": { "label": "日別のアクティブな閲覧時間。{{days}}", "separator": "、", "hours_other": "{{count}} 時間" },
   "timeline": {
     "title": "今日のタイムライン",
-    "idle": "アイドル時間",
     "label_other": "今日のアクティブな閲覧タイムライン、{{count}} 件の時間帯。空白部分はアクティブな閲覧が記録されていません。",
     "empty": "今日のアクティブな閲覧記録はまだありません",
     "item": "{{domain}}、{{from}}〜{{to}}"
   },
   "heatmap": {
     "title": "アクティブな時間帯",
-    "caption": "各マスはその時間帯の平均アクティブ時間です",
     "legend": "薄い {{min}}、濃い {{max}}",
     "label": "曜日と時間ごとのアクティブな時間帯。{{summary}}",
     "separator": "、",
@@ -77,7 +72,6 @@
     "emptyDescription": "ウェブページを訪問すると、ここに自動的に記録が表示されます。",
     "collapse": "一覧を閉じる",
     "showAll_other": "全 {{count}} サイトを表示",
-    "details": "サイトの詳細を表示",
     "filterSite": "{{domain}} で絞り込む",
     "openDetail": "{{domain}} の詳細"
   },
@@ -93,31 +87,29 @@
     "empty": "条件に一致する訪問履歴はありません"
   },
   "settings": {
-    "language": { "title": "言語", "description": "PageTime の表示言語を選択します。", "label": "表示言語：{{language}}" },
-    "theme": { "title": "外観", "description": "ライト、ダーク、またはシステム設定に合わせます。選択はこの端末にだけ保存されます。", "label": "外観：{{mode}}", "system": "システムに合わせる", "light": "ライト", "dark": "ダーク" },
-    "recording": { "title": "閲覧の記録", "description": "ページの訪問回数を記録し、フォーカスされたウィンドウのアクティブなタブでの閲覧時間のみを集計します。" },
-    "audible": { "title": "音声の再生中は計測を続ける", "description": "フォーカスされたウィンドウのアクティブなタブがミュートされていない音声を再生している間は、アイドル中も計測します。音声が止まるかタブをミュートすると、すぐに停止します。" },
-    "idle": { "title": "アイドル判定時間", "description": "キーボードやマウスの操作がなくなってから、ブラウザをアイドルとみなすまでの時間です。", "label": "アイドル判定時間：{{duration}}", "option_other": "{{count}} 分" },
+    "language": { "title": "言語", "label": "表示言語：{{language}}" },
+    "theme": { "title": "外観", "label": "外観：{{mode}}", "system": "システムに合わせる", "light": "ライト", "dark": "ダーク" },
+    "recording": { "title": "閲覧の記録" },
+    "audible": { "title": "音声の再生中は計測を続ける" },
+    "idle": { "title": "アイドル判定時間", "description": "無操作がこの時間続くとアイドルとみなします。", "label": "アイドル判定時間：{{duration}}", "option_other": "{{count}} 分" },
     "siteMerge": {
       "title": "サイトのまとめ方",
-      "description": "概要とサイト詳細のグループ分けだけを変えます。記録には元のホスト名が残ります。いつでも切り替えできます。",
       "label": "サイトのまとめ方：{{mode}}",
       "none": "まとめない",
       "prefix": "www・m・mobile をまとめる",
       "registrable": "登録可能ドメインでまとめる"
     },
-    "recordMode": { "title": "記録範囲", "description": "これからどのサイトを記録するかを選びます。ブラックリストとホワイトリストは別々に保存されます。モードを切り替えても、もう一方のリストは消えず、既存の記録も削除・非表示になりません。example.com はそのホストとサブドメインに一致し、mail.example.com は example.com には一致しません。", "blacklist": "ブラックリスト", "whitelist": "ホワイトリスト", "blacklistHint": "下のリスト以外のサイトを記録します。", "whitelistHint": "下のリストにあるサイトだけを記録します。" },
-    "ignored": { "title": "無視するサイト", "description": "これらのホストとそのサブドメインは、ブラウザの内部ページと同じように、時間も訪問回数も記録しません。example.com は a.example.com にも一致します。mail.example.com は example.com には一致しません。既存の記録は残り、統計からも隠れません。", "input": "無視するホスト", "placeholder": "example.com", "add": "追加", "remove": "{{domain}} を削除", "emptyTitle": "無視するサイトはありません", "emptyDescription": "ホストを追加すると、これ以降はそのサイトを記録しません。", "error": "example.com のようなホストを入力してください。プロトコル、パス、ポートは除かれます。空白は使えず、ドットのない名前は localhost だけ受け付けます。", "limit": "無視できるホストは {{count}} 件までです。" },
-    "allowed": { "title": "許可するサイト", "description": "これらのホストとそのサブドメインだけ、時間と訪問回数を記録します。example.com は a.example.com にも一致します。mail.example.com は example.com には一致しません。既存の記録は残り、統計からも隠れません。", "input": "許可するホスト", "placeholder": "example.com", "add": "追加", "remove": "{{domain}} を削除", "emptyTitle": "許可するサイトはありません", "emptyDescription": "ホストを追加すると、これ以降はそのサイトを記録します。リストが空のあいだは何も記録しません。", "limit": "許可できるホストは {{count}} 件までです。", "emptyWarningTitle": "空のホワイトリストは何も記録しません", "emptyWarning": "許可されたホストがないため、どのサイトの時間も訪問回数も記録しません。空のリストは「すべて記録」ではありません。記録を始めるには、ホストを 1 件以上追加してください。既存の記録は残り、隠れません。", "error": "example.com のようなホストを入力してください。プロトコル、パス、ポートは除かれます。空白は使えず、ドットのない名前は localhost だけ受け付けます。" },
-    "badge": { "title": "ツールバーのバッジ", "description": "ツールバーのアイコンに今日のアクティブな閲覧時間を表示します。" },
+    "recordMode": { "title": "記録範囲", "blacklist": "ブラックリスト", "whitelist": "ホワイトリスト", "blacklistHint": "下のリスト以外のサイトを記録します。", "whitelistHint": "下のリストにあるサイトだけを記録します。" },
+    "ignored": { "title": "無視するサイト", "input": "無視するホスト", "placeholder": "example.com（サブドメインを含む）", "add": "追加", "remove": "{{domain}} を削除", "emptyTitle": "無視するサイトはありません", "error": "example.com のような有効なホストを入力してください", "limit": "無視できるホストは {{count}} 件までです。" },
+    "allowed": { "title": "許可するサイト", "input": "許可するホスト", "placeholder": "example.com（サブドメインを含む）", "add": "追加", "remove": "{{domain}} を削除", "emptyTitle": "許可するサイトはありません", "limit": "許可できるホストは {{count}} 件までです。", "emptyWarning": "ホワイトリストが空のため、どのサイトも記録されません", "error": "example.com のような有効なホストを入力してください" },
+    "badge": { "title": "ツールバーのバッジ" },
     "docs": { "timing": "計測ルールとプライバシーの説明", "privacy": "プライバシーポリシー" },
-    "export": { "title": "データを書き出す", "description": "この端末の記録をファイルとしてダウンロードします。JSON にはすべてのテーブル、記録の状態、設定が入ります。CSV は日付とホスト名ごとに 1 行で、表計算ソフトで分析できます。", "note": "ファイルはお使いのコンピューターにだけ保存されます。含まれるのはホスト名と時間だけで、URL やタイトルは含まれません。", "json": "JSON を書き出す", "csv": "CSV を書き出す", "exporting": "書き出しています…", "done": "{{file}} を保存しました。", "errorTitle": "書き出せませんでした", "error": "ファイルはダウンロードされていません。もう一度お試しください。" },
-    "deleteDay": { "title": "ある日の記録を削除", "description": "この端末から、選んだ日のアクティブ時間、訪問回数、時間帯を削除します。元に戻せません。", "label": "削除する日付", "button": "この日を削除", "done": "{{date}} の記録を削除しました。", "confirmTitle": "{{date}} の記録を削除しますか？", "confirmDescription": "この端末から、その日のアクティブ時間、訪問回数、時間帯を削除します。元に戻せません。", "confirm": "この日を削除", "deleting": "削除しています…" },
-    "clear": { "title": "すべての記録を削除", "description": "このデバイスに PageTime が保存した記録を削除します。削除後は元に戻せません。", "button": "データを削除" }
+    "export": { "title": "データを書き出す", "description": "この端末のすべての記録をダウンロードします。", "note": "ファイルはお使いのコンピューターにだけ保存されます。含まれるのはホスト名と時間だけで、URL やタイトルは含まれません。", "json": "JSON を書き出す", "csv": "CSV を書き出す", "exporting": "書き出しています…", "done": "{{file}} を保存しました。", "errorTitle": "書き出せませんでした", "error": "ファイルはダウンロードされていません。もう一度お試しください。" },
+    "deleteDay": { "title": "ある日の記録を削除", "label": "削除する日付", "button": "この日を削除", "done": "{{date}} の記録を削除しました。", "confirmTitle": "{{date}} の記録を削除しますか？", "confirmDescription": "削除すると元に戻せません。", "confirm": "この日を削除", "deleting": "削除しています…" },
+    "clear": { "title": "すべての記録を削除", "button": "データを削除" }
   },
   "detail": {
     "title": "サイトの詳細",
-    "description": "{{range}}のサイト統計と今日のアクティブな時間帯",
     "close": "詳細を閉じる",
     "visits_other": "{{count}} 回",
     "todaySessions": "今日のアクティブな時間帯",
@@ -126,10 +118,10 @@
     "ignored": "このサイトはすでに無視リストにあります",
     "allow": "ホワイトリストに追加",
     "allowed": "このサイトはすでに許可されています",
-    "allowConfirm": { "title": "このサイトをホワイトリストに追加しますか？", "description": "今後、{{domain}} とそのサブドメインの時間と訪問回数を記録します。既存の記録は削除も非表示もしません。", "confirm": "ホワイトリストに追加" },
-    "ignoreConfirm": { "title": "このサイトを記録しないようにしますか？", "description": "今後、{{domain}} とそのサブドメインの時間と訪問回数は記録しません。既存の記録は削除されません。", "confirm": "記録しない" },
+    "allowConfirm": { "title": "このサイトをホワイトリストに追加しますか？", "description": "今後、{{domain}} とそのサブドメインを記録します。", "confirm": "ホワイトリストに追加" },
+    "ignoreConfirm": { "title": "このサイトを記録しないようにしますか？", "description": "今後、{{domain}} とそのサブドメインを記録しません。", "confirm": "記録しない" },
     "delete": "このサイトの記録を削除",
-    "deleteConfirm": { "title": "このサイトの記録を削除しますか？", "description": "{{domain}} の全日付の時間、訪問回数、時間帯を削除します。元に戻せません。今後記録したくない場合は、無視リストに追加してください。", "confirm": "記録を削除", "deleting": "削除しています…" },
+    "deleteConfirm": { "title": "{{domain}} の記録を削除しますか？", "description": "削除すると元に戻せません。", "confirm": "記録を削除", "deleting": "削除しています…" },
     "viewVisits": "訪問履歴を表示",
     "trend": {
       "title": "日別の推移",
@@ -156,7 +148,7 @@
   },
   "confirm": {
     "title": "すべての閲覧記録を削除しますか？",
-    "description": "PageTime のローカルデータのみが削除されます。削除後は元に戻せません。",
+    "description": "削除すると元に戻せません。",
     "cancel": "キャンセル",
     "clearing": "削除中…",
     "confirm": "削除する"
