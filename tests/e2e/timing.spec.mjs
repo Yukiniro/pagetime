@@ -548,3 +548,72 @@ test('an open dashboard shows background writes without a reload', async () => {
     expect(await dashboard.evaluate(() => window.PAGETIME_MARKER)).toBe('kept');
   });
 });
+
+test('the settings data overview reads the ledger live, and clearing empties it without a reload', async () => {
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    const dashboard = await context.newPage();
+    await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
+    await dashboard.evaluate(() => localStorage.setItem('pagetime-language', 'en'));
+    await dashboard.reload();
+    await dashboard.getByRole('button', { name: 'Settings', exact: true }).click();
+    const overview = dashboard.getByRole('region', { name: 'Local data' });
+    const item = label => overview.locator('dl > div', { has: dashboard.locator('dt', { hasText: label }) });
+    await expect(overview).toContainText('IndexedDB (pagetime-ledger)');
+    await expect(overview).toContainText('0 hostnames');
+    await expect(item('Earliest daily total')).toContainText('No records yet');
+    await expect(overview).toContainText('Kept for 31 days, from');
+    await expect(overview).toContainText('Space used (estimate)');
+    await expect(overview).not.toContainText('Older version data');
+    await dashboard.evaluate(() => { window.PAGETIME_MARKER = 'kept'; });
+    const page = await context.newPage();
+    await page.goto(pageUrl('a.test'));
+    await waitForDomain(context, 'a.test');
+    await page.waitForTimeout(2_000);
+    await page.goto('about:blank');
+    await waitForSpan(context, 'a.test', 1_000);
+    await dashboard.bringToFront();
+    await expect(overview).toContainText('1 hostname');
+    await expect(overview.getByRole('listitem').filter({ hasText: 'visits' })).toHaveText(/^1\s*Visits/);
+    await expect(overview.getByRole('listitem').filter({ hasText: 'spans' })).not.toHaveText(/^0\s/);
+    await expect(item('Earliest daily total')).not.toContainText('No records yet');
+    await expect(overview).not.toContainText('Invalid Date');
+    await dashboard.getByRole('button', { name: 'Clear data', exact: true }).click();
+    await dashboard.getByRole('alertdialog').getByRole('button', { name: 'Clear', exact: true }).click();
+    await expect(overview).toContainText('0 hostnames');
+    await expect(item('Earliest daily total')).toContainText('No records yet');
+    await expect(overview.getByRole('listitem').filter({ hasText: 'visits' })).toHaveText(/^0\s*Visits/);
+    expect(await dashboard.evaluate(() => window.PAGETIME_MARKER)).toBe('kept');
+    await sw.evaluate(() => chrome.storage.local.set({ data: { visits: [{ domain: 'old.test', at: 1 }], spans: [], enabled: true, since: 1 } }));
+    await dashboard.reload();
+    await dashboard.getByRole('button', { name: 'Settings', exact: true }).click();
+    await expect(overview).toContainText('Older version data');
+    expect((await sw.evaluate(() => chrome.storage.local.get('data'))).data.visits).toHaveLength(1);
+  });
+});
+
+test('the data overview hides the space estimate when storage.estimate() is missing or fails', async () => {
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    for (const patch of ['missing', 'rejects']) {
+      const dashboard = await context.newPage();
+      const errors = [];
+      dashboard.on('pageerror', error => errors.push(error));
+      await dashboard.addInitScript(mode => {
+        Object.defineProperty(StorageManager.prototype, 'estimate', {
+          configurable: true,
+          value: mode === 'missing' ? undefined : () => Promise.reject(new Error('blocked')),
+        });
+        localStorage.setItem('pagetime-language', 'en');
+      }, patch);
+      await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
+      await dashboard.getByRole('button', { name: 'Settings', exact: true }).click();
+      const overview = dashboard.getByRole('region', { name: 'Local data' });
+      await expect(overview).toContainText('Kept for 31 days, from');
+      await dashboard.waitForTimeout(500);
+      await expect(overview).not.toContainText('Space used (estimate)');
+      expect(errors, patch).toEqual([]);
+      await dashboard.close();
+    }
+  });
+});

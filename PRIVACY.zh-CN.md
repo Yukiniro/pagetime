@@ -17,7 +17,7 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 
 每次计时事件都在同一个 IndexedDB 事务里更新 `days`、`hours`、`spans`、`visits` 和 `cursor`，要么全部写入，要么一条也不写。统计页直接读取同一个数据库，数据变化时自动刷新。`domain` 只接受主机名：`src/model.mjs` 的 `domainOf` 只从 `http:` / `https:` 网址取出 `hostname`，路径、查询、片段、端口和账号都丢掉。
 
-改用 IndexedDB 之前的版本把记录放在 `chrome.storage.local` 的 `data` 键。这一版不读、不写、也不删除这个键，旧版本存下的记录原样留在那里，但不会显示。新账本从空开始。
+改用 IndexedDB 之前的版本把记录放在 `chrome.storage.local` 的 `data` 键。这一版不读、不写、也不删除这个键，旧版本存下的记录原样留在那里，但不会显示。「设置」里的本地数据概况只用 `getBytesInUse` 显示这个键是否还在、约占多大，不读取其内容。新账本从空开始。
 
 账本写入失败时，后台在 `chrome.storage.local` 写入 `ledgerError`：`{ at, name }`，即失败时间和错误名。它存在期间统计页显示保存错误，下一次写入成功后删除。清理旧明细失败只记日志，不会写入它。
 
