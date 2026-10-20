@@ -1,4 +1,6 @@
 import { addDays, daily, dateKey, dateKeyStart, groupSites, midnight, openCredit, overlapMs, splitByHour, summarize } from './model.mjs';
+import { compareBlocks, compareSummary, previousWindow } from './range.mjs';
+import { focusSummary } from './site-filter.mjs';
 import { siteOf } from './site.mjs';
 
 export const VISIT_LIST_LIMIT = 200;
@@ -211,4 +213,49 @@ export function siteSeriesFromSnapshot(data, { site, siteMerge = 'prefix', start
     state: { enabled: data.enabled, since: data.since },
     cursor: null,
   }, { site, siteMerge, start, end, now });
+}
+
+const totalsOf = summary => ({ ms: summary.ms, visits: summary.visits, sites: summary.rows.filter(row => row.ms > 0 || row.visits > 0).length });
+
+// KPI figures for [start, end) read from stored rows. Whole days come from `days` (time and visits).
+// An `end` inside a day takes that day's part from `hours` (time only) and `visits` rows, because hour buckets hold no visit count.
+// `segment` is the unsaved cursor time. A site filter narrows the figures the same way the KPI bar does.
+export function windowTotals({ domains, days, hours = [], visits = [], segment = null }, { start, end }, { site = '', siteMerge = 'prefix' } = {}) {
+  const host = new Map(domains.map(row => [row.id, row.host]));
+  const entries = [];
+  const cutDay = midnight(end);
+  const add = (domainId, ms, count) => {
+    const domain = host.get(domainId);
+    if (domain) entries.push({ domain, ms, visits: count });
+  };
+  for (const row of days) if (inRange(row.date, start, cutDay)) add(row.domainId, row.ms, row.visits);
+  if (cutDay < end) {
+    const cutHour = new Date(end).getHours();
+    const cutKey = dateKey(cutDay);
+    for (const row of hours) if (row.date === cutKey && row.hour < cutHour) add(row.domainId, row.ms, 0);
+    for (const visit of visits) if (visit.at >= cutDay && visit.at < end) add(visit.domainId, 0, 1);
+  }
+  const open = overlapMs(segment, start, end);
+  if (open) entries.push({ domain: segment.domain, ms: open, visits: 0 });
+  return totalsOf(focusSummary(groupSites(entries, keyFor(siteMerge)), site));
+}
+
+export function windowTotalsFromSnapshot(data, { start, end }, { site = '', siteMerge = 'prefix' } = {}) {
+  return totalsOf(focusSummary(summarize(data, start, end, keyFor(siteMerge)), site));
+}
+
+// The preview twin of the extension's comparison: same windows, same blocks, totals from the snapshot.
+export function compareFromSnapshot(data, { start, end, focus = '', siteMerge = 'prefix' }, now) {
+  const window = previousWindow({ start, end }, now);
+  const blocks = compareBlocks(window, { since: data.since, now });
+  const options = { site: focus, siteMerge };
+  const ready = !blocks.ms;
+  return {
+    window,
+    summary: compareSummary(
+      ready ? windowTotalsFromSnapshot(data, window.current, options) : null,
+      ready ? windowTotalsFromSnapshot(data, window.previous, options) : null,
+      blocks,
+    ),
+  };
 }
