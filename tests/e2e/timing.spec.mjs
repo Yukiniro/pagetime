@@ -621,6 +621,7 @@ test('a one-year ledger of 200 sites exports with a progress state and the page 
   test.setTimeout(180_000);
   await withBrowser(async context => {
     const sw = await worker(context);
+    await expect.poll(async () => (await readData(sw))?.enabled).toBe(true);
     const seeded = await sw.evaluate(async () => {
       const db = await new Promise((resolve, reject) => {
         const request = indexedDB.open('pagetime-ledger');
@@ -764,5 +765,52 @@ test('the overview compares each KPI with the previous period and says when it c
     }
     await lines.first().hover();
     await expect(dashboard.getByText('Not enough recorded data to compare.')).toBeVisible();
+  });
+});
+
+test('the date control fits a 320px and a 375px page and its step buttons still work', async () => {
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    await expect.poll(async () => (await readData(sw))?.enabled).toBe(true);
+    await seedOldDays(sw);
+    const dashboard = await context.newPage();
+    await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
+    const fits = () => dashboard.evaluate(() => {
+      const edges = [...document.querySelectorAll('.range-control > :not(form)')].map(node => node.getBoundingClientRect());
+      return document.documentElement.scrollWidth <= window.innerWidth && edges.every(edge => edge.left >= 0 && edge.right <= window.innerWidth);
+    });
+    for (const language of ['en', 'de', 'ru']) {
+      await dashboard.evaluate(code => localStorage.setItem('pagetime-language', code), language);
+      for (const width of [320, 375]) {
+        await dashboard.setViewportSize({ width, height: 700 });
+        await dashboard.reload();
+        const trigger = dashboard.locator('.range-control .range');
+        await trigger.click();
+        await dashboard.getByRole('menuitemradio').nth(2).click();
+        expect(await fits(), `${language} ${width}px, 30 days`).toBe(true);
+        const sizes = await dashboard.evaluate(() => [...document.querySelectorAll('.range-control > *:not(form)')].map(node => { const box = node.getBoundingClientRect(); return [Math.round(box.width), Math.round(box.height), node.scrollHeight <= node.clientHeight]; }));
+        expect(sizes[0], `${language} ${width}px, previous button size`).toEqual([38, 38, true]);
+        expect(sizes[2], `${language} ${width}px, next button size`).toEqual([38, 38, true]);
+        expect(sizes[1][1], `${language} ${width}px, date button height`).toBe(38);
+        expect(sizes[1][2], `${language} ${width}px, date button text is not clipped`).toBe(true);
+        await trigger.click();
+        await dashboard.getByRole('menuitemradio').nth(1).click();
+        const label = await trigger.getAttribute('aria-label');
+        const steps = dashboard.locator('.range-step');
+        await expect(steps).toHaveCount(2);
+        await steps.first().click();
+        expect(await trigger.getAttribute('aria-label'), `${language} ${width}px, previous period`).not.toBe(label);
+        expect(await fits(), `${language} ${width}px, paged`).toBe(true);
+        const paged = await trigger.getAttribute('aria-label');
+        await steps.last().focus();
+        await dashboard.keyboard.press('Enter');
+        expect(await trigger.getAttribute('aria-label'), `${language} ${width}px, next period by keyboard`).not.toBe(paged);
+      }
+    }
+    await dashboard.setViewportSize({ width: 1100, height: 800 });
+    await dashboard.evaluate(() => localStorage.setItem('pagetime-language', 'en'));
+    await dashboard.reload();
+    await expect(dashboard.getByRole('button', { name: 'Previous period' })).toBeVisible();
+    await expect(dashboard.getByRole('button', { name: 'Next period' })).toBeVisible();
   });
 });

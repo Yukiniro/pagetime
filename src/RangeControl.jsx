@@ -84,7 +84,7 @@ export function RangeControl({ range, today, since, onChange }) {
     <Button type="button" variant="outline" size="icon" className="range-step" aria-label={t('range.previous')} disabled={!earlier} onClick={() => step(earlier)}><CaretLeft /></Button>
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button variant="outline" className="range" />} aria-label={t('range.label', { range: spoken })}>
-        <CalendarBlank /><span>{title}</span>{showDates && <span className="range-dates">{dates}</span>}<CaretDown />
+        <CalendarBlank /><span className="range-text"><span className="range-title">{title}</span>{showDates && <span className="range-dates">{dates}</span>}</span><CaretDown />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-auto min-w-44">
         <DropdownMenuRadioGroup value={range.preset} onValueChange={value => { if (value === 'custom') openCustom(); else applyPreset(value); }}>
