@@ -49,3 +49,4 @@
 - **没有 host permission。** 清单里没有匹配网站的主机权限，因此不能向网页注入代码，也不能靠主机权限读取页面。
 - **没有 content script。** 仓库里没有内容脚本入口，构建校验要求 `content_scripts` 为空或不存在。
 - **没有 `history`、`scripting`、`cookies`、`webRequest`、`identity`。** 不能读写浏览器历史库，不能执行页面脚本，不能读 Cookie，不能查看请求正文，没有账号。
+- **没有 `downloads`。** 「设置 → 导出数据」在统计页里生成文件，通过 `Blob` 网址和 `<a download>` 链接保存，不需要权限。扩展不能列出、打开或删除用户的下载内容。

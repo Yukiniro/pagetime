@@ -529,6 +529,164 @@ test('deleting a site from the dashboard removes it from the ranking and the det
   });
 });
 
+async function openSettings(context, sw) {
+  const dashboard = await context.newPage();
+  await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
+  await dashboard.evaluate(() => localStorage.setItem('pagetime-language', 'en'));
+  await dashboard.reload();
+  await dashboard.getByRole('button', { name: 'Settings', exact: true }).click();
+  await expect(dashboard.getByRole('heading', { name: 'Export data' })).toBeVisible();
+  return dashboard;
+}
+
+async function exportFile(dashboard, name) {
+  const started = dashboard.waitForEvent('download');
+  await dashboard.getByRole('button', { name, exact: true }).click();
+  const download = await started;
+  return { name: download.suggestedFilename(), bytes: fs.readFileSync(await download.path()) };
+}
+
+async function readRows(sw, names) {
+  return sw.evaluate(async names => {
+    const db = await new Promise((resolve, reject) => {
+      const request = indexedDB.open('pagetime-ledger');
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    try {
+      const tx = db.transaction(names, 'readonly');
+      return Object.fromEntries(await Promise.all(names.map(name => new Promise((resolve, reject) => {
+        const request = tx.objectStore(name).getAll();
+        request.onsuccess = () => resolve([name, request.result]);
+        request.onerror = () => reject(request.error);
+      }))));
+    } finally {
+      db.close();
+    }
+  }, names);
+}
+
+test('exporting from settings downloads the ledger as JSON and as a daily CSV', async () => {
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    const page = await context.newPage();
+    await page.goto(pageUrl('a.test'));
+    await waitForDomain(context, 'a.test');
+    await page.waitForTimeout(2_000);
+    await page.goto('about:blank');
+    await waitForSpan(context, 'a.test', 1_000);
+    const dashboard = await openSettings(context, sw);
+    await expect(dashboard.getByText('The file is saved only on your computer. It contains hostnames and durations, never URLs or titles.')).toBeVisible();
+    const stored = await readRows(sw, ['domains', 'days', 'hours', 'spans', 'visits']);
+
+    const json = await exportFile(dashboard, 'Export JSON');
+    const today = await dashboard.evaluate(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; });
+    expect(json.name).toBe(`pagetime-${today}.json`);
+    const document = JSON.parse(json.bytes.toString('utf8'));
+    expect(document.format).toBe('pagetime-ledger');
+    expect(document.schemaVersion).toBe(1);
+    expect(Date.parse(document.exportedAt)).toBeGreaterThan(Date.now() - 60_000);
+    expect(document.timeZone).toBe(await dashboard.evaluate(() => Intl.DateTimeFormat().resolvedOptions().timeZone));
+    expect(document.appVersion).toBe(JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version);
+    expect(document.recording.enabled).toBe(true);
+    expect(document.settings).toMatchObject({ recordMode: 'blacklist', siteMerge: 'prefix', ignored: [], allowed: [] });
+    expect(Object.keys(document.tables)).toEqual(['domains', 'days', 'hours', 'spans', 'visits']);
+    const id = document.tables.domains.find(row => row.host === 'a.test').id;
+    expect(document.tables.days).toEqual(stored.days.map(({ date, domainId, ms, visits }) => ({ date, domainId, ms, visits })));
+    expect(document.tables.spans.length).toBe(stored.spans.length);
+    expect(document.tables.visits.length).toBe(stored.visits.length);
+    expect(document.tables.hours.filter(row => row.domainId === id).reduce((sum, row) => sum + row.ms, 0))
+      .toBe(document.tables.days.filter(row => row.domainId === id).reduce((sum, row) => sum + row.ms, 0));
+    expect(json.bytes.toString('utf8')).not.toMatch(/http:\/\/|<title>|pagetime<\/title>/);
+    await expect(dashboard.getByRole('status')).toHaveText(`Saved pagetime-${today}.json.`);
+
+    const csv = await exportFile(dashboard, 'Export CSV');
+    expect(csv.name).toBe(`pagetime-${today}.csv`);
+    expect(csv.bytes.subarray(0, 3).toString('hex')).toBe('efbbbf');
+    const lines = csv.bytes.toString('utf8').slice(1).split('\r\n');
+    expect(lines[0]).toBe('date,host,active_ms,visits');
+    expect(lines.at(-1)).toBe('');
+    const row = stored.days.find(day => day.domainId === id && day.date === today);
+    expect(lines).toContain(`${today},a.test,${row.ms},${row.visits}`);
+
+    await dashboard.evaluate(() => { URL.createObjectURL = () => { throw new Error('blocked'); }; });
+    await dashboard.getByRole('button', { name: 'Export CSV', exact: true }).click();
+    await expect(dashboard.getByRole('alert')).toContainText('Export failed');
+    await expect(dashboard.getByRole('alert')).toContainText('Nothing was downloaded. Try again.');
+    await expect(dashboard.getByRole('button', { name: 'Export JSON', exact: true })).toBeEnabled();
+  });
+});
+
+test('a one-year ledger of 200 sites exports with a progress state and the page keeps painting', async () => {
+  test.setTimeout(180_000);
+  await withBrowser(async context => {
+    const sw = await worker(context);
+    const seeded = await sw.evaluate(async () => {
+      const db = await new Promise((resolve, reject) => {
+        const request = indexedDB.open('pagetime-ledger');
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+      });
+      const first = new Date();
+      first.setHours(0, 0, 0, 0);
+      first.setDate(first.getDate() - 364);
+      const key = at => { const d = new Date(at); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
+      let days = 0, hours = 0;
+      try {
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(['meta', 'domains', 'days', 'hours'], 'readwrite');
+          tx.oncomplete = resolve;
+          tx.onerror = () => reject(tx.error);
+          tx.objectStore('meta').put({ key: 'state', value: { enabled: true, since: first.getTime() } });
+          for (let id = 1; id <= 200; id++) tx.objectStore('domains').put({ id, host: `site-${id}.example.com` });
+          for (let d = 0; d < 365; d++) {
+            const at = new Date(first);
+            at.setDate(at.getDate() + d);
+            const date = key(at.getTime());
+            for (let id = 1; id <= 200; id++) {
+              tx.objectStore('days').put({ date, domainId: id, ms: 4 * 600_000, visits: 3 });
+              days++;
+              for (const hour of [9, 11, 14, 20]) { tx.objectStore('hours').put({ date, hour, domainId: id, ms: 600_000 }); hours++; }
+            }
+          }
+        });
+      } finally {
+        db.close();
+      }
+      return { days, hours };
+    });
+    expect(seeded).toEqual({ days: 73_000, hours: 292_000 });
+    const dashboard = await openSettings(context, sw);
+    await dashboard.evaluate(() => {
+      window.PAGETIME_LONGEST = 0;
+      new PerformanceObserver(list => {
+        for (const entry of list.getEntries()) window.PAGETIME_LONGEST = Math.max(window.PAGETIME_LONGEST, entry.duration);
+      }).observe({ type: 'longtask' });
+      window.PAGETIME_FRAMES = 0;
+      const frame = () => { window.PAGETIME_FRAMES++; requestAnimationFrame(frame); };
+      requestAnimationFrame(frame);
+    });
+    const started = Date.now();
+    const downloaded = dashboard.waitForEvent('download', { timeout: 120_000 });
+    const framesBefore = await dashboard.evaluate(() => window.PAGETIME_FRAMES);
+    await dashboard.getByRole('button', { name: 'Export JSON', exact: true }).click();
+    await expect(dashboard.getByRole('status')).toHaveText('Exporting…');
+    await expect(dashboard.getByRole('button', { name: 'Export CSV', exact: true })).toBeDisabled();
+    const download = await downloaded;
+    const elapsed = Date.now() - started;
+    const { longest, frames } = await dashboard.evaluate(() => ({ longest: window.PAGETIME_LONGEST, frames: window.PAGETIME_FRAMES }));
+    const document = JSON.parse(fs.readFileSync(await download.path(), 'utf8'));
+    console.log(`large export: ${elapsed} ms, ${frames - framesBefore} frames painted, longest main-thread task ${Math.round(longest)} ms, ${(fs.statSync(await download.path()).size / 1e6).toFixed(1)} MB`);
+    expect(document.tables.days).toHaveLength(73_000);
+    expect(document.tables.hours).toHaveLength(292_000);
+    expect(document.tables.domains).toHaveLength(200);
+    expect(frames - framesBefore).toBeGreaterThan(5);
+    expect(longest).toBeLessThan(1_000);
+    await expect(dashboard.getByRole('status')).toHaveText(/^Saved pagetime-\d{4}-\d{2}-\d{2}\.json\.$/);
+    await expect(dashboard.getByRole('button', { name: 'Export CSV', exact: true })).toBeEnabled();
+  });
+});
+
 test('an open dashboard shows background writes without a reload', async () => {
   await withBrowser(async context => {
     const sw = await worker(context);

@@ -78,4 +78,8 @@ The manifest permissions are `storage`, `tabs`, `webNavigation`, `idle`, and `al
 - Removing the extension from the browser deletes that extension's IndexedDB and `chrome.storage`, including an old `data` key.
 - Pausing recording sets `enabled` in `meta.state` to false. It does not delete the ledger.
 
-Deleting, clearing, and uninstalling cannot be undone. This version has no backup, recycle bin, sync, import, or export command. What makes the ledger portable is the table shape above: it stays in local storage on this device and is not locked to an account.
+Deleting, clearing, and uninstalling cannot be undone. This version has no backup, recycle bin, sync, or import command.
+
+## How to export it
+
+Settings → Export data saves a copy of the ledger as a file. The dashboard reads `meta.state` and every row of `domains`, `days`, `hours`, `spans`, and `visits` in one read-only IndexedDB transaction (`readLedgerSnapshot` in `src/ledger.mjs`), builds the file in the page (`src/export.mjs`), and saves it through a `Blob` URL and an `<a download>` link. Nothing is sent over the network, no message is added, and no `downloads` permission is used. Export JSON writes `pagetime-YYYY-MM-DD.json` with `format: "pagetime-ledger"`, `schemaVersion`, `exportedAt`, `timeZone`, `appVersion`, `recording` (`meta.state`), the whole `settings` record including `ignored`, `allowed`, `recordMode`, and `siteMerge`, and the five tables with rows sorted by primary key. The `cursor` row is not exported. Export CSV writes `pagetime-YYYY-MM-DD.csv`, UTF-8 with a byte order mark, with the columns `date,host,active_ms,visits`: one row per stored local date and raw hostname from `days`, not grouped by `siteMerge`. Neither file contains a URL, title, or page content. The saved file is outside the extension, so deleting, clearing, or uninstalling does not remove it. In the local preview, export uses the `pagetime-preview` object.
