@@ -178,14 +178,22 @@ export default defineBackground(() => {
     if (area === 'local' && Object.prototype.hasOwnProperty.call(changes, 'language')) void run(() => refreshBadge());
   });
   browser.runtime.onStartup.addListener(() => { void run(async () => { applyIdle(await readSettings()); await update(); }); });
-  browser.action.onClicked.addListener(() => { void browser.tabs.create({ url: browser.runtime.getURL('/dashboard.html') }); });
+  const extensionPage = (sender: { id?: string, url?: string }) => {
+    if (sender.id !== browser.runtime.id || typeof sender.url !== 'string') return '';
+    if (sender.url.startsWith(browser.runtime.getURL('/dashboard.html'))) return 'dashboard';
+    if (sender.url.startsWith(browser.runtime.getURL('/popup.html'))) return 'popup';
+    return '';
+  };
   const deleteHosts = (message: { host?: unknown, hosts?: unknown }) => {
     const listed = [message.host, ...(Array.isArray(message.hosts) ? message.hosts : [])];
     return [...new Set(listed.filter((host): host is string => typeof host === 'string' && host.length > 0 && host.length <= 253))];
   };
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (sender.id !== browser.runtime.id || !sender.url?.startsWith(browser.runtime.getURL('/dashboard.html'))) return;
-    if (!['snapshot', 'toggle', 'clear', 'deleteSite', 'deleteDay', 'settings'].includes(message?.type)) return;
+    const page = extensionPage(sender);
+    const allowed = page === 'dashboard'
+      ? ['snapshot', 'toggle', 'clear', 'deleteSite', 'deleteDay', 'settings']
+      : page === 'popup' ? ['snapshot', 'toggle', 'settings'] : [];
+    if (!allowed.includes(message?.type)) return;
     void run(async () => {
       if (message.type === 'clear') {
         await write(() => clearLedger(db, Date.now()));

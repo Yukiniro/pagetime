@@ -29,6 +29,18 @@
     "todaySite": "今日 {{duration}} · {{domain}} {{siteDuration}}",
     "paused": "記録を一時停止中"
   },
+  "popup": {
+    "totalOnly": "今日の合計",
+    "total": "今日の合計 {{duration}}",
+    "siteToday": "今日 {{duration}}",
+    "ignore": "このサイトを記録しない",
+    "unignore": "このサイトを再び記録",
+    "allow": "このサイトを記録する",
+    "unallow": "このサイトを記録から外す",
+    "pause": "記録を一時停止",
+    "resume": "記録を再開",
+    "open": "ダッシュボードを開く"
+  },
   "summary": {
     "sites_other": "<b>{{count}}</b> サイト"
   },

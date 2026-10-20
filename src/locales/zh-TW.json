@@ -29,6 +29,18 @@
     "todaySite": "今天 {{duration}} · {{domain}} {{siteDuration}}",
     "paused": "已暫停記錄"
   },
+  "popup": {
+    "totalOnly": "今日總時長",
+    "total": "今日共 {{duration}}",
+    "siteToday": "今日 {{duration}}",
+    "ignore": "不記錄此站",
+    "unignore": "恢復記錄此站",
+    "allow": "記錄此站",
+    "unallow": "不再記錄此站",
+    "pause": "暫停記錄",
+    "resume": "恢復記錄",
+    "open": "打開儀表板"
+  },
   "summary": {
     "sites_other": "<b>{{count}}</b> 個網站"
   },

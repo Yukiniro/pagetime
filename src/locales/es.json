@@ -29,6 +29,18 @@
     "todaySite": "Hoy {{duration}} · {{domain}} {{siteDuration}}",
     "paused": "Grabación en pausa"
   },
+  "popup": {
+    "totalOnly": "Total de hoy",
+    "total": "Hoy {{duration}} en total",
+    "siteToday": "Hoy {{duration}}",
+    "ignore": "No registrar este sitio",
+    "unignore": "Volver a registrar este sitio",
+    "allow": "Registrar este sitio",
+    "unallow": "Dejar de registrar este sitio",
+    "pause": "Pausar registro",
+    "resume": "Reanudar registro",
+    "open": "Abrir el panel"
+  },
   "summary": {
     "sites_one": "<b>{{count}}</b> sitio",
     "sites_many": "<b>{{count}}</b> sitios",

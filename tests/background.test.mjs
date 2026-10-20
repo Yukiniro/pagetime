@@ -182,6 +182,39 @@ test('an outside page cannot delete, and an invalid date leaves the ledger unmar
   assert.equal(LEDGER_ERROR_KEY in h.local, false);
 });
 
+function fromPopup(h, type, body = {}) {
+  return new Promise(resolve => {
+    const returned = h.browser.runtime.onMessage.listeners[0](
+      { type, ...body },
+      { id: 'jilan', url: 'chrome-extension://jilan/popup.html' },
+      resolve,
+    );
+    if (returned !== true) resolve({ returned });
+  });
+}
+
+test('the toolbar popup can pause and change settings, and cannot delete', async () => {
+  const h = await createHarness({ url: 'https://a.com/' });
+  await h.advance(10_000);
+  await h.fireAlarm();
+  const before = total(await h.read());
+  assert.equal(h.browser.action.onClicked.listeners.length, 0);
+  assert.deepEqual(await fromPopup(h, 'deleteSite', { host: 'a.com' }), { returned: undefined });
+  assert.deepEqual(await fromPopup(h, 'clear'), { returned: undefined });
+  await h.settle();
+  assert.equal(total(await h.read()), before);
+  assert.equal((await fromPopup(h, 'toggle')).ok, true);
+  assert.equal((await h.read()).enabled, false);
+  assert.equal(h.badge.text, 'II');
+  const read = await fromPopup(h, 'settings');
+  const saved = await fromPopup(h, 'settings', { settings: { ...read.settings, ignored: ['a.com'], badge: false } });
+  assert.deepEqual(saved.settings.ignored, ['a.com']);
+  assert.equal(saved.settings.badge, false);
+  assert.equal(h.badge.text, '');
+  assert.equal((await h.read()).enabled, false);
+  assert.equal(total(await h.read()), before);
+});
+
 test('after the database closes, the worker reopens it and the checkpoint still lands', async () => {
   const h = await createHarness();
   h.advance(10_000);
