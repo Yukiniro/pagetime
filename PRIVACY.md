@@ -17,7 +17,7 @@ The durable ledger is the IndexedDB database `pagetime-ledger` in the extension'
 
 Each timing event updates `days`, `hours`, `spans`, `visits`, and `cursor` in one IndexedDB transaction, so they are all written or none is. The dashboard reads the same database directly and refreshes when it changes. `domainOf` in `src/model.mjs` keeps only the `hostname` of an `http:` or `https:` URL. Path, query, fragment, port, and userinfo are dropped.
 
-Versions before the IndexedDB ledger kept their records in the `data` key of `chrome.storage.local`. This version never reads, writes, or deletes that key, so records saved by an older version stay there unchanged and are not shown. The new ledger starts empty.
+Versions before the IndexedDB ledger kept their records in the `data` key of `chrome.storage.local`. This version never reads, writes, or deletes that key, so records saved by an older version stay there unchanged and are not shown. The local data overview in Settings shows only whether the key is still there and its size, from `getBytesInUse`, without reading its contents. The new ledger starts empty.
 
 If a ledger write fails, the background stores `ledgerError` in `chrome.storage.local`: `{ at, name }`, the time and the error name. The dashboard shows a save error while it is present. The next successful write removes it. A failed cleanup of old detail is only logged and does not set it.
 
