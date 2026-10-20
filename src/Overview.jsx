@@ -96,7 +96,7 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
         {chart === 'timeline' ? (showTimeline ? <>
           <p className="chart-caption">{formatDate(now, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(todayKpi.ms) })}</p>
           <Timeline spans={chartSpans} className="primary-timeline" lane={36} isDark={isDark} />
-          <div className="legend">{legend.map(row => <Button variant="ghost" size="xs" key={row.domain} onClick={event => openSite(row.domain, event)}><i style={{ background: colorOf(row.domain) }} />{row.domain}</Button>)}<span className="idle-legend"><i />{t('timeline.idle')}</span></div>
+          <div className="legend">{legend.map(row => <Button variant="ghost" size="xs" key={row.domain} onClick={event => openSite(row.domain, event)}><i style={{ background: colorOf(row.domain) }} />{row.domain}</Button>)}</div>
         </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />) : (showTrend ? <Trend days={trendDays} className="primary-trend" isDark={isDark} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
       </div>
     </section>
@@ -126,7 +126,7 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
         <span id="active-hours-title">{t('heatmap.title')}</span>
         <CaretDown className={hoursOpen ? 'heatmap-caret open' : 'heatmap-caret'} />
       </Button>
-      {hoursOpen && <div id="active-hours-panel" className="heatmap-panel"><p>{t('heatmap.caption')}</p>{/* Hour cells are not a filter; filtering by hour is deferred. */}<Heatmap rows={hourRows} since={since} start={start} end={end} today={today} isDark={isDark} /></div>}
+      {hoursOpen && <div id="active-hours-panel" className="heatmap-panel">{/* Hour cells are not a filter; filtering by hour is deferred. */}<Heatmap rows={hourRows} since={since} start={start} end={end} today={today} isDark={isDark} /></div>}
     </section>
   </div>;
 }

@@ -83,7 +83,7 @@ export function App() {
   const scopeHost = selected ? normalizeHost(selected) : null;
   const alreadyListed = selected ? (listField === 'allowed' ? isAllowed(selected, settings.allowed) : isIgnored(selected, settings.ignored)) : false;
   const listLimit = (settings[listField]?.length ?? 0) >= IGNORED_LIMIT;
-  const confirmKey = listField === 'allowed' ? 'detail.allowConfirm' : 'detail.ignoreConfirm';
+  const confirmKey = listField === 'allowed' ? 'allowConfirm' : 'ignoreConfirm';
   async function confirmListAdd() {
     const host = normalizeHost(ignoreTarget);
     const current = settings[listField] ?? [];
@@ -114,7 +114,7 @@ export function App() {
           <Button variant="outline" className="action-button" disabled={busy || !shown} onClick={() => act('toggle')}>{enabled ? <Pause weight="fill" /> : <Play weight="fill" />}{enabled ? t('actions.pause') : t('actions.resume')}</Button>
         </header>
         <main>
-          <div className="page-header"><div><h1>{t(`pages.${page}.title`)}</h1><p>{t(`pages.${page}.subtitle`)}</p></div>
+          <div className="page-header"><div><h1>{t(`pages.${page}.title`)}</h1></div>
             {page !== 'settings' && <RangeControl range={active} today={today} onChange={setRange} />}
           </div>
           {problem && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => { ledger.retry(); act(); }}>{t('error.retry')}</Button></AlertDescription></Alert>}
@@ -126,39 +126,39 @@ export function App() {
             </TableBody></Table>
             {!view.visits.length && <Empty><EmptyHeader><EmptyTitle>{t('records.empty')}</EmptyTitle></EmptyHeader></Empty>}
           </section>) : <section className="settings">
-            <div className="setting-row"><div><h2>{t('settings.language.title')}</h2><p>{t('settings.language.description')}</p></div><DropdownMenu>
+            <div className="setting-row"><h2>{t('settings.language.title')}</h2><DropdownMenu>
               <DropdownMenuTrigger render={<Button variant="outline" className="action-button" />} aria-label={t('settings.language.label', { language: languageName })}><Translate />{languageName}<CaretDown /></DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={i18n.resolvedLanguage} onValueChange={value => i18n.changeLanguage(value)}>
                 {languages.map(([code, name]) => <DropdownMenuRadioItem closeOnClick key={code} value={code} lang={code}>{name}</DropdownMenuRadioItem>)}
               </DropdownMenuRadioGroup></DropdownMenuContent>
             </DropdownMenu></div>
-            <div className="setting-row"><div><h2>{t('settings.theme.title')}</h2><p>{t('settings.theme.description')}</p></div><DropdownMenu>
+            <div className="setting-row"><h2>{t('settings.theme.title')}</h2><DropdownMenu>
               <DropdownMenuTrigger render={<Button variant="outline" className="action-button" />} aria-label={t('settings.theme.label', { mode: themeLabel })} disabled={busy}>{themeLabel}<CaretDown /></DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={settings.theme} onValueChange={value => saveSettings({ ...settings, theme: value })}>
                 {THEME_MODES.map(mode => <DropdownMenuRadioItem closeOnClick key={mode} value={mode}>{t(`settings.theme.${mode}`)}</DropdownMenuRadioItem>)}
               </DropdownMenuRadioGroup></DropdownMenuContent>
             </DropdownMenu></div>
-            <div className="setting-row"><div><h2 id="toolbar-badge">{t('settings.badge.title')}</h2><p>{t('settings.badge.description')}</p></div><Switch className="shrink-0" checked={settings.badge} onCheckedChange={checked => saveSettings({ ...settings, badge: checked })} disabled={busy} aria-labelledby="toolbar-badge" /></div>
-            <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.recording.title')}</h2><p>{t('settings.recording.description')}</p>
+            <div className="setting-row"><h2 id="toolbar-badge">{t('settings.badge.title')}</h2><Switch className="shrink-0" checked={settings.badge} onCheckedChange={checked => saveSettings({ ...settings, badge: checked })} disabled={busy} aria-labelledby="toolbar-badge" /></div>
+            <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.recording.title')}</h2>
               <div className="mt-4 flex flex-col gap-4">
-                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="count-audible">{t('settings.audible.title')}</h3><p>{t('settings.audible.description')}</p></div><Switch checked={settings.countAudible} onCheckedChange={checked => saveSettings({ ...settings, countAudible: checked })} disabled={busy} aria-labelledby="count-audible" /></div>
+                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="count-audible">{t('settings.audible.title')}</h3></div><Switch checked={settings.countAudible} onCheckedChange={checked => saveSettings({ ...settings, countAudible: checked })} disabled={busy} aria-labelledby="count-audible" /></div>
                 <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="idle-threshold">{t('settings.idle.title')}</h3><p>{t('settings.idle.description')}</p></div><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.idle.label', { duration: idleLabel })} disabled={busy}>{idleLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={String(settings.idleSeconds)} onValueChange={value => saveSettings({ ...settings, idleSeconds: Number(value) })}>{IDLE_OPTIONS.map(seconds => <DropdownMenuRadioItem closeOnClick key={seconds} value={String(seconds)}>{t('settings.idle.option', { count: seconds / 60 })}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div>
               </div></div><Button variant="outline" className="action-button self-start" disabled={busy} onClick={() => act('toggle')}>{enabled ? t('actions.pause') : t('actions.enable')}</Button></div>
-            <div className="setting-row"><div className="min-w-0 flex-1"><h2 id="record-mode">{t('settings.recordMode.title')}</h2><p>{t('settings.recordMode.description')}</p>
+            <div className="setting-row"><div className="min-w-0 flex-1"><h2 id="record-mode">{t('settings.recordMode.title')}</h2>
               <RadioGroup className="mt-4 gap-3" aria-labelledby="record-mode" value={settings.recordMode} disabled={busy} onValueChange={value => { if (value !== settings.recordMode) saveSettings({ ...settings, recordMode: value }); }}>
                 {RECORD_MODES.map(mode => <label key={mode} className="flex items-start gap-3"><RadioGroupItem value={mode} className="mt-1" /><span className="min-w-0"><strong>{t(`settings.recordMode.${mode}`)}</strong><p>{t(`settings.recordMode.${mode}Hint`)}</p></span></label>)}
               </RadioGroup>
-              {listField === 'allowed' && !(settings.allowed?.length) && <Alert variant="destructive" className="mt-4"><WarningCircle /><AlertTitle>{t('settings.allowed.emptyWarningTitle')}</AlertTitle><AlertDescription>{t('settings.allowed.emptyWarning')}</AlertDescription></Alert>}
-              <h3 className="mt-4">{t(`settings.${listField}.title`)}</h3><p>{t(`settings.${listField}.description`)}</p><IgnoredSites key={listField} field={listField} settings={settings} busy={busy} onSave={saveSettings} />
+              {listField === 'allowed' && !(settings.allowed?.length) && <Alert variant="destructive" className="mt-4"><WarningCircle /><AlertTitle>{t('settings.allowed.emptyWarning')}</AlertTitle></Alert>}
+              <h3 className="mt-4">{t(`settings.${listField}.title`)}</h3><IgnoredSites key={listField} field={listField} settings={settings} busy={busy} onSave={saveSettings} />
             </div></div>
-            <div className="setting-row"><div className="min-w-0 flex-1"><h2 id="site-merge">{t('settings.siteMerge.title')}</h2><p>{t('settings.siteMerge.description')}</p></div><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.siteMerge.label', { mode: mergeLabel })} disabled={busy}>{mergeLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={settings.siteMerge} onValueChange={value => { setSite(''); setSearch(''); setFilterSite(''); saveSettings({ ...settings, siteMerge: value }); }}>{MERGE_MODES.map(mode => <DropdownMenuRadioItem closeOnClick key={mode} value={mode}>{t(`settings.siteMerge.${mode}`)}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div>
+            <div className="setting-row"><h2 id="site-merge">{t('settings.siteMerge.title')}</h2><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.siteMerge.label', { mode: mergeLabel })} disabled={busy}>{mergeLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={settings.siteMerge} onValueChange={value => { setSite(''); setSearch(''); setFilterSite(''); saveSettings({ ...settings, siteMerge: value }); }}>{MERGE_MODES.map(mode => <DropdownMenuRadioItem closeOnClick key={mode} value={mode}>{t(`settings.siteMerge.${mode}`)}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div>
             <ExportData />
-            <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.deleteDay.title')}</h2><p>{t('settings.deleteDay.description')}</p><div className="mt-4 flex max-w-xs flex-col gap-2">
+            <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.deleteDay.title')}</h2><div className="mt-4 flex max-w-xs flex-col gap-2">
               <Input type="date" aria-label={t('settings.deleteDay.label')} min={minDay} max={maxDay} value={chosenDay} disabled={busy || minDay > maxDay} onChange={event => { setChosenDay(event.target.value); setDayDone(''); }} />
               {dayStats && <p>{duration(dayStats.ms)} · <Trans i18nKey="summary.sites" count={dayStats.sites} components={{ b: <strong /> }} /></p>}
               {dayDone === chosenDay && chosenDay && <p role="status">{t('settings.deleteDay.done', { date: formatDate(dateKeyStart(chosenDay)) })}</p>}
             </div></div><Button variant="destructive" className="action-button shrink-0" disabled={busy || !dayStats} onClick={() => setConfirmDay(true)}><Trash />{t('settings.deleteDay.button')}</Button></div>
-            <div className="setting-row"><div><h2>{t('settings.clear.title')}</h2><p>{t('settings.clear.description')}</p></div><AlertDialogTrigger render={<Button variant="destructive" className="action-button" disabled={busy} />}><Trash />{t('settings.clear.button')}</AlertDialogTrigger></div>
+            <div className="setting-row"><h2>{t('settings.clear.title')}</h2><AlertDialogTrigger render={<Button variant="destructive" className="action-button" disabled={busy} />}><Trash />{t('settings.clear.button')}</AlertDialogTrigger></div>
             <p className="settings-links"><a href={links.timing} target="_blank" rel="noreferrer noopener">{t('settings.docs.timing')}</a><span aria-hidden="true">·</span><a href={links.privacy} target="_blank" rel="noreferrer noopener">{t('settings.docs.privacy')}</a></p>
           </section>}
         </main>
@@ -171,7 +171,7 @@ export function App() {
   </AlertDialog>
   <AlertDialog open={Boolean(deleteTarget)} onOpenChange={open => { if (!open) setDeleteTarget(null); }}>
     <AlertDialogContent>
-      <AlertDialogHeader><AlertDialogTitle>{t('detail.deleteConfirm.title')}</AlertDialogTitle><AlertDialogDescription>{t('detail.deleteConfirm.description', { domain: deleteTarget ?? '' })}</AlertDialogDescription></AlertDialogHeader>
+      <AlertDialogHeader><AlertDialogTitle>{t('detail.deleteConfirm.title', { domain: deleteTarget ?? '' })}</AlertDialogTitle><AlertDialogDescription>{t('detail.deleteConfirm.description')}</AlertDialogDescription></AlertDialogHeader>
       {error && <Alert variant="destructive"><AlertDescription>{errorText}</AlertDescription></Alert>}
       <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction variant="destructive" disabled={busy} onClick={async () => { if (await act('deleteSite', { host: deleteTarget, hosts: removeHosts(deleteTarget) })) { setDeleteTarget(null); setSelected(null); } }}>{busy ? t('detail.deleteConfirm.deleting') : t('detail.deleteConfirm.confirm')}</AlertDialogAction></AlertDialogFooter>
     </AlertDialogContent>
@@ -185,8 +185,8 @@ export function App() {
   </AlertDialog>
   <AlertDialog open={Boolean(ignoreTarget)} onOpenChange={open => { if (!open) setIgnoreTarget(null); }}>
     <AlertDialogContent>
-      <AlertDialogHeader><AlertDialogTitle>{t(`${confirmKey}.title`)}</AlertDialogTitle><AlertDialogDescription>{t(`${confirmKey}.description`, { domain: ignoreTarget ?? '' })}</AlertDialogDescription></AlertDialogHeader>
-      <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction disabled={busy} onClick={confirmListAdd}>{t(`${confirmKey}.confirm`)}</AlertDialogAction></AlertDialogFooter>
+      <AlertDialogHeader><AlertDialogTitle>{t(`detail.${confirmKey}.title`)}</AlertDialogTitle><AlertDialogDescription>{t(`detail.${confirmKey}.description`, { domain: ignoreTarget ?? '' })}</AlertDialogDescription></AlertDialogHeader>
+      <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction disabled={busy} onClick={confirmListAdd}>{t(`detail.${confirmKey}.confirm`)}</AlertDialogAction></AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
   {/* Dismissing the drawer clears the open site and leaves the ranking filter in place. */}
@@ -195,7 +195,6 @@ export function App() {
     onOpenChange={open => { if (!open) setSelected(null); }}
     finalFocus={detailTrigger}
     siteKey={selected ?? ''}
-    rangeLabel={chip}
     ready={Boolean(stats)}
     row={selectedRow}
     detail={ledger.detailSite === selected ? ledger.detail : null}

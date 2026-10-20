@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { X } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@app/components/ui/button';
-import { Empty, EmptyDescription, EmptyHeader, EmptyTitle } from '@app/components/ui/empty';
+import { Empty, EmptyHeader, EmptyTitle } from '@app/components/ui/empty';
 import { InputGroup, InputGroupInput } from '@app/components/ui/input-group';
 import { IGNORED_LIMIT, normalizeHost } from './settings.mjs';
 
@@ -34,6 +34,6 @@ export function IgnoredSites({ settings, busy, onSave, field = 'ignored' }) {
         <span className="min-w-0 break-all text-sm">{host}</span>
         <Button type="button" variant="ghost" size="icon-sm" aria-label={text('remove', { domain: host })} disabled={busy} onClick={() => onSave({ ...settings, [field]: hosts.filter(item => item !== host) })}><X /></Button>
       </li>)}
-    </ul> : <Empty className="flex-none border border-dashed py-6"><EmptyHeader><EmptyTitle>{text('emptyTitle')}</EmptyTitle><EmptyDescription>{text('emptyDescription')}</EmptyDescription></EmptyHeader></Empty>}
+    </ul> : <Empty className="flex-none border border-dashed py-6"><EmptyHeader><EmptyTitle>{text('emptyTitle')}</EmptyTitle></EmptyHeader></Empty>}
   </div>;
 }

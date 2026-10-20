@@ -5,9 +5,9 @@
   "status": { "recording": "Enregistrement de la navigation", "paused": "Enregistrement en pause", "since": "Depuis le {{date}}" },
   "actions": { "pause": "Suspendre", "resume": "Reprendre", "enable": "Activer l’enregistrement" },
   "pages": {
-    "overview": { "title": "Aperçu de la navigation", "subtitle": "Découvrez comment vous passez votre temps sur le web" },
-    "records": { "title": "Historique des visites", "subtitle": "Chaque visite, retracée" },
-    "settings": { "title": "Paramètres", "subtitle": "Gérez vos données et leur mode d’enregistrement" }
+    "overview": { "title": "Aperçu de la navigation" },
+    "records": { "title": "Historique des visites" },
+    "settings": { "title": "Paramètres" }
   },
   "range": { "today": "Aujourd’hui", "last7": "7 derniers jours", "last30": "30 derniers jours", "custom": "Personnalisé", "start": "Date de début", "end": "Date de fin", "apply": "Appliquer", "cancel": "Annuler", "invalid": "La date de fin doit être le même jour ou un jour ultérieur", "lastDays_one": "{{count}} dernier jour", "lastDays_many": "{{count}} derniers jours", "lastDays_other": "{{count}} derniers jours", "label": "Période : {{range}}" },
   "error": {
@@ -30,11 +30,6 @@
     "paused": "Enregistrement en pause"
   },
   "summary": {
-    "label": "Résumé",
-    "totalTime": "Temps de navigation active total",
-    "visits_one": "<b>{{count}}</b> visite",
-    "visits_many": "<b>{{count}}</b> visites",
-    "visits_other": "<b>{{count}}</b> visites",
     "sites_one": "<b>{{count}}</b> site",
     "sites_many": "<b>{{count}}</b> sites",
     "sites_other": "<b>{{count}}</b> sites"
@@ -53,7 +48,6 @@
   "trend": { "label": "Temps de navigation active par jour. {{days}}", "separator": " ; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },
   "timeline": {
     "title": "Chronologie du jour",
-    "idle": "Temps d’inactivité",
     "label_one": "Chronologie de la navigation active du jour, {{count}} session ; les zones vides n’ont aucune activité enregistrée.",
     "label_many": "Chronologie de la navigation active du jour, {{count}} sessions ; les zones vides n’ont aucune activité enregistrée.",
     "label_other": "Chronologie de la navigation active du jour, {{count}} sessions ; les zones vides n’ont aucune activité enregistrée.",
@@ -62,7 +56,6 @@
   },
   "heatmap": {
     "title": "Heures actives",
-    "caption": "Chaque case est le temps actif moyen de cette heure",
     "legend": "Clair {{min}}, foncé {{max}}",
     "label": "Heures actives par jour et par heure. {{summary}}",
     "separator": " ; ",
@@ -87,7 +80,6 @@
     "showAll_one": "Voir {{count}} site",
     "showAll_many": "Voir les {{count}} sites",
     "showAll_other": "Voir les {{count}} sites",
-    "details": "Voir les détails du site",
     "filterSite": "Filtrer sur {{domain}}",
     "openDetail": "Détails de {{domain}}"
   },
@@ -105,31 +97,29 @@
     "empty": "Aucune visite correspondante"
   },
   "settings": {
-    "language": { "title": "Langue", "description": "Choisissez la langue d’affichage de PageTime.", "label": "Langue d’affichage : {{language}}" },
-    "theme": { "title": "Apparence", "description": "Clair, sombre ou selon le système. Le choix reste sur cet appareil.", "label": "Apparence : {{mode}}", "system": "Système", "light": "Clair", "dark": "Sombre" },
-    "recording": { "title": "Enregistrement", "description": "Compte les visites de pages et ne mesure que le temps passé sur l’onglet actif de la fenêtre au premier plan." },
-    "audible": { "title": "Continuer à compter pendant la lecture audio", "description": "Si l’onglet actif de la fenêtre au premier plan lit un son non coupé, le temps d’inactivité compte aussi. Le décompte s’arrête dès que le son s’arrête ou que l’onglet est coupé." },
-    "idle": { "title": "Seuil d’inactivité", "description": "Durée sans clavier ni souris avant que ce navigateur soit considéré comme inactif.", "label": "Seuil d’inactivité : {{duration}}", "option_one": "{{count}} minute", "option_many": "{{count}} minutes", "option_other": "{{count}} minutes" },
+    "language": { "title": "Langue", "label": "Langue d’affichage : {{language}}" },
+    "theme": { "title": "Apparence", "label": "Apparence : {{mode}}", "system": "Système", "light": "Clair", "dark": "Sombre" },
+    "recording": { "title": "Enregistrement" },
+    "audible": { "title": "Continuer à compter pendant la lecture audio" },
+    "idle": { "title": "Seuil d’inactivité", "description": "Sans clavier ni souris pendant cette durée, le navigateur est inactif.", "label": "Seuil d’inactivité : {{duration}}", "option_one": "{{count}} minute", "option_many": "{{count}} minutes", "option_other": "{{count}} minutes" },
     "siteMerge": {
       "title": "Regrouper les sous-domaines",
-      "description": "Change uniquement le regroupement de l’aperçu et des détails du site. Les enregistrements gardent le nom d’hôte d’origine, et le choix peut être modifié à tout moment.",
       "label": "Regroupement des sous-domaines : {{mode}}",
       "none": "Ne pas regrouper",
       "prefix": "Regrouper www, m et mobile",
       "registrable": "Regrouper par domaine enregistrable"
     },
-    "recordMode": { "title": "Périmètre d’enregistrement", "description": "Choisissez quels sites sont mesurés à partir de maintenant. La liste noire et la liste blanche sont enregistrées séparément. Changer de mode n’efface pas l’autre liste, et ne supprime ni ne masque les enregistrements existants. example.com correspond à cet hôte et à ses sous-domaines ; mail.example.com ne correspond pas à example.com.", "blacklist": "Liste noire", "whitelist": "Liste blanche", "blacklistHint": "Enregistrer tous les sites sauf ceux de la liste ci-dessous.", "whitelistHint": "Enregistrer seulement les sites de la liste ci-dessous." },
-    "ignored": { "title": "Sites ignorés", "description": "Ces hôtes et leurs sous-domaines ne sont pas mesurés et les visites ne sont pas comptées, comme une page interne du navigateur. example.com correspond aussi à a.example.com ; mail.example.com ne correspond pas à example.com. Les enregistrements existants restent et ne sont pas masqués.", "input": "Hôte à ignorer", "placeholder": "example.com", "add": "Ajouter", "remove": "Retirer {{domain}}", "emptyTitle": "Aucun site ignoré", "emptyDescription": "Ajoutez un hôte pour ne plus l’enregistrer à partir de maintenant.", "error": "Saisissez un hôte tel que example.com. Le protocole, le chemin et le port sont retirés. Les espaces ne sont pas admis, et un nom sans point n’est accepté que pour localhost.", "limit": "Vous pouvez ignorer au plus {{count}} hôtes." },
-    "allowed": { "title": "Sites autorisés", "description": "Seuls ces hôtes et leurs sous-domaines sont mesurés et les visites sont comptées. example.com correspond aussi à a.example.com ; mail.example.com ne correspond pas à example.com. Les enregistrements existants restent et ne sont pas masqués.", "input": "Hôte à autoriser", "placeholder": "example.com", "add": "Ajouter", "remove": "Retirer {{domain}}", "emptyTitle": "Aucun site autorisé", "emptyDescription": "Ajoutez un hôte pour l’enregistrer à partir de maintenant. Tant que la liste est vide, rien n’est enregistré.", "limit": "Vous pouvez autoriser au plus {{count}} hôtes.", "emptyWarningTitle": "Une liste blanche vide n’enregistre rien", "emptyWarning": "Aucun hôte n’est autorisé, donc PageTime n’enregistre ni le temps ni les visites d’aucun site. Une liste vide ne signifie pas tout enregistrer. Ajoutez au moins un hôte avant qu’un enregistrement commence. Les enregistrements existants restent et ne sont pas masqués.", "error": "Saisissez un hôte tel que example.com. Le protocole, le chemin et le port sont retirés. Les espaces ne sont pas admis, et un nom sans point n’est accepté que pour localhost." },
-    "badge": { "title": "Badge de la barre d’outils", "description": "Affiche le temps de navigation actif d’aujourd’hui sur l’icône de la barre d’outils." },
+    "recordMode": { "title": "Périmètre d’enregistrement", "blacklist": "Liste noire", "whitelist": "Liste blanche", "blacklistHint": "Enregistrer tous les sites sauf ceux de la liste ci-dessous.", "whitelistHint": "Enregistrer seulement les sites de la liste ci-dessous." },
+    "ignored": { "title": "Sites ignorés", "input": "Hôte à ignorer", "placeholder": "example.com (sous-domaines inclus)", "add": "Ajouter", "remove": "Retirer {{domain}}", "emptyTitle": "Aucun site ignoré", "error": "Saisissez un hôte valide, tel que example.com", "limit": "Vous pouvez ignorer au plus {{count}} hôtes." },
+    "allowed": { "title": "Sites autorisés", "input": "Hôte à autoriser", "placeholder": "example.com (sous-domaines inclus)", "add": "Ajouter", "remove": "Retirer {{domain}}", "emptyTitle": "Aucun site autorisé", "limit": "Vous pouvez autoriser au plus {{count}} hôtes.", "emptyWarning": "La liste blanche est vide, aucun site n’est enregistré", "error": "Saisissez un hôte valide, tel que example.com" },
+    "badge": { "title": "Badge de la barre d’outils" },
     "docs": { "timing": "Règles de mesure et confidentialité", "privacy": "Politique de confidentialité" },
-    "export": { "title": "Exporter les données", "description": "Télécharge le registre de cet appareil sous forme de fichier. Le JSON contient toutes les tables, l’état de l’enregistrement et les réglages. Le CSV a une ligne par jour et par nom d’hôte, pour les tableurs.", "note": "Le fichier est enregistré uniquement sur votre ordinateur. Il contient des noms d’hôte et des durées, jamais d’URL ni de titres.", "json": "Exporter en JSON", "csv": "Exporter en CSV", "exporting": "Exportation…", "done": "{{file}} enregistré.", "errorTitle": "Échec de l’exportation", "error": "Rien n’a été téléchargé. Réessayez." },
-    "deleteDay": { "title": "Supprimer les enregistrements d’un jour", "description": "Retire de cet appareil le temps actif, les visites et les sessions d’un jour. Cette action est irréversible.", "label": "Date à supprimer", "button": "Supprimer ce jour", "done": "Enregistrements du {{date}} supprimés.", "confirmTitle": "Supprimer les enregistrements du {{date}} ?", "confirmDescription": "Le temps actif, les visites et les sessions de ce jour seront retirés de cet appareil. Cette action est irréversible.", "confirm": "Supprimer ce jour", "deleting": "Suppression…" },
-    "clear": { "title": "Effacer tous les enregistrements", "description": "Supprime les données enregistrées par PageTime sur cet appareil. Action irréversible.", "button": "Effacer les données" }
+    "export": { "title": "Exporter les données", "description": "Télécharge tous les enregistrements de cet appareil.", "note": "Le fichier est enregistré uniquement sur votre ordinateur. Il contient des noms d’hôte et des durées, jamais d’URL ni de titres.", "json": "Exporter en JSON", "csv": "Exporter en CSV", "exporting": "Exportation…", "done": "{{file}} enregistré.", "errorTitle": "Échec de l’exportation", "error": "Rien n’a été téléchargé. Réessayez." },
+    "deleteDay": { "title": "Supprimer les enregistrements d’un jour", "label": "Date à supprimer", "button": "Supprimer ce jour", "done": "Enregistrements du {{date}} supprimés.", "confirmTitle": "Supprimer les enregistrements du {{date}} ?", "confirmDescription": "Cette action est irréversible.", "confirm": "Supprimer ce jour", "deleting": "Suppression…" },
+    "clear": { "title": "Effacer tous les enregistrements", "button": "Effacer les données" }
   },
   "detail": {
     "title": "Détails du site",
-    "description": "{{range}} · statistiques du site et sessions actives du jour",
     "close": "Fermer les détails",
     "visits_one": "{{count}}",
     "visits_many": "{{count}}",
@@ -140,10 +130,10 @@
     "ignored": "Ce site est déjà ignoré",
     "allow": "Ajouter à la liste blanche",
     "allowed": "Ce site est déjà autorisé",
-    "allowConfirm": { "title": "Ajouter ce site à la liste blanche ?", "description": "{{domain}} et ses sous-domaines seront mesurés et les visites compteront à partir de maintenant. Les enregistrements existants ne sont ni supprimés ni masqués.", "confirm": "Ajouter à la liste blanche" },
-    "ignoreConfirm": { "title": "Ne plus enregistrer ce site ?", "description": "{{domain}} et ses sous-domaines ne seront plus mesurés ni comptés comme visites. Les enregistrements existants ne sont pas supprimés.", "confirm": "Ne plus enregistrer" },
+    "allowConfirm": { "title": "Ajouter ce site à la liste blanche ?", "description": "{{domain}} et ses sous-domaines seront enregistrés à partir de maintenant.", "confirm": "Ajouter à la liste blanche" },
+    "ignoreConfirm": { "title": "Ne plus enregistrer ce site ?", "description": "{{domain}} et ses sous-domaines ne seront plus enregistrés.", "confirm": "Ne plus enregistrer" },
     "delete": "Supprimer les enregistrements de ce site",
-    "deleteConfirm": { "title": "Supprimer les enregistrements de ce site ?", "description": "Le temps actif, le nombre de visites et les sessions de {{domain}} seront supprimés pour toutes les dates. Cette action est irréversible. Pour ne plus l’enregistrer ensuite, ajoutez-le à la liste des sites ignorés.", "confirm": "Supprimer les enregistrements", "deleting": "Suppression…" },
+    "deleteConfirm": { "title": "Supprimer les enregistrements de {{domain}} ?", "description": "Cette action est irréversible.", "confirm": "Supprimer les enregistrements", "deleting": "Suppression…" },
     "viewVisits": "Voir les visites",
     "trend": {
       "title": "Tendance quotidienne",
@@ -170,7 +160,7 @@
   },
   "confirm": {
     "title": "Effacer tous les enregistrements de navigation ?",
-    "description": "Seules les données locales de PageTime seront supprimées. Action irréversible.",
+    "description": "Cette action est irréversible.",
     "cancel": "Annuler",
     "clearing": "Suppression…",
     "confirm": "Effacer"

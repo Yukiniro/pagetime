@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ArrowRight, Trash, X } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { ScrollArea } from '@app/components/ui/scroll-area';
-import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@app/components/ui/sheet';
+import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@app/components/ui/sheet';
 import { useTranslation } from 'react-i18next';
 import { Breakdown, HourChart, SiteTrend } from './Charts.jsx';
 import { iconForSite } from './data.js';
@@ -79,7 +79,7 @@ export function SiteDetailPanel({ siteKey, row, detail, sessions, today, isDark 
   </>;
 }
 
-export function SiteDetailSheet({ open, onOpenChange, finalFocus, siteKey, ready, rangeLabel, ...panel }) {
+export function SiteDetailSheet({ open, onOpenChange, finalFocus, siteKey, ready, ...panel }) {
   const { t } = useTranslation();
   const narrow = useNarrowDrawer();
 
@@ -88,7 +88,6 @@ export function SiteDetailSheet({ open, onOpenChange, finalFocus, siteKey, ready
       <SheetHeader className="site-detail-head flex-row items-start justify-between gap-3 border-b px-5 pt-5 pb-4">
         <div className="min-w-0 flex-1">
           <SheetTitle className="text-xl">{t('detail.title')}</SheetTitle>
-          <SheetDescription>{t('detail.description', { range: rangeLabel })}</SheetDescription>
         </div>
         <SheetClose render={<Button variant="ghost" size="icon-sm" className="shrink-0" />} aria-label={t('detail.close')}><X /></SheetClose>
       </SheetHeader>

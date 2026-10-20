@@ -5,9 +5,9 @@
   "status": { "recording": "正在記錄瀏覽資料", "paused": "已暫停記錄", "since": "自 {{date}} 開始" },
   "actions": { "pause": "暫停記錄", "resume": "繼續記錄", "enable": "開啟記錄" },
   "pages": {
-    "overview": { "title": "瀏覽概覽", "subtitle": "了解你在網頁上的時間分布與造訪情況" },
-    "records": { "title": "造訪紀錄", "subtitle": "每一次造訪，都有跡可循" },
-    "settings": { "title": "設定", "subtitle": "掌握自己的資料與記錄方式" }
+    "overview": { "title": "瀏覽概覽" },
+    "records": { "title": "造訪紀錄" },
+    "settings": { "title": "設定" }
   },
   "range": { "today": "今天", "last7": "近 7 天", "last30": "近 30 天", "custom": "自訂", "start": "開始日期", "end": "結束日期", "apply": "套用", "cancel": "取消", "invalid": "結束日期不能早於開始日期", "lastDays_other": "最近 {{count}} 天", "label": "統計時間範圍：{{range}}" },
   "error": {
@@ -30,9 +30,6 @@
     "paused": "已暫停記錄"
   },
   "summary": {
-    "label": "摘要",
-    "totalTime": "總活躍瀏覽時間",
-    "visits_other": "造訪 <b>{{count}}</b> 次",
     "sites_other": "<b>{{count}}</b> 個網站"
   },
   "kpi": { "label": "{{range}}彙總", "sites": "網站數" },
@@ -49,14 +46,12 @@
   "trend": { "label": "每日活躍瀏覽時長。{{days}}", "separator": "；", "hours_other": "{{count}} 小時" },
   "timeline": {
     "title": "今日時間軸",
-    "idle": "閒置時間",
     "label_other": "今日活躍時間軸，{{count}} 個時段；空白區域未記錄活躍瀏覽。",
     "empty": "今天還沒有活躍瀏覽紀錄",
     "item": "{{domain}}，{{from}} 至 {{to}}"
   },
   "heatmap": {
     "title": "活躍時段",
-    "caption": "每格為該時段的平均活躍時長",
     "legend": "淺色 {{min}}，深色 {{max}}",
     "label": "依星期和小時統計的活躍時段。{{summary}}",
     "separator": "；",
@@ -77,7 +72,6 @@
     "emptyDescription": "造訪一個網頁後，紀錄會自動出現在這裡。",
     "collapse": "收合清單",
     "showAll_other": "查看全部 {{count}} 個網站",
-    "details": "查看網站詳情",
     "filterSite": "依 {{domain}} 篩選",
     "openDetail": "查看 {{domain}} 的詳情"
   },
@@ -93,31 +87,29 @@
     "empty": "沒有符合條件的造訪紀錄"
   },
   "settings": {
-    "language": { "title": "語言", "description": "選擇 PageTime 介面的顯示語言。", "label": "介面語言：{{language}}" },
-    "theme": { "title": "外觀", "description": "選擇淺色、深色，或跟隨系統。這個選擇只保存在這台裝置上。", "label": "外觀：{{mode}}", "system": "跟隨系統", "light": "淺色", "dark": "深色" },
-    "recording": { "title": "瀏覽紀錄", "description": "記錄網頁造訪次數，僅累計前景視窗中作用中分頁的瀏覽時間。" },
-    "audible": { "title": "播放音訊時繼續計時", "description": "前景視窗的目前分頁正在播放未靜音聲音時，系統閒置也繼續計時。聲音停止或分頁靜音後立即停止。" },
-    "idle": { "title": "閒置判定時間", "description": "多久沒有鍵盤或滑鼠操作後，把瀏覽器視為閒置。", "label": "閒置判定時間：{{duration}}", "option_other": "{{count}} 分鐘" },
+    "language": { "title": "語言", "label": "介面語言：{{language}}" },
+    "theme": { "title": "外觀", "label": "外觀：{{mode}}", "system": "跟隨系統", "light": "淺色", "dark": "深色" },
+    "recording": { "title": "瀏覽紀錄" },
+    "audible": { "title": "播放音訊時繼續計時" },
+    "idle": { "title": "閒置判定時間", "description": "多久沒有鍵盤滑鼠操作後視為閒置。", "label": "閒置判定時間：{{duration}}", "option_other": "{{count}} 分鐘" },
     "siteMerge": {
       "title": "網站合併方式",
-      "description": "只改變總覽和網站詳情的分組。紀錄裡仍保存原始主機名稱，可以隨時切換。",
       "label": "網站合併方式：{{mode}}",
       "none": "不合併",
       "prefix": "合併 www、m、mobile",
       "registrable": "按可註冊網域合併"
     },
-    "recordMode": { "title": "記錄範圍", "description": "選擇之後哪些網站會計入時長和造訪。黑名單和白名單分開保存，切換模式不會清空另一份清單，也不會刪除或隱藏已有紀錄。example.com 符合該網域及其子網域；mail.example.com 不符合 example.com。", "blacklist": "黑名單", "whitelist": "白名單", "blacklistHint": "除了下面列出的網站外，其他網站都會記錄。", "whitelistHint": "只記錄下面列出的網站。" },
-    "ignored": { "title": "忽略的網站", "description": "這些網域及其子網域不計時長、不記造訪次數，和開啟瀏覽器內部頁面一樣。例如 example.com 也會符合 a.example.com；mail.example.com 不會符合 example.com。已有紀錄不會刪除，也不會從統計中隱藏。", "input": "要忽略的網域", "placeholder": "example.com", "add": "新增", "remove": "移除 {{domain}}", "emptyTitle": "沒有忽略的網站", "emptyDescription": "新增後，這些網站之後就不會再記入新的時長和造訪。", "error": "請輸入網域，例如 example.com。系統會去掉協定、路徑和連接埠。不能包含空格；沒有點號時只接受 localhost。", "limit": "最多忽略 {{count}} 個網站。" },
-    "allowed": { "title": "允許的網站", "description": "只有這些網域及其子網域會計入時長和造訪次數。例如 example.com 也會符合 a.example.com；mail.example.com 不會符合 example.com。已有紀錄不會刪除，也不會從統計中隱藏。", "input": "要允許的網域", "placeholder": "example.com", "add": "新增", "remove": "移除 {{domain}}", "emptyTitle": "沒有允許的網站", "emptyDescription": "新增後，只有這些網站之後會計入新的時長和造訪。清單為空時不會記錄任何網站。", "limit": "最多允許 {{count}} 個網站。", "emptyWarningTitle": "空白名單不會記錄任何網站", "emptyWarning": "允許清單是空的，所以不會記錄任何網站的時長和造訪。空白名單不等於記錄全部網站。請先新增至少一個網域。已有紀錄會保留，也不會被隱藏。", "error": "請輸入網域，例如 example.com。系統會去掉協定、路徑和連接埠。不能包含空格；沒有點號時只接受 localhost。" },
-    "badge": { "title": "工具列角標", "description": "在工具列圖示上顯示今天的活躍瀏覽時間。" },
+    "recordMode": { "title": "記錄範圍", "blacklist": "黑名單", "whitelist": "白名單", "blacklistHint": "除了下面列出的網站外，其他網站都會記錄。", "whitelistHint": "只記錄下面列出的網站。" },
+    "ignored": { "title": "忽略的網站", "input": "要忽略的網域", "placeholder": "example.com（含子網域）", "add": "新增", "remove": "移除 {{domain}}", "emptyTitle": "沒有忽略的網站", "error": "請輸入有效網域，如 example.com", "limit": "最多忽略 {{count}} 個網站。" },
+    "allowed": { "title": "允許的網站", "input": "要允許的網域", "placeholder": "example.com（含子網域）", "add": "新增", "remove": "移除 {{domain}}", "emptyTitle": "沒有允許的網站", "limit": "最多允許 {{count}} 個網站。", "emptyWarning": "白名單為空，目前不記錄任何網站", "error": "請輸入有效網域，如 example.com" },
+    "badge": { "title": "工具列角標" },
     "docs": { "timing": "計時規則與隱私說明", "privacy": "隱私權政策" },
-    "export": { "title": "匯出資料", "description": "把這台裝置上的帳本下載成檔案。JSON 包含全部資料表、記錄狀態和設定；CSV 每天每個主機名稱一列，方便用試算表分析。", "note": "檔案只會儲存在你的電腦上，包含主機名稱和時長，不含網址和標題。", "json": "匯出 JSON", "csv": "匯出 CSV", "exporting": "正在匯出…", "done": "已儲存 {{file}}。", "errorTitle": "匯出失敗", "error": "沒有下載任何檔案，請再試一次。" },
-    "deleteDay": { "title": "刪除某一天的紀錄", "description": "從這台裝置上刪除某一天的活躍時長、造訪次數和時段，刪除後無法復原。", "label": "要刪除的日期", "button": "刪除這一天", "done": "已刪除 {{date}} 的紀錄。", "confirmTitle": "刪除 {{date}} 的紀錄？", "confirmDescription": "將從這台裝置上刪除這一天的活躍時長、造訪次數和時段，無法復原。", "confirm": "刪除這一天", "deleting": "正在刪除…" },
-    "clear": { "title": "清除所有紀錄", "description": "刪除此裝置上 PageTime 已儲存的紀錄，刪除後無法復原。", "button": "清除資料" }
+    "export": { "title": "匯出資料", "description": "下載本機全部紀錄", "note": "檔案只會儲存在你的電腦上，包含主機名稱和時長，不含網址和標題。", "json": "匯出 JSON", "csv": "匯出 CSV", "exporting": "正在匯出…", "done": "已儲存 {{file}}。", "errorTitle": "匯出失敗", "error": "沒有下載任何檔案，請再試一次。" },
+    "deleteDay": { "title": "刪除某一天的紀錄", "label": "要刪除的日期", "button": "刪除這一天", "done": "已刪除 {{date}} 的紀錄。", "confirmTitle": "刪除 {{date}} 的紀錄？", "confirmDescription": "刪除後無法復原。", "confirm": "刪除這一天", "deleting": "正在刪除…" },
+    "clear": { "title": "清除所有紀錄", "button": "清除資料" }
   },
   "detail": {
     "title": "網站詳情",
-    "description": "{{range}}的網站統計與今日活躍時段",
     "close": "關閉詳情",
     "visits_other": "{{count}} 次",
     "todaySessions": "今日活躍時段",
@@ -126,10 +118,10 @@
     "ignored": "此網站已在忽略清單中",
     "allow": "加入白名單",
     "allowed": "此網站已在白名單中",
-    "allowConfirm": { "title": "把此網站加入白名單？", "description": "之後會記錄 {{domain}} 及其子網域的時長和造訪次數。已有紀錄不會刪除，也不會隱藏。", "confirm": "加入白名單" },
-    "ignoreConfirm": { "title": "不再記錄此網站？", "description": "之後不再記錄 {{domain}} 及其子網域的時長和造訪次數。已有紀錄不會刪除。", "confirm": "不再記錄" },
+    "allowConfirm": { "title": "把此網站加入白名單？", "description": "之後會記錄 {{domain}} 及其子網域。", "confirm": "加入白名單" },
+    "ignoreConfirm": { "title": "不再記錄此網站？", "description": "之後不再記錄 {{domain}} 及其子網域。", "confirm": "不再記錄" },
     "delete": "刪除此網站的紀錄",
-    "deleteConfirm": { "title": "刪除此網站的紀錄？", "description": "將刪除 {{domain}} 在所有日期的時長、造訪次數和時段，無法復原。如果以後也不想記錄，請把它加入忽略清單。", "confirm": "刪除紀錄", "deleting": "正在刪除…" },
+    "deleteConfirm": { "title": "刪除 {{domain}} 的紀錄？", "description": "刪除後無法復原。", "confirm": "刪除紀錄", "deleting": "正在刪除…" },
     "viewVisits": "查看造訪紀錄",
     "trend": {
       "title": "每日趨勢",
@@ -156,7 +148,7 @@
   },
   "confirm": {
     "title": "清除所有瀏覽紀錄？",
-    "description": "此操作只刪除 PageTime 的本機資料，刪除後無法復原。",
+    "description": "刪除後無法復原。",
     "cancel": "取消",
     "clearing": "正在清除…",
     "confirm": "確認清除"

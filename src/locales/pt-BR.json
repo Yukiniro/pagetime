@@ -5,9 +5,9 @@
   "status": { "recording": "Registrando a navegação", "paused": "Registro pausado", "since": "Desde {{date}}" },
   "actions": { "pause": "Pausar registro", "resume": "Retomar registro", "enable": "Ativar registro" },
   "pages": {
-    "overview": { "title": "Visão geral da navegação", "subtitle": "Veja como você passa seu tempo na web" },
-    "records": { "title": "Histórico de visitas", "subtitle": "Cada visita, registrada" },
-    "settings": { "title": "Configurações", "subtitle": "Controle seus dados e a forma de registro" }
+    "overview": { "title": "Visão geral da navegação" },
+    "records": { "title": "Histórico de visitas" },
+    "settings": { "title": "Configurações" }
   },
   "range": { "today": "Hoje", "last7": "Últimos 7 dias", "last30": "Últimos 30 dias", "custom": "Personalizado", "start": "Data inicial", "end": "Data final", "apply": "Aplicar", "cancel": "Cancelar", "invalid": "A data final não pode ser anterior à data inicial", "lastDays_one": "Último {{count}} dia", "lastDays_many": "Últimos {{count}} dias", "lastDays_other": "Últimos {{count}} dias", "label": "Período: {{range}}" },
   "error": {
@@ -30,11 +30,6 @@
     "paused": "Gravação pausada"
   },
   "summary": {
-    "label": "Resumo",
-    "totalTime": "Tempo total de navegação ativa",
-    "visits_one": "<b>{{count}}</b> visita",
-    "visits_many": "<b>{{count}}</b> visitas",
-    "visits_other": "<b>{{count}}</b> visitas",
     "sites_one": "<b>{{count}}</b> site",
     "sites_many": "<b>{{count}}</b> sites",
     "sites_other": "<b>{{count}}</b> sites"
@@ -53,7 +48,6 @@
   "trend": { "label": "Tempo diário de navegação ativa. {{days}}", "separator": "; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },
   "timeline": {
     "title": "Linha do tempo de hoje",
-    "idle": "Tempo ocioso",
     "label_one": "Linha do tempo da navegação ativa de hoje, {{count}} sessão; áreas em branco não têm atividade registrada.",
     "label_many": "Linha do tempo da navegação ativa de hoje, {{count}} sessões; áreas em branco não têm atividade registrada.",
     "label_other": "Linha do tempo da navegação ativa de hoje, {{count}} sessões; áreas em branco não têm atividade registrada.",
@@ -62,7 +56,6 @@
   },
   "heatmap": {
     "title": "Horários ativos",
-    "caption": "Cada célula é o tempo ativo médio daquele horário",
     "legend": "Claro {{min}}, escuro {{max}}",
     "label": "Horários ativos por dia da semana e hora. {{summary}}",
     "separator": "; ",
@@ -87,7 +80,6 @@
     "showAll_one": "Ver {{count}} site",
     "showAll_many": "Ver todos os {{count}} sites",
     "showAll_other": "Ver todos os {{count}} sites",
-    "details": "Ver detalhes do site",
     "filterSite": "Filtrar por {{domain}}",
     "openDetail": "Detalhes de {{domain}}"
   },
@@ -105,31 +97,29 @@
     "empty": "Nenhuma visita encontrada"
   },
   "settings": {
-    "language": { "title": "Idioma", "description": "Escolha o idioma de exibição do PageTime.", "label": "Idioma de exibição: {{language}}" },
-    "theme": { "title": "Aparência", "description": "Claro, escuro ou seguir o sistema. A escolha fica neste dispositivo.", "label": "Aparência: {{mode}}", "system": "Seguir o sistema", "light": "Claro", "dark": "Escuro" },
-    "recording": { "title": "Registro de navegação", "description": "Conta as visitas às páginas e mede apenas o tempo na guia ativa da janela em foco." },
-    "audible": { "title": "Continuar contando enquanto houver áudio", "description": "Se a guia ativa da janela em foco reproduzir som sem silenciar, o tempo ocioso também conta. A contagem para assim que o som para ou a guia é silenciada." },
-    "idle": { "title": "Limite de ociosidade", "description": "Por quanto tempo sem teclado ou mouse este navegador passa a contar como ocioso.", "label": "Limite de ociosidade: {{duration}}", "option_one": "{{count}} minuto", "option_many": "{{count}} minutos", "option_other": "{{count}} minutos" },
+    "language": { "title": "Idioma", "label": "Idioma de exibição: {{language}}" },
+    "theme": { "title": "Aparência", "label": "Aparência: {{mode}}", "system": "Seguir o sistema", "light": "Claro", "dark": "Escuro" },
+    "recording": { "title": "Registro de navegação" },
+    "audible": { "title": "Continuar contando enquanto houver áudio" },
+    "idle": { "title": "Limite de ociosidade", "description": "Sem teclado ou mouse por este tempo, o navegador conta como ocioso.", "label": "Limite de ociosidade: {{duration}}", "option_one": "{{count}} minuto", "option_many": "{{count}} minutos", "option_other": "{{count}} minutos" },
     "siteMerge": {
       "title": "Agrupar subdomínios",
-      "description": "Muda apenas como a visão geral e os detalhes do site são agrupados. Os registros guardam o hostname original, e você pode trocar quando quiser.",
       "label": "Agrupamento de subdomínios: {{mode}}",
       "none": "Não agrupar",
       "prefix": "Agrupar www, m e mobile",
       "registrable": "Agrupar por domínio registrável"
     },
-    "recordMode": { "title": "Escopo do registro", "description": "Escolha quais sites entram no tempo a partir de agora. A lista negra e a lista branca ficam guardadas separadamente. Trocar o modo não apaga a outra lista, nem apaga ou oculta os registros existentes. example.com corresponde a esse host e aos subdomínios; mail.example.com não corresponde a example.com.", "blacklist": "Lista negra", "whitelist": "Lista branca", "blacklistHint": "Registrar todos os sites, exceto os da lista abaixo.", "whitelistHint": "Registrar somente os sites da lista abaixo." },
-    "ignored": { "title": "Sites ignorados", "description": "Estes hosts e seus subdomínios não entram no tempo nem nas visitas, como uma página interna do navegador. example.com também corresponde a a.example.com; mail.example.com não corresponde a example.com. Os registros existentes permanecem e não são ocultados.", "input": "Host a ignorar", "placeholder": "example.com", "add": "Adicionar", "remove": "Remover {{domain}}", "emptyTitle": "Nenhum site ignorado", "emptyDescription": "Adicione um host para deixar de registrá-lo a partir de agora.", "error": "Informe um host como example.com. Protocolo, caminho e porta são removidos. Espaços não são permitidos, e um nome sem ponto só é aceito para localhost.", "limit": "Você pode ignorar até {{count}} hosts." },
-    "allowed": { "title": "Sites permitidos", "description": "Somente estes hosts e seus subdomínios entram no tempo e nas visitas. example.com também corresponde a a.example.com; mail.example.com não corresponde a example.com. Os registros existentes permanecem e não são ocultados.", "input": "Host a permitir", "placeholder": "example.com", "add": "Adicionar", "remove": "Remover {{domain}}", "emptyTitle": "Nenhum site permitido", "emptyDescription": "Adicione um host para registrá-lo a partir de agora. Enquanto a lista estiver vazia, nada é registrado.", "limit": "Você pode permitir até {{count}} hosts.", "emptyWarningTitle": "Uma lista branca vazia não registra nada", "emptyWarning": "Nenhum host está permitido, então o PageTime não registra tempo nem visitas de nenhum site. Uma lista vazia não significa registrar todos os sites. Adicione pelo menos um host antes de qualquer registro. Os registros existentes permanecem e não são ocultados.", "error": "Informe um host como example.com. Protocolo, caminho e porta são removidos. Espaços não são permitidos, e um nome sem ponto só é aceito para localhost." },
-    "badge": { "title": "Selo da barra", "description": "Mostra o tempo de navegação ativo de hoje no ícone da barra." },
+    "recordMode": { "title": "Escopo do registro", "blacklist": "Lista negra", "whitelist": "Lista branca", "blacklistHint": "Registrar todos os sites, exceto os da lista abaixo.", "whitelistHint": "Registrar somente os sites da lista abaixo." },
+    "ignored": { "title": "Sites ignorados", "input": "Host a ignorar", "placeholder": "example.com (inclui subdomínios)", "add": "Adicionar", "remove": "Remover {{domain}}", "emptyTitle": "Nenhum site ignorado", "error": "Informe um host válido, como example.com", "limit": "Você pode ignorar até {{count}} hosts." },
+    "allowed": { "title": "Sites permitidos", "input": "Host a permitir", "placeholder": "example.com (inclui subdomínios)", "add": "Adicionar", "remove": "Remover {{domain}}", "emptyTitle": "Nenhum site permitido", "limit": "Você pode permitir até {{count}} hosts.", "emptyWarning": "A lista branca está vazia, então nenhum site é registrado", "error": "Informe um host válido, como example.com" },
+    "badge": { "title": "Selo da barra" },
     "docs": { "timing": "Regras de contagem e privacidade", "privacy": "Política de privacidade" },
-    "export": { "title": "Exportar dados", "description": "Baixa o registro deste dispositivo como arquivo. O JSON traz todas as tabelas, o estado da gravação e as configurações. O CSV tem uma linha por dia e nome de host, para planilhas.", "note": "O arquivo fica salvo só no seu computador. Ele contém nomes de host e durações, nunca URLs ou títulos.", "json": "Exportar JSON", "csv": "Exportar CSV", "exporting": "Exportando…", "done": "{{file}} salvo.", "errorTitle": "Falha ao exportar", "error": "Nada foi baixado. Tente de novo." },
-    "deleteDay": { "title": "Apagar os registros de um dia", "description": "Remove deste dispositivo o tempo ativo, as visitas e as sessões de um dia. Não dá para desfazer.", "label": "Data a apagar", "button": "Apagar este dia", "done": "Registros de {{date}} apagados.", "confirmTitle": "Apagar os registros de {{date}}?", "confirmDescription": "O tempo ativo, as visitas e as sessões desse dia serão removidos deste dispositivo. Não dá para desfazer.", "confirm": "Apagar este dia", "deleting": "Apagando…" },
-    "clear": { "title": "Limpar todos os registros", "description": "Exclui os registros que o PageTime salvou neste dispositivo. Não é possível desfazer.", "button": "Limpar dados" }
+    "export": { "title": "Exportar dados", "description": "Baixa todos os registros deste dispositivo.", "note": "O arquivo fica salvo só no seu computador. Ele contém nomes de host e durações, nunca URLs ou títulos.", "json": "Exportar JSON", "csv": "Exportar CSV", "exporting": "Exportando…", "done": "{{file}} salvo.", "errorTitle": "Falha ao exportar", "error": "Nada foi baixado. Tente de novo." },
+    "deleteDay": { "title": "Apagar os registros de um dia", "label": "Data a apagar", "button": "Apagar este dia", "done": "Registros de {{date}} apagados.", "confirmTitle": "Apagar os registros de {{date}}?", "confirmDescription": "Não dá para desfazer.", "confirm": "Apagar este dia", "deleting": "Apagando…" },
+    "clear": { "title": "Limpar todos os registros", "button": "Limpar dados" }
   },
   "detail": {
     "title": "Detalhes do site",
-    "description": "{{range}} · estatísticas do site e sessões ativas de hoje",
     "close": "Fechar detalhes",
     "visits_one": "{{count}}",
     "visits_many": "{{count}}",
@@ -140,10 +130,10 @@
     "ignored": "Este site já está ignorado",
     "allow": "Adicionar à lista branca",
     "allowed": "Este site já está permitido",
-    "allowConfirm": { "title": "Adicionar este site à lista branca?", "description": "{{domain}} e seus subdomínios passarão a entrar no tempo e nas visitas. Os registros existentes não são apagados nem ocultados.", "confirm": "Adicionar à lista branca" },
-    "ignoreConfirm": { "title": "Parar de registrar este site?", "description": "{{domain}} e seus subdomínios deixarão de ter tempo e visitas registrados. Os registros existentes não são apagados.", "confirm": "Parar de registrar" },
+    "allowConfirm": { "title": "Adicionar este site à lista branca?", "description": "{{domain}} e seus subdomínios serão registrados daqui para frente.", "confirm": "Adicionar à lista branca" },
+    "ignoreConfirm": { "title": "Parar de registrar este site?", "description": "{{domain}} e seus subdomínios deixarão de ser registrados.", "confirm": "Parar de registrar" },
     "delete": "Apagar os registros deste site",
-    "deleteConfirm": { "title": "Apagar os registros deste site?", "description": "O tempo ativo, a contagem de visitas e as sessões de {{domain}} serão removidos em todas as datas. Não dá para desfazer. Se também não quiser registrar este site daqui para frente, adicione-o à lista de sites ignorados.", "confirm": "Apagar registros", "deleting": "Apagando…" },
+    "deleteConfirm": { "title": "Apagar os registros de {{domain}}?", "description": "Não dá para desfazer.", "confirm": "Apagar registros", "deleting": "Apagando…" },
     "viewVisits": "Ver visitas",
     "trend": {
       "title": "Tendência diária",
@@ -170,7 +160,7 @@
   },
   "confirm": {
     "title": "Limpar todos os registros de navegação?",
-    "description": "Apenas os dados locais do PageTime serão excluídos. Não é possível desfazer.",
+    "description": "Não dá para desfazer.",
     "cancel": "Cancelar",
     "clearing": "Limpando…",
     "confirm": "Limpar"
