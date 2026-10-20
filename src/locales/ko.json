@@ -9,7 +9,7 @@
     "records": { "title": "방문 기록" },
     "settings": { "title": "설정" }
   },
-  "range": { "today": "오늘", "last7": "최근 7일", "last30": "최근 30일", "custom": "직접 선택", "start": "시작 날짜", "end": "종료 날짜", "apply": "적용", "cancel": "취소", "invalid": "종료 날짜는 시작 날짜보다 빠를 수 없습니다", "lastDays_other": "최근 {{count}}일", "label": "통계 기간: {{range}}" },
+  "range": { "today": "오늘", "last7": "최근 7일", "last30": "최근 30일", "custom": "직접 선택", "start": "시작 날짜", "end": "종료 날짜", "apply": "적용", "cancel": "취소", "invalid": "종료 날짜는 시작 날짜보다 빠를 수 없습니다", "lastDays_other": "최근 {{count}}일", "label": "통계 기간: {{range}}", "previous": "이전 기간", "next": "다음 기간" },
   "error": {
     "title": "불러오기 또는 저장 실패",
     "retry": "다시 시도",

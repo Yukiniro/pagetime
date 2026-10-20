@@ -1,0 +1,40 @@
+# 日期范围前后翻页与单日时间线
+
+The date control on Overview and Visits has `Previous period` and `Next period` on either side. A click, or ArrowLeft / ArrowRight, moves the closed range by its own number of days and shows the result as Custom. `Next period` is disabled when the range already ends today. `Previous period` is disabled when another full step would start before the local day of `since`. The choice is not stored.
+
+A single day opens that day's timeline: the caption date and `Active …` match that day's KPI. The other tab stays `Last 7 days`, ending on the selected day. A multi-day range still opens on its daily trend, and the timeline tab stays today. Today itself is unchanged: the trigger reads `Date range: Today` and the chart opens on `Today's timeline`.
+
+A single day past detail retention draws 24 hour bars in that timeline slot. Their durations add up to that day's active time. There is no extra sentence about retention.
+
+## Sub-features
+
+- Paging on Overview and Visits, absent on Settings.
+- Disabled next while the range ends today; disabled previous at the `since` day.
+- Arrow keys do nothing while focus is in a field, or while a drawer, dialog, or menu is open. Arrow keys in the custom date inputs do not turn the page.
+- A custom single day shows one date on the trigger, not a `start–end` span.
+- Site filter (#37) stays selected across a page. Multi-day ranges still default to the trend.
+
+## How to get to it (user POV)
+
+Open the preview or the extension dashboard. The first screen is Overview. The two arrow buttons flank the date button, to the right of `Browsing overview`.
+
+## Driving it with Playwright
+
+Preview origin is the URL `launch` printed (default `http://127.0.0.1:4173/`), or the extension `dashboard.html`. Language is already English.
+
+1. Wait until `[data-status="empty"]` or `[data-status="ready"]` exists.
+2. Assert `getByRole('button', { name: 'Previous period' })` and `getByRole('button', { name: 'Next period' })`. On a today range, `Next period` is disabled.
+3. Open `getByRole('button', { name: /^Date range/ })`, then click `Custom`. Focus `Start date` inside `getByRole('form', { name: 'Custom' })` and press ArrowLeft. The trigger still matches `/^Date range: Today$/` (the date field may change its own value). Press Escape.
+4. Open the date menu again and press ArrowLeft. The trigger still matches `/^Date range: Today/`. Press Escape.
+5. Open Visits. The same two buttons are there, and `Next period` is still disabled. Focus the search box `Search sites` and press ArrowRight. The trigger stays on today.
+6. Open Settings. `Previous period` and `Next period` are absent.
+7. Return to Overview and reload. The trigger is `Date range: Today`. `localStorage` has no range key.
+8. When status is `ready`: click `Previous period`. The trigger's accessible name no longer starts with `Date range: Today`, the selected tab is `Today's timeline`, and the caption date is not today's date. The KPI active time matches the caption's `Active` duration. Click the trend tab and assert it is `Last 7 days`. Open the date menu, choose `Last 7 days`, and assert the selected tab is not `Today's timeline`. Page back once with ArrowLeft while focus is on `document.body` and assert the trigger changed and the ranking filter chip, if one was active, is still there.
+
+## Gotchas
+
+- A fresh preview sets `since` to the moment the empty ledger is created, which is today, so `Previous period` is disabled too. Do not write `pagetime-preview` to enable it. Report the ready-ledger step as not run when `[data-status]` is `empty`.
+- The search box name is the `records.search` string: `Search sites`.
+- A single custom day formats one date through `formatDate` (`month: 'long'`, `day: 'numeric'`, `weekday: 'short'`). Match the trigger with a prefix, not a hard-coded date.
+- ArrowLeft inside `<input type="date">` changes the date field. Assert the applied range, not the field's value.
+- Do not click `Clear data` or the delete confirms.

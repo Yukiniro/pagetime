@@ -95,7 +95,7 @@ Stable handles, from `src/App.jsx`, `src/Overview.jsx`, `src/RangeControl.jsx`, 
 | --- | --- |
 | Pages | `getByRole('button', { name: 'Overview' \| 'Visits' \| 'Settings', exact: true })` inside `getByRole('navigation', { name: 'Main navigation' })` |
 | Page title | `getByRole('heading', { level: 1 })` — `Browsing overview`, `Visit history`, `Settings` |
-| Date range | `getByRole('button', { name: /^Date range/ })`, then `getByRole('menuitemradio', { name: 'Today' \| 'Last 7 days' \| 'Last 30 days' \| 'Custom' })` |
+| Date range | `getByRole('button', { name: /^Date range/ })`, then `getByRole('menuitemradio', { name: 'Today' \| 'Last 7 days' \| 'Last 30 days' \| 'Custom' })`. `Previous period` and `Next period` sit on either side; `Next period` is disabled while the range ends today |
 | Custom panel | `getByRole('form', { name: 'Custom' })`, labels `Start date` and `End date`, button `Apply`, alert `The end date must be on or after the start date` |
 | Empty ledger | `[data-status="empty"]` and text `Your browsing will show up here` |
 | Ready ledger | `[data-status="ready"]` |

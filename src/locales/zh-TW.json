@@ -9,7 +9,7 @@
     "records": { "title": "造訪紀錄" },
     "settings": { "title": "設定" }
   },
-  "range": { "today": "今天", "last7": "近 7 天", "last30": "近 30 天", "custom": "自訂", "start": "開始日期", "end": "結束日期", "apply": "套用", "cancel": "取消", "invalid": "結束日期不能早於開始日期", "lastDays_other": "最近 {{count}} 天", "label": "統計時間範圍：{{range}}" },
+  "range": { "today": "今天", "last7": "近 7 天", "last30": "近 30 天", "custom": "自訂", "start": "開始日期", "end": "結束日期", "apply": "套用", "cancel": "取消", "invalid": "結束日期不能早於開始日期", "lastDays_other": "最近 {{count}} 天", "label": "統計時間範圍：{{range}}", "previous": "上一段", "next": "下一段" },
   "error": {
     "title": "讀取或儲存失敗",
     "retry": "重試",

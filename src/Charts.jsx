@@ -4,7 +4,7 @@ import * as echarts from 'echarts/core';
 import {BarChart,CustomChart,HeatmapChart} from 'echarts/charts';
 import {GridComponent,TooltipComponent,VisualMapComponent} from 'echarts/components';
 import {CanvasRenderer} from 'echarts/renderers';
-import {midnight} from './model.mjs';
+import {addDays, midnight} from './model.mjs';
 import {weekHourMatrix,weekStartOf} from './heatmap.mjs';
 import {colorOf} from './data.js';
 import {duration,formatDate,timeLabel} from './i18n.js';
@@ -54,6 +54,18 @@ export function HourChart({hours, dayCount, domain, isDark=false}){
     series:[{type:'bar',barMaxWidth:14,itemStyle:{color:theme.bar,borderRadius:[2,2,0,0]},data:hours.map(row=>row.ms/3_600_000)}]};
   return <><Chart option={option} className="hour-chart" label={t('detail.hours.label',{domain,hours:hours.map(item).join(t('detail.hours.separator'))})}/><ul className="sr-only">{hours.map(row=><li key={row.hour}>{item(row)}</li>)}</ul></>;
 }
+export function DayHourChart({hours, isDark=false}){
+  const {t}=useTranslation();
+  const {theme,fontFamily,tooltip}=chartTheme(isDark);
+  const slot=hour=>{const from=new Date(2000,0,1,hour,0,0,0);return t('detail.hours.slot',{from:timeLabel(from),to:timeLabel(from.getTime()+3_600_000)});};
+  const item=row=>`${slot(row.hour)} ${t('active',{duration:duration(row.ms)})}`;
+  const option={animation:false,backgroundColor:'transparent',textStyle:{fontFamily,color:theme.label},grid:{left:8,right:12,top:12,bottom:8,containLabel:true},
+    tooltip:tooltip({trigger:'axis',renderMode:'richText',formatter:p=>{const row=hours[p[0]?.dataIndex];if(!row)return '';return `${slot(row.hour)}\n${t('active',{duration:duration(row.ms)})}`;}}),
+    xAxis:{type:'category',data:hours.map(row=>row.hour),axisTick:{show:false},axisLine:{lineStyle:{color:theme.axis}},axisLabel:{color:theme.label,fontSize:12,interval:2,hideOverlap:true}},
+    yAxis:{type:'value',min:0,minInterval:1,max:Math.max(1,...hours.map(row=>Math.ceil(row.ms/3_600_000))),splitNumber:3,axisLabel:{color:theme.label,formatter:v=>v?t('trend.hours',{count:v}):'0'},splitLine:{lineStyle:{color:theme.split}}},
+    series:[{type:'bar',barMaxWidth:18,itemStyle:{color:theme.bar,borderRadius:[2,2,0,0]},data:hours.map(row=>row.ms/3_600_000)}]};
+  return <><Chart option={option} className="hour-chart primary-hours" label={hours.map(item).join(t('detail.hours.separator'))}/><ul className="sr-only">{hours.map(row=><li key={row.hour}>{item(row)}</li>)}</ul></>;
+}
 const weekdayAt=weekday=>new Date(2026,9,18+weekday).getTime();
 const hourRange=hour=>[`${String(hour).padStart(2,'0')}:00`,hour===23?'24:00':`${String(hour+1).padStart(2,'0')}:00`];
 export function Heatmap({rows,since,start,end,today,isDark=false}){
@@ -75,21 +87,21 @@ export function Heatmap({rows,since,start,end,today,isDark=false}){
     <h3 className="sr-only">{t('heatmap.top')}</h3>
     <ul className="sr-only">{top.length?top.map(cell=><li key={`${cell.weekday}-${cell.hour}`}>{item(cell)}</li>):<li>{t('heatmap.empty')}</li>}</ul></>;
 }
-export function Timeline({spans, className='timeline-chart', lane=22, isDark=false}){
+export function Timeline({spans, day, className='timeline-chart', lane=22, isDark=false, showEmpty=true}){
   const {t}=useTranslation();
   const {theme,fontFamily,tooltip}=chartTheme(isDark);
-  const start=midnight(Date.now());const end=new Date(start);end.setDate(end.getDate()+1);
-  const today=spans.filter(s=>s.end>start&&s.start<end.getTime());
+  const start=midnight(day);const end=addDays(start,1);
+  const today=spans.filter(s=>s.end>start&&s.start<end);
   const earliest=today.length?Math.min(...today.map(s=>s.start)):start+8*3_600_000;
   const latest=today.length?Math.max(...today.map(s=>s.end)):start+20*3_600_000;
   const min=Math.max(start,Math.min(start+8*3_600_000,Math.floor(earliest/3_600_000)*3_600_000));
-  const max=Math.min(end.getTime(),Math.max(start+20*3_600_000,Math.ceil(latest/3_600_000)*3_600_000));
+  const max=Math.min(end,Math.max(start+20*3_600_000,Math.ceil(latest/3_600_000)*3_600_000));
   const option={animation:false,backgroundColor:'transparent',textStyle:{fontFamily,color:theme.label},grid:{left:14,right:16,top:30,bottom:10,show:true,backgroundColor:theme.timeline,borderWidth:0},
-    tooltip:tooltip({renderMode:'richText',formatter:p=>{const s=today[p.dataIndex];const name=s.site||s.domain;return `${name}\n${timeLabel(Math.max(s.start,start))}–${timeLabel(Math.min(s.end,end.getTime()))}\n${duration(Math.min(s.end,end.getTime())-Math.max(s.start,start))}`;}}),
+    tooltip:tooltip({renderMode:'richText',formatter:p=>{const s=today[p.dataIndex];const name=s.site||s.domain;return `${name}\n${timeLabel(Math.max(s.start,start))}–${timeLabel(Math.min(s.end,end))}\n${duration(Math.min(s.end,end)-Math.max(s.start,start))}`;}}),
     xAxis:{type:'value',min,max,interval:((max-min)/3_600_000>16?4:2)*3_600_000,position:'top',axisLine:{show:false},axisTick:{show:false},splitLine:{show:false},axisLabel:{color:theme.label,fontSize:12,formatter:timeLabel}},
     yAxis:{show:false,min:0,max:1},
-    series:[{type:'custom',data:today.map(s=>[Math.max(s.start,start),Math.min(s.end,end.getTime())]),renderItem:(params,api)=>{const from=api.coord([api.value(0),.5]),to=api.coord([api.value(1),.5]);const name=today[params.dataIndex].site||today[params.dataIndex].domain;return{type:'rect',shape:{x:from[0],y:from[1]-lane/2,width:Math.max(1,to[0]-from[0]),height:lane,r:4},style:{fill:colorOf(name)}};}}]};
-  return <><Chart option={option} className={className} label={t('timeline.label',{count:today.length})}/>{!today.length&&<p className="timeline-empty">{t('timeline.empty')}</p>}<ul className="sr-only">{today.map((s,i)=><li key={i}>{t('timeline.item',{domain:s.site||s.domain,from:timeLabel(s.start),to:timeLabel(s.end)})}</li>)}</ul></>;
+    series:[{type:'custom',data:today.map(s=>[Math.max(s.start,start),Math.min(s.end,end)]),renderItem:(params,api)=>{const from=api.coord([api.value(0),.5]),to=api.coord([api.value(1),.5]);const name=today[params.dataIndex].site||today[params.dataIndex].domain;return{type:'rect',shape:{x:from[0],y:from[1]-lane/2,width:Math.max(1,to[0]-from[0]),height:lane,r:4},style:{fill:colorOf(name)}};}}]};
+  return <><Chart option={option} className={className} label={t('timeline.label',{count:today.length})}/>{showEmpty&&!today.length&&<p className="timeline-empty">{t('timeline.empty')}</p>}<ul className="sr-only">{today.map((s,i)=><li key={i}>{t('timeline.item',{domain:s.site||s.domain,from:timeLabel(s.start),to:timeLabel(s.end)})}</li>)}</ul></>;
 }
 export function Breakdown({hosts, isDark=false}){
   const {t}=useTranslation();

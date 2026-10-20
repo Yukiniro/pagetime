@@ -32,18 +32,45 @@ export function activeRange(range, today) {
   return presetRange(preset, today);
 }
 
-// Today (exactly one local day, and that day is today) opens the timeline.
-// Every other interval opens the daily trend of that interval.
-export function defaultChart(range, today) {
-  const startOfToday = midnight(today);
-  return midnight(range.start) === startOfToday && midnight(range.end) === addDays(startOfToday, 1) ? 'timeline' : 'trend';
+// A single local day opens that day's timeline. Every longer interval opens its daily trend.
+export function defaultChart(range) {
+  return dayCount(range.start, range.end) === 1 ? 'timeline' : 'trend';
 }
 
-// The other tab while the range is today stays the last 7 local days.
-export function trendWindow(range, today) {
-  const startOfToday = midnight(today);
-  if (defaultChart(range, startOfToday) === 'timeline') return { start: addDays(startOfToday, -6), end: addDays(startOfToday, 1) };
-  return { start: midnight(range.start), end: midnight(range.end) };
+// The other tab of a single day is the 7 local days ending on that day. Today keeps the same window it had before.
+// A longer range charts itself.
+export function trendWindow(range) {
+  const start = midnight(range.start);
+  const end = midnight(range.end);
+  if (dayCount(start, end) === 1) return { start: addDays(end, -7), end };
+  return { start, end };
+}
+
+// The timeline's local day: the selected day when the range is one day, otherwise today.
+export function timelineDay(range, today) {
+  const start = midnight(range.start);
+  return dayCount(start, range.end) === 1 ? start : midnight(today);
+}
+
+// Session rows for this local day have already been removed. Hour totals remain.
+export function timelineUsesHours(day, now) {
+  return midnight(day) < detailCutoff(now);
+}
+
+// Move the closed interval by its own length. `direction` is -1 or 1.
+// The result is a custom range, or null when the step would start before the local day of `since`
+// or end after today. A partial step is not returned.
+export function shiftRange(range, direction, today, since) {
+  if (direction !== -1 && direction !== 1) return null;
+  if (!Number.isFinite(today) || !Number.isFinite(since)) return null;
+  const start = midnight(range?.start);
+  const end = midnight(range?.end);
+  const days = dayCount(start, end);
+  if (!days) return null;
+  const nextStart = addDays(start, direction * days);
+  const nextEnd = addDays(end, direction * days);
+  if (nextStart < midnight(since) || nextEnd > addDays(midnight(today), 1)) return null;
+  return { preset: 'custom', start: nextStart, end: nextEnd };
 }
 
 // Same wall-clock time `days` calendar days away. addDays only handles midnights.

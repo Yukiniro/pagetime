@@ -5,7 +5,7 @@ import { daysBetween, hoursBetween, openLedger, readDomains, readHead, recentVis
 import { readComparison } from './compare.mjs';
 import { compareFromSnapshot, siteSeries, siteSeriesFromSnapshot, VISIT_LIST_LIMIT, daySummary, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
 import { addDays, dateKey, openCredit } from './model.mjs';
-import { trendWindow } from './range.mjs';
+import { timelineDay, trendWindow } from './range.mjs';
 import { siteOf } from './site.mjs';
 
 let db;
@@ -27,16 +27,17 @@ function useExtensionLedger(range) {
       const now = Date.now();
       const displayFrom = dateKey(range.start);
       const displayTo = dateKey(addDays(range.end, -1));
-      // Today keeps a last-7-days trend tab. Any other range charts that range.
+      // A single day keeps a 7-day trend ending on that day. A longer range charts itself.
       // Extra trend rows stay out of the main view, so rankings and visits keep the selected range.
       // `focus` limits the bars to one merged site. It does not change the visit list or ranking totals.
       const trend = trendWindow(range, range.today);
+      const chartDay = timelineDay(range, range.today);
       const fetchFrom = dateKey(Math.min(range.start, trend.start, range.today));
       const fetchTo = dateKey(Math.max(addDays(range.end, -1), addDays(trend.end, -1), range.today));
       const [allDays, hours, spans, visits] = await Promise.all([
         daysBetween(db, fetchFrom, fetchTo),
         hoursBetween(db, displayFrom, displayTo),
-        spansBetween(db, range.today, addDays(range.today, 1)),
+        spansBetween(db, chartDay, addDays(chartDay, 1)),
         recentVisits(db, range.start, range.end, ids, VISIT_LIST_LIMIT),
       ]);
       const rows = {

@@ -9,7 +9,7 @@
     "records": { "title": "Histórico de visitas" },
     "settings": { "title": "Configurações" }
   },
-  "range": { "today": "Hoje", "last7": "Últimos 7 dias", "last30": "Últimos 30 dias", "custom": "Personalizado", "start": "Data inicial", "end": "Data final", "apply": "Aplicar", "cancel": "Cancelar", "invalid": "A data final não pode ser anterior à data inicial", "lastDays_one": "Último {{count}} dia", "lastDays_many": "Últimos {{count}} dias", "lastDays_other": "Últimos {{count}} dias", "label": "Período: {{range}}" },
+  "range": { "today": "Hoje", "last7": "Últimos 7 dias", "last30": "Últimos 30 dias", "custom": "Personalizado", "start": "Data inicial", "end": "Data final", "apply": "Aplicar", "cancel": "Cancelar", "invalid": "A data final não pode ser anterior à data inicial", "lastDays_one": "Último {{count}} dia", "lastDays_many": "Últimos {{count}} dias", "lastDays_other": "Últimos {{count}} dias", "label": "Período: {{range}}", "previous": "Período anterior", "next": "Próximo período" },
   "error": {
     "title": "Não foi possível carregar ou salvar os dados",
     "retry": "Tentar novamente",

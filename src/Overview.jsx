@@ -4,11 +4,13 @@ import { Button } from '@app/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { EmptyState, FilterEmpty } from './EmptyState.jsx';
 import { colorOf, iconForSite } from './data.js';
-import { Heatmap, Timeline, Trend } from './Charts.jsx';
+import { DayHourChart, Heatmap, Timeline, Trend } from './Charts.jsx';
 import { KpiCompare } from './KpiCompare.jsx';
 import { SiteIcon } from './SiteIcon.jsx';
+import { dayHourTotals } from './ledger-view.mjs';
 import { duration, formatDate } from './i18n.js';
-import { addDays } from './model.mjs';
+import { addDays, dateKey, midnight } from './model.mjs';
+import { dayCount, timelineDay, timelineUsesHours } from './range.mjs';
 import { focusSpans, focusSummary, timelineHasActivity, trendHasActivity } from './site-filter.mjs';
 
 const RANK_LIMIT = 8;
@@ -58,9 +60,16 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
   const todayKpi = focusSummary(todayStats, filterSite);
   const chartSpans = focusSpans(spans, filterSite);
   const filtered = Boolean(filterSite);
-  const showTimeline = !filtered || timelineHasActivity(chartSpans, today, addDays(today, 1));
+  const single = dayCount(start, end) === 1;
+  const chartDay = timelineDay({ start, end }, today);
+  const chartKpi = single ? kpi : todayKpi;
+  const hoursMode = single && timelineUsesHours(chartDay, now);
+  const hourBars = dayHourTotals(hourRows, dateKey(chartDay), filterSite);
+  const showHours = !filtered || hourBars.some(row => row.ms > 0);
+  const showTimeline = !filtered || timelineHasActivity(chartSpans, chartDay, addDays(chartDay, 1));
   const showTrend = !filtered || trendHasActivity(trendDays);
-  const legend = (todayKpi?.rows ?? []).filter(row => row.ms).slice(0, 5);
+  const legend = (chartKpi?.rows ?? []).filter(row => row.ms).slice(0, 5);
+  const caption = <p className="chart-caption">{formatDate(chartDay, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(chartKpi.ms) })}</p>;
   const trendTitle = trendLabel || t('range.last7');
   const tabs = [['timeline', t('timeline.title')], ['trend', trendTitle]];
 
@@ -93,11 +102,14 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
         </div>
       </div>
       <div id="primary-chart" role="tabpanel" aria-labelledby={`chart-tab-${chart}`} className="chart-panel">
-        {chart === 'timeline' ? (showTimeline ? <>
-          <p className="chart-caption">{formatDate(now, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(todayKpi.ms) })}</p>
-          <Timeline spans={chartSpans} className="primary-timeline" lane={36} isDark={isDark} />
+        {chart === 'timeline' ? (hoursMode ? (showHours ? <>
+          {caption}
+          <DayHourChart hours={hourBars} isDark={isDark} />
+        </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />) : (showTimeline ? <>
+          {caption}
+          <Timeline spans={chartSpans} day={chartDay} className="primary-timeline" lane={36} isDark={isDark} showEmpty={midnight(chartDay) === midnight(today)} />
           <div className="legend">{legend.map(row => <Button variant="ghost" size="xs" key={row.domain} onClick={event => openSite(row.domain, event)}><i style={{ background: colorOf(row.domain) }} />{row.domain}</Button>)}</div>
-        </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />) : (showTrend ? <Trend days={trendDays} className="primary-trend" isDark={isDark} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
+        </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)) : (showTrend ? <Trend days={trendDays} className="primary-trend" isDark={isDark} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
       </div>
     </section>
     <section className="rank-section" aria-label={t('ranking.title')}>

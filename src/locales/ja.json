@@ -9,7 +9,7 @@
     "records": { "title": "訪問履歴" },
     "settings": { "title": "設定" }
   },
-  "range": { "today": "今日", "last7": "過去 7 日間", "last30": "過去 30 日間", "custom": "カスタム", "start": "開始日", "end": "終了日", "apply": "適用", "cancel": "キャンセル", "invalid": "終了日は開始日以降にしてください", "lastDays_other": "過去 {{count}} 日間", "label": "集計期間：{{range}}" },
+  "range": { "today": "今日", "last7": "過去 7 日間", "last30": "過去 30 日間", "custom": "カスタム", "start": "開始日", "end": "終了日", "apply": "適用", "cancel": "キャンセル", "invalid": "終了日は開始日以降にしてください", "lastDays_other": "過去 {{count}} 日間", "label": "集計期間：{{range}}", "previous": "前の期間", "next": "次の期間" },
   "error": {
     "title": "読み込みまたは保存に失敗しました",
     "retry": "再試行",
