@@ -18,6 +18,18 @@ When implementing from a selected generated mock, treat that image as the source
 
 Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local prototype can be handed to Sites. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
 
+## 贡献与 PR（Agent / 维护者）
+
+- **Changeset**：每个 PR 都必须带 changeset。用户可见变更按 patch / minor 选型；纯文档、工程类或免发布改动用空 changeset：`npx changeset --empty`。发版流程见 `docs/releasing.md`；下方「Release policy」不再重复选型细则。
+- **测试顺序**：跑 `npm test` 前先 `npm run build:preview`（与 CI 一致）。
+- **PR 正文**：只贴验证的通过数与日志尾部几行，不要贴完整输出（GitHub 正文上限约 32K 字符）。
+- **常用验证命令**：
+  - `npm run typecheck`
+  - `npm run build:preview && npm test`
+  - `npm run build`
+  - `npm run verify-build`
+  - `xvfb-run -a npm run test:e2e`
+
 ## 工程设计原则
 
 - 不要维护向后兼容性。应移除废弃路径，而不是增加兼容层、回退方案或迁移逻辑。
@@ -33,7 +45,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 
 ### Release policy
 
-用户可见变更附 changeset：修复为 patch，完整新功能为 minor，major 需维护者确认；免发布改动附空 changeset。修改版本发布、产物校验或恢复流程时，先读 `docs/releasing.md`。使用 npm，保留现有 CI；发版由维护者手动创建版本 PR，合并后发布 GitHub ZIP。
+Changeset 与 PR 要求见上文「贡献与 PR」。修改版本发布、产物校验或恢复流程时，先读 `docs/releasing.md`。使用 npm，保留现有 CI；发版由维护者手动创建版本 PR，合并后发布 GitHub ZIP。
 
 ### 浏览器插件
 
