@@ -17,7 +17,9 @@ Install the extension, leave an http page active, and click the PageTime toolbar
 
 ## Driving it with Playwright
 
-Extension only. Fresh profile. Language is English (`localStorage['pagetime-language'] = 'en'` before the popup opens). Serve one local http page, for example `http://127.0.0.1:<port>/`, and leave that tab active. Open the popup with `chrome.action.openPopup()` from the service worker. Do not navigate the active tab to `popup.html`.
+Extension only. Fresh profile. Language is English (`localStorage['pagetime-language'] = 'en'` on the extension origin before the popup opens). Serve one local http page, for example `http://127.0.0.1:<port>/`, and leave that tab active. Open the popup with `chrome.action.openPopup()` from the service worker. Do not navigate the active tab to `popup.html`.
+
+Playwright's `context.pages()` does not include the toolbar popup: Chrome lists it in `/json/list` as a `page` whose URL ends in `popup.html`, and `Target.setAutoAttach` never hands that target to Playwright. Launch with `--remote-debugging-port` and drive the popup through that target's DevTools socket (`tests/e2e/popup-cdp.mjs`). `tests/e2e/popup.spec.mjs` is this journey.
 
 1. `main[data-status="ready"]` is visible. The heading is `127.0.0.1`. The large figure `[data-figure="site"]` has an accessible name starting with `Today`. The total line matches `/^Today .+ total$/`. Buttons `Don't record this site`, `Pause recording`, and `Open dashboard` are visible. The switch name is `Toolbar badge` and it is checked. Status text is `Recording browsing activity`.
 2. Click `Don't record this site`. The button becomes `Record this site again`. On the already-open Settings page, `Remove 127.0.0.1` appears without reloading. `chrome.storage.local` `settings.ignored` is `['127.0.0.1']` and `allowed` stays `[]`.
