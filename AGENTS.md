@@ -31,6 +31,13 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
   - `xvfb-run -a npm run test:e2e`
 - **界面验证**：按 [`.cursor/skills/verify-pagetime/SKILL.md`](.cursor/skills/verify-pagetime/SKILL.md) 启动预览或扩展，先跑 Doctor，再按 `features/` 里的用户路径驱动并留下证据。地图过期时用 `/maintain-verification-skill`。
 
+## 完成定义
+
+- **改了行为的 PR**（用户可见的界面、计时、存储、导出、设置等行为）：必须跑 `.cursor/skills/verify-pagetime/features/` 里对应的 feature 检查，并在 PR 描述附证据，可以是命令输出、截图或日志，格式遵守上文「PR 正文」的篇幅限制。
+- **新增功能**：同步在 `.cursor/skills/verify-pagetime/features/` 新增 feature 文件，并登记到该目录的 `README.md`。
+- **纯文档、工程类改动**：在 PR 描述写明未改行为，无需 feature 检查。
+- **自查与评审**：提交前对照 [`REVIEW.md`](REVIEW.md)（历史评审中反复出现的意见）。`.agents/skills/code-review` 以它为标准来源，规则只写在 `REVIEW.md`，这里和 skill 里都不重复。遇到重复意见就追加到 `REVIEW.md`。
+
 ## 工程设计原则
 
 - 不要维护向后兼容性。应移除废弃路径，而不是增加兼容层、回退方案或迁移逻辑。
