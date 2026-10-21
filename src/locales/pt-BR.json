@@ -60,10 +60,15 @@
   "trend": { "label": "Tempo diário de navegação ativa. {{days}}", "separator": "; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },
   "timeline": {
     "title": "Linha do tempo de hoje",
+    "dayTitle": "Linha do tempo",
     "label_one": "Linha do tempo da navegação ativa de hoje, {{count}} sessão; áreas em branco não têm atividade registrada.",
     "label_many": "Linha do tempo da navegação ativa de hoje, {{count}} sessões; áreas em branco não têm atividade registrada.",
     "label_other": "Linha do tempo da navegação ativa de hoje, {{count}} sessões; áreas em branco não têm atividade registrada.",
+    "dayLabel_one": "Linha do tempo da navegação ativa em {{date}}, {{count}} sessão; áreas em branco não têm atividade registrada.",
+    "dayLabel_many": "Linha do tempo da navegação ativa em {{date}}, {{count}} sessões; áreas em branco não têm atividade registrada.",
+    "dayLabel_other": "Linha do tempo da navegação ativa em {{date}}, {{count}} sessões; áreas em branco não têm atividade registrada.",
     "empty": "Nenhuma navegação ativa registrada hoje",
+    "dayEmpty": "Nenhuma navegação ativa registrada em {{date}}",
     "item": "{{domain}}, das {{from}} às {{to}}",
     "other": "Outros"
   },

@@ -58,8 +58,11 @@
   "trend": { "label": "일별 활성 브라우징 시간. {{days}}", "separator": ", ", "hours_other": "{{count}}시간" },
   "timeline": {
     "title": "오늘의 타임라인",
+    "dayTitle": "타임라인",
     "label_other": "오늘의 활성 브라우징 타임라인, {{count}}개 구간. 빈 영역은 활성 브라우징이 기록되지 않았습니다.",
+    "dayLabel_other": "{{date}} 활성 브라우징 타임라인, {{count}}개 구간. 빈 영역은 활성 브라우징이 기록되지 않았습니다.",
     "empty": "오늘은 아직 활성 브라우징 기록이 없습니다",
+    "dayEmpty": "{{date}}에는 아직 활성 브라우징 기록이 없습니다",
     "item": "{{domain}}, {{from}}~{{to}}",
     "other": "기타"
   },

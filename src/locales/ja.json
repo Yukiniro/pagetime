@@ -58,8 +58,11 @@
   "trend": { "label": "日別のアクティブな閲覧時間。{{days}}", "separator": "、", "hours_other": "{{count}} 時間" },
   "timeline": {
     "title": "今日のタイムライン",
+    "dayTitle": "タイムライン",
     "label_other": "今日のアクティブな閲覧タイムライン、{{count}} 件の時間帯。空白部分はアクティブな閲覧が記録されていません。",
+    "dayLabel_other": "{{date}}のアクティブな閲覧タイムライン、{{count}} 件の時間帯。空白部分はアクティブな閲覧が記録されていません。",
     "empty": "今日のアクティブな閲覧記録はまだありません",
+    "dayEmpty": "{{date}}のアクティブな閲覧記録はまだありません",
     "item": "{{domain}}、{{from}}〜{{to}}",
     "other": "その他"
   },

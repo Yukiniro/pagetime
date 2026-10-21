@@ -11,9 +11,10 @@ import { KpiCompare } from './KpiCompare.jsx';
 import { SiteIcon } from './SiteIcon.jsx';
 import { dayHourTotals } from './ledger-view.mjs';
 import { duration, formatDate } from './i18n.js';
-import { addDays, dateKey, midnight } from './model.mjs';
+import { addDays, dateKey } from './model.mjs';
 import { dayCount, timelineDay, timelineUsesHours } from './range.mjs';
 import { focusSpans, focusSummary, timelineHasActivity, trendHasActivity } from './site-filter.mjs';
+import { timelineCopy } from './timeline-copy.mjs';
 
 const RANK_LIMIT = 8;
 
@@ -74,9 +75,13 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
   const colors = colorsFor(chartKpi?.rows ?? [], swatches);
   const legend = [...colors.keys()].filter(domain => colors.get(domain) !== swatches.other);
   const showOther = colors.size > legend.length;
-  const caption = <p className="chart-caption">{formatDate(chartDay, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(chartKpi.ms) })}</p>;
+  const chartDate = formatDate(chartDay, { month: 'long', day: 'numeric', weekday: 'long' });
+  const caption = <p className="chart-caption">{chartDate}<span>·</span>{t('active', { duration: duration(chartKpi.ms) })}</p>;
+  const copy = timelineCopy(chartDay, today);
+  const timelineDate = copy.today ? '' : chartDate;
+  const timelineTitle = t(copy.titleKey);
   const trendTitle = trendLabel || t('range.last7');
-  const tabs = [['timeline', t('timeline.title')], ['trend', trendTitle]];
+  const tabs = [['timeline', timelineTitle], ['trend', trendTitle]];
 
   return <div className="contents" data-status="ready">
     {filtered && <div className="filter-bar" role="status">
@@ -101,7 +106,7 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
     </section>
     <section className="chart-card ledger-card" aria-label={t('chart.label')}>
       <div className="chart-head">
-        <h2>{chart === 'timeline' ? t('timeline.title') : trendTitle}</h2>
+        <h2>{chart === 'timeline' ? timelineTitle : trendTitle}</h2>
         <div className="chart-tabs" role="tablist" aria-label={t('chart.label')}>
           {tabs.map(([key, label]) => <Button key={key} variant="ghost" size="sm" role="tab" id={`chart-tab-${key}`} className="chart-tab" aria-selected={chart === key} aria-controls="primary-chart" onClick={() => setChart(key)}>{label}</Button>)}
         </div>
@@ -112,7 +117,7 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
           <DayHourChart hours={hourBars} isDark={isDark} />
         </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />) : (showTimeline ? <>
           {caption}
-          <Timeline spans={chartSpans} day={chartDay} className="primary-timeline" lane={36} isDark={isDark} showEmpty={midnight(chartDay) === midnight(today)} colorOf={domain => colors.get(domain) ?? swatches.other} onSelectSite={openSite} />
+          <Timeline spans={chartSpans} day={chartDay} className="primary-timeline" lane={36} isDark={isDark} showEmpty labelKey={copy.labelKey} emptyKey={copy.emptyKey} date={timelineDate} colorOf={domain => colors.get(domain) ?? swatches.other} onSelectSite={openSite} />
           <div className="legend">{legend.map(domain => <Button variant="ghost" size="xs" key={domain} onClick={event => openSite(domain, event)}><i style={{ background: colors.get(domain) }} />{domain}</Button>)}{showOther && <span className="legend-other"><i style={{ background: swatches.other }} />{t('timeline.other')}</span>}</div>
         </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)) : (showTrend ? <Trend days={trendDays} className="primary-trend" isDark={isDark} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
       </div>

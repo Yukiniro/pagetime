@@ -20,7 +20,7 @@ Overview, range is a single local day that still has session rows (today, or a r
 Language is English. Viewport 1280×800.
 
 1. Assert `[data-status="ready"]`. If the status is `empty`, stop. Do not insert a host.
-2. Assert the selected tab is `Today's timeline` and a graphic whose label starts `Today's active browsing timeline` is visible. If the chart is the hour bars instead, this day is past detail retention; stop.
+2. If the date trigger is `Date range: Today`, the selected tab is `Today's timeline` and the graphic label starts `Today's active browsing timeline`. If the range is another single day, the selected tab is `Timeline` and the graphic label does not start with `Today's`. If the chart is the hour bars instead, this day is past detail retention; stop. The hour-bar heading is `Timeline` when that day is not today.
 3. Click one color block (the same spot that shows that site's tooltip). Assert `getByRole('dialog')` is titled `Site details` and contains that site's domain.
 4. Close with `Close details`. Click a gray block whose site is not a legend button. The dialog contains that site's real domain. `getByRole('button', { name: 'Other', exact: true })` has count 0, and `.legend-other` is present.
 5. Click `Filter to <domain>`, then click that site's block again. The dialog opens and the status `Filtered to <domain>` is still present. Close the dialog. The status is still present.

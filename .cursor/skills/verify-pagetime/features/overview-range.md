@@ -7,7 +7,7 @@ The overview is one page: a range control in the top bar, then either the empty 
 - Range menu: Today, Last 7 days, Last 30 days, Custom.
 - Custom interval: Apply is enabled only when the end day is on or after the start day. An inverted interval leaves the previous range in place and shows why.
 - Empty ledger: status `Your browsing will show up here`, with `How time is counted`. The KPI, chart, rankings, and heatmap are not mounted.
-- Ready ledger: section labelled `<range> totals` (active time, visits, sites), one chart tab selected, the other tab still available, rankings in two columns, heatmap collapsed until opened. While the range is today the chart opens on `Today's timeline` and the other tab is `Last 7 days`. A multi-day range opens on that range's daily trend, and the timeline tab stays `Today's timeline`. A single day opens on that day's timeline; paging is in [range-shift.md](range-shift.md).
+- Ready ledger: section labelled `<range> totals` (active time, visits, sites), one chart tab selected, the other tab still available, rankings in two columns, heatmap collapsed until opened. While the range is today the chart opens on `Today's timeline` and the other tab is `Last 7 days`. A multi-day range opens on that range's daily trend, and the timeline tab stays `Today's timeline`. A single day that is not today opens on `Timeline`; paging and that day's empty line are in [range-shift.md](range-shift.md) and [timeline-day-copy.md](timeline-day-copy.md).
 
 ## How to get to it (user POV)
 

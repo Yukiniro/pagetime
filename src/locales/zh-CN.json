@@ -58,8 +58,11 @@
   "trend": { "label": "每日活跃浏览时长。{{days}}", "separator": "；", "hours_other": "{{count}} 小时" },
   "timeline": {
     "title": "今日时间线",
+    "dayTitle": "时间线",
     "label_other": "今日活跃时间线，{{count}} 个时段；空白区域未记录活跃浏览。",
+    "dayLabel_other": "{{date}}的活跃时间线，{{count}} 个时段；空白区域未记录活跃浏览。",
     "empty": "今天还没有活跃浏览记录",
+    "dayEmpty": "{{date}}还没有活跃浏览记录",
     "item": "{{domain}}，{{from}} 至 {{to}}",
     "other": "其他"
   },
