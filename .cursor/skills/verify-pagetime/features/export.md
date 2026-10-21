@@ -1,6 +1,6 @@
 # 导出 JSON / CSV
 
-Settings downloads the ledger from the page. JSON is every table plus recording state and settings (`format: "pagetime-ledger"`). CSV is one row per local date and raw hostname, UTF-8 with a BOM, header `date,host,active_ms,visits`. Nothing is uploaded, and there is no import.
+Settings downloads the ledger from the page. JSON is every table plus recording state and settings (`format: "pagetime-ledger"`). CSV is one row per local date and raw hostname, UTF-8 with a BOM, header `date,host,active_ms,visits`. Nothing is uploaded. Restoring a backup is a separate journey in [restore.md](restore.md).
 
 ## Sub-features
 
@@ -23,7 +23,7 @@ Fresh preview context or fresh extension profile. English. Listen for downloads 
 3. Parse the file. `format` is `pagetime-ledger`, `schemaVersion` is `1`, `tables` keys are `domains`, `days`, `hours`, `spans`, `visits` in that order. On an empty preview every table is `[]`, `recording.enabled` is true, and `settings.recordMode` is `blacklist`. The body has no `http://` URL.
 4. Click `Export CSV` the same way. The filename ends in `.csv`. The first three bytes are `EF BB BF`. The first line is `date,host,active_ms,visits`. An empty ledger has no further data row.
 5. Assert that no request started by those clicks has a URL outside the page origin (the preview origin `launch` printed, or `chrome-extension://` for the dashboard). The download is a blob URL, not a navigation.
-6. Screenshot the status line. Do not add an import control, and do not click `Clear data`.
+6. Screenshot the status line. Do not click `Restore from backup` or `Clear data`.
 
 ## Gotchas
 
@@ -31,4 +31,4 @@ Fresh preview context or fresh extension profile. English. Listen for downloads 
 - `Exporting…` is guaranteed by the e2e that writes a year of 200 sites inside the service worker. This journey does not write that fixture. Missing `Exporting…` on an empty file is not a failure. A missing download, or a status other than `Saved pagetime-<date>.<ext>.`, is a failure.
 - The status node is `role="status"`. The error node is `role="alert"`. Do not treat the static note as the status.
 - CSV rows use the raw hostname. Grouping (`prefix` / `registrable`) does not merge export rows.
-- There is no import. A proof that only checks the button labels is incomplete; the download body is the side effect.
+- A proof that only checks the button labels is incomplete; the download body is the side effect. Restore is covered by [restore.md](restore.md), not by this journey.

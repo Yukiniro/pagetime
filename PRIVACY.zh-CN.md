@@ -67,7 +67,7 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 
 ## 没有网络、遥测或账号
 
-清单权限只有 `storage`、`tabs`、`webNavigation`、`idle`、`alarms`。可调空闲时间和音频计时没有新增权限。没有 host permission，没有 content script，`incognito` 为 `not_allowed`。无痕窗口不记录。扩展不申报遥测、分析或账号接口。统计页可以发的消息只有 `snapshot`、`toggle`、`clear`、`deleteSite`、`deleteDay`、`settings`。工具栏 popup 可以发的消息只有 `snapshot`、`toggle`、`settings`。后台只接受来自本扩展自己的 `dashboard.html` 和 `popup.html`。popup 不能清空或删除记录。删除记录不新增权限。
+清单权限只有 `storage`、`tabs`、`webNavigation`、`idle`、`alarms`。可调空闲时间和音频计时没有新增权限。没有 host permission，没有 content script，`incognito` 为 `not_allowed`。无痕窗口不记录。扩展不申报遥测、分析或账号接口。统计页可以发的消息只有 `snapshot`、`toggle`、`clear`、`deleteSite`、`deleteDay`、`settings`、`restore`。工具栏 popup 可以发的消息只有 `snapshot`、`toggle`、`settings`。后台只接受来自本扩展自己的 `dashboard.html` 和 `popup.html`。popup 不能清空或删除记录。删除记录不新增权限。
 
 ## 如何删除
 
@@ -78,8 +78,12 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 - 从浏览器里移除扩展后，浏览器会删掉该扩展的 IndexedDB 和 `chrome.storage`，包括旧的 `data` 键。
 - 暂停记录只把 `meta.state` 的 `enabled` 设为 false，不删除已有账本。
 
-删除、清空或卸载后不能恢复。这一版没有备份、回收站、同步或导入命令。
+删除、清空或卸载本身不能从账本里撤销。设置里可以用 PageTime 备份 JSON 覆盖账本和设置。没有回收站，也没有同步。
 
 ## 如何导出
 
 「设置 → 导出数据」把账本存成一份文件。统计页在一个只读 IndexedDB 事务里读取 `meta.state` 和 `domains`、`days`、`hours`、`spans`、`visits` 的全部行（`src/ledger.mjs` 的 `readLedgerSnapshot`），在页面里生成文件（`src/export.mjs`），再通过 `Blob` 网址和 `<a download>` 链接保存。不联网、不新增消息，也不使用 `downloads` 权限。「导出 JSON」生成 `pagetime-YYYY-MM-DD.json`，含 `format: "pagetime-ledger"`、`schemaVersion`、`exportedAt`、`timeZone`、`appVersion`、`recording`（即 `meta.state`）、完整的 `settings`（含 `ignored`、`allowed`、`recordMode`、`siteMerge`），以及按主键排序的五张表；`cursor` 行不导出。「导出 CSV」生成 `pagetime-YYYY-MM-DD.csv`，UTF-8 带 BOM，列为 `date,host,active_ms,visits`：`days` 里每个本地日期、每个原始主机名一行，不按 `siteMerge` 合并。两种文件都不含网址、标题或页面内容。保存下来的文件在扩展之外，删除、清空或卸载都不会删掉它。本地预览导出的是 `pagetime-preview` 里的那份对象。
+
+## 如何恢复
+
+「设置 → 导出数据 → 从备份恢复」在页面里读取一个本地 JSON 文件（`<input type="file">`，`src/import-file.js`）。页面解析后检查 `format: "pagetime-ledger"` 和认识的 `schemaVersion`（`src/import.mjs`）。行里不认识的字段会被丢掉。缺少格式、版本不认识，或表和导出的行对不上时，在写入之前拒绝，账本保持原样。不接受 CSV。确认一次后，统计页发送 `restore`。后台在一个 IndexedDB 事务里清空 `domains`、`days`、`hours`、`spans`、`visits`，写入文件中的行，把 `recording` 写入 `meta.state`，并删除 `cursor`。这个事务失败时，IndexedDB 会整笔回滚。随后后台把经过 `validateSettings` 的 `settings` 写入 `chrome.storage.local`，并按现有的 `DETAIL_DAYS` 清理 `spans` 和 `visits`。`days` 和 `hours` 按文件原样保留。文件不会上传，不新增权限，也没有 content script。本地预览会禁用恢复，并且不写 `pagetime-preview` 或 `pagetime-preview-settings`。

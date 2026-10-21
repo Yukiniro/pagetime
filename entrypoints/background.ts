@@ -3,6 +3,7 @@ import { defineBackground } from 'wxt/utils/define-background';
 import { badgeLabels, resolveLocale, todayFigures } from '../src/badge.mjs';
 import { CHECKPOINT_SECONDS, dateKey, dateKeyStart, detailCutoff, domainOf, openCredit } from '../src/model.mjs';
 import { clearLedger, commitTick, daysBetween, deleteDay, deleteSite, LEDGER_ERROR_KEY, openLedger, pruneDetail, readDomains, readHead, reopening, toggleRecording } from '../src/ledger.mjs';
+import { parseLedgerBackup, replaceLedger } from '../src/import.mjs';
 import { shouldRecord, validateSettings } from '../src/settings.mjs';
 
 // `session` ties the cursor to one storage.session lifetime, so a browser restart or extension reload starts without it.
@@ -191,7 +192,7 @@ export default defineBackground(() => {
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const page = extensionPage(sender);
     const allowed = page === 'dashboard'
-      ? ['snapshot', 'toggle', 'clear', 'deleteSite', 'deleteDay', 'settings']
+      ? ['snapshot', 'toggle', 'clear', 'deleteSite', 'deleteDay', 'settings', 'restore']
       : page === 'popup' ? ['snapshot', 'toggle', 'settings'] : [];
     if (!allowed.includes(message?.type)) return;
     void run(async () => {
@@ -211,6 +212,18 @@ export default defineBackground(() => {
         await browser.storage.local.set({ settings: next });
         applyIdle(next);
         await update();
+      } else if (message.type === 'restore') {
+        // Validate before the transaction. A bad file throws here and the ledger is not opened for writing.
+        const backup = parseLedgerBackup(message.backup);
+        await write(() => replaceLedger(db, backup));
+        await browser.storage.local.set({ settings: backup.settings });
+        applyIdle(backup.settings);
+        // update() skips prune after the first one today, so a restored file still needs its own pass.
+        try {
+          await pruneDetail(db, detailCutoff(Date.now()));
+        } catch (error) {
+          console.error('PageTime prune failed', error);
+        }
       }
       if (message.type === 'settings') return { settings: await readSettings() };
       await update();

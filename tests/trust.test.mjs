@@ -71,6 +71,15 @@ test('the bundled export path builds the file in the page: no network request an
   assert.doesNotMatch(code, /\.downloads\b|\bdownloads\.download\b/);
 });
 
+test('the bundled restore path reads a local file and makes no network request', async () => {
+  const code = await bundle('src/import-file.js');
+  assert.match(code, /pagetime-ledger/);
+  assert.match(code, /schemaVersion/);
+  assert.doesNotMatch(code, NETWORK_API);
+  assert.doesNotMatch(code, /\.downloads\b|\bdownloads\.download\b/);
+  assert.doesNotMatch(code, /content_scripts|executeScript/);
+});
+
 test('permission notes match wxt.config.ts and state the install warning', () => {
   const listed = [...text('wxt.config.ts').match(/permissions:\s*\[([^\]]+)\]/)[1].matchAll(/'([^']+)'/g)].map(match => match[1]);
   assert.deepEqual(listed, ['storage', 'tabs', 'webNavigation', 'idle', 'alarms']);

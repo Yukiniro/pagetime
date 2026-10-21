@@ -39,6 +39,8 @@ export async function command(type='snapshot', body) {
     if(!response?.ok) throw new Error('connect');
     return undefined;
   }
+  // Preview storage is not a ledger backup. Restore is refused before any read or write.
+  if(type==='restore') throw new Error('preview');
   if(type==='settings'){
     const settings=body?.settings===undefined?readPreviewSettings():validateSettings(body.settings);
     if(body?.settings!==undefined){
