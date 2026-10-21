@@ -62,7 +62,8 @@
     "label_one": "Today's active browsing timeline, {{count}} session; blank areas have no recorded activity.",
     "label_other": "Today's active browsing timeline, {{count}} sessions; blank areas have no recorded activity.",
     "empty": "No active browsing recorded today yet",
-    "item": "{{domain}}, {{from}} to {{to}}"
+    "item": "{{domain}}, {{from}} to {{to}}",
+    "other": "Other"
   },
   "heatmap": {
     "title": "Active hours",

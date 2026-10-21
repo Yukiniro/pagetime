@@ -3,10 +3,7 @@ import assert from 'node:assert/strict';
 globalThis.location={protocol:'http:'};
 const values=new Map();
 globalThis.localStorage={getItem:k=>values.get(k)??null,setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};
-const {command,colorOf,knownSites,palette}=await import('../src/data.js');
-test('domain colors stay stable',()=>{
-  assert.equal(colorOf(knownSites[0]),palette[0]);assert.equal(colorOf('example.com'),colorOf('example.com'));assert.ok(palette.includes(colorOf('baidu.com')));
-});
+const {command}=await import('../src/data.js');
 test('preview starts empty, ignores unrelated keys, and persists pause and clear',async()=>{
   values.clear();
   values.set('jilan-demo-v1',JSON.stringify({visits:[{domain:'github.com',at:1}],spans:[{domain:'github.com',start:1,end:2}],enabled:true,since:1}));

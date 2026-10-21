@@ -6,9 +6,8 @@ import {GridComponent,TooltipComponent,VisualMapComponent} from 'echarts/compone
 import {CanvasRenderer} from 'echarts/renderers';
 import {addDays, midnight} from './model.mjs';
 import {weekHourMatrix,weekStartOf} from './heatmap.mjs';
-import {colorOf} from './data.js';
 import {duration,formatDate,timeLabel} from './i18n.js';
-import {getChartTheme} from './theme.mjs';
+import {getChartTheme,timelineSwatchesFor} from './theme.mjs';
 echarts.use([BarChart,CustomChart,HeatmapChart,GridComponent,TooltipComponent,VisualMapComponent,CanvasRenderer]);
 function Chart({option,label,className,height}){
   const ref=useRef(null);
@@ -87,9 +86,11 @@ export function Heatmap({rows,since,start,end,today,isDark=false}){
     <h3 className="sr-only">{t('heatmap.top')}</h3>
     <ul className="sr-only">{top.length?top.map(cell=><li key={`${cell.weekday}-${cell.hour}`}>{item(cell)}</li>):<li>{t('heatmap.empty')}</li>}</ul></>;
 }
-export function Timeline({spans, day, className='timeline-chart', lane=22, isDark=false, showEmpty=true}){
+export function Timeline({spans, day, className='timeline-chart', lane=22, isDark=false, showEmpty=true, colorOf}){
   const {t}=useTranslation();
   const {theme,fontFamily,tooltip}=chartTheme(isDark);
+  const other=timelineSwatchesFor(isDark).other;
+  const fill=name=>colorOf?.(name)??other;
   const start=midnight(day);const end=addDays(start,1);
   const today=spans.filter(s=>s.end>start&&s.start<end);
   const earliest=today.length?Math.min(...today.map(s=>s.start)):start+8*3_600_000;
@@ -100,7 +101,7 @@ export function Timeline({spans, day, className='timeline-chart', lane=22, isDar
     tooltip:tooltip({renderMode:'richText',formatter:p=>{const s=today[p.dataIndex];const name=s.site||s.domain;return `${name}\n${timeLabel(Math.max(s.start,start))}–${timeLabel(Math.min(s.end,end))}\n${duration(Math.min(s.end,end)-Math.max(s.start,start))}`;}}),
     xAxis:{type:'value',min,max,interval:((max-min)/3_600_000>16?4:2)*3_600_000,position:'top',axisLine:{show:false},axisTick:{show:false},splitLine:{show:false},axisLabel:{color:theme.label,fontSize:12,formatter:timeLabel}},
     yAxis:{show:false,min:0,max:1},
-    series:[{type:'custom',data:today.map(s=>[Math.max(s.start,start),Math.min(s.end,end)]),renderItem:(params,api)=>{const from=api.coord([api.value(0),.5]),to=api.coord([api.value(1),.5]);const name=today[params.dataIndex].site||today[params.dataIndex].domain;return{type:'rect',shape:{x:from[0],y:from[1]-lane/2,width:Math.max(1,to[0]-from[0]),height:lane,r:4},style:{fill:colorOf(name)}};}}]};
+    series:[{type:'custom',data:today.map(s=>[Math.max(s.start,start),Math.min(s.end,end)]),renderItem:(params,api)=>{const from=api.coord([api.value(0),.5]),to=api.coord([api.value(1),.5]);const name=today[params.dataIndex].site||today[params.dataIndex].domain;return{type:'rect',shape:{x:from[0],y:from[1]-lane/2,width:Math.max(1,to[0]-from[0]),height:lane,r:4},style:{fill:fill(name)}};}}]};
   return <><Chart option={option} className={className} label={t('timeline.label',{count:today.length})}/>{showEmpty&&!today.length&&<p className="timeline-empty">{t('timeline.empty')}</p>}<ul className="sr-only">{today.map((s,i)=><li key={i}>{t('timeline.item',{domain:s.site||s.domain,from:timeLabel(s.start),to:timeLabel(s.end)})}</li>)}</ul></>;
 }
 export function Breakdown({hosts, isDark=false}){

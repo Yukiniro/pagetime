@@ -64,7 +64,8 @@
     "label_many": "Chronologie de la navigation active du jour, {{count}} sessions ; les zones vides n’ont aucune activité enregistrée.",
     "label_other": "Chronologie de la navigation active du jour, {{count}} sessions ; les zones vides n’ont aucune activité enregistrée.",
     "empty": "Aucune navigation active enregistrée aujourd’hui",
-    "item": "{{domain}}, de {{from}} à {{to}}"
+    "item": "{{domain}}, de {{from}} à {{to}}",
+    "other": "Autres"
   },
   "heatmap": {
     "title": "Heures actives",

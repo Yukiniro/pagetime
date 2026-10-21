@@ -9,7 +9,7 @@ import { siteOf } from '../src/site.mjs';
 import { DEFAULT_SETTINGS, validateSettings } from '../src/settings.mjs';
 
 globalThis.location = { protocol: 'http:' };
-const { colorOf, iconHost } = await import('../src/data.js');
+const { iconHost } = await import('../src/data.js');
 
 const modes = ['none', 'prefix', 'registrable'];
 const keyOf = mode => domain => siteOf(domain, mode);
@@ -64,8 +64,19 @@ test('merged sites share a known icon and one timeline color', async () => {
   assert.equal(iconForSite('mozilla.org', [{ domain: 'developer.mozilla.org' }]), 'developer.mozilla.org');
   assert.equal(iconForSite('youtube.com', [{ domain: 'www.youtube.com' }, { domain: 'm.youtube.com' }]), 'youtube.com');
   assert.equal(iconForSite('example.com', [{ domain: 'www.example.com' }, { domain: 'm.example.com' }]), '');
-  assert.equal(colorOf(siteOf('www.youtube.com', 'prefix')), colorOf(siteOf('m.youtube.com', 'prefix')));
-  assert.equal(colorOf(siteOf('www.youtube.com', 'prefix')), colorOf('youtube.com'));
+  const site = siteOf('www.youtube.com', 'prefix');
+  assert.equal(site, siteOf('m.youtube.com', 'prefix'));
+  assert.equal(site, 'youtube.com');
+  const { colorsFor } = await import('../src/timeline-colors.mjs');
+  const { timelineSwatchesFor } = await import('../src/theme.mjs');
+  const swatches = timelineSwatchesFor(false);
+  const colors = colorsFor([
+    { domain: site, ms: 100, visits: 2 },
+    { domain: 'github.com', ms: 40, visits: 1 },
+  ], swatches);
+  assert.equal(colors.size, 2);
+  assert.equal(colors.get(site), swatches.ranks[0]);
+  assert.notEqual(colors.get(site), colors.get('github.com'));
 });
 
 test('invalid siteMerge falls back to prefix and the other choices are kept', () => {

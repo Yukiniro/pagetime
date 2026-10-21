@@ -64,7 +64,8 @@
     "label_many": "Cronología de navegación activa de hoy, {{count}} sesiones; las zonas en blanco no tienen actividad registrada.",
     "label_other": "Cronología de navegación activa de hoy, {{count}} sesiones; las zonas en blanco no tienen actividad registrada.",
     "empty": "Aún no hay navegación activa registrada hoy",
-    "item": "{{domain}}, de {{from}} a {{to}}"
+    "item": "{{domain}}, de {{from}} a {{to}}",
+    "other": "Otros"
   },
   "heatmap": {
     "title": "Horas activas",
