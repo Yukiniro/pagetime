@@ -4,7 +4,7 @@ A ranking row filters the overview to that site. The caret opens a drawer with t
 
 ## Sub-features
 
-- Filter: the row button `Filter to <domain>` toggles `filterSite`. A status chip reads `Filtered to <domain>` and offers `Clear filter`.
+- Filter: the row button `Filter to <domain>` toggles `filterSite`. A status chip reads `Filtered to <domain>` and offers `Clear filter`. The expanded Active hours heatmap follows this filter; that journey is [heatmap-site-filter.md](heatmap-site-filter.md).
 - Drawer: `Details for <domain>` opens a dialog `Site details`. The description includes the current range chip. Close is `Close details`. Session rows follow the chart day. Today, and any multi-day range, uses the heading `Today's active sessions`. A single earlier day that still has session rows uses a heading that contains that date. A single day past detail retention leaves the session heading and the list out.
 - From the drawer, `View visits` goes to Visit history with the search filled by that site. This journey stops before `Delete this site's records` and before `Stop recording this site` / `Add to whitelist`.
 
