@@ -97,9 +97,11 @@ test('restoring a JSON backup from settings replaces the empty ledger', async ()
     await dashboard.getByRole('button', { name: 'Replace records', exact: true }).click();
     await expect(dashboard.getByRole('status').filter({ hasText: 'Restored.' })).toBeVisible();
     await expect(dashboard.getByRole('button', { name: 'Remove skip.restore' })).toBeVisible();
+    await expect(dashboard.locator('[data-slot="alert-dialog-content"]')).toHaveCount(0);
     await shot(dashboard, 'restore-settings-after.png');
     await dashboard.getByRole('button', { name: 'Overview', exact: true }).click();
     await expect(dashboard.getByRole('button', { name: 'Details for restored.test' }).first()).toBeVisible();
+    await shot(dashboard, 'restore-overview-after.png');
     expect(outside).toEqual([]);
   } finally {
     await context.close().catch(() => {});
