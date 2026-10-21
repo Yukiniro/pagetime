@@ -1,5 +1,5 @@
 import { addDays, daily, dateKey, dateKeyStart, groupSites, midnight, openCredit, overlapMs, splitByHour, summarize } from './model.mjs';
-import { compareBlocks, compareSummary, previousWindow, timelineDay } from './range.mjs';
+import { compareBlocks, compareSummary, dayCount, previousWindow, timelineDay, trendWindow } from './range.mjs';
 import { focusSummary } from './site-filter.mjs';
 import { siteOf } from './site.mjs';
 
@@ -156,9 +156,27 @@ export function dayHourTotals(rows, date, site = '') {
   return totals;
 }
 
+// Options for one site's detail charts. Daily bars use the main chart's trend window.
+// Hours stay on the selected range. `dayFrom`/`dayTo` are the inclusive day keys for that trend window.
+export function detailSeriesArgs(range, now) {
+  const trend = trendWindow(range);
+  return {
+    site: range.detail,
+    siteMerge: range.siteMerge,
+    start: range.start,
+    end: range.end,
+    dayStart: trend.start,
+    dayEnd: trend.end,
+    dayFrom: dateKey(trend.start),
+    dayTo: dateKey(addDays(trend.end, -1)),
+    now,
+  };
+}
+
 // Daily bars and 0–23 totals for one merged site. Missing days stay in the list as 0.
 // Days before `since` are marked unrecorded. Open credit uses the same rule as viewFromLedger, so the two sums match that site's header.
-export function siteSeries({ domains, days, hours, state, cursor = null, lastEnd }, { site, siteMerge = 'prefix', start, end, now }) {
+// `dayStart`/`dayEnd` select the daily bars. Hours and `hourDays` stay on [start, end).
+export function siteSeries({ domains, days, hours, state, cursor = null, lastEnd }, { site, siteMerge = 'prefix', start, end, dayStart = start, dayEnd = end, now }) {
   const keyOf = keyFor(siteMerge);
   const host = new Map(domains.map(row => [row.id, row.host]));
   const belongs = domainId => {
@@ -167,7 +185,7 @@ export function siteSeries({ domains, days, hours, state, cursor = null, lastEnd
   };
   const perDay = new Map();
   for (const row of days) {
-    if (!belongs(row.domainId) || !inRange(row.date, start, end)) continue;
+    if (!belongs(row.domainId) || !inRange(row.date, dayStart, dayEnd)) continue;
     perDay.set(row.date, (perDay.get(row.date) ?? 0) + row.ms);
   }
   const byHour = Array.from({ length: 24 }, (_, hour) => ({ hour, ms: 0 }));
@@ -178,24 +196,23 @@ export function siteSeries({ domains, days, hours, state, cursor = null, lastEnd
   const enabled = state?.enabled ?? true;
   const segment = enabled ? openCredit(cursor, lastEnd, now) : null;
   if (segment && keyOf(segment.domain) === site) {
-    const from = Math.max(segment.start, start);
-    const to = Math.min(segment.end, end);
-    if (to > from) {
-      for (const piece of splitByHour(from, to)) {
-        const ms = piece.end - piece.start;
-        perDay.set(piece.date, (perDay.get(piece.date) ?? 0) + ms);
-        byHour[piece.hour].ms += ms;
-      }
-    }
+    const apply = (windowStart, windowEnd, add) => {
+      const from = Math.max(segment.start, windowStart);
+      const to = Math.min(segment.end, windowEnd);
+      if (to <= from) return;
+      for (const piece of splitByHour(from, to)) add(piece, piece.end - piece.start);
+    };
+    apply(dayStart, dayEnd, (piece, ms) => perDay.set(piece.date, (perDay.get(piece.date) ?? 0) + ms));
+    apply(start, end, (piece, ms) => { byHour[piece.hour].ms += ms; });
   }
   const recordedFrom = midnight(state?.since ?? now);
   const series = [];
-  for (let at = start; at < end; at = addDays(at, 1)) series.push({ at, ms: perDay.get(dateKey(at)) ?? 0, recorded: at >= recordedFrom });
-  return { days: series, hours: byHour };
+  for (let at = dayStart; at < dayEnd; at = addDays(at, 1)) series.push({ at, ms: perDay.get(dateKey(at)) ?? 0, recorded: at >= recordedFrom });
+  return { days: series, hours: byHour, hourDays: dayCount(start, end) };
 }
 
 // Preview snapshots store spans, not day and hour rows. The result matches siteSeries.
-export function siteSeriesFromSnapshot(data, { site, siteMerge = 'prefix', start, end, now }) {
+export function siteSeriesFromSnapshot(data, { site, siteMerge = 'prefix', start, end, dayStart = start, dayEnd = end, now }) {
   const domains = [];
   const ids = new Map();
   const idOf = host => {
@@ -205,12 +222,14 @@ export function siteSeriesFromSnapshot(data, { site, siteMerge = 'prefix', start
     domains.push({ id, host });
     return id;
   };
+  const clipStart = Math.min(start, dayStart);
+  const clipEnd = Math.max(end, dayEnd);
   const dayRows = [];
   const dayIndex = new Map();
   const hours = [];
   for (const span of data.spans) {
-    const from = Math.max(span.start, start);
-    const to = Math.min(span.end, end);
+    const from = Math.max(span.start, clipStart);
+    const to = Math.min(span.end, clipEnd);
     if (to <= from) continue;
     const domainId = idOf(span.domain);
     for (const piece of splitByHour(from, to)) {
@@ -232,7 +251,7 @@ export function siteSeriesFromSnapshot(data, { site, siteMerge = 'prefix', start
     hours,
     state: { enabled: data.enabled, since: data.since },
     cursor: null,
-  }, { site, siteMerge, start, end, now });
+  }, { site, siteMerge, start, end, dayStart, dayEnd, now });
 }
 
 const totalsOf = summary => ({ ms: summary.ms, visits: summary.visits, sites: summary.rows.filter(row => row.ms > 0 || row.visits > 0).length });
