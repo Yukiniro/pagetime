@@ -5,7 +5,7 @@ Rankings, the site drawer, and the visit list share `SiteIcon`. A hostname with 
 ## Sub-features
 
 - Packaged SVG wins over the cache. The preview and the extension both use `./assets/<host>.svg` for the hosts listed above.
-- Extension cache: the image `src` is `chrome.runtime.getURL('/_favicon/')` plus `pageUrl=https://<displayed host>` and `size=32`. The displayed host is the one the row already shows (the merged site on a ranking row).
+- Extension cache: the image `src` is `chrome.runtime.getURL('/_favicon/')` plus `pageUrl=https://<displayed host>` and `size=32`. A ranking or detail row uses the merged host it shows. A visit row uses the raw hostname it shows, not the merged key.
 - Miss: no `img`, or an `img` that never stays up, and the globe SVG remains. The row height does not jump.
 - Preview: no element `src` contains `_favicon`, and the page does not request another origin for an icon.
 

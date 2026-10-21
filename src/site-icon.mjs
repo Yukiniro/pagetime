@@ -7,10 +7,12 @@ export function localIconPath(iconName) {
   return iconName ? `./assets/${iconName}.svg` : '';
 }
 
-// The row already passes the merged or displayed host. Prefer that, then the raw hostname.
+// Favicon host is the hostname the row shows. Visit rows pass the raw hostname
+// as domain and the merged key as site. Rankings and the detail header pass
+// the merged host as both, so they keep that host.
 export function iconPageHost(domain, site = domain) {
-  if (typeof site === 'string' && site) return site;
-  if (typeof domain === 'string') return domain;
+  if (typeof domain === 'string' && domain) return domain;
+  if (typeof site === 'string') return site;
   return '';
 }
 

@@ -38,10 +38,17 @@ test('the preview never builds a _favicon URL', () => {
   assert.equal(called, false);
 });
 
-test('the extension favicon URL uses the merged host, https, and size 32', () => {
-  assert.equal(iconPageHost('www.cutoo.ai', 'cutoo.ai'), 'cutoo.ai');
+test('visit rows look up the raw hostname and rankings keep the merged host', () => {
+  assert.equal(iconPageHost('www.cutoo.ai', 'cutoo.ai'), 'www.cutoo.ai');
+  assert.equal(iconPageHost('m.example.com', 'example.com'), 'm.example.com');
+  assert.equal(iconPageHost('www.youtube.com', 'youtube.com'), 'www.youtube.com');
   assert.equal(iconPageHost('dash.cloudflare.com', 'dash.cloudflare.com'), 'dash.cloudflare.com');
-  assert.equal(iconPageHost('www.youtube.com', 'youtube.com'), 'youtube.com');
+  assert.equal(iconPageHost('wikipedia.org', 'wikipedia.org'), 'wikipedia.org');
+  assert.equal(iconPageHost('', 'cutoo.ai'), 'cutoo.ai');
+  assert.equal(
+    urlFor(iconPageHost('www.cutoo.ai', 'cutoo.ai')),
+    'chrome-extension://abc/_favicon/?pageUrl=https%3A%2F%2Fwww.cutoo.ai&size=32',
+  );
   assert.equal(
     urlFor('dash.cloudflare.com'),
     'chrome-extension://abc/_favicon/?pageUrl=https%3A%2F%2Fdash.cloudflare.com&size=32',
