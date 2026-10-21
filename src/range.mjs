@@ -18,12 +18,27 @@ export function presetRange(preset, today) {
 }
 
 // Null when a key is not a local calendar day, or the end day is before the start day.
-// That range is not applied; the caller keeps the previous one.
-export function customRange(startKey, endKey) {
+// When `since` is passed, also null when it is not finite or either day is before the local day of `since`.
+// That range is not applied; the caller keeps the previous one and does not clamp the days.
+// Omitting `since` leaves the closed interval unbounded, which query windows still rely on.
+export function customRange(startKey, endKey, since) {
   const start = dateKeyStart(startKey);
   const last = dateKeyStart(endKey);
   if (start === null || last === null || last < start) return null;
+  if (since !== undefined) {
+    if (!Number.isFinite(since)) return null;
+    const earliest = midnight(since);
+    if (start < earliest || last < earliest) return null;
+  }
   return { preset: 'custom', start, end: addDays(last, 1) };
+}
+
+// False, and `onChange` is not called, when `customRange` rejects the interval.
+export function applyCustomRange(startKey, endKey, since, onChange) {
+  const next = customRange(startKey, endKey, since);
+  if (!next) return false;
+  onChange(next);
+  return true;
 }
 
 export function activeRange(range, today) {
