@@ -1,8 +1,8 @@
 import { addDays, midnight } from './model.mjs';
 
 // Spans that overlap the local day [midnight, next midnight). The timeline tooltip,
-// custom series, and screen-reader list all use this list, so a click dataIndex
-// addresses the same span as the tooltip.
+// custom series, screen-reader list, and segment buttons all use this list, so a
+// click dataIndex addresses the same span as Enter or Space on that button.
 export function spansOnDay(spans, day) {
   const start = midnight(day);
   const end = addDays(start, 1);

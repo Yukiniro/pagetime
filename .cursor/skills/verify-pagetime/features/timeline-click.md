@@ -9,7 +9,7 @@ On a single-day segment timeline, a color block opens the same site detail sheet
 - Legend: the top sites are buttons. `Other` is not a button.
 - Filter: with `Filtered to <domain>` showing, a block click opens details and leaves that status in place.
 - Blank track: the empty part of the timeline does not open a dialog.
-- Reading: the existing screen-reader list of segments is still in the page.
+- Reading: each segment is a button in the screen-reader list. The canvas graphic stays out of the tab order.
 
 ## How to get to it (user POV)
 
@@ -25,7 +25,8 @@ Language is English. Viewport 1280×800.
 4. Close with `Close details`. Click a gray block whose site is not a legend button. The dialog contains that site's real domain. `getByRole('button', { name: 'Other', exact: true })` has count 0, and `.legend-other` is present.
 5. Click `Filter to <domain>`, then click that site's block again. The dialog opens and the status `Filtered to <domain>` is still present. Close the dialog. The status is still present.
 6. Click the empty track between blocks. No dialog opens.
-7. The screen-reader list still mentions the site (`ul.sr-only`).
+7. The screen-reader list still mentions the site. Each segment is `button.timeline-segment` inside `.timeline-segments` (class `sr-only` until focused). The timeline graphic has `tabindex="-1"`.
+8. Focus the segment button whose name contains the gray site, then press Enter. The dialog opens that site. Close it. Focus another segment button and press Space. That site's dialog opens. With `Filtered to <domain>` showing, Enter on that site's segment button opens the dialog and leaves the status in place.
 
 ## Gotchas
 
@@ -34,3 +35,4 @@ Language is English. Viewport 1280×800.
 - `Other` is the legend label. The block's target is the grouped site key (`site || domain`), such as `gray.example` for a stored host `www.gray.example`.
 - Do not click `Delete this site's records`. Do not treat the block as the ranking filter (`Filter to`).
 - Hovering a block sets the chart canvas cursor to `pointer`. The empty track does not.
+- The canvas is not the keyboard target. Focus `button.timeline-segment`, including a gray site that has no legend button. `Other` stays plain text. Enter and Space both open the same site detail as a click.

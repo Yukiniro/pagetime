@@ -117,7 +117,13 @@ export function Timeline({spans, day, className='timeline-chart', lane=22, isDar
     xAxis:{type:'value',min,max,interval:((max-min)/3_600_000>16?4:2)*3_600_000,position:'top',axisLine:{show:false},axisTick:{show:false},splitLine:{show:false},axisLabel:{color:theme.label,fontSize:12,formatter:timeLabel}},
     yAxis:{show:false,min:0,max:1},
     series:[{type:'custom',data:today.map(s=>[Math.max(s.start,start),Math.min(s.end,end)]),renderItem:(params,api)=>{const from=api.coord([api.value(0),.5]),to=api.coord([api.value(1),.5]);const name=today[params.dataIndex].site||today[params.dataIndex].domain;return{type:'rect',shape:{x:from[0],y:from[1]-lane/2,width:Math.max(1,to[0]-from[0]),height:lane,r:4},style:{fill:fill(name)}};}}]};
-  return <><Chart option={option} className={className} label={t('timeline.label',{count:today.length})} onClick={onClick}/>{showEmpty&&!today.length&&<p className="timeline-empty">{t('timeline.empty')}</p>}<ul className="sr-only">{today.map((s,i)=><li key={i}>{t('timeline.item',{domain:s.site||s.domain,from:timeLabel(s.start),to:timeLabel(s.end)})}</li>)}</ul></>;
+  const item=(s,i)=>{
+    const domain=timelineDomainAt(today,i);
+    const label=t('timeline.item',{domain:domain||s.site||s.domain,from:timeLabel(s.start),to:timeLabel(s.end)});
+    if(!onSelectSite||!domain)return <li key={i}>{onSelectSite?<span className="sr-only">{label}</span>:label}</li>;
+    return <li key={i}><button type="button" className="sr-only timeline-segment pointer-events-none" onClick={event=>onSelectSite(domain,event)}>{label}</button></li>;
+  };
+  return <><Chart option={option} className={className} label={t('timeline.label',{count:today.length})} onClick={onClick}/>{showEmpty&&!today.length&&<p className="timeline-empty">{t('timeline.empty')}</p>}<ul className={onSelectSite?'timeline-segments':'sr-only'}>{today.map(item)}</ul></>;
 }
 export function Breakdown({hosts, isDark=false}){
   const {t}=useTranslation();
