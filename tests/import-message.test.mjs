@@ -54,6 +54,76 @@ test('a dashboard restore overwrites the ledger and settings, and prunes old det
   assert.equal(h.detectionIntervals.at(-1), 300);
 });
 
+test('a restore whose detail prune fails is not successful, and a later update retries the prune', async () => {
+  const now = new Date(2026, 9, 21, 15).getTime();
+  const h = await createHarness({ now });
+  const old = new Date(2026, 7, 1, 12).getTime();
+  const recent = new Date(2026, 9, 20, 11).getTime();
+  assert.ok(old < detailCutoff(now));
+  assert.ok(recent >= detailCutoff(now));
+  h.failPrune(Object.assign(new Error('prune broke'), { name: 'UnknownError' }));
+  const backup = {
+    format: 'pagetime-ledger',
+    schemaVersion: 1,
+    recording: { enabled: false, since: 0 },
+    settings: { idleSeconds: 300, badge: false, ignored: ['skip.restore'] },
+    tables: {
+      domains: [{ id: 3, host: 'restored.test' }],
+      days: [
+        { date: dateKey(old), domainId: 3, ms: 4_000, visits: 1 },
+        { date: dateKey(recent), domainId: 3, ms: 6_000, visits: 1 },
+      ],
+      hours: [],
+      spans: [
+        { id: 1, domainId: 3, start: old, end: old + 4_000 },
+        { id: 2, domainId: 3, start: recent, end: recent + 6_000 },
+      ],
+      visits: [{ id: 1, domainId: 3, at: old }, { id: 2, domainId: 3, at: recent }],
+    },
+  };
+  assert.deepEqual({ ...await h.message('restore', { backup }) }, { error: 'save' });
+  const during = await h.read();
+  assert.deepEqual(during.spans.filter(span => span.domain === 'restored.test').map(span => span.start).sort(), [old, recent]);
+  assert.equal(during.enabled, false);
+  assert.equal(during.since, 0);
+  assert.deepEqual(h.local.settings.ignored, ['skip.restore']);
+  assert.equal(LEDGER_ERROR_KEY in h.local, false);
+  assert.ok(h.errors.some(([label, error]) => label === 'PageTime prune failed' && error.name === 'UnknownError'));
+  assert.equal(h.errors.some(([label]) => label === 'PageTime recording failed'), false);
+  h.failPrune(null);
+  assert.deepEqual({ ...await h.message('snapshot') }, { ok: true });
+  const after = await h.read();
+  assert.deepEqual(after.spans.filter(span => span.domain === 'restored.test').map(span => span.start), [recent]);
+  assert.deepEqual(after.visits.filter(visit => visit.domain === 'restored.test').map(visit => visit.at), [recent]);
+  assert.equal((await h.db.table('days').toArray()).length, 2);
+});
+
+test('a span that crosses local midnight is rejected before the ledger is opened for writing', async () => {
+  const h = await createHarness();
+  const before = await h.read();
+  const start = new Date(2026, 9, 20, 23, 30).getTime();
+  const end = new Date(2026, 9, 21, 0, 30).getTime();
+  assert.notEqual(dateKey(start), dateKey(end));
+  const response = await h.message('restore', {
+    backup: {
+      format: 'pagetime-ledger',
+      schemaVersion: 1,
+      recording: { enabled: true, since: null },
+      tables: {
+        domains: [{ id: 1, host: 'night.test' }],
+        days: [],
+        hours: [],
+        spans: [{ id: 1, domainId: 1, start, end }],
+        visits: [],
+      },
+    },
+  });
+  assert.deepEqual({ ...response }, { error: 'save' });
+  assert.deepEqual(await h.read(), before);
+  assert.equal(h.local.settings, undefined);
+  assert.equal(LEDGER_ERROR_KEY in h.local, false);
+});
+
 test('a bad restore message does not change the ledger or mark a write failure', async () => {
   const h = await createHarness();
   const before = await h.read();

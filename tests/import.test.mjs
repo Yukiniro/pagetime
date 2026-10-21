@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { IDBFactory, IDBKeyRange } from 'fake-indexeddb';
 import { EXPORT_FORMAT, EXPORT_ROW_FIELDS, EXPORT_SCHEMA_VERSION, EXPORT_TABLES, toLedgerJson } from '../src/export.mjs';
-import { ImportError, KNOWN_SCHEMA_VERSIONS, parseLedgerBackup, replaceLedger, restoreLedger } from '../src/import.mjs';
+import { ImportError, KNOWN_SCHEMA_VERSIONS, PARSE_CHUNK, parseLedgerBackup, parseLedgerBackupPaused, replaceLedger, restoreLedger } from '../src/import.mjs';
 import { clearLedger, commitTick, openLedger, readHead, readLedgerSnapshot } from '../src/ledger.mjs';
 import { dateKey, detailCutoff } from '../src/model.mjs';
 import { DEFAULT_SETTINGS } from '../src/settings.mjs';
@@ -198,6 +198,58 @@ test('more rows than one put chunk all land in the same replacement', async () =
   assert.equal((await db.table('domains').get(count)).host, `h${count - 1}.test`);
   assert.equal(await db.table('domains').where('host').equals('gone.test').count(), 0);
   assert.equal((await readHead(db)).state.since, null);
+});
+
+test('a span that ends on the next local midnight restores, and one that runs past it does not open a write', async () => {
+  const db = fresh();
+  const start = at(10, 18, 23, 59) + 30_000;
+  await tick(db, { now: start, cursor: { domain: 'a.test', since: start } });
+  await tick(db, { now: start + 60_000, span: { domain: 'a.test', start, end: start + 60_000 } });
+  const parsed = parseLedgerBackup(toLedgerJson(await readLedgerSnapshot(db), meta));
+  assert.deepEqual(
+    parsed.tables.spans.map(row => [row.start, row.end]).sort((a, b) => a[0] - b[0]),
+    [[start, at(10, 19)], [at(10, 19), start + 60_000]],
+  );
+  const domainId = parsed.tables.domains[0].id;
+  const fullDay = structuredClone(parsed);
+  fullDay.tables.spans = [{ id: 8, domainId, start: at(10, 18), end: at(10, 19) }];
+  assert.equal(parseLedgerBackup(fullDay).tables.spans[0].end, at(10, 19));
+  const before = await readLedgerSnapshot(db);
+  const crossed = structuredClone(parsed);
+  crossed.tables.spans[0].end = at(10, 19) + 1;
+  await assert.rejects(restoreLedger(db, crossed, at(10, 21, 12)), error => codeOf(error) === 'structure');
+  const later = structuredClone(parsed);
+  later.tables.spans = [{ id: 1, domainId, start: at(10, 18, 23), end: at(10, 19, 1) }];
+  await assert.rejects(restoreLedger(db, JSON.stringify(later), at(10, 21, 12)), error => codeOf(error) === 'structure');
+  assert.deepEqual(await readLedgerSnapshot(db), before);
+});
+
+test('validating a large backup yields between row chunks and still rejects a bad later row', async () => {
+  const domains = Array.from({ length: PARSE_CHUNK }, (_, index) => ({ id: index + 1, host: `h${index}.test` }));
+  const start = at(10, 18, 23);
+  const document = {
+    format: 'pagetime-ledger',
+    schemaVersion: 1,
+    tables: {
+      domains,
+      days: [],
+      hours: [],
+      spans: [{ id: 1, domainId: 1, start, end: at(10, 19, 1) }],
+      visits: [],
+    },
+  };
+  let ran = false;
+  await assert.rejects(
+    parseLedgerBackupPaused(document, () => new Promise(resolve => { setTimeout(() => { ran = true; resolve(); }, 0); })),
+    error => codeOf(error) === 'structure',
+  );
+  assert.equal(ran, true);
+  const accepted = await parseLedgerBackupPaused({
+    ...document,
+    tables: { ...document.tables, spans: [{ id: 1, domainId: 1, start, end: at(10, 19) }] },
+  }, () => new Promise(resolve => { setTimeout(resolve); }));
+  assert.equal(accepted.tables.domains.length, PARSE_CHUNK);
+  assert.equal(accepted.tables.spans[0].end, at(10, 19));
 });
 
 test('the import source schedules no network and no foreign wait inside the ledger transaction', () => {

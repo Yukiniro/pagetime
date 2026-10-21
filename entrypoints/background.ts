@@ -219,10 +219,13 @@ export default defineBackground(() => {
         await browser.storage.local.set({ settings: backup.settings });
         applyIdle(backup.settings);
         // update() skips prune after the first one today, so a restored file still needs its own pass.
+        // A failure here is not a finished restore: old detail would remain, and that skip would last until tomorrow.
         try {
           await pruneDetail(db, detailCutoff(Date.now()));
         } catch (error) {
+          prunedOn = undefined;
           console.error('PageTime prune failed', error);
+          return { error: 'save' };
         }
       }
       if (message.type === 'settings') return { settings: await readSettings() };

@@ -49,7 +49,11 @@ async function bundle(entry) {
       rollupOptions: { external: [/^react(-dom)?(\/|$)/] },
     },
   });
-  return [output].flat().flatMap(result => result.output).map(chunk => chunk.code ?? '').join('\n');
+  // Worker scripts are emitted as assets. They are part of the path being checked.
+  return [output].flat().flatMap(result => result.output).map(chunk => {
+    if (typeof chunk.code === 'string') return chunk.code;
+    return chunk.fileName?.endsWith('.js') && typeof chunk.source === 'string' ? chunk.source : '';
+  }).join('\n');
 }
 
 test('the bundled storage layer makes no network request', async () => {

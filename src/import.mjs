@@ -1,6 +1,6 @@
 import { EXPORT_FORMAT, EXPORT_ROW_FIELDS, EXPORT_SCHEMA_VERSION, EXPORT_TABLES } from './export.mjs';
 import { ledgerTx, pruneDetail } from './ledger.mjs';
-import { dateKeyStart, detailCutoff } from './model.mjs';
+import { addDays, dateKey, dateKeyStart, detailCutoff, midnight } from './model.mjs';
 import { HOST_MAX, validateSettings } from './settings.mjs';
 
 export const KNOWN_SCHEMA_VERSIONS = [EXPORT_SCHEMA_VERSION];
@@ -54,49 +54,92 @@ function parseRow(name, row, ids, hosts, seen) {
     seen.hours.add(key);
   } else if (name === 'spans') {
     if (!positiveId(copy.id) || seen.spans.has(copy.id) || !finite(copy.start) || !finite(copy.end) || copy.end < copy.start) fail('structure');
+    // Half-open [start, end). A stored span may end on the next local midnight; any later instant belongs to the next day.
+    if (dateKey(copy.start) !== dateKey(copy.end) && copy.end !== addDays(midnight(copy.start), 1)) fail('structure');
     seen.spans.add(copy.id);
   } else if (!positiveId(copy.id) || seen.visits.has(copy.id) || !finite(copy.at)) fail('structure');
   else seen.visits.add(copy.id);
   return copy;
 }
 
-function parseTables(value) {
-  if (!isObject(value)) fail('structure');
+export const PARSE_CHUNK = 5_000;
+
+function decodeDocument(input) {
+  if (typeof input !== 'string') return input;
+  const text = input.charCodeAt(0) === 0xfeff ? input.slice(1) : input;
+  try { return JSON.parse(text); }
+  catch { fail('format'); }
+}
+
+function checkedDocument(document) {
+  if (!isObject(document) || document.format !== EXPORT_FORMAT) fail('format');
+  if (!KNOWN_SCHEMA_VERSIONS.includes(document.schemaVersion)) fail('version');
+  if (!isObject(document.tables)) fail('structure');
+  return document;
+}
+
+function packBackup(document, tables) {
+  return {
+    format: EXPORT_FORMAT,
+    schemaVersion: document.schemaVersion,
+    tables,
+    recording: recordingOf(document.recording),
+    settings: validateSettings(document.settings),
+  };
+}
+
+// One task per chunk so a caller can run them straight through or yield between them. Row state is shared.
+function chunkTasks(tablesIn) {
   const ids = new Set();
   const hosts = new Set();
   const seen = { days: new Set(), hours: new Set(), spans: new Set(), visits: new Set() };
   /** @type {Record<string, object[]>} */
   const tables = {};
+  const tasks = [];
   for (const name of EXPORT_TABLES) {
-    if (!Array.isArray(value[name])) fail('structure');
-    tables[name] = value[name].map(row => parseRow(name, row, ids, hosts, seen));
+    const rows = tablesIn[name];
+    if (!Array.isArray(rows)) fail('structure');
+    const into = [];
+    tables[name] = into;
+    for (let index = 0; index < rows.length; index += PARSE_CHUNK) {
+      const end = Math.min(rows.length, index + PARSE_CHUNK);
+      tasks.push(() => {
+        for (let row = index; row < end; row += 1) into.push(parseRow(name, rows[row], ids, hosts, seen));
+      });
+    }
   }
-  return tables;
+  return { tables, tasks };
 }
 
 /**
  * Accepts only a PageTime ledger backup. Unknown row fields are dropped.
- * A wrong format, an unknown schemaVersion, or a table that does not match the export rows throws,
- * and the caller must not open a write. `0` is kept for totals, visit counts, hours, and `recording.since`.
+ * A wrong format, an unknown schemaVersion, a table that does not match the export rows, or a span that
+ * ends after the next local midnight throws, and the caller must not open a write.
+ * `0` is kept for totals, visit counts, hours, and `recording.since`.
  * Illegal settings fields fall back inside validateSettings and do not throw.
  * @param {unknown} input JSON text or an already parsed value
  */
 export function parseLedgerBackup(input) {
-  let document = input;
-  if (typeof input === 'string') {
-    const text = input.charCodeAt(0) === 0xfeff ? input.slice(1) : input;
-    try { document = JSON.parse(text); }
-    catch { fail('format'); }
+  const document = checkedDocument(decodeDocument(input));
+  const { tables, tasks } = chunkTasks(document.tables);
+  for (const task of tasks) task();
+  return packBackup(document, tables);
+}
+
+/**
+ * Same acceptance rules as parseLedgerBackup. `pause` runs before every chunk after the first,
+ * so a large file can yield between real row checks. The dashboard calls this from a worker, not the page thread.
+ * @param {unknown} input
+ * @param {() => Promise<void>} [pause]
+ */
+export async function parseLedgerBackupPaused(input, pause) {
+  const document = checkedDocument(decodeDocument(input));
+  const { tables, tasks } = chunkTasks(document.tables);
+  for (let index = 0; index < tasks.length; index += 1) {
+    if (index > 0 && pause) await pause();
+    tasks[index]();
   }
-  if (!isObject(document) || document.format !== EXPORT_FORMAT) fail('format');
-  if (!KNOWN_SCHEMA_VERSIONS.includes(document.schemaVersion)) fail('version');
-  return {
-    format: EXPORT_FORMAT,
-    schemaVersion: document.schemaVersion,
-    tables: parseTables(document.tables),
-    recording: recordingOf(document.recording),
-    settings: validateSettings(document.settings),
-  };
+  return packBackup(document, tables);
 }
 
 /**

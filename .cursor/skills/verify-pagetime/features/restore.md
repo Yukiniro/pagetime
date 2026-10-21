@@ -28,6 +28,7 @@ Extension profile, English. Do not use this journey on the preview except to che
 ## Gotchas
 
 - Preview restore must not write `pagetime-preview` or `pagetime-preview-settings`. The button stays disabled there.
+- A span that ends after the next local midnight is a structure error. The alert says the backup doesn't match the ledger, and the ledger stays as it was. A span that ends exactly on that midnight is still one local day.
 - The confirm is once. There is no second typed confirmation.
 - A failed file does not clear the ledger. Do not treat the alert as success.
 - `Restoring…` can finish before it is observable on a small file. A missing status of `Restored.` is a failure.
