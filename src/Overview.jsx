@@ -112,7 +112,7 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
           <DayHourChart hours={hourBars} isDark={isDark} />
         </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />) : (showTimeline ? <>
           {caption}
-          <Timeline spans={chartSpans} day={chartDay} className="primary-timeline" lane={36} isDark={isDark} showEmpty={midnight(chartDay) === midnight(today)} colorOf={domain => colors.get(domain) ?? swatches.other} />
+          <Timeline spans={chartSpans} day={chartDay} className="primary-timeline" lane={36} isDark={isDark} showEmpty={midnight(chartDay) === midnight(today)} colorOf={domain => colors.get(domain) ?? swatches.other} onSelectSite={openSite} />
           <div className="legend">{legend.map(domain => <Button variant="ghost" size="xs" key={domain} onClick={event => openSite(domain, event)}><i style={{ background: colors.get(domain) }} />{domain}</Button>)}{showOther && <span className="legend-other"><i style={{ background: swatches.other }} />{t('timeline.other')}</span>}</div>
         </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)) : (showTrend ? <Trend days={trendDays} className="primary-trend" isDark={isDark} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
       </div>

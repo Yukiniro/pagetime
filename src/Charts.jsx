@@ -5,16 +5,26 @@ import {BarChart,CustomChart,HeatmapChart} from 'echarts/charts';
 import {GridComponent,TooltipComponent,VisualMapComponent} from 'echarts/components';
 import {CanvasRenderer} from 'echarts/renderers';
 import {addDays, midnight} from './model.mjs';
+import {spansOnDay, timelineDomainAt} from './timeline-select.mjs';
 import {weekHourMatrix,weekStartOf} from './heatmap.mjs';
 import {duration,formatDate,timeLabel} from './i18n.js';
 import {getChartTheme,timelineSwatchesFor} from './theme.mjs';
 echarts.use([BarChart,CustomChart,HeatmapChart,GridComponent,TooltipComponent,VisualMapComponent,CanvasRenderer]);
-function Chart({option,label,className,height}){
+function Chart({option,label,className,height,onClick}){
   const ref=useRef(null);
-  useEffect(()=>{const chart=echarts.init(ref.current,null,{renderer:'canvas'});chart.setOption(option);
-    const observer=new ResizeObserver(()=>chart.resize());observer.observe(ref.current);
-    return()=>{observer.disconnect();chart.dispose();};},[option]);
-  return <div ref={ref} role="img" aria-label={label} className={className} style={height?{height}:undefined}/>;
+  useEffect(()=>{
+    const el=ref.current;
+    const chart=echarts.init(el,null,{renderer:'canvas'});
+    chart.setOption(option);
+    const handleClick=params=>{
+      if(params?.componentType!=='series')return;
+      onClick?.(params,el);
+    };
+    if(onClick)chart.on('click',handleClick);
+    const observer=new ResizeObserver(()=>chart.resize());observer.observe(el);
+    return()=>{observer.disconnect();chart.dispose();};
+  },[option,onClick]);
+  return <div ref={ref} role="img" aria-label={label} className={className} style={height?{height}:undefined} tabIndex={onClick?-1:undefined}/>;
 }
 function chartTheme(isDark){
   const theme=getChartTheme(isDark);
@@ -86,13 +96,18 @@ export function Heatmap({rows,since,start,end,today,isDark=false}){
     <h3 className="sr-only">{t('heatmap.top')}</h3>
     <ul className="sr-only">{top.length?top.map(cell=><li key={`${cell.weekday}-${cell.hour}`}>{item(cell)}</li>):<li>{t('heatmap.empty')}</li>}</ul></>;
 }
-export function Timeline({spans, day, className='timeline-chart', lane=22, isDark=false, showEmpty=true, colorOf}){
+export function Timeline({spans, day, className='timeline-chart', lane=22, isDark=false, showEmpty=true, colorOf, onSelectSite}){
   const {t}=useTranslation();
   const {theme,fontFamily,tooltip}=chartTheme(isDark);
   const other=timelineSwatchesFor(isDark).other;
   const fill=name=>colorOf?.(name)??other;
   const start=midnight(day);const end=addDays(start,1);
-  const today=spans.filter(s=>s.end>start&&s.start<end);
+  const today=spansOnDay(spans, day);
+  const onClick=onSelectSite?(params,currentTarget)=>{
+    const domain=timelineDomainAt(today,params?.dataIndex);
+    if(!domain)return;
+    onSelectSite(domain,{currentTarget});
+  }:undefined;
   const earliest=today.length?Math.min(...today.map(s=>s.start)):start+8*3_600_000;
   const latest=today.length?Math.max(...today.map(s=>s.end)):start+20*3_600_000;
   const min=Math.max(start,Math.min(start+8*3_600_000,Math.floor(earliest/3_600_000)*3_600_000));
@@ -102,7 +117,13 @@ export function Timeline({spans, day, className='timeline-chart', lane=22, isDar
     xAxis:{type:'value',min,max,interval:((max-min)/3_600_000>16?4:2)*3_600_000,position:'top',axisLine:{show:false},axisTick:{show:false},splitLine:{show:false},axisLabel:{color:theme.label,fontSize:12,formatter:timeLabel}},
     yAxis:{show:false,min:0,max:1},
     series:[{type:'custom',data:today.map(s=>[Math.max(s.start,start),Math.min(s.end,end)]),renderItem:(params,api)=>{const from=api.coord([api.value(0),.5]),to=api.coord([api.value(1),.5]);const name=today[params.dataIndex].site||today[params.dataIndex].domain;return{type:'rect',shape:{x:from[0],y:from[1]-lane/2,width:Math.max(1,to[0]-from[0]),height:lane,r:4},style:{fill:fill(name)}};}}]};
-  return <><Chart option={option} className={className} label={t('timeline.label',{count:today.length})}/>{showEmpty&&!today.length&&<p className="timeline-empty">{t('timeline.empty')}</p>}<ul className="sr-only">{today.map((s,i)=><li key={i}>{t('timeline.item',{domain:s.site||s.domain,from:timeLabel(s.start),to:timeLabel(s.end)})}</li>)}</ul></>;
+  const item=(s,i)=>{
+    const domain=timelineDomainAt(today,i);
+    const label=t('timeline.item',{domain:domain||s.site||s.domain,from:timeLabel(s.start),to:timeLabel(s.end)});
+    if(!onSelectSite||!domain)return <li key={i}>{onSelectSite?<span className="sr-only">{label}</span>:label}</li>;
+    return <li key={i}><button type="button" className="sr-only timeline-segment pointer-events-none" onClick={event=>onSelectSite(domain,event)}>{label}</button></li>;
+  };
+  return <><Chart option={option} className={className} label={t('timeline.label',{count:today.length})} onClick={onClick}/>{showEmpty&&!today.length&&<p className="timeline-empty">{t('timeline.empty')}</p>}<ul className={onSelectSite?'timeline-segments':'sr-only'}>{today.map(item)}</ul></>;
 }
 export function Breakdown({hosts, isDark=false}){
   const {t}=useTranslation();
