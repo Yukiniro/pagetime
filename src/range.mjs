@@ -41,6 +41,31 @@ export function applyCustomRange(startKey, endKey, since, onChange) {
   return true;
 }
 
+// Local midnight of the earliest stored day, hour, visit, or span. Null when none of those rows exist.
+// A hostname with no such row is not a recorded day.
+export function earliestRecordedDay(records) {
+  const source = records ?? {};
+  let earliest = null;
+  const consider = (at) => {
+    if (!Number.isFinite(at)) return;
+    const day = midnight(at);
+    if (earliest === null || day < earliest) earliest = day;
+  };
+  for (const row of source.days ?? []) consider(dateKeyStart(row?.date));
+  for (const row of source.hours ?? []) consider(dateKeyStart(row?.date));
+  for (const row of source.visits ?? []) consider(row?.at);
+  for (const row of source.spans ?? []) consider(row?.start);
+  return earliest;
+}
+
+// Lower bound for RangeControl, applyCustomRange, and customRange.
+// A finite recording start stays the bound. A missing start uses the earliest recorded local day.
+// An empty ledger uses the local day of `now`.
+export function customRangeSince(since, records, now) {
+  if (Number.isFinite(since)) return since;
+  return earliestRecordedDay(records) ?? midnight(now);
+}
+
 export function activeRange(range, today) {
   if (range?.preset === 'custom' && range.end > range.start) return { preset: 'custom', start: midnight(range.start), end: midnight(range.end) };
   const preset = range?.preset === '7d' || range?.preset === '30d' ? range.preset : 'today';

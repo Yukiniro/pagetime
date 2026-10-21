@@ -27,5 +27,6 @@ Preview origin is the URL `launch` printed (default `http://127.0.0.1:4173/`), o
 ## Gotchas
 
 - An empty preview's `since` is the moment the ledger is created, which is today. Do not write `pagetime-preview` to move `since` earlier. The rejection of a day before `since` is `tests/custom-range-since.test.mjs`; this journey checks the same gate against today.
+- A restored ledger with `recording.since` null uses the earliest stored local day from day, hour, visit, or span rows. Hostnames alone leave the minimum on today. That case is the same test file. This journey does not write a backup.
 - Last 7 days and Last 30 days can still start before `since`. This journey does not change those presets.
 - Do not click `Clear data` or the delete confirms.

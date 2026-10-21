@@ -107,6 +107,7 @@ export function App() {
     if (await saveSettings({ ...settings, [listField]: [...current, host] })) setIgnoreTarget(null);
   }
   const minDay = dateKey(view?.since ?? now);
+  const rangeSince = ledger.rangeSince ?? now;
   const maxDay = dateKey(today);
   const dayReady = Boolean(dayQuery) && minDay <= maxDay && dayQuery >= minDay && dayQuery <= maxDay;
   const dayStats = dayReady ? (isExtension ? (liveDay?.date === dayQuery ? liveDay : null) : view?.day) : null;
@@ -129,7 +130,7 @@ export function App() {
         </header>
         <main>
           <div className="page-header"><div><h1>{t(`pages.${page}.title`)}</h1></div>
-            {page !== 'settings' && <RangeControl range={active} today={today} since={view?.since ?? now} onChange={setRange} />}
+            {page !== 'settings' && <RangeControl range={active} today={today} since={rangeSince} onChange={setRange} />}
           </div>
           {problem && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => { ledger.retry(); act(); }}>{t('error.retry')}</Button></AlertDescription></Alert>}
           {page === 'overview' ? (overviewStatus === 'loading' ? <DashboardSkeleton /> : overviewStatus === 'empty' ? <LedgerEmpty /> : overviewStatus === 'ready' ? <Overview compare={ledger.compare} preset={active.preset} todayStats={todayStats} stats={stats} trendDays={ledger.trendDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={chip} chartMode={defaultChart(active)} trendLabel={trendTitle(t, active, today)} filterSite={filterSite} onFilter={onFilter} openSite={openSite} isDark={isDark} /> : null) : !shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'records' ? (ledger.pending ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : <section className="records">
