@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { isExtension, watchLedgerError } from './data.js';
 import { daysBetween, hoursBetween, openLedger, readDomains, readHead, recentVisits, siteDays, siteHours, spansBetween } from './ledger.mjs';
 import { readComparison } from './compare.mjs';
-import { compareFromSnapshot, siteSeries, siteSeriesFromSnapshot, VISIT_LIST_LIMIT, daySummary, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
+import { compareFromSnapshot, detailSeriesArgs, siteSeries, siteSeriesFromSnapshot, VISIT_LIST_LIMIT, daySummary, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
 import { addDays, dateKey, openCredit } from './model.mjs';
 import { timelineDay, trendWindow } from './range.mjs';
 import { siteOf } from './site.mjs';
@@ -51,8 +51,10 @@ function useExtensionLedger(range) {
         lastEnd: head.lastEnd,
       };
       const detailIds = range.detail ? domains.filter(row => siteOf(row.host, range.siteMerge) === range.detail).map(row => row.id) : [];
-      const [detailDays, detailHours] = range.detail ? await Promise.all([
-        Promise.all(detailIds.map(id => siteDays(db, id, displayFrom, displayTo))),
+      // Daily bars follow the trend tab. Hour buckets stay on the selected range.
+      const detailArgs = range.detail ? detailSeriesArgs(range, now) : null;
+      const [detailDays, detailHours] = detailArgs ? await Promise.all([
+        Promise.all(detailIds.map(id => siteDays(db, id, detailArgs.dayFrom, detailArgs.dayTo))),
         Promise.all(detailIds.map(id => siteHours(db, id, displayFrom, displayTo))),
       ]) : [[], []];
       const trendDays = viewFromLedger({
@@ -78,9 +80,9 @@ function useExtensionLedger(range) {
         compare,
         view: viewFromLedger(rows, { ...range, now }),
         trendDays,
-        detail: range.detail ? siteSeries({
+        detail: detailArgs ? siteSeries({
           domains, days: detailDays.flat(), hours: detailHours.flat(), state: head.state, cursor, lastEnd: head.lastEnd,
-        }, { site: range.detail, siteMerge: range.siteMerge, start: range.start, end: range.end, now }) : null,
+        }, detailArgs) : null,
         detailSite: range.detail || '',
       };
     } catch (error) {
@@ -110,7 +112,7 @@ function usePreviewLedger(range) {
     view: data ? viewFromSnapshot(data, range) : undefined,
     compare: data ? compareFromSnapshot(data, range, now) : undefined,
     trendDays: data ? viewFromSnapshot(data, { start: trend.start, end: trend.end, today: range.today, site: range.focus || '', siteMerge: range.siteMerge }).days : undefined,
-    detail: data && range.detail ? siteSeriesFromSnapshot(data, { start: range.start, end: range.end, site: range.detail, siteMerge: range.siteMerge, now }) : null,
+    detail: data && range.detail ? siteSeriesFromSnapshot(data, detailSeriesArgs(range, now)) : null,
     detailSite: range.detail || '',
     pending: !data,
     error: undefined,
