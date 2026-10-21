@@ -6,7 +6,7 @@ import { Input } from '@app/components/ui/input';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from './i18n.js';
 import { addDays, dateKey, dateKeyStart } from './model.mjs';
-import { customRange, dayCount, presetRange, shiftRange } from './range.mjs';
+import { applyCustomRange, customRange, dayCount, presetRange, shiftRange } from './range.mjs';
 import { presetLabel, singleDayLabel } from './range-label.mjs';
 
 const PRESETS = ['today', '7d', '30d', 'custom'];
@@ -39,7 +39,7 @@ export function RangeControl({ range, today, since, onChange }) {
   const parsedStart = dateKeyStart(draftStart);
   const parsedEnd = dateKeyStart(draftEnd);
   const invalid = parsedStart !== null && parsedEnd !== null && parsedEnd < parsedStart;
-  const ordered = parsedStart !== null && parsedEnd !== null && parsedEnd >= parsedStart;
+  const draftRange = customRange(draftStart, draftEnd, since);
 
   function openCustom() {
     setDraftStart(dateKey(range.start));
@@ -53,10 +53,8 @@ export function RangeControl({ range, today, since, onChange }) {
   }
 
   function applyCustom() {
-    const next = customRange(draftStart, draftEnd);
-    if (!next) return;
+    if (!applyCustomRange(draftStart, draftEnd, since, onChange)) return;
     setDrafting(false);
-    onChange(next);
   }
 
   function step(next) {
@@ -94,12 +92,12 @@ export function RangeControl({ range, today, since, onChange }) {
     </DropdownMenu>
     <Button type="button" variant="outline" size="icon" className="range-step" aria-label={t('range.next')} disabled={!later} onClick={() => step(later)}><CaretRight /></Button>
     {drafting && <form className="range-panel" aria-label={t('range.custom')} onSubmit={event => { event.preventDefault(); applyCustom(); }} onKeyDown={event => { if (event.key === 'Escape') setDrafting(false); }}>
-      <label className="range-field"><span>{t('range.start')}</span><Input type="date" autoFocus value={draftStart} max={dateKey(today)} aria-invalid={invalid || undefined} onChange={event => setDraftStart(event.target.value)} /></label>
-      <label className="range-field"><span>{t('range.end')}</span><Input type="date" value={draftEnd} max={dateKey(today)} aria-invalid={invalid || undefined} onChange={event => setDraftEnd(event.target.value)} /></label>
+      <label className="range-field"><span>{t('range.start')}</span><Input type="date" autoFocus value={draftStart} min={dateKey(since)} max={dateKey(today)} aria-invalid={invalid || undefined} onChange={event => setDraftStart(event.target.value)} /></label>
+      <label className="range-field"><span>{t('range.end')}</span><Input type="date" value={draftEnd} min={dateKey(since)} max={dateKey(today)} aria-invalid={invalid || undefined} onChange={event => setDraftEnd(event.target.value)} /></label>
       {invalid && <p className="range-invalid" role="alert">{t('range.invalid')}</p>}
       <div className="range-actions">
         <Button type="button" variant="ghost" size="sm" onClick={() => setDrafting(false)}>{t('range.cancel')}</Button>
-        <Button type="submit" size="sm" disabled={!ordered}>{t('range.apply')}</Button>
+        <Button type="submit" size="sm" disabled={!draftRange}>{t('range.apply')}</Button>
       </div>
     </form>}
   </div>;

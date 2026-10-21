@@ -18,12 +18,52 @@ export function presetRange(preset, today) {
 }
 
 // Null when a key is not a local calendar day, or the end day is before the start day.
-// That range is not applied; the caller keeps the previous one.
-export function customRange(startKey, endKey) {
+// When `since` is passed, also null when it is not finite or either day is before the local day of `since`.
+// That range is not applied; the caller keeps the previous one and does not clamp the days.
+// Omitting `since` leaves the closed interval unbounded, which query windows still rely on.
+export function customRange(startKey, endKey, since) {
   const start = dateKeyStart(startKey);
   const last = dateKeyStart(endKey);
   if (start === null || last === null || last < start) return null;
+  if (since !== undefined) {
+    if (!Number.isFinite(since)) return null;
+    const earliest = midnight(since);
+    if (start < earliest || last < earliest) return null;
+  }
   return { preset: 'custom', start, end: addDays(last, 1) };
+}
+
+// False, and `onChange` is not called, when `customRange` rejects the interval.
+export function applyCustomRange(startKey, endKey, since, onChange) {
+  const next = customRange(startKey, endKey, since);
+  if (!next) return false;
+  onChange(next);
+  return true;
+}
+
+// Local midnight of the earliest stored day, hour, visit, or span. Null when none of those rows exist.
+// A hostname with no such row is not a recorded day.
+export function earliestRecordedDay(records) {
+  const source = records ?? {};
+  let earliest = null;
+  const consider = (at) => {
+    if (!Number.isFinite(at)) return;
+    const day = midnight(at);
+    if (earliest === null || day < earliest) earliest = day;
+  };
+  for (const row of source.days ?? []) consider(dateKeyStart(row?.date));
+  for (const row of source.hours ?? []) consider(dateKeyStart(row?.date));
+  for (const row of source.visits ?? []) consider(row?.at);
+  for (const row of source.spans ?? []) consider(row?.start);
+  return earliest;
+}
+
+// Lower bound for RangeControl, applyCustomRange, and customRange.
+// A finite recording start stays the bound. A missing start uses the earliest recorded local day.
+// An empty ledger uses the local day of `now`.
+export function customRangeSince(since, records, now) {
+  if (Number.isFinite(since)) return since;
+  return earliestRecordedDay(records) ?? midnight(now);
 }
 
 export function activeRange(range, today) {

@@ -5,6 +5,7 @@ Drive one file per journey. Selectors assume English (`pagetime-language` = `en`
 | Feature | File | Surface |
 | --- | --- | --- |
 | 一页账本概览与日期范围 | [overview-range.md](overview-range.md) | Preview or extension. KPI, chart, and heatmap need a non-empty ledger. |
+| 自定义日期不能早于记录开始日 | [custom-range-since.md](custom-range-since.md) | Preview or extension. An empty ledger's `since` is today. |
 | 日期范围前后翻页与单日时间线 | [range-shift.md](range-shift.md) | Preview or extension. Chart steps need a non-empty ledger. |
 | 单日时间线文案跟着所选那一天 | [timeline-day-copy.md](timeline-day-copy.md) | Preview or extension. Chart steps need a non-empty ledger. |
 | 站点详情抽屉与点选过滤 | [site-detail.md](site-detail.md) | Extension after a real visit. An empty preview has no rank row. A single day shows that day's 7-day trend in the drawer. |

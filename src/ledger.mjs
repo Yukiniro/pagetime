@@ -312,6 +312,22 @@ export const readState = async db => (await db.table('meta').get('state'))?.valu
 /** @param {Dexie} db */
 export const readDomains = db => db.table('domains').toArray();
 
+/** Earliest row of each recorded table. Empty when that table has no rows. Hosts are not included. @param {Dexie} db */
+export async function readEarliestRecordedRows(db) {
+  const [day, hour, visit, span] = await Promise.all([
+    db.table('days').orderBy('[date+domainId]').first(),
+    db.table('hours').orderBy('[date+hour+domainId]').first(),
+    db.table('visits').orderBy('at').first(),
+    db.table('spans').orderBy('start').first(),
+  ]);
+  return {
+    days: day ? [day] : [],
+    hours: hour ? [hour] : [],
+    visits: visit ? [visit] : [],
+    spans: span ? [span] : [],
+  };
+}
+
 export const SNAPSHOT_BATCH = 5_000;
 const SNAPSHOT_TABLES = ['domains', 'days', 'hours', 'spans', 'visits'];
 

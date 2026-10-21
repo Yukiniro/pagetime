@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { isExtension, watchLedgerError } from './data.js';
-import { daysBetween, hoursBetween, openLedger, readDomains, readHead, recentVisits, siteDays, siteHours, spansBetween } from './ledger.mjs';
+import { daysBetween, hoursBetween, openLedger, readDomains, readEarliestRecordedRows, readHead, recentVisits, siteDays, siteHours, spansBetween } from './ledger.mjs';
 import { readComparison } from './compare.mjs';
 import { compareFromSnapshot, detailSeriesArgs, siteSeries, siteSeriesFromSnapshot, VISIT_LIST_LIMIT, daySummary, viewFromLedger, viewFromSnapshot } from './ledger-view.mjs';
 import { addDays, dateKey, openCredit } from './model.mjs';
-import { timelineDay, trendWindow } from './range.mjs';
+import { customRangeSince, timelineDay, trendWindow } from './range.mjs';
 import { siteOf } from './site.mjs';
 
 let db;
@@ -75,9 +75,17 @@ function useExtensionLedger(range) {
         range, now, since: head.state?.since ?? now, domains, days: allDays,
         segment: (head.state?.enabled ?? true) ? openCredit(cursor, head.lastEnd, now) : null,
       });
+      // When the recording start is missing, the custom-range bound is the earliest stored local day.
+      const recordingSince = head.state?.since;
+      const rangeSince = customRangeSince(
+        recordingSince,
+        Number.isFinite(recordingSince) ? undefined : await readEarliestRecordedRows(db),
+        now,
+      );
       return {
         rangeKey,
         compare,
+        rangeSince,
         view: viewFromLedger(rows, { ...range, now }),
         trendDays,
         detail: detailArgs ? siteSeries({
@@ -94,6 +102,7 @@ function useExtensionLedger(range) {
   return {
     view: result?.view,
     compare: result?.compare,
+    rangeSince: result?.rangeSince,
     trendDays: result?.trendDays,
     detail: result?.detail ?? null,
     detailSite: result?.detailSite ?? '',
@@ -109,6 +118,7 @@ function usePreviewLedger(range) {
   const now = Date.now();
   const trend = trendWindow(range, range.today);
   return {
+    rangeSince: data ? customRangeSince(data.since, data, now) : undefined,
     view: data ? viewFromSnapshot(data, range) : undefined,
     compare: data ? compareFromSnapshot(data, range, now) : undefined,
     trendDays: data ? viewFromSnapshot(data, { start: trend.start, end: trend.end, today: range.today, site: range.focus || '', siteMerge: range.siteMerge }).days : undefined,
