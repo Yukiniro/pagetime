@@ -368,8 +368,14 @@ test('S7 minimizing the browser window stops timing', async () => {
       const wins = await (await worker(context)).evaluate(async () => (await chrome.windows.getAll()).map(win => win.focused || win.state !== 'minimized'));
       return wins.some(Boolean);
     }).toBe(false);
+    // getAll() can report minimized before the focus or bounds listener commits the stop.
+    // Sampling parked before that tick counts the still-open pre-minimize span in `added`.
+    await expect.poll(async () => (await readCursor(await worker(context)))?.domain ?? null).toBeNull();
     const parked = domainMs(await readData(await worker(context)), 'a.test');
+    expect(parked).toBeGreaterThanOrEqual(1_000);
     await page.waitForTimeout(STAY);
+    expect((await readCursor(await worker(context)))?.domain ?? null).toBeNull();
+    expect(domainMs(await readData(await worker(context)), 'a.test')).toBe(parked);
     for (const id of ids) xdo(['windowmap', id]);
     await (await worker(context)).evaluate(async () => {
       const wins = await chrome.windows.getAll();
