@@ -10,4 +10,5 @@ Drive one file per journey. Selectors assume English (`pagetime-language` = `en`
 | 设置页记录范围（黑名单 / 白名单） | [recording-scope.md](recording-scope.md) | Preview (`pagetime-preview-settings`) or extension settings message. |
 | 设置页底部文档链接 | [settings-docs.md](settings-docs.md) | Preview or extension. Links open repository docs; no request is made by the page. |
 | 导出 JSON / CSV | [export.md](export.md) | Preview or extension. The file is a blob download in the page. |
+| 从备份恢复 | [restore.md](restore.md) | Extension. Preview disables the control and does not write preview storage. |
 | 工具栏 popup | [toolbar-popup.md](toolbar-popup.md) | Extension. The toolbar icon opens `popup.html`. |

@@ -17,7 +17,8 @@ export function artifact(version = '1.0.1') {
     'dashboard.html': bytes('<script type="module" src="/dashboard.js"></script><link href="/dashboard.css" rel="stylesheet">'),
     'dashboard.js': bytes('console.log("dashboard");'), 'dashboard.css': bytes('body {}'),
     'popup.html': bytes('<script type="module" src="/popup.js"></script><link href="/popup.css" rel="stylesheet">'),
-    'popup.js': bytes('console.log("popup");'), 'popup.css': bytes('body {}')
+    'popup.js': bytes('console.log("popup");'), 'popup.css': bytes('body {}'),
+    'import-parse-worker.js': bytes('self.onmessage=()=>{self.postMessage({value:JSON.parse("{}")});};')
   };
   for (const [code, messages] of Object.entries(locales)) files[`_locales/${code}/messages.json`] = bytes(messages);
   for (const file of Object.values(manifest.icons)) files[file] = readFileSync(new URL(`public/${file}`, root));

@@ -1,6 +1,6 @@
 ---
 name: verify-pagetime
-description: "Drive PageTime the way a user does and keep proof. Use when verifying the WXT dashboard or the Vite preview: the one-page ledger and date range, site detail drawer and ranking filter, settings recording scope, the settings docs links, JSON/CSV export, or the toolbar popup. Launch, doctor, drive, evidence, then cleanup."
+description: "Drive PageTime the way a user does and keep proof. Use when verifying the WXT dashboard or the Vite preview: the one-page ledger and date range, site detail drawer and ranking filter, settings recording scope, the settings docs links, JSON/CSV export, restore from a JSON backup, or the toolbar popup. Launch, doctor, drive, evidence, then cleanup."
 ---
 
 # Verify PageTime
@@ -109,10 +109,11 @@ Stable handles, from `src/App.jsx`, `src/Overview.jsx`, `src/RangeControl.jsx`, 
 | Ignore / allow | textbox `Host to ignore` or `Host to allow`, button `Add`, remove `Remove <domain>` |
 | Docs links | `getByRole('link', { name: 'Timing rules and privacy notes' })` and `getByRole('link', { name: 'Privacy policy' })`, last row of Settings |
 | Export | heading `Export data`, buttons `Export JSON` and `Export CSV`, `status` `Saved pagetime-<date>.json.` or `.csv.` |
+| Restore | button `Restore from backup`, hidden `input[type=file]`, dialog `Replace all local records?`, status `Restoring…` or `Restored.` Preview disables the button |
 
 One feature per drive. The steps live in `features/`. A missing precondition is a failed journey; the reason is already in that file's Gotchas. Do not write sample rows into `pagetime-preview` or IndexedDB to make a journey pass.
 
-Leave delete alone. Do not click `Clear data`, `Delete this day`, `Delete this site's records`, or the confirm buttons `Clear` and `Delete records`. Those paths stay in `tests/e2e/timing.spec.mjs`.
+Leave delete alone. Do not click `Clear data`, `Delete this day`, `Delete this site's records`, or the confirm buttons `Clear` and `Delete records`. Those paths stay in `tests/e2e/timing.spec.mjs`. Do not click `Restore from backup` unless the feature file is `restore.md`.
 
 ## Evidence
 

@@ -3,6 +3,7 @@ import vm from 'node:vm';
 import ts from 'typescript';
 import { IDBFactory, IDBKeyRange } from 'fake-indexeddb';
 import * as badge from '../../src/badge.mjs';
+import * as importer from '../../src/import.mjs';
 import * as ledger from '../../src/ledger.mjs';
 import * as model from '../../src/model.mjs';
 import * as settings from '../../src/settings.mjs';
@@ -180,6 +181,7 @@ export async function createHarness({ now: start = 1_000_000, url = 'https://exa
       require: name => name === 'wxt/browser' ? { browser }
         : name === 'wxt/utils/define-background' ? { defineBackground: fn => fn() }
         : name.endsWith('ledger.mjs') ? workerLedger
+        : name.endsWith('import.mjs') ? importer
         : name.endsWith('settings.mjs') ? settings
         : name.endsWith('badge.mjs') ? badge
         : model,

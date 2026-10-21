@@ -33,6 +33,9 @@ export function verifyFiles(read, { version, locales }) {
     return bytes;
   };
   assert.doesNotMatch(file(manifest.background.service_worker).toString('utf8'), NETWORK_API, 'The background makes no network request');
+  const parser = file('import-parse-worker.js').toString('utf8');
+  assert.match(parser, /JSON\.parse/, 'Restore parses JSON in the extension worker');
+  assert.doesNotMatch(parser, NETWORK_API, 'The restore worker makes no network request');
   for (const page of ['dashboard.html', 'popup.html']) {
     const html = file(page).toString('utf8');
     for (const [, path] of html.matchAll(/(?:src|href)="([^"]+)"/g)) file(path.replace(/^\//, ''));

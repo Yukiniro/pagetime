@@ -3,6 +3,14 @@ import { addDays, dateKey, midnight, splitByHour } from './model.mjs';
 export const EXPORT_FORMAT = 'pagetime-ledger';
 export const EXPORT_SCHEMA_VERSION = 1;
 export const EXPORT_TABLES = ['domains', 'days', 'hours', 'spans', 'visits'];
+// Field order is the JSON row order. Import keeps these fields and drops every other one.
+export const EXPORT_ROW_FIELDS = {
+  domains: ['id', 'host'],
+  days: ['date', 'domainId', 'ms', 'visits'],
+  hours: ['date', 'hour', 'domainId', 'ms'],
+  spans: ['id', 'domainId', 'start', 'end'],
+  visits: ['id', 'domainId', 'at'],
+};
 export const CSV_COLUMNS = ['date', 'host', 'active_ms', 'visits'];
 
 const compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
@@ -15,12 +23,13 @@ const byFields = fields => (a, b) => {
 };
 
 // Primary keys follow src/ledger.mjs. Each row keeps only its schema fields, in a fixed order.
+const rowShape = name => row => Object.fromEntries(EXPORT_ROW_FIELDS[name].map(field => [field, row[field]]));
 const TABLES = {
-  domains: { order: byFields(['id']), row: ({ id, host }) => ({ id, host }) },
-  days: { order: byFields(['date', 'domainId']), row: ({ date, domainId, ms, visits }) => ({ date, domainId, ms, visits }) },
-  hours: { order: byFields(['date', 'hour', 'domainId']), row: ({ date, hour, domainId, ms }) => ({ date, hour, domainId, ms }) },
-  spans: { order: byFields(['id']), row: ({ id, domainId, start, end }) => ({ id, domainId, start, end }) },
-  visits: { order: byFields(['id']), row: ({ id, domainId, at }) => ({ id, domainId, at }) },
+  domains: { order: byFields(['id']), row: rowShape('domains') },
+  days: { order: byFields(['date', 'domainId']), row: rowShape('days') },
+  hours: { order: byFields(['date', 'hour', 'domainId']), row: rowShape('hours') },
+  spans: { order: byFields(['id']), row: rowShape('spans') },
+  visits: { order: byFields(['id']), row: rowShape('visits') },
 };
 
 const CHUNK_ROWS = 5_000;

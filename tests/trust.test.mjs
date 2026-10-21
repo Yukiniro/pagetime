@@ -49,7 +49,11 @@ async function bundle(entry) {
       rollupOptions: { external: [/^react(-dom)?(\/|$)/] },
     },
   });
-  return [output].flat().flatMap(result => result.output).map(chunk => chunk.code ?? '').join('\n');
+  // Worker scripts are emitted as assets. They are part of the path being checked.
+  return [output].flat().flatMap(result => result.output).map(chunk => {
+    if (typeof chunk.code === 'string') return chunk.code;
+    return chunk.fileName?.endsWith('.js') && typeof chunk.source === 'string' ? chunk.source : '';
+  }).join('\n');
 }
 
 test('the bundled storage layer makes no network request', async () => {
@@ -69,6 +73,15 @@ test('the bundled export path builds the file in the page: no network request an
   assert.match(code, /\bdownload\b/, 'the file is saved through a download link');
   assert.doesNotMatch(code, NETWORK_API);
   assert.doesNotMatch(code, /\.downloads\b|\bdownloads\.download\b/);
+});
+
+test('the bundled restore path reads a local file and makes no network request', async () => {
+  const code = await bundle('src/import-file.js');
+  assert.match(code, /pagetime-ledger/);
+  assert.match(code, /schemaVersion/);
+  assert.doesNotMatch(code, NETWORK_API);
+  assert.doesNotMatch(code, /\.downloads\b|\bdownloads\.download\b/);
+  assert.doesNotMatch(code, /content_scripts|executeScript/);
 });
 
 test('permission notes match wxt.config.ts and state the install warning', () => {
