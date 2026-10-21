@@ -27,5 +27,5 @@ test('a focused segment button leaves the screen-reader clip and can be clicked'
   const rule = css.match(/\.timeline-segment:focus,\.timeline-segment:focus-visible\{[^}]*\}/)?.[0] ?? '';
   assert.match(rule, /clip-path:none/);
   assert.match(rule, /pointer-events:auto/);
-  assert.match(rule, /position:static/);
+  assert.match(rule, /position:absolute/);
 });

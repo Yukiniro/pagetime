@@ -35,4 +35,4 @@ Language is English. Viewport 1280×800.
 - `Other` is the legend label. The block's target is the grouped site key (`site || domain`), such as `gray.example` for a stored host `www.gray.example`.
 - Do not click `Delete this site's records`. Do not treat the block as the ranking filter (`Filter to`).
 - Hovering a block sets the chart canvas cursor to `pointer`. The empty track does not.
-- The canvas is not the keyboard target. Focus `button.timeline-segment`, including a gray site that has no legend button. `Other` stays plain text. Enter and Space both open the same site detail as a click.
+- The canvas is not the keyboard target. Focus `button.timeline-segment`, including a gray site that has no legend button. `Other` stays plain text. Enter and Space both open the same site detail as a click. The focused label is drawn over the timeline and does not shift the legend or the rankings.

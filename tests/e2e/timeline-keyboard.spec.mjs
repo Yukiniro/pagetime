@@ -129,7 +129,7 @@ test('keyboard activates every timeline segment, including a gray site with no l
     await segments.getByRole('button', { name: /github\.com/ }).focus();
     await dashboard.keyboard.press('Enter');
     await expect(dialog).toContainText('github.com');
-    await expect(dashboard.getByRole('status').filter({ hasText: 'Filtered to github.com' })).toBeVisible();
+    await expect(dashboard.locator('.filter-bar')).toContainText('Filtered to github.com');
     await dashboard.screenshot({ path: path.join(shotDir, 'filtered-keyboard.png') });
     await dashboard.getByRole('button', { name: 'Close details' }).click();
     await expect(dashboard.getByRole('status').filter({ hasText: 'Filtered to github.com' })).toBeVisible();
