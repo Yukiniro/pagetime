@@ -102,7 +102,7 @@ Stable handles, from `src/App.jsx`, `src/Overview.jsx`, `src/RangeControl.jsx`, 
 | Empty ledger | `[data-status="empty"]` and text `Your browsing will show up here` |
 | Ready ledger | `[data-status="ready"]` |
 | KPI | `section` label ending in `totals` (`Today totals` while the range is today). Compare lines are `[data-compare="ms"]`, `[data-compare="visits"]`, `[data-compare="sites"]` |
-| Chart | `getByRole('tablist', { name: 'Primary chart' })`, tabs `Today's timeline` and the trend label (`Last 7 days` while the range is today), `tabpanel` `#primary-chart` |
+| Chart | `getByRole('tablist', { name: 'Primary chart' })`, tabs `Today's timeline` while the chart day is today, or `Timeline` for any other single day, and the trend label (`Last 7 days` while the range is today), `tabpanel` `#primary-chart` |
 | Rank filter | `getByRole('button', { name: 'Filter to <domain>' })`. Active chip is a `status` whose text is `Filtered to <domain>`, with button `Clear filter` |
 | Site drawer | `getByRole('button', { name: 'Details for <domain>' })`, then `getByRole('dialog')` titled `Site details`, close `Close details` |
 | Recording scope | `getByRole('radiogroup', { name: 'Recording scope' })`, radios whose names start with `Blacklist` and `Whitelist` |

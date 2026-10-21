@@ -11,7 +11,7 @@ test('each selectable timeline segment is a button on the same openSite path as 
   assert.match(timeline, /const domain=timelineDomainAt\(today,i\)/);
   assert.match(timeline, /<button type="button" className="sr-only timeline-segment pointer-events-none" onClick=\{event=>onSelectSite\(domain,event\)\}>/);
   assert.match(timeline, /onSelectSite\(domain,\{currentTarget\}\)/);
-  assert.match(timeline, /<Chart option=\{option\} className=\{className\} label=\{t\('timeline\.label',\{count:today\.length\}\)\} onClick=\{onClick\}\/>/);
+  assert.match(timeline, /<Chart option=\{option\} className=\{className\} label=\{t\(labelKey,\{count:today\.length,date\}\)\} onClick=\{onClick\}\/>/);
   assert.match(charts, /tabIndex=\{onClick\?-1:undefined\}/);
   assert.doesNotMatch(charts, /tabIndex=\{0\}|tabIndex=\{onClick\?0/);
   assert.match(timeline, /<ul className=\{onSelectSite\?'timeline-segments':'sr-only'\}>/);

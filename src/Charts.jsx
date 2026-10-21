@@ -96,7 +96,7 @@ export function Heatmap({rows,since,start,end,today,isDark=false}){
     <h3 className="sr-only">{t('heatmap.top')}</h3>
     <ul className="sr-only">{top.length?top.map(cell=><li key={`${cell.weekday}-${cell.hour}`}>{item(cell)}</li>):<li>{t('heatmap.empty')}</li>}</ul></>;
 }
-export function Timeline({spans, day, className='timeline-chart', lane=22, isDark=false, showEmpty=true, colorOf, onSelectSite}){
+export function Timeline({spans, day, className='timeline-chart', lane=22, isDark=false, showEmpty=true, colorOf, onSelectSite, labelKey='timeline.label', emptyKey='timeline.empty', date=''}){
   const {t}=useTranslation();
   const {theme,fontFamily,tooltip}=chartTheme(isDark);
   const other=timelineSwatchesFor(isDark).other;
@@ -123,7 +123,7 @@ export function Timeline({spans, day, className='timeline-chart', lane=22, isDar
     if(!onSelectSite||!domain)return <li key={i}>{onSelectSite?<span className="sr-only">{label}</span>:label}</li>;
     return <li key={i}><button type="button" className="sr-only timeline-segment pointer-events-none" onClick={event=>onSelectSite(domain,event)}>{label}</button></li>;
   };
-  return <><Chart option={option} className={className} label={t('timeline.label',{count:today.length})} onClick={onClick}/>{showEmpty&&!today.length&&<p className="timeline-empty">{t('timeline.empty')}</p>}<ul className={onSelectSite?'timeline-segments':'sr-only'}>{today.map(item)}</ul></>;
+  return <><Chart option={option} className={className} label={t(labelKey,{count:today.length,date})} onClick={onClick}/>{showEmpty&&!today.length&&<p className="timeline-empty">{t(emptyKey,{date})}</p>}<ul className={onSelectSite?'timeline-segments':'sr-only'}>{today.map(item)}</ul></>;
 }
 export function Breakdown({hosts, isDark=false}){
   const {t}=useTranslation();

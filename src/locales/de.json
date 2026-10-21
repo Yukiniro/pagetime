@@ -59,9 +59,13 @@
   "trend": { "label": "Aktive Surfzeit pro Tag. {{days}}", "separator": "; ", "hours_one": "{{count}} Std.", "hours_other": "{{count}} Std." },
   "timeline": {
     "title": "Heutige Zeitleiste",
+    "dayTitle": "Zeitleiste",
     "label_one": "Heutige Zeitleiste der aktiven Nutzung, {{count}} Sitzung; leere Bereiche enthalten keine aufgezeichnete Aktivität.",
     "label_other": "Heutige Zeitleiste der aktiven Nutzung, {{count}} Sitzungen; leere Bereiche enthalten keine aufgezeichnete Aktivität.",
+    "dayLabel_one": "Zeitleiste der aktiven Nutzung am {{date}}, {{count}} Sitzung; leere Bereiche enthalten keine aufgezeichnete Aktivität.",
+    "dayLabel_other": "Zeitleiste der aktiven Nutzung am {{date}}, {{count}} Sitzungen; leere Bereiche enthalten keine aufgezeichnete Aktivität.",
     "empty": "Heute wurde noch keine aktive Nutzung aufgezeichnet",
+    "dayEmpty": "Am {{date}} wurde keine aktive Nutzung aufgezeichnet",
     "item": "{{domain}}, {{from}} bis {{to}}",
     "other": "Sonstige"
   },

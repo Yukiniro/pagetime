@@ -59,9 +59,13 @@
   "trend": { "label": "Daily active browsing time. {{days}}", "separator": "; ", "hours_one": "{{count}} hr", "hours_other": "{{count}} hrs" },
   "timeline": {
     "title": "Today's timeline",
+    "dayTitle": "Timeline",
     "label_one": "Today's active browsing timeline, {{count}} session; blank areas have no recorded activity.",
     "label_other": "Today's active browsing timeline, {{count}} sessions; blank areas have no recorded activity.",
+    "dayLabel_one": "Active browsing timeline on {{date}}, {{count}} session; blank areas have no recorded activity.",
+    "dayLabel_other": "Active browsing timeline on {{date}}, {{count}} sessions; blank areas have no recorded activity.",
     "empty": "No active browsing recorded today yet",
+    "dayEmpty": "No active browsing recorded on {{date}}",
     "item": "{{domain}}, {{from}} to {{to}}",
     "other": "Other"
   },

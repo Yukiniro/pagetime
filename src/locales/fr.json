@@ -60,10 +60,15 @@
   "trend": { "label": "Temps de navigation active par jour. {{days}}", "separator": " ; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },
   "timeline": {
     "title": "Chronologie du jour",
+    "dayTitle": "Chronologie",
     "label_one": "Chronologie de la navigation active du jour, {{count}} session ; les zones vides n’ont aucune activité enregistrée.",
     "label_many": "Chronologie de la navigation active du jour, {{count}} sessions ; les zones vides n’ont aucune activité enregistrée.",
     "label_other": "Chronologie de la navigation active du jour, {{count}} sessions ; les zones vides n’ont aucune activité enregistrée.",
+    "dayLabel_one": "Chronologie de la navigation active du {{date}}, {{count}} session ; les zones vides n’ont aucune activité enregistrée.",
+    "dayLabel_many": "Chronologie de la navigation active du {{date}}, {{count}} sessions ; les zones vides n’ont aucune activité enregistrée.",
+    "dayLabel_other": "Chronologie de la navigation active du {{date}}, {{count}} sessions ; les zones vides n’ont aucune activité enregistrée.",
     "empty": "Aucune navigation active enregistrée aujourd’hui",
+    "dayEmpty": "Aucune navigation active enregistrée le {{date}}",
     "item": "{{domain}}, de {{from}} à {{to}}",
     "other": "Autres"
   },

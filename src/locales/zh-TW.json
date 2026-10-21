@@ -58,8 +58,11 @@
   "trend": { "label": "每日活躍瀏覽時長。{{days}}", "separator": "；", "hours_other": "{{count}} 小時" },
   "timeline": {
     "title": "今日時間軸",
+    "dayTitle": "時間軸",
     "label_other": "今日活躍時間軸，{{count}} 個時段；空白區域未記錄活躍瀏覽。",
+    "dayLabel_other": "{{date}}的活躍時間軸，{{count}} 個時段；空白區域未記錄活躍瀏覽。",
     "empty": "今天還沒有活躍瀏覽紀錄",
+    "dayEmpty": "{{date}}還沒有活躍瀏覽紀錄",
     "item": "{{domain}}，{{from}} 至 {{to}}",
     "other": "其他"
   },
