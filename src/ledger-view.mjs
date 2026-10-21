@@ -7,8 +7,9 @@ export const VISIT_LIST_LIMIT = 200;
 
 // Both sources produce the same view for a range: { start, end, today } are local midnights, `search` is lower case.
 // `site` is an exact merged-site filter for the visit list and for trend day totals.
-// Stats, spans, and hour rows stay complete, so a site focus can narrow KPI and the timeline
-// without hiding ranking rows or the site-detail totals. Hour-cell filtering is not applied.
+// Stats, spans, and hour rows stay complete, so a site focus can narrow KPI, the timeline,
+// and the heatmap without hiding ranking rows or the site-detail totals. The heatmap matches
+// `row.site` in the view. Hour-cell filtering is not applied.
 
 const keyFor = siteMerge => domain => siteOf(domain, siteMerge);
 const matches = (domain, search, site, keyOf) => site ? keyOf(domain) === site : !search || domain.includes(search);

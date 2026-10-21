@@ -7,6 +7,7 @@ import { iconForSite } from './data.js';
 import { colorsFor } from './timeline-colors.mjs';
 import { timelineSwatchesFor } from './theme.mjs';
 import { DayHourChart, Heatmap, Timeline, Trend } from './Charts.jsx';
+import { heatmapHasActivity } from './heatmap.mjs';
 import { KpiCompare } from './KpiCompare.jsx';
 import { SiteIcon } from './SiteIcon.jsx';
 import { dayHourTotals } from './ledger-view.mjs';
@@ -71,6 +72,7 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
   const showHours = !filtered || hourBars.some(row => row.ms > 0);
   const showTimeline = !filtered || timelineHasActivity(chartSpans, chartDay, addDays(chartDay, 1));
   const showTrend = !filtered || trendHasActivity(trendDays);
+  const showHeatmap = !filtered || heatmapHasActivity(hourRows, start, end, since, today, filterSite);
   const swatches = timelineSwatchesFor(isDark);
   const colors = colorsFor(chartKpi?.rows ?? [], swatches);
   const legend = [...colors.keys()].filter(domain => colors.get(domain) !== swatches.other);
@@ -148,7 +150,7 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
         <span id="active-hours-title">{t('heatmap.title')}</span>
         <CaretDown className={hoursOpen ? 'heatmap-caret open' : 'heatmap-caret'} />
       </Button>
-      {hoursOpen && <div id="active-hours-panel" className="heatmap-panel">{/* Hour cells are not a filter; filtering by hour is deferred. */}<Heatmap rows={hourRows} since={since} start={start} end={end} today={today} isDark={isDark} /></div>}
+      {hoursOpen && <div id="active-hours-panel" className="heatmap-panel">{/* Hour cells are not a filter; filtering by hour is deferred. */}{showHeatmap ? <Heatmap rows={hourRows} site={filterSite} since={since} start={start} end={end} today={today} isDark={isDark} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />}</div>}
     </section>
   </div>;
 }

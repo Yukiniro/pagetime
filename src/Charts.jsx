@@ -77,10 +77,10 @@ export function DayHourChart({hours, isDark=false}){
 }
 const weekdayAt=weekday=>new Date(2026,9,18+weekday).getTime();
 const hourRange=hour=>[`${String(hour).padStart(2,'0')}:00`,hour===23?'24:00':`${String(hour+1).padStart(2,'0')}:00`];
-export function Heatmap({rows,since,start,end,today,isDark=false}){
+export function Heatmap({rows,since,start,end,today,isDark=false,site=''}){
   const {t,i18n}=useTranslation();
   const {theme,fontFamily,tooltip}=chartTheme(isDark);
-  const matrix=weekHourMatrix(rows,start,end,since,weekStartOf(i18n.resolvedLanguage),today);
+  const matrix=weekHourMatrix(rows,start,end,since,weekStartOf(i18n.resolvedLanguage),today,site);
   const weekdayName=(weekday,width)=>formatDate(weekdayAt(weekday),{weekday:width});
   const item=cell=>{const [from,to]=hourRange(cell.hour);return t('heatmap.item',{weekday:weekdayName(cell.weekday,'long'),from,to,duration:duration(cell.average),days:t('heatmap.days',{count:cell.days})});};
   const top=matrix.cells.filter(cell=>cell.ms>0).sort((a,b)=>b.average-a.average||a.row-b.row||a.hour-b.hour).slice(0,3);
