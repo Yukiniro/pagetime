@@ -12,7 +12,7 @@ export default defineConfig({
     name: 'PageTime',
     description: '__MSG_extDescription__',
     default_locale: 'en',
-    permissions: ['storage', 'tabs', 'webNavigation', 'idle', 'alarms'],
+    permissions: ['storage', 'tabs', 'webNavigation', 'idle', 'alarms', 'favicon'],
     incognito: 'not_allowed',
     action: { default_title: '__MSG_actionTitle__' },
   },

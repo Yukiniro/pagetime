@@ -30,7 +30,7 @@
 
 ## 隐私与权限
 
-仅保存域名、访问时间和活跃时段，不保存网址路径、查询参数、标题、页面正文、Cookie 或输入内容。扩展无远程请求、账号、数据上传或外部字体。图标随安装包本地分发。保存字段、存放位置、`DETAIL_DAYS` 和删除方式见 [隐私说明（中文）](PRIVACY.zh-CN.md) 与 [Privacy](PRIVACY.md)。
+仅保存域名、访问时间和活跃时段，不保存网址路径、查询参数、标题、页面正文、Cookie 或输入内容。扩展无远程请求、账号、数据上传或外部字体。已知站点的 SVG 随安装包本地分发；扩展里其余站点读取浏览器已缓存的 favicon，不向站点或第三方图床请求，也不上传。读不到缓存或加载失败时仍是地球占位。本地预览不读这层缓存。保存字段、存放位置、`DETAIL_DAYS` 和删除方式见 [隐私说明（中文）](PRIVACY.zh-CN.md) 与 [Privacy](PRIVACY.md)。
 
 | 权限 | 用途 |
 | --- | --- |
@@ -39,8 +39,9 @@
 | `idle` | 检测系统空闲或锁定 |
 | `alarms` | 定期保存活跃时段 |
 | `storage` | 在本地保存计时设置和写入失败标记，session 保存检查点所属的会话编号。账本在 IndexedDB，不需要额外权限 |
+| `favicon` | 在扩展页面读取浏览器已缓存的站点图标。不向站点或第三方请求，也不上传 |
 
-不申请 `history`、网页正文访问或 content script 权限，也没有 host permission。`tabs` 和 `webNavigation` 会让 Chrome / Edge 在安装时显示 “Read your browsing history”；`storage`、`idle`、`alarms` 不触发安装警告。每一项能做什么、不能做什么见 [权限说明（中文）](docs/permissions.zh-CN.md) 与 [Permissions](docs/permissions.md)。
+不申请 `history`、网页正文访问或 content script 权限，也没有 host permission。`tabs` 和 `webNavigation` 会让 Chrome / Edge 在安装时显示 “Read your browsing history”。单独申请 `favicon` 会显示 “Read the icons of the websites you visit”；已经有 `tabs` 时这句被并掉，安装对话框不因此多一句。`storage`、`idle`、`alarms` 不触发安装警告。每一项能做什么、不能做什么见 [权限说明（中文）](docs/permissions.zh-CN.md) 与 [Permissions](docs/permissions.md)。
 
 ## 组件基础
 

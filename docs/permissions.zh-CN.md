@@ -1,14 +1,14 @@
 # PageTime 权限说明
 
-权限以 `wxt.config.ts` 的 `manifest.permissions` 为准。`scripts/verify-build.mjs` 要求构建出的 `manifest.json` 里，这五项不多不少：
+权限以 `wxt.config.ts` 的 `manifest.permissions` 为准。`scripts/verify-build.mjs` 要求构建出的 `manifest.json` 里正好是这些，不能多也不能少：
 
-`storage`、`tabs`、`webNavigation`、`idle`、`alarms`
+`storage`、`tabs`、`webNavigation`、`idle`、`alarms`、`favicon`
 
 没有 `host_permissions`（没有 host permission）。没有 `content_scripts`（没有 content script）。没有 `optional_permissions`。`incognito` 是 `not_allowed`。扩展入口只有 `entrypoints/background.ts`、`entrypoints/dashboard/` 和 `entrypoints/popup/`。工具栏 popup 用已有的 `tabs` 权限读取当前标签的主机名，不新增权限，不注入 content script，也不保存网址。英文版见 [permissions.md](permissions.md)。
 
 ## 安装时浏览器怎么说
 
-[Chrome 权限列表](https://developer.chrome.com/docs/extensions/reference/permissions-list) 写明：`tabs` 和 `webNavigation` 各自都会显示警告 **Read your browsing history**（读取你的浏览记录）。两句相同，安装对话框里合并成一句。`storage`、`idle`、`alarms` 不触发安装警告。
+[Chrome 权限列表](https://developer.chrome.com/docs/extensions/reference/permissions-list) 写明：`tabs` 和 `webNavigation` 各自都会显示警告 **Read your browsing history**（读取你的浏览记录）。两句相同，安装对话框里合并成一句。单独申请 `favicon` 会显示 **Read the icons of the websites you visit**（读取你访问过的网站图标）。[Chrome favicon 说明](https://developer.chrome.com/docs/extensions/how-to/ui/favicons) 写明：如果已经有 `tabs` 这类会盖过它的权限，安装对话框不会再为 `favicon` 加一句。本扩展已经申请 `tabs`，因此安装时不会多出这句警告。`storage`、`idle`、`alarms` 不触发安装警告。
 
 这不是 `history` 权限的那句 “Read and change your browsing history on all your signed-in devices”。本扩展不申请 `history`。Edge 使用同一套 Chromium 警告，界面语言不同时措辞由浏览器翻译。
 
@@ -37,6 +37,14 @@
 用来在连续 `settings.idleSeconds` 秒没有键盘或鼠标操作时停止计时。默认是 `IDLE_SECONDS`（60）；已保存的值也可以是 60、120、300 或 600。后台用这个值调用 `idle.setDetectionInterval`，并把它传给 `idle.queryState`。锁屏永远不计。`countAudible` 开着时（默认开），前台窗口的当前标签正在播放且未静音，空闲也继续计入。这用的是原有的 `idle` 和 `tabs` 权限，没有新增权限。
 
 能够查询 `active`、`idle` 或 `locked`。不能知道按下了哪个键。不触发安装警告。
+
+## `favicon`
+
+统计页的 `SiteIcon`（站点排行、站点详情、访问记录）用它读取浏览器已经缓存的 favicon。图片地址是 `runtime.getURL('/_favicon/')`，`pageUrl` 为 `https://` 加上这一行已经在显示的主机名，`size` 为 `32`。这个地址在扩展自己的源上。PageTime 不请求该站点，不请求 `/favicon.ico`，不使用第三方图床，也不上传图标或主机名。
+
+安装包里自带 SVG 的主机名仍用那个文件（`github.com`、`wxt.dev`、`developer.mozilla.org`、`youtube.com`、`notion.so`）。其他主机名才读缓存。图片加载失败，或得到的图和浏览器在「没有缓存」时返回的通用图标相同，这一行仍显示地球占位。本地预览不调用 `_favicon`。
+
+不保存完整网址，也不新增 content script。因为已经申请了 `tabs`，安装对话框不会额外出现 `favicon` 的警告。见上面的安装说明。
 
 ## `alarms`
 

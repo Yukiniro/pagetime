@@ -1,14 +1,14 @@
 # PageTime permissions
 
-The permissions are `manifest.permissions` in `wxt.config.ts`. `scripts/verify-build.mjs` requires the built `manifest.json` to contain exactly these five:
+The permissions are `manifest.permissions` in `wxt.config.ts`. `scripts/verify-build.mjs` requires the built `manifest.json` to contain exactly these, and no others:
 
-`storage`, `tabs`, `webNavigation`, `idle`, `alarms`
+`storage`, `tabs`, `webNavigation`, `idle`, `alarms`, `favicon`
 
 There is no `host_permissions` entry (no host permission). There is no `content_scripts` entry (no content script). There is no `optional_permissions` entry. `incognito` is `not_allowed`. The only extension entrypoints are `entrypoints/background.ts`, `entrypoints/dashboard/`, and `entrypoints/popup/`. The toolbar popup reads the active tab's hostname with the existing `tabs` permission. It does not add a permission, a content script, or a stored URL. 中文版见 [permissions.zh-CN.md](permissions.zh-CN.md).
 
 ## What the browser says at install
 
-The [Chrome permissions list](https://developer.chrome.com/docs/extensions/reference/permissions-list) says that `tabs` and `webNavigation` each display **Read your browsing history**. The two warnings are the same sentence, so the install dialog shows it once. `storage`, `idle`, and `alarms` do not display an install warning.
+The [Chrome permissions list](https://developer.chrome.com/docs/extensions/reference/permissions-list) says that `tabs` and `webNavigation` each display **Read your browsing history**. The two warnings are the same sentence, so the install dialog shows it once. `favicon` on its own displays **Read the icons of the websites you visit**. The [Chrome favicon guide](https://developer.chrome.com/docs/extensions/how-to/ui/favicons) says that warning is not added when the extension already has a permission that supersedes it, such as `tabs`. This extension requests `tabs`, so the install dialog does not gain a second sentence for `favicon`. `storage`, `idle`, and `alarms` do not display an install warning.
 
 This is not the `history` permission warning, “Read and change your browsing history on all your signed-in devices.” This extension does not request `history`. Edge uses the same Chromium warnings and translates the sentence for the browser language.
 
@@ -37,6 +37,14 @@ It can observe the full URL, frame id, transition type, and time on navigation e
 Stops counting after `settings.idleSeconds` seconds without keyboard or mouse input. The default is `IDLE_SECONDS` (60); the stored value may be 60, 120, 300, or 600. The background calls `idle.setDetectionInterval` with that value and passes the same value to `idle.queryState`. A locked state never counts. When `countAudible` is on (the default), idle time still counts if the active tab of the focused window is audible and not muted. This uses the existing `idle` and `tabs` permissions. No new permission was added.
 
 It can query `active`, `idle`, or `locked`. It cannot see which key was pressed. No install warning.
+
+## `favicon`
+
+Used by `SiteIcon` on the dashboard (rankings, site details, and the visit list) to read a favicon the browser has already cached. The image address is `runtime.getURL('/_favicon/')` with `pageUrl` set to `https://` plus the hostname that row already shows, and `size` `32`. That address is on the extension's own origin. PageTime does not request the site, `/favicon.ico`, or a third-party icon host, and it does not upload the icon or the hostname.
+
+A hostname that ships in the package as an SVG keeps that file (`github.com`, `wxt.dev`, `developer.mozilla.org`, `youtube.com`, `notion.so`). Any other hostname tries the cache. If the image fails to load, or the bitmap is the browser's generic icon (the same image returned for a page with nothing cached), the row keeps the globe placeholder. The local preview does not call `_favicon`.
+
+The full page URL is not stored. No content script is added. With `tabs` already requested, the install dialog does not add the `favicon` warning. See the install section above.
 
 ## `alarms`
 

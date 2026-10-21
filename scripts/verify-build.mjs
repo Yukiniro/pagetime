@@ -20,7 +20,7 @@ export function verifyFiles(read, { version, locales }) {
   assert.equal(manifest.name, 'PageTime');
   assert.equal(manifest.default_locale, 'en');
   assert.equal(manifest.incognito, 'not_allowed');
-  assert.deepEqual([...manifest.permissions].sort(), ['alarms', 'idle', 'storage', 'tabs', 'webNavigation'].sort());
+  assert.deepEqual([...manifest.permissions].sort(), ['alarms', 'favicon', 'idle', 'storage', 'tabs', 'webNavigation'].sort());
   assert.equal(manifest.host_permissions?.length ?? 0, 0, 'No host permissions');
   assert.equal(manifest.content_scripts?.length ?? 0, 0, 'No content scripts');
   assert.equal(manifest.action.default_popup, 'popup.html');

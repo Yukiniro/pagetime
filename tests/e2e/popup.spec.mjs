@@ -116,7 +116,7 @@ test('the toolbar popup edits the list, pause, and badge, and reuses the dashboa
   expect(manifest.action.default_popup).toBe('popup.html');
   expect(manifest.action.default_title).toBe('__MSG_actionTitle__');
   expect(manifest.content_scripts ?? []).toEqual([]);
-  expect([...manifest.permissions].sort()).toEqual(['alarms', 'idle', 'storage', 'tabs', 'webNavigation']);
+  expect([...manifest.permissions].sort()).toEqual(['alarms', 'favicon', 'idle', 'storage', 'tabs', 'webNavigation']);
 
   const debugPort = await freePort();
   const { context, userDataDir } = await launch(debugPort);
