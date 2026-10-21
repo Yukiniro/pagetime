@@ -17,6 +17,9 @@ export class ImportError extends Error {
 const fail = code => { throw new ImportError(code); };
 const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const finite = value => typeof value === 'number' && Number.isFinite(value);
+// TimeClip: a number past this limit makes `new Date(ms)` invalid, and dateKey then returns NaN-NaN-NaN.
+const DATE_LIMIT_MS = 8.64e15;
+const instant = value => finite(value) && Math.abs(value) <= DATE_LIMIT_MS;
 const positiveId = value => Number.isSafeInteger(value) && value > 0;
 // Zero is a real total, a real visit count, and a real hour. Only non-numbers are rejected.
 const msOk = value => finite(value) && value >= 0;
@@ -26,9 +29,10 @@ const hourOk = value => Number.isSafeInteger(value) && value >= 0 && value <= 23
 /** @param {unknown} value @returns {{ enabled: boolean, since: number | null }} */
 function recordingOf(value) {
   const source = isObject(value) ? value : {};
+  if (finite(source.since) && !instant(source.since)) fail('structure');
   return {
     enabled: typeof source.enabled === 'boolean' ? source.enabled : true,
-    since: finite(source.since) ? source.since : null,
+    since: instant(source.since) ? source.since : null,
   };
 }
 
@@ -53,11 +57,11 @@ function parseRow(name, row, ids, hosts, seen) {
     if (dateKeyStart(copy.date) === null || !hourOk(copy.hour) || !msOk(copy.ms) || seen.hours.has(key)) fail('structure');
     seen.hours.add(key);
   } else if (name === 'spans') {
-    if (!positiveId(copy.id) || seen.spans.has(copy.id) || !finite(copy.start) || !finite(copy.end) || copy.end < copy.start) fail('structure');
+    if (!positiveId(copy.id) || seen.spans.has(copy.id) || !instant(copy.start) || !instant(copy.end) || copy.end < copy.start) fail('structure');
     // Half-open [start, end). A stored span may end on the next local midnight; any later instant belongs to the next day.
     if (dateKey(copy.start) !== dateKey(copy.end) && copy.end !== addDays(midnight(copy.start), 1)) fail('structure');
     seen.spans.add(copy.id);
-  } else if (!positiveId(copy.id) || seen.visits.has(copy.id) || !finite(copy.at)) fail('structure');
+  } else if (!positiveId(copy.id) || seen.visits.has(copy.id) || !instant(copy.at)) fail('structure');
   else seen.visits.add(copy.id);
   return copy;
 }
@@ -113,8 +117,8 @@ function chunkTasks(tablesIn) {
 
 /**
  * Accepts only a PageTime ledger backup. Unknown row fields are dropped.
- * A wrong format, an unknown schemaVersion, a table that does not match the export rows, or a span that
- * ends after the next local midnight throws, and the caller must not open a write.
+ * A wrong format, an unknown schemaVersion, a table that does not match the export rows, a timestamp
+ * outside the JavaScript Date range, or a span that ends after the next local midnight throws, and the caller must not open a write.
  * `0` is kept for totals, visit counts, hours, and `recording.since`.
  * Illegal settings fields fall back inside validateSettings and do not throw.
  * @param {unknown} input JSON text or an already parsed value
@@ -154,7 +158,7 @@ export function replaceLedger(db, backup) {
     if (!Array.isArray(backup?.tables?.[name])) fail('structure');
   }
   const recording = backup.recording;
-  if (!recording || typeof recording.enabled !== 'boolean' || !(recording.since === null || finite(recording.since))) fail('structure');
+  if (!recording || typeof recording.enabled !== 'boolean' || !(recording.since === null || instant(recording.since))) fail('structure');
   const state = { enabled: recording.enabled, since: recording.since };
   return ledgerTx(db, {
     // Ordered awaits stay on this transaction. write() cannot, because it must schedule every request before the first one settles.

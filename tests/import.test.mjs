@@ -224,6 +224,52 @@ test('a span that ends on the next local midnight restores, and one that runs pa
   assert.deepEqual(await readLedgerSnapshot(db), before);
 });
 
+test('a timestamp outside the Date range is rejected before a write, and the Date limit is accepted', async () => {
+  const db = fresh();
+  await tick(db, { now: at(10, 21, 8), span: { domain: 'kept.test', start: at(10, 21, 8), end: at(10, 21, 8, 1) } });
+  const before = await readLedgerSnapshot(db);
+  const head = await readHead(db);
+  const parsed = parseLedgerBackup(toLedgerJson(before, meta));
+  const domainId = parsed.tables.domains[0].id;
+  const limit = 8.64e15;
+  const overflow = 9_000_000_000_000_000;
+  assert.equal(new Date(limit).getTime(), limit);
+  assert.equal(new Date(-limit).getTime(), -limit);
+  assert.ok(Number.isNaN(new Date(overflow).getTime()));
+  assert.ok(Number.isNaN(new Date(limit + 1).getTime()));
+
+  const spanOverflow = structuredClone(parsed);
+  spanOverflow.tables.spans = [{ id: 1, domainId, start: overflow, end: overflow }];
+  const visitOverflow = structuredClone(parsed);
+  visitOverflow.tables.spans = [];
+  visitOverflow.tables.visits = [{ id: 1, domainId, at: limit + 1 }];
+  const sinceOverflow = structuredClone(parsed);
+  sinceOverflow.recording = { enabled: true, since: overflow };
+  const sinceBelow = structuredClone(parsed);
+  sinceBelow.recording = { enabled: false, since: -limit - 1 };
+  for (const input of [spanOverflow, visitOverflow, sinceOverflow, sinceBelow]) {
+    await assert.rejects(restoreLedger(db, input), error => codeOf(error) === 'structure');
+  }
+  await assert.rejects(
+    async () => replaceLedger(db, { ...parsed, recording: { enabled: true, since: overflow } }),
+    error => codeOf(error) === 'structure',
+  );
+
+  const edge = structuredClone(parsed);
+  edge.recording = { enabled: true, since: limit };
+  edge.tables.spans = [{ id: 9, domainId, start: -limit, end: -limit }, { id: 10, domainId, start: limit, end: limit }];
+  edge.tables.visits = [{ id: 9, domainId, at: -limit }, { id: 10, domainId, at: limit }];
+  const accepted = parseLedgerBackup(edge);
+  assert.equal(accepted.recording.since, limit);
+  assert.deepEqual(accepted.tables.spans.map(row => [row.start, row.end]), [[-limit, -limit], [limit, limit]]);
+  assert.deepEqual(accepted.tables.visits.map(row => row.at), [-limit, limit]);
+  const zero = structuredClone(parsed);
+  zero.recording = { enabled: false, since: 0 };
+  assert.equal(parseLedgerBackup(zero).recording.since, 0);
+  assert.deepEqual(await readLedgerSnapshot(db), before);
+  assert.deepEqual(await readHead(db), head);
+});
+
 test('validating a large backup yields between row chunks and still rejects a bad later row', async () => {
   const domains = Array.from({ length: PARSE_CHUNK }, (_, index) => ({ id: index + 1, host: `h${index}.test` }));
   const start = at(10, 18, 23);

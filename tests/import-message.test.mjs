@@ -124,6 +124,31 @@ test('a span that crosses local midnight is rejected before the ledger is opened
   assert.equal(LEDGER_ERROR_KEY in h.local, false);
 });
 
+test('a timestamp outside the Date range is rejected before the ledger is opened for writing', async () => {
+  const h = await createHarness();
+  const before = await h.read();
+  const overflow = 9_000_000_000_000_000;
+  assert.ok(Number.isNaN(new Date(overflow).getTime()));
+  const response = await h.message('restore', {
+    backup: {
+      format: 'pagetime-ledger',
+      schemaVersion: 1,
+      recording: { enabled: true, since: overflow },
+      tables: {
+        domains: [{ id: 1, host: 'far.test' }],
+        days: [],
+        hours: [],
+        spans: [{ id: 1, domainId: 1, start: overflow, end: overflow }],
+        visits: [{ id: 1, domainId: 1, at: overflow }],
+      },
+    },
+  });
+  assert.deepEqual({ ...response }, { error: 'save' });
+  assert.deepEqual(await h.read(), before);
+  assert.equal(h.local.settings, undefined);
+  assert.equal(LEDGER_ERROR_KEY in h.local, false);
+});
+
 test('a bad restore message does not change the ledger or mark a write failure', async () => {
   const h = await createHarness();
   const before = await h.read();
