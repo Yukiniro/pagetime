@@ -60,7 +60,8 @@
     "title": "今日時間軸",
     "label_other": "今日活躍時間軸，{{count}} 個時段；空白區域未記錄活躍瀏覽。",
     "empty": "今天還沒有活躍瀏覽紀錄",
-    "item": "{{domain}}，{{from}} 至 {{to}}"
+    "item": "{{domain}}，{{from}} 至 {{to}}",
+    "other": "其他"
   },
   "heatmap": {
     "title": "活躍時段",

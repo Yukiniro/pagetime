@@ -3,7 +3,9 @@ import { ArrowRight, CaretDown, CaretRight } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { EmptyState, FilterEmpty } from './EmptyState.jsx';
-import { colorOf, iconForSite } from './data.js';
+import { iconForSite } from './data.js';
+import { colorsFor } from './timeline-colors.mjs';
+import { timelineSwatchesFor } from './theme.mjs';
 import { DayHourChart, Heatmap, Timeline, Trend } from './Charts.jsx';
 import { KpiCompare } from './KpiCompare.jsx';
 import { SiteIcon } from './SiteIcon.jsx';
@@ -68,7 +70,10 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
   const showHours = !filtered || hourBars.some(row => row.ms > 0);
   const showTimeline = !filtered || timelineHasActivity(chartSpans, chartDay, addDays(chartDay, 1));
   const showTrend = !filtered || trendHasActivity(trendDays);
-  const legend = (chartKpi?.rows ?? []).filter(row => row.ms).slice(0, 5);
+  const swatches = timelineSwatchesFor(isDark);
+  const colors = colorsFor(chartKpi?.rows ?? [], swatches);
+  const legend = [...colors.keys()].filter(domain => colors.get(domain) !== swatches.other);
+  const showOther = colors.size > legend.length;
   const caption = <p className="chart-caption">{formatDate(chartDay, { month: 'long', day: 'numeric', weekday: 'long' })}<span>·</span>{t('active', { duration: duration(chartKpi.ms) })}</p>;
   const trendTitle = trendLabel || t('range.last7');
   const tabs = [['timeline', t('timeline.title')], ['trend', trendTitle]];
@@ -107,8 +112,8 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
           <DayHourChart hours={hourBars} isDark={isDark} />
         </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />) : (showTimeline ? <>
           {caption}
-          <Timeline spans={chartSpans} day={chartDay} className="primary-timeline" lane={36} isDark={isDark} showEmpty={midnight(chartDay) === midnight(today)} />
-          <div className="legend">{legend.map(row => <Button variant="ghost" size="xs" key={row.domain} onClick={event => openSite(row.domain, event)}><i style={{ background: colorOf(row.domain) }} />{row.domain}</Button>)}</div>
+          <Timeline spans={chartSpans} day={chartDay} className="primary-timeline" lane={36} isDark={isDark} showEmpty={midnight(chartDay) === midnight(today)} colorOf={domain => colors.get(domain) ?? swatches.other} />
+          <div className="legend">{legend.map(domain => <Button variant="ghost" size="xs" key={domain} onClick={event => openSite(domain, event)}><i style={{ background: colors.get(domain) }} />{domain}</Button>)}{showOther && <span className="legend-other"><i style={{ background: swatches.other }} />{t('timeline.other')}</span>}</div>
         </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)) : (showTrend ? <Trend days={trendDays} className="primary-trend" isDark={isDark} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
       </div>
     </section>

@@ -62,7 +62,8 @@
     "label_one": "Heutige Zeitleiste der aktiven Nutzung, {{count}} Sitzung; leere Bereiche enthalten keine aufgezeichnete Aktivität.",
     "label_other": "Heutige Zeitleiste der aktiven Nutzung, {{count}} Sitzungen; leere Bereiche enthalten keine aufgezeichnete Aktivität.",
     "empty": "Heute wurde noch keine aktive Nutzung aufgezeichnet",
-    "item": "{{domain}}, {{from}} bis {{to}}"
+    "item": "{{domain}}, {{from}} bis {{to}}",
+    "other": "Sonstige"
   },
   "heatmap": {
     "title": "Aktive Zeiten",

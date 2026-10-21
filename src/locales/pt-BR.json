@@ -64,7 +64,8 @@
     "label_many": "Linha do tempo da navegação ativa de hoje, {{count}} sessões; áreas em branco não têm atividade registrada.",
     "label_other": "Linha do tempo da navegação ativa de hoje, {{count}} sessões; áreas em branco não têm atividade registrada.",
     "empty": "Nenhuma navegação ativa registrada hoje",
-    "item": "{{domain}}, das {{from}} às {{to}}"
+    "item": "{{domain}}, das {{from}} às {{to}}",
+    "other": "Outros"
   },
   "heatmap": {
     "title": "Horários ativos",

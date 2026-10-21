@@ -14,6 +14,7 @@ A single day past detail retention draws 24 hour bars in that timeline slot. The
 - A custom single day shows one date on the trigger, not a `start–end` span.
 - Narrow screens: at 320px and 375px wide the page has no horizontal scroll with `Last 30 days`, in every language. Below 480px the trigger shows the label and the date span on two lines and hides the calendar icon; the arrow buttons keep their size and labels.
 - Site filter (#37) stays selected across a page. Multi-day ranges still default to the trend.
+- Timeline colors follow that day's active-time ranking. The legend lists at most the first five sites, each with a different color, and the segments for a site use that same color. A later site is neutral gray. The legend ends with `Other` only when such a site exists, and `Other` is not a button. A site filter paints that one site with the first color. The hover tooltip and the screen-reader list still name each site.
 
 ## How to get to it (user POV)
 
@@ -32,10 +33,12 @@ Preview origin is the URL `launch` printed (default `http://127.0.0.1:4173/`), o
 7. Return to Overview and reload. The trigger is `Date range: Today`. `localStorage` has no range key.
 8. When status is `ready`: click `Previous period`. The trigger's accessible name no longer starts with `Date range: Today`, the selected tab is `Today's timeline`, and the caption date is not today's date. The KPI active time matches the caption's `Active` duration. Click the trend tab and assert it is `Last 7 days`. Open the date menu, choose `Last 7 days`, and assert the selected tab is not `Today's timeline`. Page back once with ArrowLeft while focus is on `document.body` and assert the trigger changed and the ranking filter chip, if one was active, is still there.
 9. Narrow check: set the viewport to `320×700`, then `375×700`. Choose `Last 30 days` and assert `document.documentElement.scrollWidth <= window.innerWidth` and that `Previous period`, the trigger and `Next period` all sit inside `0..innerWidth`. Repeat with `pagetime-language` set to `de` and `ru` (the longest labels). Screenshot the top of the page. The extension journey `the date control fits a 320px and a 375px page` in `tests/e2e/timing.spec.mjs` also clicks the arrows at those widths.
+10. When the timeline legend is on screen: each legend button's swatch differs from the others, and `Other` is absent unless a site beyond those buttons has active time. `Other`, when present, is text in the legend and not a button. Hovering a segment still shows that site's name. Skip this step when `[data-status]` is `empty`.
 
 ## Gotchas
 
 - A fresh preview sets `since` to the moment the empty ledger is created, which is today, so `Previous period` is disabled too. Do not write `pagetime-preview` to enable it. Report the ready-ledger step as not run when `[data-status]` is `empty`.
+- An empty preview has no timeline legend, so the color step is not run. The rank colors themselves are `tests/timeline-colors.test.mjs`.
 - The search box name is the `records.search` string: `Search sites`.
 - A single custom day formats one date through `formatDate` (`month: 'long'`, `day: 'numeric'`, `weekday: 'short'`). Match the trigger with a prefix, not a hard-coded date.
 - ArrowLeft inside `<input type="date">` changes the date field. Assert the applied range, not the field's value.

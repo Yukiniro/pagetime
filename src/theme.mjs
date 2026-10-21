@@ -46,3 +46,19 @@ const dark = {
 export function getChartTheme(isDark) {
   return isDark ? dark : light;
 }
+
+// Five rank colors plus one neutral gray for every site outside the legend.
+// Light and dark are separate so each stays distinct on that theme's timeline.
+const timelineLight = {
+  ranks: ['#2563eb', '#059669', '#c2410c', '#4c1d95', '#9f1239'],
+  other: '#64748b',
+};
+
+const timelineDark = {
+  ranks: ['#4f8df8', '#a6f2c6', '#f6ae6f', '#c7a0ee', '#f74569'],
+  other: '#8b97ab',
+};
+
+export function timelineSwatchesFor(isDark) {
+  return isDark ? timelineDark : timelineLight;
+}
