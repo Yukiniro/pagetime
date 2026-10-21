@@ -86,7 +86,7 @@ test('the bundled restore path reads a local file and makes no network request',
 
 test('permission notes match wxt.config.ts and state the install warning', () => {
   const listed = [...text('wxt.config.ts').match(/permissions:\s*\[([^\]]+)\]/)[1].matchAll(/'([^']+)'/g)].map(match => match[1]);
-  assert.deepEqual(listed, ['storage', 'tabs', 'webNavigation', 'idle', 'alarms']);
+  assert.deepEqual(listed, ['storage', 'tabs', 'webNavigation', 'idle', 'alarms', 'favicon']);
   for (const path of ['docs/permissions.md', 'docs/permissions.zh-CN.md']) {
     const note = text(path);
     for (const permission of listed) assert.match(note, new RegExp(`\`${permission}\``));
@@ -95,5 +95,22 @@ test('permission notes match wxt.config.ts and state the install warning', () =>
     assert.match(note, /content script|content_scripts/);
     assert.match(note, /no host permission|没有 host permission/i);
     assert.match(note, /no content script|没有 content script/i);
+  }
+});
+
+test('site icons read the browser favicon cache and do not fetch a remote icon', () => {
+  for (const path of ['src/SiteIcon.jsx', 'src/site-icon.mjs']) {
+    const source = text(path);
+    assert.doesNotMatch(source, NETWORK_API, path);
+    assert.doesNotMatch(source, /favicon\.ico|google\.com\/s2|icons\.duckduckgo|gstatic\.com|faviconkit/i, path);
+  }
+  const icon = text('src/site-icon.mjs');
+  assert.match(icon, /_favicon/);
+  assert.match(icon, /https:\/\/\$\{host\}/);
+  assert.match(text('src/SiteIcon.jsx'), /isExtension/);
+  for (const path of ['PRIVACY.md', 'PRIVACY.zh-CN.md', 'README.md']) {
+    const note = text(path);
+    assert.match(note, /favicon/);
+    assert.match(note, /cache|缓存/);
   }
 });

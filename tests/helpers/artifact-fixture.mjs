@@ -8,7 +8,7 @@ export function artifact(version = '1.0.1') {
   const manifest = {
     manifest_version: 3, name: 'PageTime', version, default_locale: 'en', incognito: 'not_allowed',
     description: '__MSG_extDescription__', action: { default_title: '__MSG_actionTitle__', default_popup: 'popup.html' },
-    permissions: ['storage', 'tabs', 'webNavigation', 'idle', 'alarms'],
+    permissions: ['storage', 'tabs', 'webNavigation', 'idle', 'alarms', 'favicon'],
     background: { service_worker: 'background.js' },
     icons: Object.fromEntries([16, 32, 48, 96, 128].map(size => [size, `icon/${size}.png`]))
   };

@@ -67,7 +67,7 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 
 ## 没有网络、遥测或账号
 
-清单权限只有 `storage`、`tabs`、`webNavigation`、`idle`、`alarms`。可调空闲时间和音频计时没有新增权限。没有 host permission，没有 content script，`incognito` 为 `not_allowed`。无痕窗口不记录。扩展不申报遥测、分析或账号接口。统计页可以发的消息只有 `snapshot`、`toggle`、`clear`、`deleteSite`、`deleteDay`、`settings`、`restore`。工具栏 popup 可以发的消息只有 `snapshot`、`toggle`、`settings`。后台只接受来自本扩展自己的 `dashboard.html` 和 `popup.html`。popup 不能清空或删除记录。删除记录不新增权限。
+清单权限有 `storage`、`tabs`、`webNavigation`、`idle`、`alarms`、`favicon`。可调空闲时间和音频计时没有新增权限。`favicon` 让统计页上的站点图标读取浏览器已经缓存的 favicon，地址是本扩展的 `_favicon`（`https://` 加上这一行已经在显示的主机名）。PageTime 不请求该站点、`/favicon.ico` 或第三方图床，也不上传图标。加载失败或浏览器给出的通用图标仍显示地球占位。本地预览不使用 `_favicon`。没有 host permission，没有 content script，`incognito` 为 `not_allowed`。无痕窗口不记录。扩展不申报遥测、分析或账号接口。统计页可以发的消息只有 `snapshot`、`toggle`、`clear`、`deleteSite`、`deleteDay`、`settings`、`restore`。工具栏 popup 可以发的消息只有 `snapshot`、`toggle`、`settings`。后台只接受来自本扩展自己的 `dashboard.html` 和 `popup.html`。popup 不能清空或删除记录。删除记录不新增权限。
 
 ## 如何删除
 

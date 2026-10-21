@@ -12,3 +12,4 @@ Drive one file per journey. Selectors assume English (`pagetime-language` = `en`
 | 导出 JSON / CSV | [export.md](export.md) | Preview or extension. The file is a blob download in the page. |
 | 从备份恢复 | [restore.md](restore.md) | Extension. Preview disables the control and does not write preview storage. |
 | 工具栏 popup | [toolbar-popup.md](toolbar-popup.md) | Extension. The toolbar icon opens `popup.html`. |
+| 站点图标 | [site-favicon.md](site-favicon.md) | Preview shows packaged SVG or the globe and never calls `_favicon`. Extension rankings use the browser favicon cache after a real https visit. |
