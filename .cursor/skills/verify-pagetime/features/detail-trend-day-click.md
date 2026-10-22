@@ -21,10 +21,10 @@ Language is English. Viewport 1280×800 so the drawer is the right-hand sheet.
 
 1. Assert `[data-status="ready"]`. If the status is `empty`, stop. Do not insert a host.
 2. Click `getByRole('button', { name: 'Details for <domain>' })`. Assert `getByRole('dialog')` contains heading `Site details` and heading `Daily trend`. The date trigger starts with `Date range: Today` when the overview was on today.
-3. Click a recorded trend column inside the dialog that is not today (the same spot that shows that day's tooltip). The trigger's accessible name changes to that day. The dialog is still open and still contains the domain. The status `Filtered to <domain>` is still present when the filter was on before the click.
-4. Click the empty part of the plot where a day has no bar. The trigger stays the same and the dialog stays open.
-5. Click `Previous period`. The trigger changes. The dialog stays open on the same site. `Next period` is enabled unless the range already ends today.
-6. Focus a `button.timeline-segment` inside the dialog whose name is another recorded day, then press Enter. The trigger changes to that day. The dialog stays open.
+3. Click a recorded trend column inside the dialog that is not today (the same spot that shows that day's tooltip, cursor `pointer`). The dialog stays open and still shows that domain. Its active time and session heading follow that day. `button.range` has an accessible name for that day, not `Date range: Today`. The overview tab `#chart-tab-timeline` is selected. The status text `Filtered to <domain>` is still present when the filter was on before the click.
+4. Click the empty part of the plot where a day has no bar. `button.range` stays the same and the dialog stays open.
+5. Activate `Previous period`. The range label changes by one day. The dialog stays open on the same site. `Next period` is enabled unless the range already ends today. At 1280 the right-hand drawer covers that control, and the open dialog marks the page behind it inert, so a mouse click at the control's coordinates hits the sheet. Read `button.range` and activate the period button itself.
+6. Focus a `button.timeline-segment` inside the dialog whose name is another recorded day, then press Enter. The range becomes that day. The dialog stays open on the same site.
 
 ## Gotchas
 
@@ -33,4 +33,5 @@ Language is English. Viewport 1280×800 so the drawer is the right-hand sheet.
 - Hovering a recorded bar sets the chart canvas cursor to `pointer`. The empty gap does not.
 - Do not click the hour bars under `Time of day`. Do not click `Delete this site's records`, `Stop recording this site`, or `Add to whitelist`.
 - The click replaces the range. It does not close the drawer and it does not clear `Filtered to <domain>`.
-- While the dialog is open, ArrowLeft and ArrowRight do not shift the range. Use `Previous period` and `Next period`.
+- While the dialog is open, ArrowLeft and ArrowRight do not shift the range. The period buttons still shift that one-day range. The open dialog marks the overview inert, and at 1280 the drawer covers `button.range`.
+- Ranking has two columns, so `Filter to <domain>` and `Details for <domain>` each match two buttons. Either one opens the same site.
