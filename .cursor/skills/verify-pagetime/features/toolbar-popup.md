@@ -4,7 +4,7 @@ Clicking the toolbar icon opens the popup. The popup shows today's active time f
 
 ## Sub-features
 
-- Site row: heading is the grouped site (prefix mode strips a leading `www.`). The large figure is that site's time today. The line under it matches `Today <duration> total`.
+- Site row: heading is the grouped site (prefix mode strips a leading `www.`). The large figure is that site's time today. The line under it matches `Today <duration> total`. A current site also shows `SiteIcon` beside the name; that journey is [popup-site-icon.md](popup-site-icon.md).
 - No site: heading `Today's total`, the large figure is today's total, and `Don't record this site` is absent. No alert.
 - Blacklist button `Don't record this site`, then `Record this site again`. Whitelist button `Record this site`, then `Stop recording this site`. The second click removes that exact host.
 - Pause button `Pause recording` / `Resume recording`. The status line uses `Recording browsing activity` or `Recording paused`, the same phrases as the dashboard header. While paused, `main` has `data-paused="true"`.

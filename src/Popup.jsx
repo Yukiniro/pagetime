@@ -9,6 +9,7 @@ import { command, isExtension } from './data.js';
 import { duration } from './i18n.js';
 import { DEFAULT_SETTINGS, IGNORED_LIMIT } from './settings.mjs';
 import { activeRecordableHost, listAction, openDashboardPage, toggleListedHost } from './popup-model.mjs';
+import { SiteIcon } from './SiteIcon.jsx';
 import { usePopupQuery } from './use-popup.js';
 import { useDocumentTheme } from './use-theme.js';
 
@@ -112,9 +113,12 @@ export function Popup() {
   return <main className="popup" data-status="ready" data-paused={enabled ? 'false' : 'true'} data-theme={isDark ? 'dark' : 'light'} data-total-ms={figures.total}>
     <p className="popup-status"><span className={`status-dot ${enabled ? '' : 'paused'}`} /><strong>{enabled ? t('status.recording') : t('status.paused')}</strong></p>
     <div className="popup-figures">
-      <h1 className="popup-host">{figures.site && figures.siteMs > 0
-        ? <Button variant="link" className="popup-host-link h-auto min-h-0 shrink min-w-0 max-w-full justify-start gap-0.5 px-0 font-semibold" aria-label={t('popup.viewSite', { site: figures.site })} disabled={busy} onClick={onOpenSite}><span>{figures.site}</span><CaretRight aria-hidden="true" weight="bold" /></Button>
-        : (figures.site ?? t('popup.totalOnly'))}</h1>
+      <h1 className="popup-host">
+        {figures.site ? <span className="popup-host-icon" aria-hidden="true"><SiteIcon domain={figures.site} site={figures.site} /></span> : null}
+        {figures.site && figures.siteMs > 0
+          ? <Button variant="link" className="popup-host-link h-auto min-h-0 shrink min-w-0 max-w-full justify-start gap-0.5 px-0 font-semibold" aria-label={t('popup.viewSite', { site: figures.site })} disabled={busy} onClick={onOpenSite}><span>{figures.site}</span><CaretRight aria-hidden="true" weight="bold" /></Button>
+          : <span className="popup-host-name">{figures.site ?? t('popup.totalOnly')}</span>}
+      </h1>
       <p className="popup-figure" data-figure={figures.site ? 'site' : 'total'} data-site-ms={figures.site ? figures.siteMs : undefined} aria-label={t('popup.siteToday', { duration: primary })}>{primary}</p>
       {figures.site && <p className="popup-total">{t('popup.total', { duration: total })}</p>}
     </div>
