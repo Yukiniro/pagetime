@@ -6,6 +6,44 @@
 
 - 概览默认合并常见前缀：去掉开头的 `www.`、`m.`、`mobile.`（例如 `www.youtube.com` 与 `m.youtube.com` 显示为 `youtube.com`）。这是默认行为变化。已经保存的记录仍按原始主机名存放，可在设置里改回不合并，或改为按可注册域名合并（例如 `a.b.example.co.uk` 显示为 `example.co.uk`）。
 
+## 1.3.0
+
+### Minor Changes
+
+- [#89](https://github.com/Yukiniro/pagetime/pull/89) [`fa264fd`](https://github.com/Yukiniro/pagetime/commit/fa264fd39450e129732243b21474f6544a3b4792) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 自定义日期的开始和结束不能早于记录开始的那一天。早于该日的范围不会被应用，当前范围保持不变。
+
+- [#87](https://github.com/Yukiniro/pagetime/pull/87) [`887e9d9`](https://github.com/Yukiniro/pagetime/commit/887e9d9947e8e80dc67e00558d9bbc2fbb16344a) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 日期范围为单日时，站点详情的每日趋势改为以该日为终点的近 7 天，与主图趋势同一窗口。多日范围不变。时段分布和会话列表仍只统计所选范围。
+
+- [#85](https://github.com/Yukiniro/pagetime/pull/85) [`30fcf09`](https://github.com/Yukiniro/pagetime/commit/30fcf093413af1bb2b7f88d92981feb9358d121e) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 站点过滤开启时，活跃时段热力只统计该合并站点的星期和小时。清除过滤后恢复全站。该站在范围内没有小时数据时，热力区显示可清除过滤的空状态。
+
+- [#92](https://github.com/Yukiniro/pagetime/pull/92) [`f32a93d`](https://github.com/Yukiniro/pagetime/commit/f32a93d9b519d643356e46bc8b6171f660ca57ab) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 在弹出窗口里，当前站点今天已有活动时间时，站点名可以点击。点击后打开或切到已打开的仪表盘，范围切到今天，并打开该站的详情。已打开的仪表盘不会新开标签，也不会整页刷新。今天没有活动时间、或当前页面无法记录时，站点名仍是文字。不新增权限，不注入内容脚本。
+
+- [#64](https://github.com/Yukiniro/pagetime/pull/64) [`9b75b1a`](https://github.com/Yukiniro/pagetime/commit/9b75b1ac84ea8ad4348be29796481d543962d36f) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 界面不再讲计时规则：移除「如何计时」弹窗及概览、设置页、空状态里的三处入口，移除设置页的「统计方式」「本地与私密」和「本地数据概况」区块（撤回 [#54](https://github.com/Yukiniro/pagetime/issues/54) 的界面部分）。「播放音频时继续计时」和「空闲判定时间」两个开关保留，并入「浏览记录」。设置页底部新增一行链接，指向仓库里的计时规则与隐私说明（`docs/timing.zh-CN.md`、`docs/timing.md`、`PRIVACY.md`）。KPI 对比无法计算时只显示「—」，提示至多一句话。计时行为和已存数据不变。
+
+- [#70](https://github.com/Yukiniro/pagetime/pull/70) [`0274340`](https://github.com/Yukiniro/pagetime/commit/02743409f5c835f44ca4b3d33b18e56493ce0f84) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 日期范围可以按当前天数前后翻一段。选中单独一天时，主图显示那一天的时间线；明细已经清掉的日子改为当天 24 小时的柱状图。
+
+- [#77](https://github.com/Yukiniro/pagetime/pull/77) [`065467a`](https://github.com/Yukiniro/pagetime/commit/065467ae9df9b0d45c59fe9eded09bd73af37fab) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 设置里可以从 PageTime 备份 JSON 覆盖恢复本机账本和设置。选择本地文件并确认一次后，会替换全部记录；格式、版本或结构不对时不改动已有账本。不接受 CSV。预览里不能恢复。
+
+- [#79](https://github.com/Yukiniro/pagetime/pull/79) [`5b44f6a`](https://github.com/Yukiniro/pagetime/commit/5b44f6ae6546ac3fd384432167bc47be79f0b14f) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 站点排行、站点详情和访问记录里的图标，在扩展中改为读取浏览器已经缓存的 favicon。安装包里原有的站点 SVG 仍然优先。读不到缓存，或图片加载失败时，仍显示地球占位。本地预览不请求这层缓存。新增 `favicon` 权限：只读浏览器图标缓存，不向站点或第三方图床拉取，也不上传。
+
+- [#81](https://github.com/Yukiniro/pagetime/pull/81) [`74c5dee`](https://github.com/Yukiniro/pagetime/commit/74c5deeb077e253bbb0c16a26683fcd13c8900ae) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 单日时间线上的色块可以点开该站点的详情。不在图例前五名里的灰色时段按真实域名打开；图例中的「其他」仍然不能点。
+
+- [#69](https://github.com/Yukiniro/pagetime/pull/69) [`f68a77c`](https://github.com/Yukiniro/pagetime/commit/f68a77cbd02a181fd11724e4932340cd3275cd72) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 点击工具栏图标会弹出小窗，而不再直接打开仪表盘。小窗显示当前站点今日时长和今日总时长，并可把该主机加入或移出忽略名单（白名单下是允许名单）、暂停或恢复记录、开关工具栏角标。再点一次名单按钮即撤销，不需要确认。已打开的仪表盘会被切到前台。没有 http(s) 主机名的页面只显示今日总时长。不新增权限，不注入内容脚本，不保存完整网址。
+
+### Patch Changes
+
+- [#73](https://github.com/Yukiniro/pagetime/pull/73) [`470bd4f`](https://github.com/Yukiniro/pagetime/commit/470bd4fc30a51fa62f643520f7deeb29ba2ff890) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 站点详情里的活跃时段跟着主图那一天显示。翻到昨天时，起止时间和时长属于那天；超过明细保留期的单日不再显示这一块。
+
+- [#65](https://github.com/Yukiniro/pagetime/pull/65) [`1d455cd`](https://github.com/Yukiniro/pagetime/commit/1d455cd01c210e22fee989ac1e61523e732655c3) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 界面文案瘦身（[#62](https://github.com/Yukiniro/pagetime/issues/62)）：页头不再有副标题；设置项描述至多一句，语言、外观、工具栏角标等标题已说清的项不再附描述；「记录范围」只保留模式切换和当前模式的列表，子域名规则只写在输入框占位符里；空白名单警告缩为一句；域名错误提示缩为「请输入有效域名，如 example.com」；导出描述改为「下载本机全部记录」；各确认框只说后果「删除后无法恢复」。去掉热力图说明、站点详情抽屉副标题和时间线「空闲」图例，并删除未使用的文案。10 种语言同步，新增未使用文案检查测试。计时、存储和删除逻辑不变。
+
+- [#71](https://github.com/Yukiniro/pagetime/pull/71) [`4cd1543`](https://github.com/Yukiniro/pagetime/commit/4cd1543dc19bdd5a5081517d06bd6ebe627547c2) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 窄屏（320px、375px 宽）下日期控件不再撑出横向滚动：中间的日期按钮可收缩，标题与日期上下两行排列，翻页按钮保持原尺寸可点、可键盘操作，无障碍标签不变；桌面宽度外观不变（[#70](https://github.com/Yukiniro/pagetime/issues/70) 评审意见）。只改展示，不改计时与存储。
+
+- [#83](https://github.com/Yukiniro/pagetime/pull/83) [`85ba854`](https://github.com/Yukiniro/pagetime/commit/85ba854279564f5c80558ca4ae69f2c454777fb8) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 翻到非今天的单日时，主图时间线的标题、无障碍标签和空状态跟着那一天，不再写「今日」。今天，以及多日范围里的时间线，仍用原来的「今日」文案。
+
+- [#75](https://github.com/Yukiniro/pagetime/pull/75) [`24c1592`](https://github.com/Yukiniro/pagetime/commit/24c1592b66e2c27fb396f22659090ea7e42157b7) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 时间线按当天活跃时长给站点上色：前五名各用一种互不相同的颜色，其余站点统一为中性灰，并在图例末尾显示「其他」。同一站点在不同日期的颜色可能不同。
+
+- [#81](https://github.com/Yukiniro/pagetime/pull/81) [`74c5dee`](https://github.com/Yukiniro/pagetime/commit/74c5deeb077e253bbb0c16a26683fcd13c8900ae) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 键盘可以打开单日时间线上每一段的站点详情：每一段都是可聚焦的按钮，Enter 和 Space 走与点击色块相同的站点。图例里没有按钮的灰色时段也包括在内。画布本身仍不进入 Tab 顺序。
+
 ## 1.2.0
 
 ### Minor Changes
