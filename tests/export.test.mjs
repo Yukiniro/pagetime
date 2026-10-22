@@ -5,7 +5,7 @@ import {
   CSV_COLUMNS, EXPORT_FORMAT, EXPORT_SCHEMA_VERSION, EXPORT_TABLES, csvField, dailyCsvParts, exportFileName,
   ledgerJsonParts, previewSnapshot, toDailyCsv, toLedgerJson,
 } from '../src/export.mjs';
-import { commitTick, daysBetween, deleteDay, deleteSite, openLedger, readDomains, readHead, readLedgerSnapshot } from '../src/ledger.mjs';
+import { commitTick, daysBetween, deleteSite, openLedger, readDomains, readHead, readLedgerSnapshot } from '../src/ledger.mjs';
 import { viewFromLedger, viewFromSnapshot } from '../src/ledger-view.mjs';
 import { addDays, dateKey, HOUR } from '../src/model.mjs';
 import { DEFAULT_SETTINGS } from '../src/settings.mjs';
@@ -203,28 +203,26 @@ test('a snapshot that starts while a write is pending sees all of that write, ne
   assert.equal(during.spans.filter(row => row.domainId === id).length, 1);
 });
 
-test('deleted sites and days do not appear in either export', async () => {
+test('a deleted site does not appear in either export', async () => {
   const db = fresh();
   await seedWeek(db);
-  const removedDay = '2026-10-13';
   const snapshotBefore = await readLedgerSnapshot(db);
-  assert.ok(snapshotBefore.days.some(row => row.date === removedDay));
   assert.ok(snapshotBefore.domains.some(row => row.host === 'b.test'));
+  assert.ok(snapshotBefore.days.length > 0);
   await deleteSite(db, ['b.test'], at(10, 20));
-  await deleteDay(db, removedDay, at(10, 20));
   const snapshot = await readLedgerSnapshot(db);
   const json = toLedgerJson(snapshot, meta);
   const csv = toDailyCsv(snapshot);
   assert.doesNotMatch(json, /"b\.test"/);
   assert.doesNotMatch(csv, /(^|,)b\.test,/m);
-  assert.doesNotMatch(csv, new RegExp(`^${removedDay},`, 'm'));
   const { tables } = JSON.parse(json);
-  const dayStart = at(10, 13), dayEnd = at(10, 14);
-  assert.ok(tables.days.every(row => row.date !== removedDay));
-  assert.ok(tables.hours.every(row => row.date !== removedDay));
-  assert.ok(tables.spans.every(row => row.end <= dayStart || row.start >= dayEnd));
-  assert.ok(tables.visits.every(row => row.at < dayStart || row.at >= dayEnd));
+  assert.ok(tables.domains.every(row => row.host !== 'b.test'));
   assert.ok(tables.days.length > 0);
+  const removedId = snapshotBefore.domains.find(row => row.host === 'b.test').id;
+  assert.ok(tables.days.every(row => row.domainId !== removedId));
+  assert.ok(tables.hours.every(row => row.domainId !== removedId));
+  assert.ok(tables.spans.every(row => row.domainId !== removedId));
+  assert.ok(tables.visits.every(row => row.domainId !== removedId));
 });
 
 test('preview data becomes the same tables: spans split at midnight, totals match the preview KPI', () => {

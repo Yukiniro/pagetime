@@ -1,8 +1,8 @@
 import { browser } from 'wxt/browser';
 import { defineBackground } from 'wxt/utils/define-background';
 import { badgeLabels, resolveLocale, todayFigures } from '../src/badge.mjs';
-import { CHECKPOINT_SECONDS, dateKey, dateKeyStart, detailCutoff, domainOf, openCredit } from '../src/model.mjs';
-import { clearLedger, commitTick, daysBetween, deleteDay, deleteSite, LEDGER_ERROR_KEY, openLedger, pruneDetail, readDomains, readHead, reopening, toggleRecording } from '../src/ledger.mjs';
+import { CHECKPOINT_SECONDS, dateKey, detailCutoff, domainOf, openCredit } from '../src/model.mjs';
+import { clearLedger, commitTick, daysBetween, deleteSite, LEDGER_ERROR_KEY, openLedger, pruneDetail, readDomains, readHead, reopening, toggleRecording } from '../src/ledger.mjs';
 import { parseLedgerBackup, replaceLedger } from '../src/import.mjs';
 import { shouldRecord, validateSettings } from '../src/settings.mjs';
 
@@ -192,7 +192,7 @@ export default defineBackground(() => {
   browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const page = extensionPage(sender);
     const allowed = page === 'dashboard'
-      ? ['snapshot', 'toggle', 'clear', 'deleteSite', 'deleteDay', 'settings', 'restore']
+      ? ['snapshot', 'toggle', 'clear', 'deleteSite', 'settings', 'restore']
       : page === 'popup' ? ['snapshot', 'toggle', 'settings'] : [];
     if (!allowed.includes(message?.type)) return;
     void run(async () => {
@@ -201,9 +201,6 @@ export default defineBackground(() => {
       } else if (message.type === 'deleteSite') {
         const hosts = deleteHosts(message);
         if (hosts.length) await write(() => deleteSite(db, hosts, Date.now()));
-      } else if (message.type === 'deleteDay') {
-        if (dateKeyStart(message.date) === null) throw new Error('invalid date');
-        await write(() => deleteDay(db, message.date, Date.now()));
       } else if (message.type === 'toggle') {
         await update();
         await write(() => toggleRecording(db, Date.now()));

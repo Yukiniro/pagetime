@@ -113,7 +113,7 @@ Stable handles, from `src/App.jsx`, `src/Overview.jsx`, `src/RangeControl.jsx`, 
 
 One feature per drive. The steps live in `features/`. A missing precondition is a failed journey; the reason is already in that file's Gotchas. Do not write sample rows into `pagetime-preview` or IndexedDB to make a journey pass.
 
-Leave delete alone. Do not click `Clear data`, `Delete this day`, `Delete this site's records`, or the confirm buttons `Clear` and `Delete records`. Those paths stay in `tests/e2e/timing.spec.mjs`. Do not click `Restore from backup` unless the feature file is `restore.md`.
+Leave delete alone. Do not click `Clear data`, `Delete this site's records`, or the confirm buttons `Clear` and `Delete records`. Those paths stay in `tests/e2e/timing.spec.mjs`. Settings has no control that deletes one day. Do not click `Restore from backup` unless the feature file is `restore.md`.
 
 ## Evidence
 

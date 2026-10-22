@@ -1,5 +1,5 @@
 import { LEDGER_ERROR_KEY } from './ledger.mjs';
-import { addDays, blankData, dateKeyStart, spansAfterDayRemoval } from './model.mjs';
+import { blankData } from './model.mjs';
 import { siteOf } from './site.mjs';
 import { DEFAULT_SETTINGS, validateSettings } from './settings.mjs';
 import { validateData } from './validate-data.mjs';
@@ -62,17 +62,6 @@ export async function command(type='snapshot', body) {
     if(names.size){
       data.visits=data.visits.filter(visit=>!names.has(visit.domain));
       data.spans=data.spans.filter(span=>!names.has(span.domain));
-    }
-  }
-  if(type==='deleteDay'){
-    const start=dateKeyStart(body?.date);
-    if(start!==null){
-      const end=addDays(start,1);
-      data.visits=data.visits.filter(visit=>visit.at<start||visit.at>=end);
-      data.spans=data.spans.flatMap(span=>{
-        if(span.end<=start||span.start>=end) return [span];
-        return spansAfterDayRemoval(span,start,end).map(part=>({domain:span.domain,start:part.start,end:part.end}));
-      });
     }
   }
   if(type!=='snapshot') {

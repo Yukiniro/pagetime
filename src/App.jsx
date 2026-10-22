@@ -7,13 +7,12 @@ import { Switch } from '@app/components/ui/switch';
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@app/components/ui/alert-dialog';
 import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@app/components/ui/sidebar';
 import { TooltipProvider } from '@app/components/ui/tooltip';
-import { Input } from '@app/components/ui/input';
 import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from '@app/components/ui/input-group';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@app/components/ui/table';
 import { Alert, AlertTitle, AlertDescription } from '@app/components/ui/alert';
 import { Empty, EmptyHeader, EmptyTitle } from '@app/components/ui/empty';
-import { Trans, useTranslation } from 'react-i18next';
-import { dateKey, dateKeyStart, midnight } from './model.mjs';
+import { useTranslation } from 'react-i18next';
+import { midnight } from './model.mjs';
 import { activeRange, defaultChart, singleDayRange, timelineDay } from './range.mjs';
 import { RangeControl } from './RangeControl.jsx';
 import { rangeChip, trendLabel as trendTitle } from './range-label.mjs';
@@ -22,7 +21,7 @@ import { hostsToDelete } from './site.mjs';
 import { IgnoredSites } from './IgnoredSites.jsx';
 import { ExportData } from './ExportData.jsx';
 import { command, isExtension } from './data.js';
-import { useDaySummary, useLedger } from './use-ledger.js';
+import { useLedger } from './use-ledger.js';
 import { docLinks } from './docs-links.mjs';
 import { VISIT_LIST_LIMIT } from './ledger-view.mjs';
 import { SiteIcon } from './SiteIcon.jsx';
@@ -33,16 +32,14 @@ import { LedgerEmpty } from './EmptyState.jsx';
 import { dashboardStatus } from './dashboard-status.mjs';
 import { siteFromLocationHash } from './popup-model.mjs';
 import { toggleSiteFilter } from './site-filter.mjs';
-import { duration, formatDate, languages, timeLabel } from './i18n.js';
+import { formatDate, languages, timeLabel } from './i18n.js';
 import { useDocumentTheme } from './use-theme.js';
 
 export function App() {
   const { t, i18n } = useTranslation();
   const [settings, setSettings] = useState(DEFAULT_SETTINGS), [ready, setReady] = useState(false), [error, setError] = useState(''), [busy, setBusy] = useState(false);
   const [page, setPage] = useState('overview'), [range, setRange] = useState({ preset: 'today', start: 0, end: 0 }), [search, setSearch] = useState(''), [site, setSite] = useState(''), [filterSite, setFilterSite] = useState(''), [selected, setSelected] = useState(null);
-  const [confirmClear, setConfirmClear] = useState(false), [ignoreTarget, setIgnoreTarget] = useState(null);
-  const [chosenDay, setChosenDay] = useState(''), [dayDone, setDayDone] = useState(''), [confirmDay, setConfirmDay] = useState(false), [deleteTarget, setDeleteTarget] = useState(null);
-  const dayQuery = /^\d{4}-\d{2}-\d{2}$/.test(chosenDay) ? chosenDay : '';
+  const [confirmClear, setConfirmClear] = useState(false), [ignoreTarget, setIgnoreTarget] = useState(null), [deleteTarget, setDeleteTarget] = useState(null);
   const detailTrigger = useRef(null);
   const headingRef = useRef(null);
   const [jumpSite] = useState(() => siteFromLocationHash(location.hash));
@@ -55,8 +52,7 @@ export function App() {
   const active = activeRange(range, today);
   const start = active.start, end = active.end;
   const chip = rangeChip(t, active);
-  const ledger = useLedger({ start, end, today, search: search.trim().toLowerCase(), site: site.trim(), siteMerge: settings.siteMerge, detail: selected ?? '', day: isExtension ? '' : dayQuery, focus: filterSite });
-  const liveDay = useDaySummary(isExtension ? dayQuery : '', settings.siteMerge);
+  const ledger = useLedger({ start, end, today, search: search.trim().toLowerCase(), site: site.trim(), siteMerge: settings.siteMerge, detail: selected ?? '', focus: filterSite });
   const view = ledger.view, stats = view?.stats, todayStats = view?.todayStats;
   async function act(type = 'snapshot', body) {
     setBusy(true);
@@ -80,7 +76,6 @@ export function App() {
       setPage('overview');
       setConfirmClear(false);
       setDeleteTarget(null);
-      setConfirmDay(false);
       setIgnoreTarget(null);
       setFilterSite('');
       setRange({ preset: 'today', start: 0, end: 0 });
@@ -141,7 +136,6 @@ export function App() {
     if (current.length >= IGNORED_LIMIT) return;
     if (await saveSettings({ ...settings, [listField]: [...current, host] })) setIgnoreTarget(null);
   }
-  const minDay = dateKey(view?.since ?? now);
   const rangeSince = ledger.rangeSince ?? now;
   const onSelectDay = at => {
     // `today` is from the last render. A dashboard left open across midnight would
@@ -149,9 +143,6 @@ export function App() {
     const next = singleDayRange(at, midnight(Date.now()), rangeSince);
     if (next) setRange(next);
   };
-  const maxDay = dateKey(today);
-  const dayReady = Boolean(dayQuery) && minDay <= maxDay && dayQuery >= minDay && dayQuery <= maxDay;
-  const dayStats = dayReady ? (isExtension ? (liveDay?.date === dayQuery ? liveDay : null) : view?.day) : null;
   const removeHosts = target => hostsToDelete(target, settings.siteMerge, view?.hosts ?? [], view?.openDomain);
 
   return <TooltipProvider><AlertDialog open={confirmClear} onOpenChange={setConfirmClear}>
@@ -209,11 +200,6 @@ export function App() {
             </div></div>
             <div className="setting-row"><h2 id="site-merge">{t('settings.siteMerge.title')}</h2><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.siteMerge.label', { mode: mergeLabel })} disabled={busy}>{mergeLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={settings.siteMerge} onValueChange={value => { setSite(''); setSearch(''); setFilterSite(''); saveSettings({ ...settings, siteMerge: value }); }}>{MERGE_MODES.map(mode => <DropdownMenuRadioItem closeOnClick key={mode} value={mode}>{t(`settings.siteMerge.${mode}`)}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div>
             <ExportData />
-            <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.deleteDay.title')}</h2><div className="mt-4 flex max-w-xs flex-col gap-2">
-              <Input type="date" aria-label={t('settings.deleteDay.label')} min={minDay} max={maxDay} value={chosenDay} disabled={busy || minDay > maxDay} onChange={event => { setChosenDay(event.target.value); setDayDone(''); }} />
-              {dayStats && <p>{duration(dayStats.ms)} · <Trans i18nKey="summary.sites" count={dayStats.sites} components={{ b: <strong /> }} /></p>}
-              {dayDone === chosenDay && chosenDay && <p role="status">{t('settings.deleteDay.done', { date: formatDate(dateKeyStart(chosenDay)) })}</p>}
-            </div></div><Button variant="destructive" className="action-button shrink-0" disabled={busy || !dayStats} onClick={() => setConfirmDay(true)}><Trash />{t('settings.deleteDay.button')}</Button></div>
             <div className="setting-row"><h2>{t('settings.clear.title')}</h2><AlertDialogTrigger render={<Button variant="destructive" className="action-button" disabled={busy} />}><Trash />{t('settings.clear.button')}</AlertDialogTrigger></div>
             <p className="settings-links"><a href={links.timing} target="_blank" rel="noreferrer noopener">{t('settings.docs.timing')}</a><span aria-hidden="true">·</span><a href={links.privacy} target="_blank" rel="noreferrer noopener">{t('settings.docs.privacy')}</a></p>
           </section>}
@@ -230,13 +216,6 @@ export function App() {
       <AlertDialogHeader><AlertDialogTitle>{t('detail.deleteConfirm.title', { domain: deleteTarget ?? '' })}</AlertDialogTitle><AlertDialogDescription>{t('detail.deleteConfirm.description')}</AlertDialogDescription></AlertDialogHeader>
       {error && <Alert variant="destructive"><AlertDescription>{errorText}</AlertDescription></Alert>}
       <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction variant="destructive" disabled={busy} onClick={async () => { if (await act('deleteSite', { host: deleteTarget, hosts: removeHosts(deleteTarget) })) { setDeleteTarget(null); setSelected(null); } }}>{busy ? t('detail.deleteConfirm.deleting') : t('detail.deleteConfirm.confirm')}</AlertDialogAction></AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
-  <AlertDialog open={confirmDay} onOpenChange={setConfirmDay}>
-    <AlertDialogContent>
-      <AlertDialogHeader><AlertDialogTitle>{t('settings.deleteDay.confirmTitle', { date: chosenDay && dateKeyStart(chosenDay) ? formatDate(dateKeyStart(chosenDay)) : '' })}</AlertDialogTitle><AlertDialogDescription>{t('settings.deleteDay.confirmDescription')}</AlertDialogDescription></AlertDialogHeader>
-      {error && <Alert variant="destructive"><AlertDescription>{errorText}</AlertDescription></Alert>}
-      <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction variant="destructive" disabled={busy} onClick={async () => { if (await act('deleteDay', { date: chosenDay })) { setDayDone(chosenDay); setConfirmDay(false); } }}>{busy ? t('settings.deleteDay.deleting') : t('settings.deleteDay.confirm')}</AlertDialogAction></AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
   <AlertDialog open={Boolean(ignoreTarget)} onOpenChange={open => { if (!open) setIgnoreTarget(null); }}>

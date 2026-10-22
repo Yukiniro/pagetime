@@ -50,7 +50,7 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 - 扩展使用 IndexedDB、`chrome.storage.local` 和 `chrome.storage.session`。代码没有调用 `chrome.storage.sync`。IndexedDB 通过 Dexie 访问，不包含 Dexie Cloud 或任何同步插件。
 - 没有账号、登录或身份权限。
 - 后台和统计页源码没有网络请求。清单不申请 host permission，扩展不能靠权限去读网页或把账本送到别的主机。
-- 本地预览（`npm run dev`）不是已安装的扩展。它把 `{ visits, spans, enabled, since }` 对象放在该浏览器的 `localStorage` 键 `pagetime-preview`，把同一份 `settings` 形状放在 `pagetime-preview-settings`。`clear`、`deleteSite` 和 `deleteDay` 只改这份本机对象，仍然不上传。Sites 预览用的 `worker/index.js` 只托管静态页面，不在扩展包里，也不接收浏览记录。
+- 本地预览（`npm run dev`）不是已安装的扩展。它把 `{ visits, spans, enabled, since }` 对象放在该浏览器的 `localStorage` 键 `pagetime-preview`，把同一份 `settings` 形状放在 `pagetime-preview-settings`。`clear` 和 `deleteSite` 只改这份本机对象，仍然不上传。Sites 预览用的 `worker/index.js` 只托管静态页面，不在扩展包里，也不接收浏览记录。
 
 ## 保留多久
 
@@ -58,7 +58,7 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 
 | 常量 | 值 | 作用 |
 | --- | --- | --- |
-| `DETAIL_DAYS` | 31 | 开始时间早于「今天往前 30 天的本地零点」的 `spans` 和 `visits` 会被删掉，即保留今天和之前 30 天。后台在每天第一次写入时和每次重启后清理。`days` 和 `hours` 汇总不按时间删除，直到清空账本，或按站点、按某一天删除 |
+| `DETAIL_DAYS` | 31 | 开始时间早于「今天往前 30 天的本地零点」的 `spans` 和 `visits` 会被删掉，即保留今天和之前 30 天。后台在每天第一次写入时和每次重启后清理。`days` 和 `hours` 汇总不按时间删除，直到清空账本，或按站点删除 |
 | `CHECKPOINT_SECONDS` | 30 | 检查点闹钟的周期（分钟数为该值除以 60） |
 | `IDLE_SECONDS` | 60 | 默认空闲阈值。已保存的 `settings.idleSeconds` 也可以是 120、300 或 600。连续无键鼠操作达到该秒数后停止计入；若 `countAudible` 开着，且前台窗口的当前标签正在播放且未静音，则继续计入。锁屏永远不计 |
 | `GAP_LIMIT_MS` | 90000 | 两次检查点间隔再长，这段最多计入 90 秒 |
@@ -67,13 +67,12 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 
 ## 没有网络、遥测或账号
 
-清单权限有 `storage`、`tabs`、`webNavigation`、`idle`、`alarms`、`favicon`。可调空闲时间和音频计时没有新增权限。`favicon` 让统计页上的站点图标读取浏览器已经缓存的 favicon，地址是本扩展的 `_favicon`（`https://` 加上这一行已经在显示的主机名）。PageTime 不请求该站点、`/favicon.ico` 或第三方图床，也不上传图标。加载失败或浏览器给出的通用图标仍显示地球占位。本地预览不使用 `_favicon`。没有 host permission，没有 content script，`incognito` 为 `not_allowed`。无痕窗口不记录。扩展不申报遥测、分析或账号接口。统计页可以发的消息只有 `snapshot`、`toggle`、`clear`、`deleteSite`、`deleteDay`、`settings`、`restore`。工具栏 popup 可以发的消息只有 `snapshot`、`toggle`、`settings`。后台只接受来自本扩展自己的 `dashboard.html` 和 `popup.html`。popup 不能清空或删除记录。删除记录不新增权限。
+清单权限有 `storage`、`tabs`、`webNavigation`、`idle`、`alarms`、`favicon`。可调空闲时间和音频计时没有新增权限。`favicon` 让统计页上的站点图标读取浏览器已经缓存的 favicon，地址是本扩展的 `_favicon`（`https://` 加上这一行已经在显示的主机名）。PageTime 不请求该站点、`/favicon.ico` 或第三方图床，也不上传图标。加载失败或浏览器给出的通用图标仍显示地球占位。本地预览不使用 `_favicon`。没有 host permission，没有 content script，`incognito` 为 `not_allowed`。无痕窗口不记录。扩展不申报遥测、分析或账号接口。统计页可以发的消息只有 `snapshot`、`toggle`、`clear`、`deleteSite`、`settings`、`restore`。工具栏 popup 可以发的消息只有 `snapshot`、`toggle`、`settings`。后台只接受来自本扩展自己的 `dashboard.html` 和 `popup.html`。popup 不能清空或删除记录。删除记录不新增权限。
 
 ## 如何删除
 
 - 在站点详情里选择删除此站点的记录，并在确认框中确认。后台收到 `deleteSite` 后，在一个事务里删掉该主机名在 `days`、`hours`、`spans`、`visits` 中的行，再删掉 `domains` 里的对应条目。统计页会把当前合并方式下显示为这个站点的每个原始主机名都交出去。把站点加入 `ignored` 或 `allowed` 不会删除已有行；这次删除也不会把它加入这两份列表。
-- 在「设置」里、「清空所有记录」上方选择一个日期，范围是这份账本开始以来、不晚于今天。页面会显示这一天的总时长和站点数。确认后发送 `deleteDay`。后台删掉该本地日的 `days` 和 `hours` 行、落在这一天的访问，以及时段里落在这一天的部分。跨过零点的时段只去掉这一天的部分，其余保留。同一次操作在一个事务里完成。
-- 如果删的是游标上的站点，或删的是今天，同一个事务会把游标的 `since` 改成删除时刻。下一次检查点不会把已删除的那段补记回来。
+- 如果删的是游标上的站点，同一个事务会把游标的 `since` 改成删除时刻。下一次检查点不会把已删除的那段补记回来。
 - 统计页「设置」里清空所有记录，并在确认框中确认。后台收到 `clear` 后在一个事务里清空 `pagetime-ledger` 的所有表（包括 `cursor`），保留原来的 `enabled`，`since` 改为清空时刻。旧的 `data` 键不受影响。
 - 从浏览器里移除扩展后，浏览器会删掉该扩展的 IndexedDB 和 `chrome.storage`，包括旧的 `data` 键。
 - 暂停记录只把 `meta.state` 的 `enabled` 设为 false，不删除已有账本。

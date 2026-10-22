@@ -1,4 +1,4 @@
-import { addDays, daily, dateKey, dateKeyStart, groupSites, midnight, openCredit, overlapMs, splitByHour, summarize } from './model.mjs';
+import { addDays, daily, dateKey, groupSites, midnight, openCredit, overlapMs, splitByHour, summarize } from './model.mjs';
 import { compareBlocks, compareSummary, dayCount, previousWindow, timelineDay, trendWindow } from './range.mjs';
 import { focusSummary } from './site-filter.mjs';
 import { siteOf } from './site.mjs';
@@ -15,33 +15,7 @@ const keyFor = siteMerge => domain => siteOf(domain, siteMerge);
 const matches = (domain, search, site, keyOf) => site ? keyOf(domain) === site : !search || domain.includes(search);
 const hourPieces = (start, end) => end > start ? splitByHour(start, end).map(piece => ({ date: piece.date, hour: piece.hour, ms: piece.end - piece.start })) : [];
 
-export function daySummaryFromSnapshot(data, date, siteMerge = 'prefix') {
-  const start = dateKeyStart(date);
-  if (start === null) return { ms: 0, sites: 0 };
-  const summary = summarize(data, start, addDays(start, 1), keyFor(siteMerge));
-  return { ms: summary.ms, sites: summary.rows.filter(row => row.ms > 0 || row.visits > 0).length };
-}
-
-// Stored day rows plus any still-open cursor time that overlaps that local day.
-export function daySummary({ domains, days, segment = null, date, siteMerge = 'prefix' }) {
-  const start = dateKeyStart(date);
-  if (start === null) return { ms: 0, sites: 0 };
-  const host = new Map(domains.map(row => [row.id, row.host]));
-  const entries = [];
-  for (const row of days) {
-    if (row.date !== date) continue;
-    const domain = host.get(row.domainId);
-    if (domain) entries.push({ domain, ms: row.ms, visits: row.visits });
-  }
-  if (segment) {
-    const ms = overlapMs(segment, start, addDays(start, 1));
-    if (ms) entries.push({ domain: segment.domain, ms, visits: 0 });
-  }
-  const grouped = groupSites(entries, keyFor(siteMerge));
-  return { ms: grouped.ms, sites: grouped.rows.filter(row => row.ms > 0 || row.visits > 0).length };
-}
-
-export function viewFromSnapshot(data, { start, end, today, search = '', site = '', siteMerge = 'prefix', day = '' }) {
+export function viewFromSnapshot(data, { start, end, today, search = '', site = '', siteMerge = 'prefix' }) {
   const keyOf = keyFor(siteMerge);
   const chartDay = timelineDay({ start, end }, today);
   const visits = data.visits.filter(visit => visit.at >= start && visit.at < end && matches(visit.domain, search, site, keyOf)).sort((a, b) => b.at - a.at);
@@ -62,7 +36,6 @@ export function viewFromSnapshot(data, { start, end, today, search = '', site = 
     visitCount: visits.length,
     hosts: [...new Set([...data.visits.map(visit => visit.domain), ...data.spans.map(span => span.domain)])],
     openDomain: null,
-    day: day ? daySummaryFromSnapshot(data, day, siteMerge) : null,
   };
 }
 
@@ -146,7 +119,6 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
     visitCount,
     hosts: domains.map(row => row.host),
     openDomain: typeof cursor?.domain === 'string' && cursor.domain ? cursor.domain : null,
-    day: null,
   };
 }
 

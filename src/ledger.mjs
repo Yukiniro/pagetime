@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { addDays, dateKey, dateKeyStart, openCredit, overlapMs, spansAfterDayRemoval, splitByHour } from './model.mjs';
+import { dateKey, splitByHour } from './model.mjs';
 
 export const LEDGER_NAME = 'pagetime-ledger';
 export const LEDGER_ERROR_KEY = 'ledgerError';
@@ -167,83 +167,6 @@ export async function deleteSite(db, hosts, now) {
         );
       }
       if (cursor && wanted.includes(cursor.domain)) writes.push(t.meta.put({ key: 'cursor', value: { ...cursor, since: now } }));
-      return writes;
-    },
-  });
-}
-
-/**
- * Pending cursor time outside the deleted day, plus whether `since` must move to `now`.
- * Moving `since` drops the in-day slice; the outside slices are stored so they are not dropped with it.
- * @param {Record<string, import('dexie').Table>} t
- */
-async function cursorAfterDayRemoval(t, { cursor, overlapping, dayStart, dayEnd, date, now }) {
-  const last = await lastSpan(t.spans);
-  const segment = openCredit(cursor, last?.end, now);
-  const inside = segment ? overlapMs(segment, dayStart, dayEnd) : 0;
-  const advance = Boolean(cursor && (inside > 0 || date === dateKey(now)));
-  const kept = advance && segment ? spansAfterDayRemoval(segment, dayStart, dayEnd) : [];
-  if (!kept.length) return { advance, added: null, days: null, hours: null, spans: [] };
-  const pieces = kept.flatMap(part => splitByHour(part.start, part.end));
-  const host = segment.domain;
-  let domain = await t.domains.where('host').equals(host).first();
-  let added = null;
-  if (!domain) {
-    added = { id: ((await t.domains.orderBy(':id').lastKey()) ?? 0) + 1, host };
-    domain = added;
-  }
-  const days = await rowsByKey(t.days, pieces.map(part => [part.date, domain.id]), ([day, domainId]) => ({ date: day, domainId, ms: 0, visits: 0 }));
-  const hours = await rowsByKey(t.hours, pieces.map(part => [part.date, part.hour, domain.id]), ([day, hour, domainId]) => ({ date: day, hour, domainId, ms: 0 }));
-  const predecessor = last && !overlapping.some(span => span.id === last.id)
-    ? { id: last.id, domainId: last.domainId, start: last.start, end: last.end }
-    : null;
-  let tail = predecessor?.domainId === domain.id ? predecessor : null;
-  const spans = [];
-  for (const piece of pieces) {
-    days.get([piece.date, domain.id].join('|')).ms += piece.end - piece.start;
-    hours.get([piece.date, piece.hour, domain.id].join('|')).ms += piece.end - piece.start;
-    if (tail && tail.end === piece.start && dateKey(tail.start) === piece.date) tail.end = piece.end;
-    else tail = { domainId: domain.id, start: piece.start, end: piece.end };
-    if (!spans.includes(tail)) spans.push(tail);
-  }
-  return { advance, added, days, hours, spans };
-}
-
-/**
- * Deletes one local date. A span that crosses that midnight keeps the part outside the day.
- * Pending cursor time outside that day is stored in the same transaction. `since` moves to `now`
- * when that pending interval meets the day, or when the day is today, so the removed slice cannot be written again.
- * @param {Dexie} db @param {string} date @param {number} now
- * @returns {Promise<void>}
- */
-export async function deleteDay(db, date, now) {
-  const dayStart = dateKeyStart(date);
-  if (dayStart === null) throw new TypeError('invalid date');
-  const dayEnd = addDays(dayStart, 1);
-  await ledgerTx(db, {
-    async read(t) {
-      const spans = (await t.spans.where('start').below(dayEnd).toArray()).filter(span => span.end > dayStart);
-      const cursor = (await t.meta.get('cursor'))?.value;
-      const carry = await cursorAfterDayRemoval(t, { cursor, overlapping: spans, dayStart, dayEnd, date, now });
-      return { spans, cursor, carry };
-    },
-    write(t, { spans, cursor, carry }) {
-      const writes = [
-        t.days.where('[date+domainId]').between([date, Dexie.minKey], [date, Dexie.maxKey]).delete(),
-        t.hours.where('[date+hour+domainId]').between([date, Dexie.minKey, Dexie.minKey], [date, Dexie.maxKey, Dexie.maxKey]).delete(),
-        t.visits.where('at').between(dayStart, dayEnd, true, false).delete(),
-      ];
-      for (const span of spans) {
-        const kept = spansAfterDayRemoval(span, dayStart, dayEnd);
-        if (!kept.length) writes.push(t.spans.delete(span.id));
-        else {
-          writes.push(t.spans.put({ id: span.id, domainId: span.domainId, start: kept[0].start, end: kept[0].end }));
-          if (kept[1]) writes.push(t.spans.add({ domainId: span.domainId, start: kept[1].start, end: kept[1].end }));
-        }
-      }
-      if (carry.added) writes.push(t.domains.add(carry.added));
-      if (carry.days) writes.push(t.days.bulkPut([...carry.days.values()]), t.hours.bulkPut([...carry.hours.values()]), t.spans.bulkPut(carry.spans));
-      if (carry.advance) writes.push(t.meta.put({ key: 'cursor', value: { ...cursor, since: now } }));
       return writes;
     },
   });
