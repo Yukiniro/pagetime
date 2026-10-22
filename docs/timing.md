@@ -50,11 +50,9 @@ Each of the three overview figures (active time, visits, sites) is compared with
 
 ## How sites are grouped
 
-Records always keep the original hostname. Grouping is only a view over those rows: switching it never rewrites stored data, and the Visits page still shows raw hostnames. Settings, Group subdomains:
+Records always keep the original hostname. Grouping is only a view over those rows, and it does not rewrite stored data. The Visits page still shows raw hostnames.
 
-- **Don't group.** Each hostname is counted on its own.
-- **Group www, m, and mobile** (default). A leading `www.`, `m.`, or `mobile.` is removed, so `www.youtube.com` and `m.youtube.com` become `youtube.com`. Other names, such as `gist.github.com`, stay separate.
-- **Group by registrable domain.** Grouped with the ICANN section of the Public Suffix List, which ships inside the extension and needs no network. `a.b.example.co.uk` becomes `example.co.uk`. IP addresses, `localhost`, and hosts with no registrable domain stay unchanged. Private suffixes such as `github.io` are not treated as public suffixes, so `user.github.io` is grouped under `github.io`.
+A leading `www.`, `m.`, or `mobile.` is removed, so `www.youtube.com` and `m.youtube.com` become `youtube.com`. Other names, such as `gist.github.com`, stay separate.
 
 A site that merges two or more hostnames lists its subdomains in the site details. Opening its visits filters by every hostname in the group.
 
@@ -73,7 +71,7 @@ The full statement is [PRIVACY.md](../PRIVACY.md) ([中文](../PRIVACY.zh-CN.md)
 
 - `tests/timing.test.mjs` drives the background with a fake clock and a fake browser.
 - `tests/model.test.mjs` and `tests/compare.test.mjs` cover the constants, the day cut-offs, and the comparison windows.
-- `tests/site.test.mjs` covers the three groupings.
+- `tests/site.test.mjs` covers grouping by a leading `www.`, `m.`, or `mobile.`.
 - `tests/e2e/timing.spec.mjs` runs the built extension in Chromium.
 - [timing-coverage.md](timing-coverage.md) maps each scenario to its test, and [timing-qa.md](timing-qa.md) is the manual checklist for macOS and Windows.
 - `tests/timing-docs.test.mjs` checks that this page and its Chinese version state the same constants as `src/model.mjs` and `src/settings.mjs`.

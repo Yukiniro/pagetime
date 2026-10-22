@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { viewFromLedger, viewFromSnapshot } from '../src/ledger-view.mjs';
-import { focusSpans, focusSummary, timelineHasActivity, toggleSiteFilter, trendHasActivity } from '../src/site-filter.mjs';
+import { focusSpans, focusSummary, toggleSiteFilter, trendHasActivity } from '../src/site-filter.mjs';
 
 const sum = rows => rows.reduce((total, row) => total + row.ms, 0);
 const at = (day, hour = 0, minute = 0) => new Date(2026, 9, day, hour, minute).getTime();
@@ -25,7 +25,7 @@ const snapshot = {
 };
 
 test('selecting a merged site keeps that site’s milliseconds and a second click clears it', () => {
-  const range = { start: at(18), end: at(20), today: at(19), siteMerge: 'prefix' };
+  const range = { start: at(18), end: at(20), today: at(19) };
   const full = viewFromSnapshot(snapshot, range);
   assert.equal(full.stats.ms, 5 * 60_000 + 4 * 60_000 + 3 * 60_000 + 60_000 + 8 * 60_000);
   let filter = toggleSiteFilter('', 'youtube.com');
@@ -35,7 +35,7 @@ test('selecting a merged site keeps that site’s milliseconds and a second clic
   assert.equal(youtube.rows.length, 1);
   const spanMs = (spans, start, end) => spans.reduce((total, span) => total + Math.max(0, Math.min(span.end, end) - Math.max(span.start, start)), 0);
   assert.equal(spanMs(focusSpans(full.spans, filter), at(19), at(20)), youtube.ms);
-  const week = viewFromSnapshot(snapshot, { start: at(13), end: at(20), today: at(19), site: filter, siteMerge: 'prefix' });
+  const week = viewFromSnapshot(snapshot, { start: at(13), end: at(20), today: at(19), site: filter });
   assert.equal(sum(week.days), youtube.ms + 8 * 60_000);
   assert.equal(week.stats.ms, full.stats.ms);
   assert.equal(week.spans.length, full.spans.length);
@@ -44,22 +44,6 @@ test('selecting a merged site keeps that site’s milliseconds and a second clic
   assert.equal(focusSummary(full.todayStats, filter).ms, full.todayStats.ms);
   assert.equal(focusSummary(full.todayStats, filter).visits, full.todayStats.visits);
   assert.equal(focusSummary(full.todayStats, filter).rows.length, full.todayStats.rows.length);
-});
-
-test('registrable and none filters use the same key as the ranking row', () => {
-  const today = { start: at(19), end: at(20), today: at(19) };
-  const registrable = viewFromSnapshot(snapshot, { ...today, siteMerge: 'registrable' });
-  const github = focusSummary(registrable.todayStats, 'github.com');
-  assert.equal(github.ms, 3 * 60_000 + 60_000);
-  assert.equal(github.visits, 2);
-  assert.deepEqual(github.rows[0].hosts.map(host => host.domain).sort(), ['gist.github.com', 'github.com']);
-  const separate = viewFromSnapshot(snapshot, { ...today, siteMerge: 'none' });
-  assert.equal(focusSummary(separate.todayStats, 'www.youtube.com').ms, 5 * 60_000);
-  assert.equal(focusSummary(separate.todayStats, 'youtube.com').ms, 0);
-  assert.equal(focusSummary(separate.todayStats, 'youtube.com').rows.length, 0);
-  assert.equal(trendHasActivity(viewFromSnapshot(snapshot, { start: at(13), end: at(20), today: at(19), site: 'missing.example', siteMerge: 'prefix' }).days), false);
-  assert.equal(timelineHasActivity(focusSpans(separate.spans, 'www.youtube.com'), at(19), at(20)), true);
-  assert.equal(timelineHasActivity(focusSpans(separate.spans, 'gist.github.com'), at(20), at(21)), false);
 });
 
 test('ledger trend days follow the site filter while ranking totals stay complete', () => {
@@ -84,7 +68,7 @@ test('ledger trend days follow the site filter while ranking totals stay complet
     spans: [{ domainId: 1, start: at(19, 9), end: at(19, 9, 5) }, { domainId: 3, start: at(19, 11), end: at(19, 11, 3) }],
     visits: [{ domainId: 1, at: at(19, 9) }, { domainId: 3, at: at(19, 11) }],
   };
-  const range = { start: at(18), end: at(20), today: at(19), now: at(19, 12), siteMerge: 'prefix' };
+  const range = { start: at(18), end: at(20), today: at(19), now: at(19, 12) };
   const full = viewFromLedger(base, range);
   const filtered = viewFromLedger(base, { ...range, site: 'youtube.com' });
   assert.equal(full.stats.ms, 21 * 60_000);
@@ -107,7 +91,7 @@ test('a filtered site with only visits still has a trend, and a site with no row
     visits: [{ domain: 'news.example', at: at(19, 9) }],
     spans: [{ domain: 'other.example', start: at(19, 8), end: at(19, 8, 5) }],
   };
-  const range = { start: at(18), end: at(21), today: at(20), site: 'news.example', siteMerge: 'prefix' };
+  const range = { start: at(18), end: at(21), today: at(20), site: 'news.example' };
   const days = viewFromSnapshot(visitOnly, range).days;
   const hit = days.find(day => new Date(day.at).getDate() === 19);
   assert.equal(hit.ms, 0);
@@ -131,7 +115,7 @@ test('a filtered site with only visits still has a trend, and a site with no row
     hours: [],
     spans: [],
     visits: [],
-  }, { start: at(18), end: at(21), today: at(20), now: at(20, 12), site: 'news.example', siteMerge: 'prefix' });
+  }, { start: at(18), end: at(21), today: at(20), now: at(20, 12), site: 'news.example' });
   const row = ledger.days.find(day => new Date(day.at).getDate() === 19);
   assert.equal(row.ms, 0);
   assert.equal(row.visits, 2);

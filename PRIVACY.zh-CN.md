@@ -35,7 +35,7 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 | `ignored` | 最多 500 条用户输入的域名，每条最长 253 个字符。只存在这个 `settings` 键里。一条记录匹配该域名及其子域名。只在 `recordMode` 为 `blacklist` 时生效。添加或移除不会删除或隐藏账本里已有的行 |
 | `allowed` | 最多 500 条域名，长度和匹配规则与 `ignored` 相同。只在 `recordMode` 为 `whitelist` 时生效。添加或移除不会删除或隐藏账本里已有的行 |
 
-`src/settings.mjs` 的 `validateSettings` 会把非法的 `schema`、`idleSeconds`、`countAudible` 或 `recordMode` 换成默认值。没有 `ignored` 或 `allowed` 时按空列表处理。非法条目会被丢掉，重复项会去掉，每份列表在 500 条处截断。它不抛错，也不改账本。没有 `settings` 时，后台使用 `{ schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', recordMode: 'blacklist', ignored: [], allowed: [], badge: true }`。`idleSeconds`、`countAudible`、`badge` 和 `recordMode` 不是浏览历史。界面语言存在 `chrome.storage.local` 的 `language` 键，供工具栏标题使用。`ignored` 和 `allowed` 是用户输入的域名。后台还会读取 `tab.audible` 和 `tab.mutedInfo` 来执行 `countAudible`。这两个标志不写入账本或 `settings`。
+`src/settings.mjs` 的 `validateSettings` 会把非法的 `schema`、`idleSeconds`、`countAudible` 或 `recordMode` 换成默认值。没有 `ignored` 或 `allowed` 时按空列表处理。非法条目会被丢掉，重复项会去掉，每份列表在 500 条处截断。它不抛错，也不改账本。没有 `settings` 时，后台使用 `{ schema: 1, idleSeconds: 60, countAudible: true, recordMode: 'blacklist', ignored: [], allowed: [], badge: true }`。`idleSeconds`、`countAudible`、`badge` 和 `recordMode` 不是浏览历史。界面语言存在 `chrome.storage.local` 的 `language` 键，供工具栏标题使用。`ignored` 和 `allowed` 是用户输入的域名。后台还会读取 `tab.audible` 和 `tab.mutedInfo` 来执行 `countAudible`。这两个标志不写入账本或 `settings`。
 
 不保存标题、完整网址、页面正文、Cookie、表单输入，也不读取页面 DOM。扩展没有 content script，也不使用 `chrome.scripting`。
 
@@ -81,7 +81,7 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 
 ## 如何导出
 
-「设置 → 导出数据」把账本存成一份文件。统计页在一个只读 IndexedDB 事务里读取 `meta.state` 和 `domains`、`days`、`hours`、`spans`、`visits` 的全部行（`src/ledger.mjs` 的 `readLedgerSnapshot`），在页面里生成文件（`src/export.mjs`），再通过 `Blob` 网址和 `<a download>` 链接保存。不联网、不新增消息，也不使用 `downloads` 权限。「导出 JSON」生成 `pagetime-YYYY-MM-DD.json`，含 `format: "pagetime-ledger"`、`schemaVersion`、`exportedAt`、`timeZone`、`appVersion`、`recording`（即 `meta.state`）、完整的 `settings`（含 `ignored`、`allowed`、`recordMode`、`siteMerge`），以及按主键排序的五张表；`cursor` 行不导出。「导出 CSV」生成 `pagetime-YYYY-MM-DD.csv`，UTF-8 带 BOM，列为 `date,host,active_ms,visits`：`days` 里每个本地日期、每个原始主机名一行，不按 `siteMerge` 合并。两种文件都不含网址、标题或页面内容。保存下来的文件在扩展之外，删除、清空或卸载都不会删掉它。本地预览导出的是 `pagetime-preview` 里的那份对象。
+「设置 → 导出数据」把账本存成一份文件。统计页在一个只读 IndexedDB 事务里读取 `meta.state` 和 `domains`、`days`、`hours`、`spans`、`visits` 的全部行（`src/ledger.mjs` 的 `readLedgerSnapshot`），在页面里生成文件（`src/export.mjs`），再通过 `Blob` 网址和 `<a download>` 链接保存。不联网、不新增消息，也不使用 `downloads` 权限。「导出 JSON」生成 `pagetime-YYYY-MM-DD.json`，含 `format: "pagetime-ledger"`、`schemaVersion`、`exportedAt`、`timeZone`、`appVersion`、`recording`（即 `meta.state`）、完整的 `settings`（含 `ignored`、`allowed`、`recordMode`），以及按主键排序的五张表；`cursor` 行不导出。「导出 CSV」生成 `pagetime-YYYY-MM-DD.csv`，UTF-8 带 BOM，列为 `date,host,active_ms,visits`：`days` 里每个本地日期、每个原始主机名一行，不合并。两种文件都不含网址、标题或页面内容。保存下来的文件在扩展之外，删除、清空或卸载都不会删掉它。本地预览导出的是 `pagetime-preview` 里的那份对象。
 
 ## 如何恢复
 

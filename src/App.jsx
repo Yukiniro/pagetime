@@ -16,7 +16,7 @@ import { midnight } from './model.mjs';
 import { activeRange, defaultChart, singleDayRange, timelineDay } from './range.mjs';
 import { RangeControl } from './RangeControl.jsx';
 import { rangeChip, trendLabel as trendTitle } from './range-label.mjs';
-import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, MERGE_MODES, RECORD_MODES, THEME_MODES, isAllowed, isIgnored, normalizeHost, validateSettings } from './settings.mjs';
+import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, RECORD_MODES, THEME_MODES, isAllowed, isIgnored, normalizeHost, validateSettings } from './settings.mjs';
 import { hostsToDelete } from './site.mjs';
 import { IgnoredSites } from './IgnoredSites.jsx';
 import { ExportData } from './ExportData.jsx';
@@ -52,7 +52,7 @@ export function App() {
   const active = activeRange(range, today);
   const start = active.start, end = active.end;
   const chip = rangeChip(t, active);
-  const ledger = useLedger({ start, end, today, search: search.trim().toLowerCase(), site: site.trim(), siteMerge: settings.siteMerge, detail: selected ?? '', focus: filterSite });
+  const ledger = useLedger({ start, end, today, search: search.trim().toLowerCase(), site: site.trim(), detail: selected ?? '', focus: filterSite });
   const view = ledger.view, stats = view?.stats, todayStats = view?.todayStats;
   async function act(type = 'snapshot', body) {
     setBusy(true);
@@ -117,7 +117,6 @@ export function App() {
   const languageName = languages.find(([code]) => code === i18n.resolvedLanguage)?.[1];
   const links = docLinks(i18n.resolvedLanguage);
   const idleLabel = t('settings.idle.option', { count: settings.idleSeconds / 60 });
-  const mergeLabel = t(`settings.siteMerge.${settings.siteMerge}`);
   const themeLabel = t(`settings.theme.${settings.theme}`);
   const isDark = useDocumentTheme(settings.theme, ready);
   const saveSettings = next => act('settings', { settings: next });
@@ -143,7 +142,7 @@ export function App() {
     const next = singleDayRange(at, midnight(Date.now()), rangeSince);
     if (next) setRange(next);
   };
-  const removeHosts = target => hostsToDelete(target, settings.siteMerge, view?.hosts ?? [], view?.openDomain);
+  const removeHosts = target => hostsToDelete(target, view?.hosts ?? [], view?.openDomain);
 
   return <TooltipProvider><AlertDialog open={confirmClear} onOpenChange={setConfirmClear}>
     <SidebarProvider className="app-shell">
@@ -198,7 +197,6 @@ export function App() {
               {listField === 'allowed' && !(settings.allowed?.length) && <Alert variant="destructive" className="mt-4"><WarningCircle /><AlertTitle>{t('settings.allowed.emptyWarning')}</AlertTitle></Alert>}
               <h3 className="mt-4">{t(`settings.${listField}.title`)}</h3><IgnoredSites key={listField} field={listField} settings={settings} busy={busy} onSave={saveSettings} />
             </div></div>
-            <div className="setting-row"><h2 id="site-merge">{t('settings.siteMerge.title')}</h2><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.siteMerge.label', { mode: mergeLabel })} disabled={busy}>{mergeLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={settings.siteMerge} onValueChange={value => { setSite(''); setSearch(''); setFilterSite(''); saveSettings({ ...settings, siteMerge: value }); }}>{MERGE_MODES.map(mode => <DropdownMenuRadioItem closeOnClick key={mode} value={mode}>{t(`settings.siteMerge.${mode}`)}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div>
             <ExportData />
             <div className="setting-row"><h2>{t('settings.clear.title')}</h2><AlertDialogTrigger render={<Button variant="destructive" className="action-button" disabled={busy} />}><Trash />{t('settings.clear.button')}</AlertDialogTrigger></div>
             <p className="settings-links"><a href={links.timing} target="_blank" rel="noreferrer noopener">{t('settings.docs.timing')}</a><span aria-hidden="true">·</span><a href={links.privacy} target="_blank" rel="noreferrer noopener">{t('settings.docs.privacy')}</a></p>

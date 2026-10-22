@@ -16,7 +16,7 @@ const meta = {
   exportedAt: at(10, 20, 8),
   timeZone: 'Asia/Shanghai',
   appVersion: '1.2.3',
-  settings: { ...DEFAULT_SETTINGS, ignored: ['skip.test'], allowed: ['keep.test'], recordMode: 'whitelist', siteMerge: 'registrable', theme: 'dark', badge: false, idleSeconds: 300, countAudible: false },
+  settings: { ...DEFAULT_SETTINGS, ignored: ['skip.test'], allowed: ['keep.test'], recordMode: 'whitelist', theme: 'dark', badge: false, idleSeconds: 300, countAudible: false },
 };
 const withoutExportedAt = text => text.replace(/"exportedAt": "[^"]+"/, '"exportedAt": ""');
 
@@ -56,6 +56,11 @@ test('a ledger export round-trips through clear and restore, except exportedAt',
   assert.equal(await db.table('domains').count(), 0);
   const restored = await restoreLedger(db, original, at(10, 21, 12));
   assert.deepEqual(restored.settings, meta.settings);
+  const legacy = JSON.parse(original);
+  legacy.settings.siteMerge = 'registrable';
+  const dropped = await restoreLedger(db, JSON.stringify(legacy), at(10, 21, 13));
+  assert.equal(Object.hasOwn(dropped.settings, 'siteMerge'), false);
+  assert.deepEqual(dropped.settings, meta.settings);
   assert.deepEqual(restored.recording, JSON.parse(original).recording);
   const again = toLedgerJson(await readLedgerSnapshot(db), { ...meta, exportedAt: meta.exportedAt + 60_000, settings: restored.settings });
   assert.notEqual(again, original);

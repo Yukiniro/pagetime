@@ -101,7 +101,7 @@ test('theme defaults to system and rejects any other value', () => {
 test('validateSettings keeps schema 1, filters invalid hosts, dedupes, and caps the list', () => {
   assert.equal(IGNORED_LIMIT, 500);
   assert.equal(HOST_MAX, 253);
-  assert.deepEqual(validateSettings(undefined), { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', recordMode: 'blacklist', ignored: [], allowed: [], badge: true, theme: 'system' });
+  assert.deepEqual(validateSettings(undefined), { schema: 1, idleSeconds: 60, countAudible: true, recordMode: 'blacklist', ignored: [], allowed: [], badge: true, theme: 'system' });
   assert.deepEqual(validateSettings({ ignored: 'example.com' }).ignored, []);
   assert.deepEqual(validateSettings({
     schema: 1,
@@ -112,7 +112,6 @@ test('validateSettings keeps schema 1, filters invalid hosts, dedupes, and caps 
     schema: 1,
     idleSeconds: 300,
     countAudible: false,
-    siteMerge: 'prefix',
     recordMode: 'blacklist',
     ignored: ['mail.example.com', 'localhost', normalizeHost('::1')],
     allowed: [],
@@ -129,7 +128,6 @@ test('validateSettings keeps schema 1, filters invalid hosts, dedupes, and caps 
     schema: 1,
     idleSeconds: 60,
     countAudible: true,
-    siteMerge: 'prefix',
     recordMode: 'blacklist',
     ignored: ['ok.com'],
     allowed: [],
@@ -153,6 +151,17 @@ test('shouldRecord follows the active list and leaves the other list unused', ()
   assert.equal(shouldRecord('mail.example.com', { recordMode: 'whitelist', allowed: ['mail.example.com'] }), true);
   assert.equal(shouldRecord('ok.com', { recordMode: 'whitelist', allowed: [] }), false);
   assert.equal(shouldRecord('ok.com', { recordMode: 'nope', ignored: [] }), true);
+});
+
+test('a stored siteMerge is dropped and the other fields stay', () => {
+  for (const siteMerge of ['none', 'prefix', 'registrable']) {
+    const settings = validateSettings({ siteMerge, idleSeconds: 120, theme: 'dark', recordMode: 'whitelist', countAudible: false });
+    assert.equal(Object.hasOwn(settings, 'siteMerge'), false);
+    assert.equal(settings.idleSeconds, 120);
+    assert.equal(settings.theme, 'dark');
+    assert.equal(settings.recordMode, 'whitelist');
+    assert.equal(settings.countAudible, false);
+  }
 });
 
 test('validateSettings keeps both host lists and falls back on an illegal record mode', () => {

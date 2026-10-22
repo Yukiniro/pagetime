@@ -97,6 +97,10 @@ test('restoring a JSON backup from settings replaces the empty ledger', async ()
     await dashboard.getByRole('button', { name: 'Replace records', exact: true }).click();
     await expect(dashboard.getByRole('status').filter({ hasText: 'Restored.' })).toBeVisible();
     await expect(dashboard.getByRole('button', { name: 'Remove skip.restore' })).toBeVisible();
+    const stored = await sw.evaluate(() => chrome.storage.local.get('settings'));
+    expect(stored.settings.siteMerge).toBeUndefined();
+    expect(stored.settings.idleSeconds).toBe(120);
+    expect(stored.settings.ignored).toEqual(['skip.restore']);
     await expect(dashboard.locator('[data-slot="alert-dialog-content"]')).toHaveCount(0);
     await shot(dashboard, 'restore-settings-after.png');
     await dashboard.getByRole('button', { name: 'Overview', exact: true }).click();

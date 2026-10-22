@@ -40,7 +40,7 @@ function snapshot() {
 }
 
 function previewDetail(range, now = at(21, 12)) {
-  return siteSeriesFromSnapshot(snapshot(), detailSeriesArgs({ ...range, detail: 'github.com', siteMerge: 'prefix' }, now));
+  return siteSeriesFromSnapshot(snapshot(), detailSeriesArgs({ ...range, detail: 'github.com' }, now));
 }
 
 const yesterday = { preset: 'custom', start: at(20), end: at(21) };
@@ -114,7 +114,7 @@ test('a span crossing midnight counts in both trend days and only the selected d
     visits: [],
     spans: [{ domain: 'github.com', start: at(19, 23, 30), end: at(20, 0, 20) }],
   };
-  const series = siteSeriesFromSnapshot(data, detailSeriesArgs({ ...yesterday, detail: 'github.com', siteMerge: 'prefix' }, at(21, 12)));
+  const series = siteSeriesFromSnapshot(data, detailSeriesArgs({ ...yesterday, detail: 'github.com' }, at(21, 12)));
   assert.equal(series.days.find(day => dateKey(day.at) === '2026-10-19').ms, minute(30));
   assert.equal(series.days.find(day => dateKey(day.at) === '2026-10-20').ms, minute(20));
   assert.equal(series.hours[23].ms, 0);
@@ -125,7 +125,7 @@ test('a span crossing midnight counts in both trend days and only the selected d
 
 test('open credit on a single day updates that trend day and that day\'s hours', () => {
   const now = at(20, 0, 0, 40);
-  const args = detailSeriesArgs({ ...yesterday, detail: 'github.com', siteMerge: 'prefix' }, now);
+  const args = detailSeriesArgs({ ...yesterday, detail: 'github.com' }, now);
   const domains = [{ id: 1, host: 'github.com' }];
   const days = [{ date: '2026-10-19', domainId: 1, ms: minute(1) }];
   const hours = [];
@@ -168,7 +168,7 @@ test('the extension detail query uses the trend day keys and the selected hour k
     span: { domain: 'youtube.com', start: youtube, end: youtube + minute(20) },
     cursor: null,
   });
-  const args = detailSeriesArgs({ ...yesterday, detail: 'github.com', siteMerge: 'prefix' }, at(21, 12));
+  const args = detailSeriesArgs({ ...yesterday, detail: 'github.com' }, at(21, 12));
   assert.equal(args.dayFrom, '2026-10-14');
   assert.equal(args.dayTo, '2026-10-20');
   assert.equal(dateKey(args.start), args.dayTo);

@@ -597,7 +597,8 @@ test('exporting from settings downloads the ledger as JSON and as a daily CSV', 
     expect(document.timeZone).toBe(await dashboard.evaluate(() => Intl.DateTimeFormat().resolvedOptions().timeZone));
     expect(document.appVersion).toBe(JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version);
     expect(document.recording.enabled).toBe(true);
-    expect(document.settings).toMatchObject({ recordMode: 'blacklist', siteMerge: 'prefix', ignored: [], allowed: [] });
+    expect(document.settings).toMatchObject({ recordMode: 'blacklist', ignored: [], allowed: [] });
+    expect(document.settings.siteMerge).toBeUndefined();
     expect(Object.keys(document.tables)).toEqual(['domains', 'days', 'hours', 'spans', 'visits']);
     const id = document.tables.domains.find(row => row.host === 'a.test').id;
     expect(document.tables.days).toEqual(stored.days.map(({ date, domainId, ms, visits }) => ({ date, domainId, ms, visits })));

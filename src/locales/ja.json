@@ -106,13 +106,6 @@
     "recording": { "title": "閲覧の記録" },
     "audible": { "title": "音声の再生中は計測を続ける" },
     "idle": { "title": "アイドル判定時間", "description": "無操作がこの時間続くとアイドルとみなします。", "label": "アイドル判定時間：{{duration}}", "option_other": "{{count}} 分" },
-    "siteMerge": {
-      "title": "サイトのまとめ方",
-      "label": "サイトのまとめ方：{{mode}}",
-      "none": "まとめない",
-      "prefix": "www・m・mobile をまとめる",
-      "registrable": "登録可能ドメインでまとめる"
-    },
     "recordMode": { "title": "記録範囲", "blacklist": "ブラックリスト", "whitelist": "ホワイトリスト", "blacklistHint": "下のリスト以外のサイトを記録します。", "whitelistHint": "下のリストにあるサイトだけを記録します。" },
     "ignored": { "title": "無視するサイト", "input": "無視するホスト", "placeholder": "example.com（サブドメインを含む）", "add": "追加", "remove": "{{domain}} を削除", "emptyTitle": "無視するサイトはありません", "error": "example.com のような有効なホストを入力してください", "limit": "無視できるホストは {{count}} 件までです。" },
     "allowed": { "title": "許可するサイト", "input": "許可するホスト", "placeholder": "example.com（サブドメインを含む）", "add": "追加", "remove": "{{domain}} を削除", "emptyTitle": "許可するサイトはありません", "limit": "許可できるホストは {{count}} 件までです。", "emptyWarning": "ホワイトリストが空のため、どのサイトも記録されません", "error": "example.com のような有効なホストを入力してください" },

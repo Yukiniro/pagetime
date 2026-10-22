@@ -50,11 +50,9 @@
 
 ## 站点如何合并
 
-记录永远保存原始主机名。合并只是查询视图：切换方式不会改写已存数据，访问记录页仍显示原始主机名。设置 →「合并子域名」：
+记录永远保存原始主机名。合并只是查询视图，不会改写已存数据。访问记录页仍显示原始主机名。
 
-- **不合并。** 每个主机名单独统计。
-- **合并 www、m、mobile**（默认）。去掉开头的 `www.`、`m.`、`mobile.`，`www.youtube.com` 与 `m.youtube.com` 都显示为 `youtube.com`。其他名称如 `gist.github.com` 仍单独统计。
-- **按可注册域名合并。** 使用随扩展离线打包的 Public Suffix List（ICANN 部分），无需联网。`a.b.example.co.uk` 显示为 `example.co.uk`。IP 地址、`localhost` 和得不到可注册域名的主机保持原样。`github.io` 这类私有后缀不当作公共后缀，因此 `user.github.io` 会并入 `github.io`。
+去掉开头的 `www.`、`m.`、`mobile.`，`www.youtube.com` 与 `m.youtube.com` 都显示为 `youtube.com`。其他名称如 `gist.github.com` 仍单独统计。
 
 一个站点合并了两个及以上主机名时，站点详情里会列出子域名构成；从详情进入访问记录时，按合并后的全部主机名筛选。
 
@@ -73,7 +71,7 @@
 
 - `tests/timing.test.mjs` 用假时钟和假 `browser` 驱动后台。
 - `tests/model.test.mjs` 和 `tests/compare.test.mjs` 覆盖常量、按天截断和比较窗口。
-- `tests/site.test.mjs` 覆盖三种合并方式。
+- `tests/site.test.mjs` 覆盖去掉开头的 `www.`、`m.`、`mobile.`。
 - `tests/e2e/timing.spec.mjs` 在 Chromium 里运行构建好的扩展。
 - [timing-coverage.md](timing-coverage.md) 把每个场景对应到测试，[timing-qa.md](timing-qa.md) 是 macOS / Windows 的手动清单。
 - `tests/timing-docs.test.mjs` 检查本页和英文版写的常量与 `src/model.mjs`、`src/settings.mjs` 一致。

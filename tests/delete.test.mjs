@@ -122,8 +122,8 @@ test('deleting a missing site is idempotent and an empty host is a no-op', async
 });
 
 test('a grouped site resolves to the stored hostnames, including the open cursor host', () => {
-  assert.deepEqual(hostsToDelete('youtube.com', 'prefix', ['www.youtube.com', 'm.youtube.com', 'gist.github.com'], 'mobile.youtube.com'), ['www.youtube.com', 'm.youtube.com', 'mobile.youtube.com']);
-  assert.deepEqual(hostsToDelete('www.youtube.com', 'none', ['www.youtube.com', 'youtube.com']), ['www.youtube.com']);
-  assert.deepEqual(hostsToDelete('github.io', 'registrable', ['user.github.io', 'github.io', 'gist.github.com']), ['user.github.io', 'github.io']);
-  assert.deepEqual(hostsToDelete('solo.test', 'prefix', []), ['solo.test']);
+  assert.deepEqual(hostsToDelete('youtube.com', ['www.youtube.com', 'm.youtube.com', 'gist.github.com'], 'mobile.youtube.com'), ['www.youtube.com', 'm.youtube.com', 'mobile.youtube.com']);
+  assert.deepEqual(hostsToDelete('youtube.com', ['www.youtube.com', 'youtube.com']), ['www.youtube.com', 'youtube.com']);
+  assert.deepEqual(hostsToDelete('github.io', ['user.github.io', 'github.io', 'gist.github.com']), ['github.io']);
+  assert.deepEqual(hostsToDelete('solo.test', []), ['solo.test']);
 });

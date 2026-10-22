@@ -11,14 +11,13 @@ export const VISIT_LIST_LIMIT = 200;
 // and the heatmap without hiding ranking rows or the site-detail totals. The heatmap matches
 // `row.site` in the view. Hour-cell filtering is not applied.
 
-const keyFor = siteMerge => domain => siteOf(domain, siteMerge);
-const matches = (domain, search, site, keyOf) => site ? keyOf(domain) === site : !search || domain.includes(search);
+const matches = (domain, search, site) => site ? siteOf(domain) === site : !search || domain.includes(search);
 const hourPieces = (start, end) => end > start ? splitByHour(start, end).map(piece => ({ date: piece.date, hour: piece.hour, ms: piece.end - piece.start })) : [];
 
-export function viewFromSnapshot(data, { start, end, today, search = '', site = '', siteMerge = 'prefix' }) {
-  const keyOf = keyFor(siteMerge);
+export function viewFromSnapshot(data, { start, end, today, search = '', site = '' }) {
+  const keyOf = siteOf;
   const chartDay = timelineDay({ start, end }, today);
-  const visits = data.visits.filter(visit => visit.at >= start && visit.at < end && matches(visit.domain, search, site, keyOf)).sort((a, b) => b.at - a.at);
+  const visits = data.visits.filter(visit => visit.at >= start && visit.at < end && matches(visit.domain, search, site)).sort((a, b) => b.at - a.at);
   const trendData = site ? {
     visits: data.visits.filter(visit => keyOf(visit.domain) === site),
     spans: data.spans.filter(span => keyOf(span.domain) === site),
@@ -39,9 +38,9 @@ export function viewFromSnapshot(data, { start, end, today, search = '', site = 
   };
 }
 
-export function viewFromLedger({ state, domains, days, hours = [], spans, visits, cursor = null, lastEnd }, { start, end, today, search = '', site = '', siteMerge = 'prefix', now }) {
+export function viewFromLedger({ state, domains, days, hours = [], spans, visits, cursor = null, lastEnd }, { start, end, today, search = '', site = '', now }) {
   const host = new Map(domains.map(row => [row.id, row.host]));
-  const keyOf = keyFor(siteMerge);
+  const keyOf = siteOf;
   const todayKey = dateKey(today);
   const entries = [];
   const todayEntries = [];
@@ -61,7 +60,7 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
         perDay.set(row.date, (perDay.get(row.date) ?? 0) + row.ms);
         dayVisits.set(row.date, (dayVisits.get(row.date) ?? 0) + (row.visits || 0));
       }
-      if (matches(domain, search, site, keyOf)) visitCount += row.visits;
+      if (matches(domain, search, site)) visitCount += row.visits;
     }
     if (row.date === todayKey) todayEntries.push({ domain, ms: row.ms, visits: row.visits });
   }
@@ -94,7 +93,7 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
   const listed = [];
   for (const visit of visits) {
     const domain = host.get(visit.domainId);
-    if (!domain || !matches(domain, search, site, keyOf)) continue;
+    if (!domain || !matches(domain, search, site)) continue;
     listed.push({ domain, site: keyOf(domain), at: visit.at });
   }
   const chartEnd = addDays(chartDay, 1);
@@ -141,7 +140,6 @@ export function detailSeriesArgs(range, now) {
   const trend = trendWindow(range);
   return {
     site: range.detail,
-    siteMerge: range.siteMerge,
     start: range.start,
     end: range.end,
     dayStart: trend.start,
@@ -155,8 +153,8 @@ export function detailSeriesArgs(range, now) {
 // Daily bars and 0–23 totals for one merged site. Missing days stay in the list as 0.
 // Days before `since` are marked unrecorded. Open credit uses the same rule as viewFromLedger, so the two sums match that site's header.
 // `dayStart`/`dayEnd` select the daily bars. Hours and `hourDays` stay on [start, end).
-export function siteSeries({ domains, days, hours, state, cursor = null, lastEnd }, { site, siteMerge = 'prefix', start, end, dayStart = start, dayEnd = end, now }) {
-  const keyOf = keyFor(siteMerge);
+export function siteSeries({ domains, days, hours, state, cursor = null, lastEnd }, { site, start, end, dayStart = start, dayEnd = end, now }) {
+  const keyOf = siteOf;
   const host = new Map(domains.map(row => [row.id, row.host]));
   const belongs = domainId => {
     const domain = host.get(domainId);
@@ -191,7 +189,7 @@ export function siteSeries({ domains, days, hours, state, cursor = null, lastEnd
 }
 
 // Preview snapshots store spans, not day and hour rows. The result matches siteSeries.
-export function siteSeriesFromSnapshot(data, { site, siteMerge = 'prefix', start, end, dayStart = start, dayEnd = end, now }) {
+export function siteSeriesFromSnapshot(data, { site, start, end, dayStart = start, dayEnd = end, now }) {
   const domains = [];
   const ids = new Map();
   const idOf = host => {
@@ -230,7 +228,7 @@ export function siteSeriesFromSnapshot(data, { site, siteMerge = 'prefix', start
     hours,
     state: { enabled: data.enabled, since: data.since },
     cursor: null,
-  }, { site, siteMerge, start, end, dayStart, dayEnd, now });
+  }, { site, start, end, dayStart, dayEnd, now });
 }
 
 const totalsOf = summary => ({ ms: summary.ms, visits: summary.visits, sites: summary.rows.filter(row => row.ms > 0 || row.visits > 0).length });
@@ -238,7 +236,7 @@ const totalsOf = summary => ({ ms: summary.ms, visits: summary.visits, sites: su
 // KPI figures for [start, end) read from stored rows. Whole days come from `days` (time and visits).
 // An `end` inside a day takes that day's part from `hours` (time only) and `visits` rows, because hour buckets hold no visit count.
 // `segment` is the unsaved cursor time. A site filter narrows the figures the same way the KPI bar does.
-export function windowTotals({ domains, days, hours = [], visits = [], segment = null }, { start, end }, { site = '', siteMerge = 'prefix' } = {}) {
+export function windowTotals({ domains, days, hours = [], visits = [], segment = null }, { start, end }, { site = '' } = {}) {
   const host = new Map(domains.map(row => [row.id, row.host]));
   const entries = [];
   const cutDay = midnight(end);
@@ -255,18 +253,18 @@ export function windowTotals({ domains, days, hours = [], visits = [], segment =
   }
   const open = overlapMs(segment, start, end);
   if (open) entries.push({ domain: segment.domain, ms: open, visits: 0 });
-  return totalsOf(focusSummary(groupSites(entries, keyFor(siteMerge)), site));
+  return totalsOf(focusSummary(groupSites(entries, siteOf), site));
 }
 
-export function windowTotalsFromSnapshot(data, { start, end }, { site = '', siteMerge = 'prefix' } = {}) {
-  return totalsOf(focusSummary(summarize(data, start, end, keyFor(siteMerge)), site));
+export function windowTotalsFromSnapshot(data, { start, end }, { site = '' } = {}) {
+  return totalsOf(focusSummary(summarize(data, start, end, siteOf), site));
 }
 
 // The preview twin of the extension's comparison: same windows, same blocks, totals from the snapshot.
-export function compareFromSnapshot(data, { start, end, focus = '', siteMerge = 'prefix' }, now) {
+export function compareFromSnapshot(data, { start, end, focus = '' }, now) {
   const window = previousWindow({ start, end }, now);
   const blocks = compareBlocks(window, { since: data.since, now });
-  const options = { site: focus, siteMerge };
+  const options = { site: focus };
   const ready = !blocks.ms;
   return {
     window,

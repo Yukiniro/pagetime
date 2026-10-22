@@ -106,13 +106,6 @@
     "recording": { "title": "브라우징 기록" },
     "audible": { "title": "오디오 재생 중에는 계속 집계" },
     "idle": { "title": "유휴 판정 시간", "description": "입력이 없는 상태가 이만큼 지속되면 유휴로 봅니다.", "label": "유휴 판정 시간: {{duration}}", "option_other": "{{count}}분" },
-    "siteMerge": {
-      "title": "사이트 합치는 방식",
-      "label": "사이트 합치는 방식: {{mode}}",
-      "none": "합치지 않음",
-      "prefix": "www, m, mobile 합치기",
-      "registrable": "등록 가능 도메인으로 합치기"
-    },
     "recordMode": { "title": "기록 범위", "blacklist": "블랙리스트", "whitelist": "화이트리스트", "blacklistHint": "아래 목록을 뺀 모든 사이트를 기록합니다.", "whitelistHint": "아래 목록에 있는 사이트만 기록합니다." },
     "ignored": { "title": "무시할 사이트", "input": "무시할 호스트", "placeholder": "example.com (하위 도메인 포함)", "add": "추가", "remove": "{{domain}} 제거", "emptyTitle": "무시할 사이트가 없습니다", "error": "example.com 같은 올바른 호스트를 입력하세요", "limit": "무시할 호스트는 최대 {{count}}개입니다." },
     "allowed": { "title": "허용할 사이트", "input": "허용할 호스트", "placeholder": "example.com (하위 도메인 포함)", "add": "추가", "remove": "{{domain}} 제거", "emptyTitle": "허용할 사이트가 없습니다", "limit": "허용할 호스트는 최대 {{count}}개입니다.", "emptyWarning": "화이트리스트가 비어 있어 어떤 사이트도 기록되지 않습니다", "error": "example.com 같은 올바른 호스트를 입력하세요" },

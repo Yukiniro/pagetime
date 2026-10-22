@@ -37,7 +37,7 @@ export function Popup() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [attempt, setAttempt] = useState(0);
-  const query = usePopupQuery(host, settings.siteMerge);
+  const query = usePopupQuery(host);
   const isDark = useDocumentTheme(settings.theme, ready);
   useEffect(() => {
     let live = true;
@@ -59,7 +59,7 @@ export function Popup() {
   }, [attempt]);
 
   const figures = query.figures;
-  const settled = Boolean(ready && figures && !figures.error && figures.hostKey === (host ?? '') && figures.merge === settings.siteMerge);
+  const settled = Boolean(ready && figures && !figures.error && figures.hostKey === (host ?? ''));
   const problem = error || query.error || figures?.error || '';
   const action = settled && host ? listAction(settings, host) : null;
   async function run(task) {

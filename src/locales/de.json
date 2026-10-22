@@ -111,13 +111,6 @@
     "recording": { "title": "Aufzeichnung" },
     "audible": { "title": "Bei Audiowiedergabe weiterzählen" },
     "idle": { "title": "Leerlaufschwelle", "description": "Keine Eingabe länger als diese Zeit gilt als Leerlauf.", "label": "Leerlaufschwelle: {{duration}}", "option_one": "{{count}} Minute", "option_other": "{{count}} Minuten" },
-    "siteMerge": {
-      "title": "Subdomains gruppieren",
-      "label": "Subdomain-Gruppierung: {{mode}}",
-      "none": "Nicht gruppieren",
-      "prefix": "www, m und mobile gruppieren",
-      "registrable": "Nach registrierbarer Domain gruppieren"
-    },
     "recordMode": { "title": "Aufzeichnungsbereich", "blacklist": "Schwarze Liste", "whitelist": "Weiße Liste", "blacklistHint": "Alle Websites außer den unten genannten werden aufgezeichnet.", "whitelistHint": "Nur die unten genannten Websites werden aufgezeichnet." },
     "ignored": { "title": "Ignorierte Websites", "input": "Zu ignorierender Host", "placeholder": "example.com (inkl. Subdomains)", "add": "Hinzufügen", "remove": "{{domain}} entfernen", "emptyTitle": "Keine ignorierten Websites", "error": "Gib einen gültigen Host ein, z. B. example.com", "limit": "Du kannst höchstens {{count}} Hosts ignorieren." },
     "allowed": { "title": "Erlaubte Websites", "input": "Zu erlaubender Host", "placeholder": "example.com (inkl. Subdomains)", "add": "Hinzufügen", "remove": "{{domain}} entfernen", "emptyTitle": "Keine erlaubten Websites", "limit": "Du kannst höchstens {{count}} Hosts erlauben.", "emptyWarning": "Die weiße Liste ist leer, daher wird keine Website aufgezeichnet", "error": "Gib einen gültigen Host ein, z. B. example.com" },

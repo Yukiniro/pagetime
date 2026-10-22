@@ -24,7 +24,7 @@ const cursor = { domain: 'www.github.com', since: now - 10_000 };
 const lastEnd = now - 10_000;
 
 function figures(extra = {}) {
-  return popupToday({ domains, days, cursor, lastEnd, now, enabled: true, host: 'www.github.com', siteMerge: 'prefix', ...extra });
+  return popupToday({ domains, days, cursor, lastEnd, now, enabled: true, host: 'www.github.com', ...extra });
 }
 
 test('today total and the grouped site match the dashboard for the same local day', () => {
@@ -39,14 +39,11 @@ test('today total and the grouped site match the dashboard for the same local da
     visits: [],
     cursor,
     lastEnd,
-  }, { start: today, end: addDays(today, 1), today, siteMerge: 'prefix', now });
+  }, { start: today, end: addDays(today, 1), today, now });
   assert.equal(view.todayStats.ms, result.total);
   assert.equal(view.todayStats.rows.find(row => row.domain === 'github.com').ms, result.siteMs);
   const badge = todayFigures({ rows: days.filter(row => row.date === key), domains, cursor, lastEnd, now, enabled: true });
   assert.equal(badge.total, result.total);
-  const raw = figures({ siteMerge: 'none' });
-  assert.equal(raw.site, 'www.github.com');
-  assert.equal(raw.siteMs, badge.siteMs);
 });
 
 test('a paused ledger and a cursor that crosses midnight keep only the credited part of today', () => {
@@ -54,7 +51,7 @@ test('a paused ledger and a cursor that crosses midnight keep only the credited 
   const start = midnight(now);
   const crossed = popupToday({
     domains, days: [], cursor: { domain: 'www.github.com', since: start - 5_000 }, lastEnd: start - 5_000,
-    now: start + 7_000, enabled: true, host: 'www.github.com', siteMerge: 'prefix',
+    now: start + 7_000, enabled: true, host: 'www.github.com',
   });
   assert.deepEqual(crossed, { total: 7_000, site: 'github.com', siteMs: 7_000 });
   assert.equal(popupToday({ domains, days, cursor, lastEnd, now, host: 'nowhere.test' }).siteMs, 0);

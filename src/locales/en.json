@@ -111,13 +111,6 @@
     "recording": { "title": "Browsing records" },
     "audible": { "title": "Keep counting while audio plays" },
     "idle": { "title": "Idle threshold", "description": "Stop counting after this long without input.", "label": "Idle threshold: {{duration}}", "option_one": "{{count}} minute", "option_other": "{{count}} minutes" },
-    "siteMerge": {
-      "title": "Group subdomains",
-      "label": "Subdomain grouping: {{mode}}",
-      "none": "Don't group",
-      "prefix": "Group www, m, and mobile",
-      "registrable": "Group by registrable domain"
-    },
     "recordMode": { "title": "Recording scope", "blacklist": "Blacklist", "whitelist": "Whitelist", "blacklistHint": "Record every site except the ones listed below.", "whitelistHint": "Record only the sites listed below." },
     "ignored": { "title": "Ignored sites", "input": "Host to ignore", "placeholder": "example.com (includes subdomains)", "add": "Add", "remove": "Remove {{domain}}", "emptyTitle": "No ignored sites", "error": "Enter a valid host, such as example.com", "limit": "You can ignore up to {{count}} hosts." },
     "allowed": { "title": "Allowed sites", "input": "Host to allow", "placeholder": "example.com (includes subdomains)", "add": "Add", "remove": "Remove {{domain}}", "emptyTitle": "No allowed sites", "limit": "You can allow up to {{count}} hosts.", "emptyWarning": "The whitelist is empty, so no sites are recorded", "error": "Enter a valid host, such as example.com" },

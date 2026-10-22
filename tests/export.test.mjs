@@ -14,7 +14,7 @@ const fresh = () => openLedger({ indexedDB: new IDBFactory(), IDBKeyRange });
 const at = (month, day, hour = 0, minute = 0, second = 0) => new Date(2026, month - 1, day, hour, minute, second).getTime();
 const tick = async (db, { now, span = null, visit = null, cursor = null }) =>
   commitTick(db, { expect: await readHead(db), now, span, visit, cursor });
-const meta = { exportedAt: at(10, 20, 8), timeZone: 'Asia/Shanghai', appVersion: '1.2.3', settings: { ...DEFAULT_SETTINGS, ignored: ['skip.test'], recordMode: 'blacklist', siteMerge: 'registrable' } };
+const meta = { exportedAt: at(10, 20, 8), timeZone: 'Asia/Shanghai', appVersion: '1.2.3', settings: { ...DEFAULT_SETTINGS, ignored: ['skip.test'], recordMode: 'blacklist' } };
 
 // Parses RFC 4180 text: quoted fields may hold commas, doubled quotes, and line breaks.
 function parseCsv(text) {
@@ -154,7 +154,7 @@ test('CSV active_ms over a range equals the overview KPI without grouping or a f
     for (const length of [1, 2, 7]) {
       const start = from, end = addDays(from, length);
       const kpi = viewFromLedger({ state: head.state, domains, days: await daysBetween(db, dateKey(start), dateKey(addDays(end, -1))), spans: [], visits: [], cursor: null, lastEnd: head.lastEnd },
-        { start, end, today, search: '', site: '', siteMerge: 'none', now: last }).stats;
+        { start, end, today, search: '', site: '', now: last }).stats;
       const inRange = records.filter(row => row.date >= dateKey(start) && row.date < dateKey(end));
       assert.equal(inRange.reduce((sum, row) => sum + row.ms, 0), kpi.ms, `${dateKey(start)} +${length}`);
       assert.equal(inRange.reduce((sum, row) => sum + row.visits, 0), kpi.visits, `${dateKey(start)} +${length} visits`);
@@ -244,7 +244,7 @@ test('preview data becomes the same tables: spans split at midnight, totals matc
   assert.deepEqual(snapshot.visits.map(v => [v.id, v.domainId]), [[1, 1], [2, 2], [3, 3]]);
   const records = csvRecords(toDailyCsv(snapshot));
   for (const day of [at(10, 18), at(10, 19)]) {
-    const kpi = viewFromSnapshot(data, { start: day, end: addDays(day, 1), today: day, siteMerge: 'none' }).stats;
+    const kpi = viewFromSnapshot(data, { start: day, end: addDays(day, 1), today: day }).stats;
     const rows = records.filter(row => row.date === dateKey(day));
     assert.equal(rows.reduce((sum, row) => sum + row.ms, 0), kpi.ms);
     assert.equal(rows.reduce((sum, row) => sum + row.visits, 0), kpi.visits);

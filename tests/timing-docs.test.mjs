@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { CHECKPOINT_SECONDS, DETAIL_DAYS, GAP_LIMIT_MS, IDLE_SECONDS } from '../src/model.mjs';
-import { IDLE_OPTIONS, MERGE_MODES } from '../src/settings.mjs';
+import { IDLE_OPTIONS } from '../src/settings.mjs';
 
 const root = new URL('../', import.meta.url);
 const read = file => fs.readFileSync(new URL(file, root), 'utf8');
@@ -27,10 +27,11 @@ for (const [file, [seconds, days]] of Object.entries(docs)) {
     assert.match(line, new RegExp(`\\b${GAP_LIMIT_MS / 1000}\\s*${seconds}.{1,3}\`GAP_LIMIT_MS\``));
   });
 
-  test(`${file} names every grouping mode and the raw-hostname rule`, () => {
+  test(`${file} describes prefix grouping and the raw-hostname rule`, () => {
     const text = read(file);
-    assert.equal(MERGE_MODES.length, 3);
-    for (const needle of ['www.youtube.com', 'gist.github.com', 'a.b.example.co.uk', 'example.co.uk', 'github.io', 'ICANN', 'Public Suffix List']) assert.ok(text.includes(needle), needle);
+    for (const needle of ['www.youtube.com', 'm.youtube.com', 'gist.github.com', 'www.', 'mobile.']) assert.ok(text.includes(needle), needle);
+    assert.equal(text.includes('Public Suffix List'), false);
+    assert.equal(text.includes('ICANN'), false);
   });
 
   test(`${file} covers the comparison rules and links only to files that exist`, () => {

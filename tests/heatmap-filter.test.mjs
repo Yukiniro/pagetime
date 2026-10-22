@@ -89,21 +89,13 @@ test('preview and ledger hour rows carry the merged site, including the open cur
       { domain: 'm.youtube.com', start: at(10, 14, 10), end: at(10, 14, 10, 30) },
       { domain: 'github.com', start: at(10, 14, 21), end: at(10, 14, 22) },
     ],
-  }, { start, end, today: start, siteMerge: 'prefix' });
+  }, { start, end, today: start });
   assert.deepEqual(preview.hourRows.map(row => row.site), ['youtube.com', 'youtube.com', 'github.com']);
   const previewArgs = [start, end, preview.since, 1, start];
   assert.equal(total(weekHourMatrix(preview.hourRows, ...previewArgs, 'youtube.com')), 90 * 60_000);
   assert.equal(total(weekHourMatrix(preview.hourRows, ...previewArgs, 'github.com')), 3_600_000);
   assert.equal(heatmapHasActivity(preview.hourRows, start, end, preview.since, start, 'notion.so'), false);
-  const separate = viewFromSnapshot({
-    enabled: true,
-    since: at(10, 1),
-    visits: [],
-    spans: [{ domain: 'www.youtube.com', start: at(10, 14, 9), end: at(10, 14, 10) }],
-  }, { start, end, today: start, siteMerge: 'none' });
-  assert.equal(separate.hourRows[0].site, 'www.youtube.com');
-  assert.equal(heatmapHasActivity(separate.hourRows, start, end, separate.since, start, 'youtube.com'), false);
-  assert.equal(total(weekHourMatrix(separate.hourRows, ...previewArgs, 'www.youtube.com')), 3_600_000);
+  assert.equal(heatmapHasActivity(preview.hourRows, start, end, preview.since, start, 'www.youtube.com'), false);
 
   const segmentStart = at(10, 18, 23, 30);
   const now = at(10, 18, 23, 50);
@@ -119,7 +111,7 @@ test('preview and ledger hour rows carry the merged site, including the open cur
     visits: [],
     cursor: { domain: 'a.test', since: segmentStart, session: 's' },
     lastEnd: segmentStart,
-  }, { start: at(10, 12), end: at(10, 19), today: at(10, 18), now, siteMerge: 'prefix' });
+  }, { start: at(10, 12), end: at(10, 19), today: at(10, 18), now });
   assert.ok(ledger.hourRows.some(row => row.site === 'a.test' && row.ms > 0));
   assert.ok(ledger.hourRows.some(row => row.site === '' && row.ms === 5_000));
   const window = [at(10, 12), at(10, 19), ledger.since, 1, at(10, 18)];

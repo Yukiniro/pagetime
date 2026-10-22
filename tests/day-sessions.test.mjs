@@ -42,7 +42,7 @@ const data = {
 };
 
 function openSessions(range, site) {
-  const view = viewFromSnapshot(data, { ...range, today, siteMerge: 'prefix' });
+  const view = viewFromSnapshot(data, { ...range, today });
   const day = timelineDay(range, today);
   const sessions = view.spans.filter(span => (span.site ?? span.domain) === site);
   return { view, day, sessions, pieces: clipDaySessions(sessions, day) };
@@ -109,7 +109,7 @@ test('a session that crosses midnight is split across the two days', () => {
 });
 
 test('paging with a site filter keeps the open site on the chart day', () => {
-  const range = { preset: 'custom', start: yesterday, end: today, site: 'youtube.com', siteMerge: 'prefix' };
+  const range = { preset: 'custom', start: yesterday, end: today, site: 'youtube.com' };
   const view = viewFromSnapshot(data, { ...range, today });
   const day = timelineDay(range, today);
   assert.equal(day, yesterday);
