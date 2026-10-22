@@ -49,7 +49,7 @@ function RankRows({ rows, metric, filterSite, onFilter, onOpen }) {
   </ol>;
 }
 
-export function Overview({ compare, preset, todayStats, stats, trendDays = [], spans, hourRows, since, start, end, today, now, rangeLabel, chartMode = 'timeline', trendLabel, filterSite = '', onFilter, openSite, isDark = false }) {
+export function Overview({ compare, preset, todayStats, stats, trendDays = [], spans, hourRows, since, start, end, today, now, rangeLabel, chartMode = 'timeline', trendLabel, filterSite = '', onFilter, openSite, onSelectDay, isDark = false }) {
   const { t } = useTranslation();
   const [chart, setChart] = useState(chartMode);
   const [metric, setMetric] = useState('visits');
@@ -121,7 +121,7 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
           {caption}
           <Timeline spans={chartSpans} day={chartDay} className="primary-timeline" lane={36} isDark={isDark} showEmpty labelKey={copy.labelKey} emptyKey={copy.emptyKey} date={timelineDate} colorOf={domain => colors.get(domain) ?? swatches.other} onSelectSite={openSite} />
           <div className="legend">{legend.map(domain => <Button variant="ghost" size="xs" key={domain} onClick={event => openSite(domain, event)}><i style={{ background: colors.get(domain) }} />{domain}</Button>)}{showOther && <span className="legend-other"><i style={{ background: swatches.other }} />{t('timeline.other')}</span>}</div>
-        </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)) : (showTrend ? <Trend days={trendDays} className="primary-trend" isDark={isDark} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
+        </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)) : (showTrend ? <Trend days={trendDays} className="primary-trend" isDark={isDark} onSelectDay={onSelectDay} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
       </div>
     </section>
     <section className="rank-section" aria-label={t('ranking.title')}>

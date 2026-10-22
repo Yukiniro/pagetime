@@ -14,7 +14,7 @@ import { Alert, AlertTitle, AlertDescription } from '@app/components/ui/alert';
 import { Empty, EmptyHeader, EmptyTitle } from '@app/components/ui/empty';
 import { Trans, useTranslation } from 'react-i18next';
 import { dateKey, dateKeyStart, midnight } from './model.mjs';
-import { activeRange, defaultChart, timelineDay } from './range.mjs';
+import { activeRange, defaultChart, singleDayRange, timelineDay } from './range.mjs';
 import { RangeControl } from './RangeControl.jsx';
 import { rangeChip, trendLabel as trendTitle } from './range-label.mjs';
 import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, MERGE_MODES, RECORD_MODES, THEME_MODES, isAllowed, isIgnored, normalizeHost, validateSettings } from './settings.mjs';
@@ -143,6 +143,10 @@ export function App() {
   }
   const minDay = dateKey(view?.since ?? now);
   const rangeSince = ledger.rangeSince ?? now;
+  const onSelectDay = at => {
+    const next = singleDayRange(at, today, rangeSince);
+    if (next) setRange(next);
+  };
   const maxDay = dateKey(today);
   const dayReady = Boolean(dayQuery) && minDay <= maxDay && dayQuery >= minDay && dayQuery <= maxDay;
   const dayStats = dayReady ? (isExtension ? (liveDay?.date === dayQuery ? liveDay : null) : view?.day) : null;
@@ -168,7 +172,7 @@ export function App() {
             {page !== 'settings' && <RangeControl range={active} today={today} since={rangeSince} onChange={setRange} />}
           </div>
           {problem && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => { ledger.retry(); act(); }}>{t('error.retry')}</Button></AlertDescription></Alert>}
-          {page === 'overview' ? (overviewStatus === 'loading' ? <DashboardSkeleton /> : overviewStatus === 'empty' ? <LedgerEmpty /> : overviewStatus === 'ready' ? <Overview compare={ledger.compare} preset={active.preset} todayStats={todayStats} stats={stats} trendDays={ledger.trendDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={chip} chartMode={defaultChart(active)} trendLabel={trendTitle(t, active, today)} filterSite={filterSite} onFilter={onFilter} openSite={openSite} isDark={isDark} /> : null) : !shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'records' ? (ledger.pending ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : <section className="records">
+          {page === 'overview' ? (overviewStatus === 'loading' ? <DashboardSkeleton /> : overviewStatus === 'empty' ? <LedgerEmpty /> : overviewStatus === 'ready' ? <Overview compare={ledger.compare} preset={active.preset} todayStats={todayStats} stats={stats} trendDays={ledger.trendDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={chip} chartMode={defaultChart(active)} trendLabel={trendTitle(t, active, today)} filterSite={filterSite} onFilter={onFilter} openSite={openSite} onSelectDay={onSelectDay} isDark={isDark} /> : null) : !shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'records' ? (ledger.pending ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : <section className="records">
             <InputGroup className="h-11 max-w-[460px]"><InputGroupInput aria-label={t('records.search')} placeholder={t('records.placeholder')} value={search} onChange={e => { setSearch(e.target.value); setSite(''); }} /><InputGroupAddon><MagnifyingGlass /></InputGroupAddon>{search && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-sm" aria-label={t('records.clearSearch')} onClick={() => { setSearch(''); setSite(''); }}><X /></InputGroupButton></InputGroupAddon>}</InputGroup>
             <p className="muted">{t('records.count', { count: view.visitCount })}{view.visitCount > VISIT_LIST_LIMIT ? t('records.limited') : ''}</p>
             <Table><TableHeader><TableRow><TableHead>{t('ranking.site')}</TableHead><TableHead>{t('records.visitedAt')}</TableHead><TableHead>{t('records.details')}</TableHead></TableRow></TableHeader><TableBody>

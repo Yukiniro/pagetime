@@ -11,6 +11,7 @@ Drive one file per journey. Selectors assume English (`pagetime-language` = `en`
 | 站点详情抽屉与点选过滤 | [site-detail.md](site-detail.md) | Extension after a real visit. An empty preview has no rank row. A single day shows that day's 7-day trend in the drawer. |
 | 站点过滤时活跃时段跟着过滤 | [heatmap-site-filter.md](heatmap-site-filter.md) | Preview or extension with hour rows. An empty preview has no rank row. |
 | 时间线色块打开站点详情 | [timeline-click.md](timeline-click.md) | Preview or extension with a single-day segment timeline. Keyboard uses each segment button. An empty ledger has no blocks. |
+| 点趋势柱跳到那一天 | [trend-day-click.md](trend-day-click.md) | Preview or extension with a multi-day trend. An empty ledger has no bars. |
 | 设置页记录范围（黑名单 / 白名单） | [recording-scope.md](recording-scope.md) | Preview (`pagetime-preview-settings`) or extension settings message. |
 | 设置页底部文档链接 | [settings-docs.md](settings-docs.md) | Preview or extension. Links open repository docs; no request is made by the page. |
 | 导出 JSON / CSV | [export.md](export.md) | Preview or extension. The file is a blob download in the page. |

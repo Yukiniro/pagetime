@@ -1,4 +1,4 @@
-import { addDays, dateKeyStart, detailCutoff, midnight } from './model.mjs';
+import { addDays, dateKey, dateKeyStart, detailCutoff, midnight } from './model.mjs';
 
 // Query windows are local midnights with an exclusive end, so a closed day interval
 // [first, last] is stored as [midnight(first), midnight(last) + 1 day).
@@ -31,6 +31,16 @@ export function customRange(startKey, endKey, since) {
     if (start < earliest || last < earliest) return null;
   }
   return { preset: 'custom', start, end: addDays(last, 1) };
+}
+
+// The range a trend bar opens. Today stays the today preset. Any other local day is a one-day custom range.
+// Null when `at` or `today` is not a finite time, or `customRange` rejects the day.
+// The caller keeps the previous range.
+export function singleDayRange(at, today, since) {
+  const day = midnight(at);
+  if (!Number.isFinite(day) || !Number.isFinite(today)) return null;
+  if (day === midnight(today)) return presetRange('today', today);
+  return customRange(dateKey(day), dateKey(day), since);
 }
 
 // False, and `onChange` is not called, when `customRange` rejects the interval.

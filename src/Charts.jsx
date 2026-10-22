@@ -6,6 +6,7 @@ import {GridComponent,TooltipComponent,VisualMapComponent} from 'echarts/compone
 import {CanvasRenderer} from 'echarts/renderers';
 import {addDays, midnight} from './model.mjs';
 import {spansOnDay, timelineDomainAt} from './timeline-select.mjs';
+import {trendDayAt, trendUnrecorded} from './trend-select.mjs';
 import {weekHourMatrix,weekStartOf} from './heatmap.mjs';
 import {duration,formatDate,timeLabel} from './i18n.js';
 import {getChartTheme,timelineSwatchesFor} from './theme.mjs';
@@ -32,22 +33,29 @@ function chartTheme(isDark){
   const tooltip=extra=>({backgroundColor:theme.tooltipBg,borderColor:theme.tooltipBorder,borderWidth:1,textStyle:{color:theme.tooltipText,fontFamily},...extra});
   return {theme,fontFamily,tooltip};
 }
-export function Trend({days, label, className='trend-chart', variant='overview', isDark=false}){
+export function Trend({days, label, className='trend-chart', variant='overview', isDark=false, onSelectDay}){
   const {t}=useTranslation();
   const {theme,fontFamily,tooltip}=chartTheme(isDark);
   const detail=variant==='detail';
-  const unrecorded=day=>day.recorded===false&&!day.ms;
+  const onClick=onSelectDay?(params)=>{
+    const at=trendDayAt(days,params?.dataIndex);
+    if(at===null)return;
+    onSelectDay(at);
+  }:undefined;
+  const bars={type:'bar',barMaxWidth:46,itemStyle:{color:theme.bar,borderRadius:[2,2,0,0]},data:days.map(d=>trendUnrecorded(d)?null:d.ms/3_600_000)};
+  // A recorded zero is a one-pixel bar so it can be clicked. An unrecorded day stays null.
+  if(onSelectDay){bars.barMinHeight=1;bars.cursor='pointer';}
   const option={animation:false,backgroundColor:'transparent',textStyle:{fontFamily,color:theme.label},grid:detail?{left:8,right:8,top:8,bottom:4,containLabel:true}:{left:56,right:10,top:12,bottom:52},
-    tooltip:tooltip({trigger:'axis',renderMode:'richText',formatter:p=>{const day=days[p[0]?.dataIndex];if(!day)return '';return `${formatDate(day.at)}\n${unrecorded(day)?t('detail.trend.unrecorded'):t('active',{duration:duration((p[0].value??0)*3_600_000)})}`;}}),
+    tooltip:tooltip({trigger:'axis',renderMode:'richText',formatter:p=>{const day=days[p[0]?.dataIndex];if(!day)return '';return `${formatDate(day.at)}\n${trendUnrecorded(day)?t('detail.trend.unrecorded'):t('active',{duration:duration((p[0].value??0)*3_600_000)})}`;}}),
     xAxis:{type:'category',data:days.map(d=>d.at),axisTick:{show:false},axisLine:{lineStyle:{color:theme.axis}},axisLabel:{color:theme.label,fontSize:detail?11:12,...(detail?{hideOverlap:true}:{}),interval:days.length>14?4:0,formatter:at=>`${formatDate(Number(at),{month:'numeric',day:'2-digit'})}\n${midnight(Number(at))===midnight(Date.now())?t('range.today'):formatDate(Number(at),{weekday:'short'})}`}},
     yAxis:{type:'value',min:0,minInterval:1,max:Math.max(6,...days.map(d=>Math.ceil(d.ms/3_600_000))),splitNumber:3,axisLabel:{color:theme.label,...(detail?{fontSize:11}:{}),formatter:v=>v?t('trend.hours',{count:v}):'0'},splitLine:{lineStyle:{color:theme.split}}},
-    series:[{type:'bar',barMaxWidth:46,itemStyle:{color:theme.bar,borderRadius:[2,2,0,0]},data:days.map(d=>unrecorded(d)?null:d.ms/3_600_000)}]};
-  const summary=days.map(d=>`${formatDate(d.at)} ${unrecorded(d)?t('detail.trend.unrecorded'):duration(d.ms)}`).join(t('trend.separator'));
-  return <Chart option={option} className={className} label={label??t('trend.label',{days:summary})}/>;
+    series:[bars]};
+  const summary=days.map(d=>`${formatDate(d.at)} ${trendUnrecorded(d)?t('detail.trend.unrecorded'):duration(d.ms)}`).join(t('trend.separator'));
+  return <Chart option={option} className={className} label={label??t('trend.label',{days:summary})} onClick={onClick}/>;
 }
 export function SiteTrend({days, domain, isDark=false}){
   const {t}=useTranslation();
-  const item=day=>t('detail.trend.item',{date:formatDate(day.at),duration:day.recorded===false&&!day.ms?t('detail.trend.unrecorded'):duration(day.ms)});
+  const item=day=>t('detail.trend.item',{date:formatDate(day.at),duration:trendUnrecorded(day)?t('detail.trend.unrecorded'):duration(day.ms)});
   return <><Trend days={days} variant="detail" className="detail-trend" isDark={isDark} label={t('detail.trend.label',{domain,days:days.map(item).join(t('detail.trend.separator'))})}/><ul className="sr-only">{days.map(day=><li key={day.at}>{item(day)}</li>)}</ul></>;
 }
 export function HourChart({hours, dayCount, domain, isDark=false}){
