@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 import { execFileSync, spawn } from 'node:child_process';
-import http from 'node:http';
+import https from 'node:https';
 import fs from 'node:fs';
 import net from 'node:net';
 import os from 'node:os';
@@ -13,6 +13,7 @@ const extensionPath = path.join(root, '.output/chrome-mv3');
 const evidence = '/tmp/pagetime-verify-evidence/popup-site-icon';
 const shots = '/opt/cursor/artifacts';
 const longHost = 'aaaa-bbbb-cccc-dddd-eeee-ffff-gggg-hhhh-iiii-jjjj-kkkk-llll.example';
+const packagedHost = 'wxt.dev';
 
 let server;
 let port;
@@ -55,7 +56,12 @@ test.beforeAll(async () => {
       await new Promise(resolve => setTimeout(resolve, 50));
     }
   }
-  server = http.createServer((_req, res) => {
+  const certDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pagetime-icon-cert-'));
+  execFileSync('openssl', ['req', '-x509', '-newkey', 'rsa:2048', '-keyout', path.join(certDir, 'key.pem'), '-out', path.join(certDir, 'cert.pem'), '-days', '1', '-nodes', '-subj', '/CN=wxt.dev'], { stdio: 'ignore' });
+  server = https.createServer({
+    key: fs.readFileSync(path.join(certDir, 'key.pem')),
+    cert: fs.readFileSync(path.join(certDir, 'cert.pem')),
+  }, (_req, res) => {
     res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
     res.end('<!doctype html><title>pagetime</title><p>ok</p>');
   });
@@ -87,7 +93,8 @@ async function launch(debugPort) {
       `--disable-extensions-except=${extensionPath}`,
       `--load-extension=${extensionPath}`,
       `--remote-debugging-port=${debugPort}`,
-      `--host-resolver-rules=MAP github.com 127.0.0.1, MAP ${longHost} 127.0.0.1`,
+      `--host-resolver-rules=MAP ${packagedHost} 127.0.0.1, MAP ${longHost} 127.0.0.1`,
+      '--ignore-certificate-errors',
       '--no-first-run',
       '--no-default-browser-check',
       '--disable-popup-blocking',
@@ -133,17 +140,25 @@ async function credited(sw, domain) {
   }, domain);
 }
 
+function within(ms, task, label) {
+  return Promise.race([
+    task,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(`${label} timed out`)), ms)),
+  ]);
+}
+
 async function openPopup(context, debugPort) {
-  await dismissPopup(debugPort);
+  focusChrome();
+  await within(8_000, dismissPopup(debugPort), 'dismiss popup');
   const sw = await worker(context);
-  const opened = await sw.evaluate(async () => {
+  const opened = await within(8_000, sw.evaluate(async () => {
     try {
       await chrome.action.openPopup();
       return '';
     } catch (error) {
       return error instanceof Error ? error.message : String(error);
     }
-  });
+  }), 'open popup');
   if (opened) throw new Error(opened);
   const popup = await attachPopup(debugPort);
   await expect.poll(() => popup.snap().then(snap => snap.status)).toBe('ready');
@@ -191,6 +206,7 @@ async function iconState(popup) {
 }
 
 test('the popup shows a site icon beside the current site and none for today only', async () => {
+  test.setTimeout(120_000);
   const manifest = JSON.parse(fs.readFileSync(path.join(extensionPath, 'manifest.json'), 'utf8'));
   const version = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version;
   expect(manifest.name).toBe('PageTime');
@@ -205,7 +221,7 @@ test('the popup shows a site icon beside the current site and none for today onl
     const sw = await worker(context);
     expect(sw.url().startsWith('chrome-extension://')).toBe(true);
     const page = await context.newPage();
-    await page.goto(`http://127.0.0.1:${port}/`);
+    await page.goto(`https://127.0.0.1:${port}/`);
     const dashboard = await context.newPage();
     await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
     await dashboard.evaluate(() => localStorage.setItem('pagetime-language', 'en'));
@@ -213,10 +229,16 @@ test('the popup shows a site icon beside the current site and none for today onl
     await expect(dashboard.locator('main')).toBeVisible();
     await expect(dashboard.getByRole('heading', { level: 1 })).toHaveText('Browsing overview');
     await page.bringToFront();
+    await expect.poll(async () => {
+      focusChrome();
+      await page.bringToFront();
+      return credited(sw, '127.0.0.1');
+    }, { timeout: 20_000 }).toBeGreaterThan(0);
 
     const local = await openPopup(context, debugPort);
     const localSnap = await local.snap();
     expect(localSnap.nodes.find(node => node.role === 'heading' && node.tag === 'H1')?.name).toBe('127.0.0.1');
+    expect(localSnap.nodes.some(node => node.role === 'button' && node.name === 'View 127.0.0.1 in the dashboard')).toBe(true);
     await expect.poll(async () => {
       const state = await iconState(local);
       return state.present && state.slotWidth === 24 && state.slotHeight === 24 && (state.natural > 0 || state.favicons >= 2);
@@ -236,32 +258,33 @@ test('the popup shows a site icon beside the current site and none for today onl
     await saveShot(local, 'popup-after-local.png');
     notes.push(`127.0.0.1 icon ${localIcon.src || 'globe'} ${localIcon.slotWidth}px scroll ${localIcon.scroll}`);
 
-    await page.goto(`http://github.com:${port}/`);
+    await page.goto(`https://${packagedHost}:${port}/`);
     await expect.poll(async () => {
       focusChrome();
       await page.bringToFront();
-      return credited(sw, 'github.com');
+      return credited(sw, packagedHost);
     }, { timeout: 20_000 }).toBeGreaterThan(0);
-    const github = await openPopup(context, debugPort);
-    const viewName = 'View github.com in the dashboard';
-    await expect.poll(async () => (await github.snap()).nodes.some(node => node.role === 'button' && node.name === viewName)).toBe(true);
+    const packaged = await openPopup(context, debugPort);
+    const viewName = `View ${packagedHost} in the dashboard`;
+    await expect.poll(async () => (await packaged.snap()).nodes.some(node => node.role === 'button' && node.name === viewName)).toBe(true);
     await expect.poll(async () => {
-      const state = await iconState(github);
-      return state.present && state.complete && state.natural > 0 && state.src.endsWith('/assets/github.com.svg');
+      const state = await iconState(packaged);
+      return state.present && state.complete && state.natural > 0 && state.src.endsWith(`/assets/${packagedHost}.svg`);
     }).toBe(true);
-    const githubIcon = await iconState(github);
-    expect(githubIcon.slotWidth).toBe(24);
-    expect(githubIcon.slotHeight).toBe(24);
-    expect(githubIcon.scroll).toBeLessThanOrEqual(320);
-    expect(githubIcon.remote).toEqual([]);
-    expect(githubIcon.src.includes('/_favicon/')).toBe(false);
-    const githubSnap = await github.snap();
-    expect(githubSnap.nodes.find(node => node.role === 'heading' && node.tag === 'H1')?.name).toBe('github.com');
-    expect(githubSnap.nodes.some(node => node.role === 'button' && node.name === 'Pause recording')).toBe(true);
-    await saveShot(github, 'popup-after-github.png');
-    notes.push(`github.com svg natural ${githubIcon.natural}; button ${viewName}`);
+    const packagedIcon = await iconState(packaged);
+    expect(packagedIcon.slotWidth).toBe(24);
+    expect(packagedIcon.slotHeight).toBe(24);
+    expect(packagedIcon.scroll).toBeLessThanOrEqual(320);
+    expect(packagedIcon.remote).toEqual([]);
+    expect(packagedIcon.src.includes('/_favicon/')).toBe(false);
+    const packagedSnap = await packaged.snap();
+    expect(packagedSnap.nodes.find(node => node.role === 'heading' && node.tag === 'H1')?.name).toBe(packagedHost);
+    expect(packagedSnap.nodes.some(node => node.role === 'button' && node.name === 'Pause recording')).toBe(true);
+    expect(packagedSnap.nodes.some(node => node.role === 'button' && node.name === "Don't record this site")).toBe(true);
+    await saveShot(packaged, 'popup-after-packaged.png');
+    notes.push(`${packagedHost} svg natural ${packagedIcon.natural}; button ${viewName}`);
 
-    await page.goto(`http://${longHost}:${port}/`);
+    await page.goto(`https://${longHost}:${port}/`);
     const long = await openPopup(context, debugPort);
     await expect.poll(async () => {
       const state = await iconState(long);
@@ -280,6 +303,9 @@ test('the popup shows a site icon beside the current site and none for today onl
     await saveShot(long, 'popup-after-long.png');
     notes.push(`long name scroll ${longIcon.nameScroll} client ${longIcon.nameClient} icon ${longIcon.src || 'globe'}`);
 
+    await long.close().catch(() => {});
+    focusChrome();
+    await page.bringToFront();
     await page.goto('about:blank');
     const blank = await openPopup(context, debugPort);
     const blankSnap = await blank.snap();
