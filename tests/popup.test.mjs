@@ -1,5 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { addDays, dateKey, midnight } from '../src/model.mjs';
 import { todayFigures } from '../src/badge.mjs';
 import { viewFromLedger } from '../src/ledger-view.mjs';
@@ -112,6 +115,28 @@ test('opening the dashboard focuses an existing tab before creating one', async 
     windows: { update: async () => {} },
   });
   assert.deepEqual(callsWithout, [[{ url: 'chrome-extension://abc/dashboard.html' }]]);
+});
+
+test('the popup shows SiteIcon beside a site and keeps the name inside 320px', () => {
+  const root = fileURLToPath(new URL('..', import.meta.url));
+  const read = path => readFileSync(join(root, path), 'utf8');
+  const popup = read('src/Popup.jsx');
+  assert.match(popup, /import \{ SiteIcon \} from '\.\/SiteIcon\.jsx'/);
+  assert.match(popup, /figures\.site \? <span className="popup-host-icon" aria-hidden="true"><SiteIcon domain=\{host\} site=\{figures\.site\} \/><\/span> : null/);
+  assert.doesNotMatch(popup, /SiteIcon domain=\{figures\.site\}/);
+  assert.match(popup, /aria-label=\{t\('popup\.viewSite', \{ site: figures\.site \}\)\}/);
+  assert.match(popup, /onClick=\{onOpenSite\}/);
+  assert.match(popup, /t\('popup\.pause'\)/);
+  assert.match(popup, /t\('popup\.resume'\)/);
+  assert.match(popup, /settings\.badge\.title/);
+  assert.doesNotMatch(popup, /content_scripts|executeScript|favicon\.ico|google\.com\/s2/);
+  const css = read('src/popup.css');
+  assert.match(css, /width: 320px/);
+  assert.match(css, /\.popup-host-icon \{[^}]*flex: 0 0 24px;[^}]*width: 24px;[^}]*height: 24px;/);
+  assert.match(css, /\.popup-host-name,\s*\n\.popup-host \.popup-host-link \{[^}]*min-width: 0;[^}]*text-overflow: ellipsis;/);
+  assert.match(css, /\.popup-host-link span \{[^}]*min-width: 0;[^}]*text-overflow: ellipsis;/);
+  assert.match(read('wxt.config.ts'), /permissions: \['storage', 'tabs', 'webNavigation', 'idle', 'alarms', 'favicon'\]/);
+  assert.doesNotMatch(read('wxt.config.ts'), /content_scripts|host_permissions/);
 });
 
 test('an open dashboard tab is focused and a missing one is created', () => {

@@ -3,10 +3,14 @@ body { overflow: hidden; background: var(--background); }
 .popup { display: flex; flex-direction: column; gap: 10px; width: 320px; padding: 14px 14px 10px; background: var(--background); color: var(--foreground); }
 .popup-status { display: flex; align-items: center; gap: 8px; color: var(--ink); font-size: 13px; line-height: 1.3; }
 .popup-status strong { font-weight: 650; }
-.popup-host { overflow: hidden; color: var(--ink-mid); font-size: 14px; font-weight: 650; letter-spacing: 0; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
+.popup-host { display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; overflow: hidden; color: var(--ink-mid); font-size: 14px; font-weight: 650; letter-spacing: 0; line-height: 1.3; white-space: nowrap; }
 .popup-host:focus-within { overflow: visible; }
+.popup-host-icon { display: flex; flex: 0 0 24px; width: 24px; height: 24px; align-items: center; justify-content: center; }
+.popup-host-icon .site-icon { width: 24px; height: 24px; min-width: 24px; max-width: 24px; min-height: 24px; max-height: 24px; flex: 0 0 24px; }
+.popup-host-name,
+.popup-host .popup-host-link { min-width: 0; flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .popup-host-link { max-width: 100%; letter-spacing: 0; line-height: 1.3; }
-.popup-host-link span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.popup-host-link span { min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .popup-figure { color: var(--ink-strong); font-size: 32px; font-weight: 750; letter-spacing: -0.6px; line-height: 1.15; font-variant-numeric: tabular-nums; }
 .popup[data-paused="true"] .popup-figure,
 .popup[data-paused="true"] .popup-total { color: var(--paused); }
