@@ -39,7 +39,8 @@
     "unallow": "이 사이트 기록 중지",
     "pause": "기록 일시중지",
     "resume": "기록 다시 시작",
-    "open": "대시보드 열기"
+    "open": "대시보드 열기",
+    "viewSite": "대시보드에서 {{site}} 보기"
   },
   "summary": {
     "sites_other": "사이트 <b>{{count}}</b>개"

@@ -39,7 +39,8 @@
     "unallow": "Stop recording this site",
     "pause": "Pause recording",
     "resume": "Resume recording",
-    "open": "Open dashboard"
+    "open": "Open dashboard",
+    "viewSite": "View {{site}} in the dashboard"
   },
   "summary": {
     "sites_one": "<b>{{count}}</b> site",
