@@ -39,7 +39,7 @@ PageTime 是装在本机 Chrome 或 Edge 里的浏览账本。下面每条都对
 
 不保存标题、完整网址、页面正文、Cookie、表单输入，也不读取页面 DOM。扩展没有 content script，也不使用 `chrome.scripting`。
 
-服务工作线程重启用的检查点是 `meta` 里的 `cursor` 行：`{ tabId, domain, since, session }`。`tabId` 是浏览器给标签的编号。`session` 是后台放在 `chrome.storage.session` 的 `session` 键里的随机编号；`session` 对不上的检查点会被忽略，所以和以前一样，浏览器会话结束或扩展重新加载后检查点就失效。没有正在记录的页面时会删掉它；清空、暂停或恢复时也会删掉。删除游标上的那个站点，或删除今天的记录时，同一个事务里保留游标，并把 `since` 改成删除时刻。这一刻之前的未写入时长，下一次检查点不会补记。它不是浏览历史。
+服务工作线程重启用的检查点是 `meta` 里的 `cursor` 行：`{ tabId, domain, since, session }`。`tabId` 是浏览器给标签的编号。`session` 是后台放在 `chrome.storage.session` 的 `session` 键里的随机编号；`session` 对不上的检查点会被忽略，所以和以前一样，浏览器会话结束或扩展重新加载后检查点就失效。没有正在记录的页面时会删掉它；清空、暂停或恢复时也会删掉。删除游标上的那个站点时，同一个事务里保留游标，并把 `since` 改成删除时刻。这一刻之前的未写入时长，下一次检查点不会补记。它不是浏览历史。
 
 为了得到主机名，后台会从 `tabs` 和 `webNavigation` 事件里读到网址。读到的网址只用来算出 `hostname`，不写入账本。
 

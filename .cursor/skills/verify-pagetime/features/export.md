@@ -12,7 +12,7 @@ Settings downloads the ledger from the page. JSON is every table plus recording 
 
 ## How to get to it (user POV)
 
-Sidebar `Settings`, then the row `Export data`, above `Delete one day's records`. Both the preview and the extension show it.
+Sidebar `Settings`, then the row `Export data`, above `Clear all records` and the button `Clear data`. Both the preview and the extension show it.
 
 ## Driving it with Playwright
 
