@@ -59,10 +59,10 @@ export function Trend({days, label, className='trend-chart', variant='overview',
       return <li key={day.at}><button type="button" className="sr-only timeline-segment pointer-events-none" onClick={()=>onSelectDay(at)}>{dayLabel(day)}</button></li>;
     })}</ul>}</>;
 }
-export function SiteTrend({days, domain, isDark=false}){
+export function SiteTrend({days, domain, isDark=false, onSelectDay}){
   const {t}=useTranslation();
   const item=day=>t('detail.trend.item',{date:formatDate(day.at),duration:trendUnrecorded(day)?t('detail.trend.unrecorded'):duration(day.ms)});
-  return <><Trend days={days} variant="detail" className="detail-trend" isDark={isDark} label={t('detail.trend.label',{domain,days:days.map(item).join(t('detail.trend.separator'))})}/><ul className="sr-only">{days.map(day=><li key={day.at}>{item(day)}</li>)}</ul></>;
+  return <><Trend days={days} variant="detail" className="detail-trend" isDark={isDark} onSelectDay={onSelectDay} label={t('detail.trend.label',{domain,days:days.map(item).join(t('detail.trend.separator'))})}/><ul className="sr-only">{days.map(day=><li key={day.at}>{item(day)}</li>)}</ul></>;
 }
 export function HourChart({hours, dayCount, domain, isDark=false}){
   const {t}=useTranslation();

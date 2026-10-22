@@ -1,6 +1,6 @@
 # 点趋势柱跳到那一天
 
-On a multi-day trend (Last 7 days, Last 30 days, or a custom range of more than one day), clicking a bar that has a value sets the date range to that local day. The chart then opens on that day's timeline. Today uses the Today preset. Any other day is a one-day custom range. A site filter that is already on stays on. An unrecorded empty column does not change the range. Previous period and Next period still move that one-day range. The same click works on the 7-day trend tab of a single day. Each selectable day is also a button with the same result; the chart itself stays out of the tab order. A filtered site that only has visits, and no active time, on a recorded day still shows that one-pixel bar. A site with no rows in the range stays on the empty filter state. Hour bars and the site-detail trend are not part of this journey.
+On a multi-day trend (Last 7 days, Last 30 days, or a custom range of more than one day), clicking a bar that has a value sets the date range to that local day. The chart then opens on that day's timeline. Today uses the Today preset. Any other day is a one-day custom range. A site filter that is already on stays on. An unrecorded empty column does not change the range. Previous period and Next period still move that one-day range. The same click works on the 7-day trend tab of a single day. Each selectable day is also a button with the same result; the chart itself stays out of the tab order. A filtered site that only has visits, and no active time, on a recorded day still shows that one-pixel bar. A site with no rows in the range stays on the empty filter state. Hour bars are not part of this journey. The site-detail trend is [detail-trend-day-click.md](detail-trend-day-click.md).
 
 ## Sub-features
 
@@ -33,5 +33,5 @@ Language is English. Viewport 1280×800.
 - A fresh preview stays on `[data-status="empty"]` and has no bars. That is a failed precondition. Do not write `pagetime-preview` or IndexedDB to force this journey.
 - An unrecorded day is a gap, not a zero-height bar. A recorded day with no active time is a one-pixel bar and does change the range.
 - Hovering a bar sets the chart canvas cursor to `pointer`. The empty gap does not.
-- Do not click a bar inside the site detail dialog. Do not click the hour bars (`.primary-hours`).
+- Do not click a bar inside the site detail dialog; that journey is [detail-trend-day-click.md](detail-trend-day-click.md). Do not click the hour bars (`.primary-hours`).
 - The click replaces the range. It does not add a second filter for the hour or the day.
