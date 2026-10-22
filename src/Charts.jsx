@@ -52,12 +52,15 @@ export function Trend({days, label, className='trend-chart', variant='overview',
     series:[bars]};
   const summary=days.map(d=>`${formatDate(d.at)} ${trendUnrecorded(d)?t('detail.trend.unrecorded'):duration(d.ms)}`).join(t('trend.separator'));
   const dayLabel=day=>t('detail.trend.item',{date:formatDate(day.at),duration:duration(day.ms)});
-  return <><Chart option={option} className={className} label={label??t('trend.label',{days:summary})} onClick={onClick}/>
+  const body=<><Chart option={option} className={className} label={label??t('trend.label',{days:summary})} onClick={onClick}/>
     {onSelectDay&&<ul className="timeline-segments">{days.map((day,i)=>{
       const at=trendDayAt(days,i);
       if(at===null)return null;
       return <li key={day.at}><button type="button" className="sr-only timeline-segment pointer-events-none" onClick={()=>onSelectDay(at)}>{dayLabel(day)}</button></li>;
     })}</ul>}</>;
+  // The sheet is position:fixed. The focused day button is position:absolute; top:0.
+  // This frame keeps that label on the trend, inside the drawer scrollport.
+  return detail?<div className="detail-trend-frame">{body}</div>:body;
 }
 export function SiteTrend({days, domain, isDark=false, onSelectDay}){
   const {t}=useTranslation();

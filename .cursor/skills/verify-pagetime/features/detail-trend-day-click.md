@@ -24,7 +24,7 @@ Language is English. Viewport 1280×800 so the drawer is the right-hand sheet.
 3. Click a recorded trend column inside the dialog that is not today (the same spot that shows that day's tooltip, cursor `pointer`). The dialog stays open and still shows that domain. Its active time and session heading follow that day. `button.range` has an accessible name for that day, not `Date range: Today`. The overview tab `#chart-tab-timeline` is selected. The status text `Filtered to <domain>` is still present when the filter was on before the click.
 4. Click the empty part of the plot where a day has no bar. `button.range` stays the same and the dialog stays open.
 5. Activate `Previous period`. The range label changes by one day. The dialog stays open on the same site. `Next period` is enabled unless the range already ends today. At 1280 the right-hand drawer covers that control, and the open dialog marks the page behind it inert, so a mouse click at the control's coordinates hits the sheet. Read `button.range` and activate the period button itself.
-6. Focus a `button.timeline-segment` inside the dialog whose name is another recorded day, then press Enter. The range becomes that day. The dialog stays open on the same site.
+6. Focus a `button.timeline-segment` inside the dialog whose name is another recorded day, then press Enter. The range becomes that day. The dialog stays open on the same site. The focused label is drawn over that daily trend, inside the drawer scroll area, not on the sheet header.
 
 ## Gotchas
 

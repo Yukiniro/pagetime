@@ -199,6 +199,30 @@ test('an unrecorded site detail column does not select a day', async () => {
   }
 });
 
+test('a detail day button is inside the trend frame that contains its focus label', async () => {
+  const view = await render(SiteTrend, { days, domain: 'github.com', onSelectDay() {} });
+  try {
+    const frame = view.host.querySelector('.detail-trend-frame');
+    const button = frame?.querySelector('button.timeline-segment');
+    assert.ok(frame);
+    assert.equal(frame.querySelector('.detail-trend')?.parentElement, frame);
+    assert.equal(button?.closest('.detail-trend-frame'), frame);
+    assert.equal(button.closest('.detail-trend'), null);
+  } finally {
+    await unmount(view);
+  }
+});
+
+test('the overview trend does not use the detail focus frame', async () => {
+  const view = await render(Trend, { days, onSelectDay() {} });
+  try {
+    assert.equal(view.host.querySelector('.detail-trend-frame'), null);
+    assert.ok(view.host.querySelector('button.timeline-segment'));
+  } finally {
+    await unmount(view);
+  }
+});
+
 test('each selectable site detail day is a button on the same path as the canvas click', async () => {
   const selected = [];
   const view = await render(SiteTrend, { days, domain: 'github.com', onSelectDay: at => selected.push(at) });
@@ -216,6 +240,19 @@ test('each selectable site detail day is a button on the same path as the canvas
   }
 });
 
+});
+
+test('the detail trend frame is the containing block for the shared focus label', () => {
+  const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
+  const frame = css.match(/\.detail-trend-frame\{[^}]*\}/)?.[0] ?? '';
+  assert.match(frame, /position:relative/);
+  assert.match(frame, /overflow:visible/);
+  const rule = css.match(/\.timeline-segment:focus,\.timeline-segment:focus-visible\{[^}]*\}/)?.[0] ?? '';
+  assert.match(rule, /position:absolute/);
+  assert.match(rule, /top:0/);
+  const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
+  const trend = charts.slice(charts.indexOf('export function Trend'), charts.indexOf('export function SiteTrend'));
+  assert.match(trend, /detail\?<div className="detail-trend-frame">/);
 });
 
 test('hour bars are not part of the day click', () => {
