@@ -42,11 +42,6 @@
     "open": "Ouvrir le tableau de bord",
     "viewSite": "Voir {{site}} dans le tableau de bord"
   },
-  "summary": {
-    "sites_one": "<b>{{count}}</b> site",
-    "sites_many": "<b>{{count}}</b> sites",
-    "sites_other": "<b>{{count}}</b> sites"
-  },
   "kpi": { "label": "Totaux pour {{range}}", "sites": "Sites" },
   "compare": {"yesterday": "par rapport à hier", "previous7": "par rapport aux 7 jours précédents", "previous30": "par rapport aux 30 jours précédents", "previousPeriod": "par rapport à la période précédente", "asOf": "{{period}}, jusqu’à {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "Aucun changement", "underMinute": "{{sign}}moins de 1 min", "basis": "Période précédente : {{range}}", "basisAsOf": "Période précédente : {{range}}. Les deux périodes sont comptées jusqu’à {{time}} le dernier jour.", "unavailable": "Pas assez de données enregistrées pour comparer."},
   "filter": {
@@ -134,7 +129,6 @@
     "badge": { "title": "Badge de la barre d’outils" },
     "docs": { "timing": "Règles de mesure et confidentialité", "privacy": "Politique de confidentialité" },
     "export": { "title": "Exporter les données", "description": "Télécharge tous les enregistrements de cet appareil.", "note": "Le fichier est enregistré uniquement sur votre ordinateur. Il contient des noms d’hôte et des durées, jamais d’URL ni de titres.", "json": "Exporter en JSON", "csv": "Exporter en CSV", "exporting": "Exportation…", "done": "{{file}} enregistré.", "errorTitle": "Échec de l’exportation", "error": "Rien n’a été téléchargé. Réessayez.", "restore": "Restaurer une sauvegarde", "restorePreview": "La restauration ne fonctionne que dans l’extension.", "restoring": "Restauration…", "restored": "Restauré.", "restoreTitle": "Remplacer tous les enregistrements locaux ?", "restoreDescription": "Le fichier remplace tous les enregistrements locaux. Cette action est irréversible.", "restoreConfirm": "Remplacer les enregistrements", "restoreErrorTitle": "Restauration impossible", "errorFormat": "Ce fichier n’est pas une sauvegarde PageTime. Rien n’a été modifié.", "errorVersion": "Cette version de sauvegarde n’est pas prise en charge. Rien n’a été modifié.", "errorStructure": "Cette sauvegarde ne correspond pas au registre. Rien n’a été modifié.", "errorRead": "Impossible de lire le fichier. Rien n’a été modifié.", "errorSave": "Impossible d’écrire la sauvegarde. Réessayez." },
-    "deleteDay": { "title": "Supprimer les enregistrements d’un jour", "label": "Date à supprimer", "button": "Supprimer ce jour", "done": "Enregistrements du {{date}} supprimés.", "confirmTitle": "Supprimer les enregistrements du {{date}} ?", "confirmDescription": "Cette action est irréversible.", "confirm": "Supprimer ce jour", "deleting": "Suppression…" },
     "clear": { "title": "Effacer tous les enregistrements", "button": "Effacer les données" }
   },
   "detail": {

@@ -32,4 +32,4 @@ Use a fresh Playwright context on the preview, or a fresh extension profile. Lan
 - An empty whitelist is a destructive recording mode, not "record everything". The alert is the proof.
 - `localhost` is the only dot-less name `normalizeHost` accepts. `example` fails the same alert as `bad host`.
 - The cap is 500 hosts. Do not loop to the cap in a verification drive.
-- Do not click `Clear data` or `Delete this day` while you are on this page.
+- Do not click `Clear data` while you are on this page. Settings has no control that deletes one day.

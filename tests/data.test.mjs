@@ -50,7 +50,7 @@ test('preview settings are stored apart from records and invalid values fall bac
   assert.deepEqual(await command('settings', { settings: { schema: 2, idleSeconds: 15, countAudible: 'yes' } }), DEFAULT_SETTINGS);
 });
 
-test('preview deleteSite and deleteDay remove only the named records', async () => {
+test('preview deleteSite removes only the named hostnames', async () => {
   const start = new Date(2026, 9, 18, 9).getTime();
   const end = start + 60 * 60_000;
   const next = new Date(2026, 9, 19, 1).getTime();
@@ -65,20 +65,19 @@ test('preview deleteSite and deleteDay remove only the named records', async () 
       { domain: 'gist.github.com', start: next, end: next + 20 * 60_000 },
     ],
   }));
-  const day = await command('deleteDay', { date: '2026-10-18' });
-  assert.deepEqual(day.visits.map(visit => [visit.domain, visit.at]), [['a.test', next]]);
-  assert.equal(day.spans.some(span => span.domain === 'b.test'), false);
-  assert.equal(day.spans.find(span => span.domain === 'a.test').start, new Date(2026, 9, 19).getTime());
   const removed = await command('deleteSite', { host: 'youtube.com', hosts: ['www.youtube.com', 'youtube.com'] });
   assert.equal(removed.spans.some(span => span.domain === 'www.youtube.com'), false);
   assert.equal(removed.spans.some(span => span.domain === 'gist.github.com'), true);
+  assert.equal(removed.spans.some(span => span.domain === 'a.test'), true);
+  assert.equal(removed.visits.filter(visit => visit.domain === 'a.test').length, 2);
   const site = await command('deleteSite', { host: 'a.test' });
   assert.equal(site.spans.some(span => span.domain === 'a.test'), false);
-  assert.equal(site.visits.length, 0);
+  assert.equal(site.visits.some(visit => visit.domain === 'a.test'), false);
+  assert.equal(site.visits.some(visit => visit.domain === 'b.test'), true);
+  assert.equal(site.spans.some(span => span.domain === 'b.test'), true);
   const again = await command('deleteSite', { host: 'missing.test' });
   assert.equal(again.spans.some(span => span.domain === 'gist.github.com'), true);
-  const same = await command('deleteDay', { date: 'not-a-day' });
-  assert.equal(same.spans.some(span => span.domain === 'gist.github.com'), true);
+  assert.equal(again.spans.some(span => span.domain === 'b.test'), true);
 });
 
 test('snapshots never write storage and storage failures are reported', async () => {

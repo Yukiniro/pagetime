@@ -42,20 +42,6 @@ export function dateKeyStart(key) {
   return dateKey(start) === key ? start : null;
 }
 
-// Parts of a span that fall outside [dayStart, dayEnd). Empty when the span is entirely inside that day.
-export function spansAfterDayRemoval(span, dayStart, dayEnd) {
-  const kept = [];
-  if (span.start < dayStart) {
-    const end = Math.min(span.end, dayStart);
-    if (end > span.start) kept.push({ start: span.start, end });
-  }
-  if (span.end > dayEnd) {
-    const start = Math.max(span.start, dayEnd);
-    if (span.end > start) kept.push({ start, end: span.end });
-  }
-  return kept;
-}
-
 // Local-time pieces of [start, end): one per clock hour, so a piece never crosses an hour or a day.
 // Fall-back snaps setMinutes to the earlier copy of the repeated hour, so +1h can fail to move forward.
 export function splitByHour(start, end) {

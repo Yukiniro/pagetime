@@ -42,9 +42,6 @@
     "open": "打开仪表盘",
     "viewSite": "在仪表盘查看 {{site}}"
   },
-  "summary": {
-    "sites_other": "<b>{{count}}</b> 个站点"
-  },
   "kpi": { "label": "{{range}}汇总", "sites": "站点数" },
   "compare": {"yesterday": "较昨天", "previous7": "较前 7 天", "previous30": "较前 30 天", "previousPeriod": "较上一周期", "asOf": "{{period}}（截至 {{time}}）", "change": "{{diff}}（{{percent}}）", "unchanged": "无变化", "underMinute": "{{sign}}不足 1 分钟", "basis": "上一周期：{{range}}", "basisAsOf": "上一周期：{{range}}。两个周期都只统计到最后一天的 {{time}}。", "unavailable": "已记录的数据不足，无法对比。"},
   "filter": {
@@ -122,7 +119,6 @@
     "badge": { "title": "工具栏角标" },
     "docs": { "timing": "计时规则与隐私说明", "privacy": "隐私政策" },
     "export": { "title": "导出数据", "description": "下载本机全部记录", "note": "文件只保存在你的电脑上，包含主机名和时长，不含网址和标题。", "json": "导出 JSON", "csv": "导出 CSV", "exporting": "正在导出…", "done": "已保存 {{file}}。", "errorTitle": "导出失败", "error": "没有下载任何文件，请重试。", "restore": "从备份恢复", "restorePreview": "从备份恢复只能在扩展里使用。", "restoring": "正在恢复…", "restored": "已恢复", "restoreTitle": "用备份替换本机记录？", "restoreDescription": "将用文件中的记录替换本机全部记录，无法撤销。", "restoreConfirm": "替换记录", "restoreErrorTitle": "无法恢复", "errorFormat": "这不是 PageTime 备份。本机记录没有改动。", "errorVersion": "不支持这份备份的版本。本机记录没有改动。", "errorStructure": "备份结构和账本不一致。本机记录没有改动。", "errorRead": "无法读取这个文件。本机记录没有改动。", "errorSave": "无法写入这份备份，请重试。" },
-    "deleteDay": { "title": "删除某一天的记录", "label": "要删除的日期", "button": "删除这一天", "done": "已删除 {{date}} 的记录。", "confirmTitle": "删除 {{date}} 的记录？", "confirmDescription": "删除后无法恢复。", "confirm": "删除这一天", "deleting": "正在删除…" },
     "clear": { "title": "清空所有记录", "button": "清空数据" }
   },
   "detail": {

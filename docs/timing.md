@@ -64,9 +64,9 @@ The full statement is [PRIVACY.md](../PRIVACY.md) ([中文](../PRIVACY.zh-CN.md)
 
 - Only the hostname, times, and visit counts are saved. Titles, page text, full URLs, paths, queries, cookies, and form input are not.
 - Data stays on this device, in the extension's own IndexedDB database. Nothing is uploaded. The extension has no host permission and no content script.
-- You can delete one site, delete one day, or clear everything. Deletion removes the records from the local database and cannot be undone.
+- You can delete one site or clear everything. Deletion removes the records from the local database and cannot be undone.
 - Progress is saved every 30 seconds (`CHECKPOINT_SECONDS`). If the browser closes unexpectedly, at most that recent interval can be lost.
-- Visit records and active sessions are kept for the last 31 days (`DETAIL_DAYS`), counting today. Daily and hourly totals are kept until you clear them or delete that site or day.
+- Visit records and active sessions are kept for the last 31 days (`DETAIL_DAYS`), counting today. Daily and hourly totals are kept until you clear them or delete that site.
 - Export data in Settings builds a JSON or CSV file in the page and saves it as a download. It makes no network request.
 
 ## Where the rules are tested

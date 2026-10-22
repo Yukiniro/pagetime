@@ -42,9 +42,6 @@
     "open": "ダッシュボードを開く",
     "viewSite": "ダッシュボードで {{site}} を見る"
   },
-  "summary": {
-    "sites_other": "<b>{{count}}</b> サイト"
-  },
   "kpi": { "label": "{{range}}の合計", "sites": "サイト数" },
   "compare": {"yesterday": "昨日比", "previous7": "直前の 7 日間との比較", "previous30": "直前の 30 日間との比較", "previousPeriod": "直前の期間との比較", "asOf": "{{period}}（{{time}} 時点）", "change": "{{diff}}（{{percent}}）", "unchanged": "変化なし", "underMinute": "{{sign}}1 分未満", "basis": "比較対象の期間：{{range}}", "basisAsOf": "比較対象の期間：{{range}}。どちらの期間も最終日の {{time}} までを集計しています。", "unavailable": "記録が足りないため比較できません。"},
   "filter": {
@@ -122,7 +119,6 @@
     "badge": { "title": "ツールバーのバッジ" },
     "docs": { "timing": "計測ルールとプライバシーの説明", "privacy": "プライバシーポリシー" },
     "export": { "title": "データを書き出す", "description": "この端末のすべての記録をダウンロードします。", "note": "ファイルはお使いのコンピューターにだけ保存されます。含まれるのはホスト名と時間だけで、URL やタイトルは含まれません。", "json": "JSON を書き出す", "csv": "CSV を書き出す", "exporting": "書き出しています…", "done": "{{file}} を保存しました。", "errorTitle": "書き出せませんでした", "error": "ファイルはダウンロードされていません。もう一度お試しください。", "restore": "バックアップから復元", "restorePreview": "バックアップからの復元は拡張機能の中だけで使えます。", "restoring": "復元しています…", "restored": "復元しました。", "restoreTitle": "ローカルの記録を置き換えますか？", "restoreDescription": "ファイルの記録でローカルの記録をすべて置き換えます。元に戻せません。", "restoreConfirm": "記録を置き換える", "restoreErrorTitle": "復元できませんでした", "errorFormat": "PageTime のバックアップではありません。記録は変更されていません。", "errorVersion": "このバックアップのバージョンには対応していません。記録は変更されていません。", "errorStructure": "バックアップの構造が台帳と一致しません。記録は変更されていません。", "errorRead": "ファイルを読み取れませんでした。記録は変更されていません。", "errorSave": "バックアップを書き込めませんでした。もう一度お試しください。" },
-    "deleteDay": { "title": "ある日の記録を削除", "label": "削除する日付", "button": "この日を削除", "done": "{{date}} の記録を削除しました。", "confirmTitle": "{{date}} の記録を削除しますか？", "confirmDescription": "削除すると元に戻せません。", "confirm": "この日を削除", "deleting": "削除しています…" },
     "clear": { "title": "すべての記録を削除", "button": "データを削除" }
   },
   "detail": {

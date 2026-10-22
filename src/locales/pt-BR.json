@@ -42,11 +42,6 @@
     "open": "Abrir o painel",
     "viewSite": "Ver {{site}} no painel"
   },
-  "summary": {
-    "sites_one": "<b>{{count}}</b> site",
-    "sites_many": "<b>{{count}}</b> sites",
-    "sites_other": "<b>{{count}}</b> sites"
-  },
   "kpi": { "label": "Totais de {{range}}", "sites": "Sites" },
   "compare": {"yesterday": "em relação a ontem", "previous7": "em relação aos 7 dias anteriores", "previous30": "em relação aos 30 dias anteriores", "previousPeriod": "em relação ao período anterior", "asOf": "{{period}}, até {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "Sem alteração", "underMinute": "{{sign}}menos de 1 min", "basis": "Período anterior: {{range}}", "basisAsOf": "Período anterior: {{range}}. Os dois períodos são contados só até {{time}} no último dia.", "unavailable": "Não há dados registrados suficientes para comparar."},
   "filter": {
@@ -134,7 +129,6 @@
     "badge": { "title": "Selo da barra" },
     "docs": { "timing": "Regras de contagem e privacidade", "privacy": "Política de privacidade" },
     "export": { "title": "Exportar dados", "description": "Baixa todos os registros deste dispositivo.", "note": "O arquivo fica salvo só no seu computador. Ele contém nomes de host e durações, nunca URLs ou títulos.", "json": "Exportar JSON", "csv": "Exportar CSV", "exporting": "Exportando…", "done": "{{file}} salvo.", "errorTitle": "Falha ao exportar", "error": "Nada foi baixado. Tente de novo.", "restore": "Restaurar do backup", "restorePreview": "Restaurar um backup só funciona dentro da extensão.", "restoring": "Restaurando…", "restored": "Restaurado.", "restoreTitle": "Substituir todos os registros locais?", "restoreDescription": "O arquivo substituirá todos os registros locais. Isso não pode ser desfeito.", "restoreConfirm": "Substituir registros", "restoreErrorTitle": "Não foi possível restaurar", "errorFormat": "Este arquivo não é um backup do PageTime. Nada foi alterado.", "errorVersion": "Esta versão de backup não é compatível. Nada foi alterado.", "errorStructure": "Este backup não corresponde ao registro. Nada foi alterado.", "errorRead": "Não foi possível ler o arquivo. Nada foi alterado.", "errorSave": "Não foi possível gravar o backup. Tente de novo." },
-    "deleteDay": { "title": "Apagar os registros de um dia", "label": "Data a apagar", "button": "Apagar este dia", "done": "Registros de {{date}} apagados.", "confirmTitle": "Apagar os registros de {{date}}?", "confirmDescription": "Não dá para desfazer.", "confirm": "Apagar este dia", "deleting": "Apagando…" },
     "clear": { "title": "Limpar todos os registros", "button": "Limpar dados" }
   },
   "detail": {

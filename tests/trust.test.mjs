@@ -30,6 +30,7 @@ test('privacy notes name the stored fields, storage areas, and model constants',
     assert.match(note, new RegExp(`\\b${DETAIL_DAYS}\\b`));
     for (const name of ['domains', 'days', 'hours', 'spans', 'visits', 'meta', 'ledgerError', 'session', 'data']) assert.match(note, new RegExp(`\`${name}\``));
     assert.match(note, /hostname|主机名/);
+    assert.doesNotMatch(note, /deleteDay|deleting today's records|删除今天的记录|Delete one day's records|按某一天/);
   }
 });
 
