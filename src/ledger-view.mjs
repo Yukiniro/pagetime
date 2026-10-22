@@ -54,7 +54,7 @@ export function viewFromSnapshot(data, { start, end, today, search = '', site = 
     since: data.since,
     stats: summarize(data, start, end, keyOf),
     todayStats: summarize(data, today, addDays(today, 1), keyOf),
-    days: daily(trendData, start, end).map(({ at, ms }) => ({ at, ms, recorded: at >= midnight(data.since) })),
+    days: daily(trendData, start, end).map(({ at, ms, visits }) => ({ at, ms, visits, recorded: at >= midnight(data.since) })),
     hourRows: data.spans.flatMap(span => hourPieces(Math.max(span.start, start), Math.min(span.end, end)).map(piece => ({ ...piece, site: keyOf(span.domain) }))),
     // A single day shows that day's sessions. A longer range keeps today's timeline.
     spans: data.spans.filter(span => span.end > chartDay && span.start < addDays(chartDay, 1)).map(span => ({ ...span, site: keyOf(span.domain) })),
@@ -73,6 +73,7 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
   const entries = [];
   const todayEntries = [];
   const perDay = new Map();
+  const dayVisits = new Map();
   const includeInTrend = domain => !site || keyOf(domain) === site;
   let visitCount = 0;
   // Day rows may include today even when the query range is earlier. `todayStats` stays on today.
@@ -83,7 +84,10 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
     if (!domain) continue;
     if (inRange(row.date, start, end)) {
       entries.push({ domain, ms: row.ms, visits: row.visits });
-      if (includeInTrend(domain)) perDay.set(row.date, (perDay.get(row.date) ?? 0) + row.ms);
+      if (includeInTrend(domain)) {
+        perDay.set(row.date, (perDay.get(row.date) ?? 0) + row.ms);
+        dayVisits.set(row.date, (dayVisits.get(row.date) ?? 0) + (row.visits || 0));
+      }
       if (matches(domain, search, site, keyOf)) visitCount += row.visits;
     }
     if (row.date === todayKey) todayEntries.push({ domain, ms: row.ms, visits: row.visits });
@@ -110,7 +114,10 @@ export function viewFromLedger({ state, domains, days, hours = [], spans, visits
   if (todayPiece) todayEntries.push({ domain: segment.domain, ms: todayPiece, visits: 0 });
   const trend = [];
   const recordedFrom = midnight(state?.since ?? now);
-  for (let at = start; at < end; at = addDays(at, 1)) trend.push({ at, ms: perDay.get(dateKey(at)) ?? 0, recorded: at >= recordedFrom });
+  for (let at = start; at < end; at = addDays(at, 1)) {
+    const key = dateKey(at);
+    trend.push({ at, ms: perDay.get(key) ?? 0, visits: dayVisits.get(key) ?? 0, recorded: at >= recordedFrom });
+  }
   const listed = [];
   for (const visit of visits) {
     const domain = host.get(visit.domainId);

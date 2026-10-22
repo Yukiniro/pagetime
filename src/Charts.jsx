@@ -51,7 +51,13 @@ export function Trend({days, label, className='trend-chart', variant='overview',
     yAxis:{type:'value',min:0,minInterval:1,max:Math.max(6,...days.map(d=>Math.ceil(d.ms/3_600_000))),splitNumber:3,axisLabel:{color:theme.label,...(detail?{fontSize:11}:{}),formatter:v=>v?t('trend.hours',{count:v}):'0'},splitLine:{lineStyle:{color:theme.split}}},
     series:[bars]};
   const summary=days.map(d=>`${formatDate(d.at)} ${trendUnrecorded(d)?t('detail.trend.unrecorded'):duration(d.ms)}`).join(t('trend.separator'));
-  return <Chart option={option} className={className} label={label??t('trend.label',{days:summary})} onClick={onClick}/>;
+  const dayLabel=day=>t('detail.trend.item',{date:formatDate(day.at),duration:duration(day.ms)});
+  return <><Chart option={option} className={className} label={label??t('trend.label',{days:summary})} onClick={onClick}/>
+    {onSelectDay&&<ul className="timeline-segments">{days.map((day,i)=>{
+      const at=trendDayAt(days,i);
+      if(at===null)return null;
+      return <li key={day.at}><button type="button" className="sr-only timeline-segment pointer-events-none" onClick={()=>onSelectDay(at)}>{dayLabel(day)}</button></li>;
+    })}</ul>}</>;
 }
 export function SiteTrend({days, domain, isDark=false}){
   const {t}=useTranslation();

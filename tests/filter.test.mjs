@@ -99,3 +99,43 @@ test('ledger trend days follow the site filter while ranking totals stay complet
   const cleared = viewFromLedger(base, { ...range, site: toggleSiteFilter('youtube.com', 'youtube.com') });
   assert.equal(sum(cleared.days), full.stats.ms);
 });
+
+test('a filtered site with only visits still has a trend, and a site with no rows does not', () => {
+  const visitOnly = {
+    enabled: true,
+    since: at(18),
+    visits: [{ domain: 'news.example', at: at(19, 9) }],
+    spans: [{ domain: 'other.example', start: at(19, 8), end: at(19, 8, 5) }],
+  };
+  const range = { start: at(18), end: at(21), today: at(20), site: 'news.example', siteMerge: 'prefix' };
+  const days = viewFromSnapshot(visitOnly, range).days;
+  const hit = days.find(day => new Date(day.at).getDate() === 19);
+  assert.equal(hit.ms, 0);
+  assert.equal(hit.visits, 1);
+  assert.equal(hit.recorded, true);
+  assert.equal(trendHasActivity(days), true);
+  assert.equal(days.filter(day => day.visits > 0).length, 1);
+  assert.equal(trendHasActivity(viewFromSnapshot(visitOnly, { ...range, site: 'missing.example' }).days), false);
+  const before = viewFromSnapshot({ ...visitOnly, since: at(20) }, range).days.find(day => new Date(day.at).getDate() === 19);
+  assert.equal(before.recorded, false);
+  assert.equal(before.visits, 1);
+  assert.equal(trendHasActivity([before]), false);
+
+  const ledger = viewFromLedger({
+    state: { enabled: true, since: at(18) },
+    domains: [{ id: 1, host: 'news.example' }, { id: 2, host: 'other.example' }],
+    days: [
+      { date: '2026-10-19', domainId: 1, ms: 0, visits: 2 },
+      { date: '2026-10-19', domainId: 2, ms: 5 * 60_000, visits: 1 },
+    ],
+    hours: [],
+    spans: [],
+    visits: [],
+  }, { start: at(18), end: at(21), today: at(20), now: at(20, 12), site: 'news.example', siteMerge: 'prefix' });
+  const row = ledger.days.find(day => new Date(day.at).getDate() === 19);
+  assert.equal(row.ms, 0);
+  assert.equal(row.visits, 2);
+  assert.equal(row.recorded, true);
+  assert.equal(trendHasActivity(ledger.days), true);
+  assert.equal(ledger.days.find(day => new Date(day.at).getDate() === 18).visits, 0);
+});

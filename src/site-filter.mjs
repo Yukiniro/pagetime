@@ -24,6 +24,8 @@ export function timelineHasActivity(spans, today, end) {
   return (spans ?? []).some(span => span.end > today && span.start < end);
 }
 
+// A visit with no active time is still a recorded day. A site with neither time nor
+// visits has no trend, including on days the ledger was already recording.
 export function trendHasActivity(days) {
-  return (days ?? []).some(day => day.ms > 0);
+  return (days ?? []).some(day => day.ms > 0 || (day.visits > 0 && day.recorded !== false));
 }

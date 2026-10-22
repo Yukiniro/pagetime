@@ -132,6 +132,25 @@ test('an unrecorded column, a blank track, and a non-series click do not select 
   }
 });
 
+test('each selectable trend day is a button on the same path as the canvas click', async () => {
+  const selected = [];
+  const view = await render(Trend, { days, onSelectDay: at => selected.push(at) });
+  try {
+    const buttons = [...view.host.querySelectorAll('button.timeline-segment')];
+    assert.equal(buttons.length, 3);
+    assert.ok(buttons.every(button => button.type === 'button' && button.textContent.length > 0));
+    assert.equal(view.host.querySelector('[role="img"]').getAttribute('tabindex'), '-1');
+    buttons[1].click();
+    buttons[0].click();
+    assert.deepEqual(selected, [3_000, 2_000]);
+    const chart = trendCharts().at(-1);
+    click(chart, { componentType: 'series', dataIndex: 3 });
+    assert.deepEqual(selected, [3_000, 2_000, 4_000]);
+  } finally {
+    await unmount(view);
+  }
+});
+
 test('the site detail trend does not register a day click', async () => {
   const view = await render(SiteTrend, { days, domain: 'github.com' });
   try {
@@ -141,6 +160,7 @@ test('the site detail trend does not register a day click', async () => {
     assert.equal(chart.option.series[0].barMinHeight, undefined);
     assert.equal(view.host.querySelector('[role="img"]').getAttribute('tabindex'), null);
     click(chart, { componentType: 'series', dataIndex: 2 });
+    assert.equal(view.host.querySelectorAll('button.timeline-segment').length, 0);
   } finally {
     await unmount(view);
   }
