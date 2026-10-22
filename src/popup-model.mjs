@@ -14,9 +14,9 @@ export function recordableHost(url) {
 /**
  * Today's active time in the same shape as the dashboard's today stats:
  * today's day rows plus the still-open cursor, clipped to the local day and grouped.
- * @param {{ domains?: { id: number, host: string }[], days?: { date: string, domainId: number, ms: number, visits?: number }[], cursor?: { domain: string, since: number } | null, lastEnd?: number, now: number, enabled?: boolean, host?: string | null, siteMerge?: string }} input
+ * @param {{ domains?: { id: number, host: string }[], days?: { date: string, domainId: number, ms: number, visits?: number }[], cursor?: { domain: string, since: number } | null, lastEnd?: number, now: number, enabled?: boolean, host?: string | null }} input
  */
-export function popupToday({ domains = [], days = [], cursor = null, lastEnd, now, enabled = true, host = null, siteMerge = 'prefix' }) {
+export function popupToday({ domains = [], days = [], cursor = null, lastEnd, now, enabled = true, host = null }) {
   const key = dateKey(now);
   const start = midnight(now);
   const hostOf = new Map(domains.map(row => [row.id, row.host]));
@@ -30,8 +30,8 @@ export function popupToday({ domains = [], days = [], cursor = null, lastEnd, no
   const segment = enabled ? openCredit(cursor, lastEnd, now) : null;
   const piece = overlapMs(segment, start, addDays(start, 1));
   if (piece) entries.push({ domain: segment.domain, ms: piece, visits: 0 });
-  const grouped = groupSites(entries, domain => siteOf(domain, siteMerge));
-  const site = typeof host === 'string' && host ? siteOf(host, siteMerge) : null;
+  const grouped = groupSites(entries, siteOf);
+  const site = typeof host === 'string' && host ? siteOf(host) : null;
   const row = site ? grouped.rows.find(item => item.domain === site) : undefined;
   return { total: grouped.ms, site, siteMs: row?.ms ?? 0 };
 }

@@ -116,13 +116,6 @@
     "recording": { "title": "Enregistrement" },
     "audible": { "title": "Continuer à compter pendant la lecture audio" },
     "idle": { "title": "Seuil d’inactivité", "description": "Sans clavier ni souris pendant cette durée, le navigateur est inactif.", "label": "Seuil d’inactivité : {{duration}}", "option_one": "{{count}} minute", "option_many": "{{count}} minutes", "option_other": "{{count}} minutes" },
-    "siteMerge": {
-      "title": "Regrouper les sous-domaines",
-      "label": "Regroupement des sous-domaines : {{mode}}",
-      "none": "Ne pas regrouper",
-      "prefix": "Regrouper www, m et mobile",
-      "registrable": "Regrouper par domaine enregistrable"
-    },
     "recordMode": { "title": "Périmètre d’enregistrement", "blacklist": "Liste noire", "whitelist": "Liste blanche", "blacklistHint": "Enregistrer tous les sites sauf ceux de la liste ci-dessous.", "whitelistHint": "Enregistrer seulement les sites de la liste ci-dessous." },
     "ignored": { "title": "Sites ignorés", "input": "Hôte à ignorer", "placeholder": "example.com (sous-domaines inclus)", "add": "Ajouter", "remove": "Retirer {{domain}}", "emptyTitle": "Aucun site ignoré", "error": "Saisissez un hôte valide, tel que example.com", "limit": "Vous pouvez ignorer au plus {{count}} hôtes." },
     "allowed": { "title": "Sites autorisés", "input": "Hôte à autoriser", "placeholder": "example.com (sous-domaines inclus)", "add": "Ajouter", "remove": "Retirer {{domain}}", "emptyTitle": "Aucun site autorisé", "limit": "Vous pouvez autoriser au plus {{count}} hôtes.", "emptyWarning": "La liste blanche est vide, aucun site n’est enregistré", "error": "Saisissez un hôte valide, tel que example.com" },

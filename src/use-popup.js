@@ -7,7 +7,7 @@ import { popupToday } from './popup-model.mjs';
 
 let db;
 
-function useExtensionPopup(host, siteMerge) {
+function useExtensionPopup(host) {
   const [marker, setMarker] = useState();
   useEffect(() => watchLedgerError(setMarker), []);
   const result = useLiveQuery(async () => {
@@ -25,12 +25,12 @@ function useExtensionPopup(host, siteMerge) {
       ]);
       const cursor = head.cursor?.session === stored.session ? head.cursor : null;
       const enabled = head.state?.enabled ?? true;
-      return { hostKey, merge: siteMerge, enabled, ...popupToday({ domains, days, cursor, lastEnd: head.lastEnd, now, enabled, host, siteMerge }) };
+      return { hostKey, enabled, ...popupToday({ domains, days, cursor, lastEnd: head.lastEnd, now, enabled, host }) };
     } catch (error) {
       console.error('PageTime could not read the ledger', error);
-      return { hostKey, merge: siteMerge, error: 'read' };
+      return { hostKey, error: 'read' };
     }
-  }, [host, siteMerge]);
+  }, [host]);
   return {
     pending: result === undefined,
     error: result?.error ?? (marker ? 'save' : undefined),
@@ -38,11 +38,11 @@ function useExtensionPopup(host, siteMerge) {
   };
 }
 
-function usePreviewPopup(host, siteMerge) {
+function usePreviewPopup(host) {
   return {
     pending: false,
     error: undefined,
-    figures: { hostKey: host ?? '', merge: siteMerge, enabled: true, total: 0, site: null, siteMs: 0 },
+    figures: { hostKey: host ?? '', enabled: true, total: 0, site: null, siteMs: 0 },
   };
 }
 

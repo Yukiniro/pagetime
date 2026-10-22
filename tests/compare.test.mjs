@@ -214,8 +214,7 @@ test('a site filter narrows both windows, by merged site', () => {
   assert.deepEqual(windowTotals(stored, today.previous, { site: 'a.test' }), { ms: 20 * MIN, visits: 1, sites: 1 });
   assert.deepEqual(windowTotals(stored, today.previous, { site: 'b.test' }), { ms: 5 * MIN, visits: 1, sites: 1 });
   assert.deepEqual(windowTotals(stored, today.current, { site: 'b.test' }), { ms: 0, visits: 0, sites: 0 });
-  assert.deepEqual(windowTotals(stored, today.previous, { site: 'www.a.test', siteMerge: 'none' }), { ms: 0, visits: 0, sites: 0 });
-  assert.deepEqual(windowTotals(stored, today.previous, { site: 'a.test', siteMerge: 'none' }), { ms: 20 * MIN, visits: 1, sites: 1 });
+  assert.deepEqual(windowTotals(stored, today.previous, { site: 'www.a.test' }), { ms: 0, visits: 0, sites: 0 });
   const summary = compareSummary(windowTotals(stored, today.current, { site: 'b.test' }), windowTotals(stored, today.previous, { site: 'b.test' }), NONE);
   assert.deepEqual(summary.ms, { diff: -5 * MIN, percent: -100 });
 });
@@ -252,7 +251,7 @@ test('the snapshot comparison matches the stored-row comparison', () => {
       { domain: 'b.test', start: at(10, 18, 16), end: at(10, 18, 16, 8) },
     ],
   };
-  const range = { ...presetRange('today', at(10, 19)), focus: '', siteMerge: 'prefix' };
+  const range = { ...presetRange('today', at(10, 19)), focus: '' };
   const { window, summary } = compareFromSnapshot(data, range, now);
   assert.deepEqual(window, today);
   assert.deepEqual(summary.ms, { diff: -15 * MIN, percent: -60 });
@@ -295,7 +294,7 @@ async function compareStored(db, range, when, extra = {}) {
   const head = await readHead(db);
   const domains = await readDomains(db);
   const days = await db.days.toArray();
-  return readComparison(db, { range: { ...range, focus: '', siteMerge: 'prefix', ...extra }, now: when, since: head.state.since, domains, days, segment: null });
+  return readComparison(db, { range: { ...range, focus: '', ...extra }, now: when, since: head.state.since, domains, days, segment: null });
 }
 
 test('readComparison reads the same figures from a real ledger', async () => {

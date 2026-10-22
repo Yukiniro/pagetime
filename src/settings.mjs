@@ -1,7 +1,6 @@
-export const MERGE_MODES = ['none', 'prefix', 'registrable'];
 export const RECORD_MODES = ['blacklist', 'whitelist'];
 export const THEME_MODES = ['system', 'light', 'dark'];
-export const DEFAULT_SETTINGS = { schema: 1, idleSeconds: 60, countAudible: true, siteMerge: 'prefix', recordMode: 'blacklist', ignored: [], allowed: [], badge: true, theme: 'system' };
+export const DEFAULT_SETTINGS = { schema: 1, idleSeconds: 60, countAudible: true, recordMode: 'blacklist', ignored: [], allowed: [], badge: true, theme: 'system' };
 export const IDLE_OPTIONS = [60, 120, 300, 600];
 export const HOST_MAX = 253;
 export const IGNORED_LIMIT = 500;
@@ -107,7 +106,6 @@ export function validateSettings(value) {
     schema: value?.schema === 1 ? 1 : DEFAULT_SETTINGS.schema,
     idleSeconds: IDLE_OPTIONS.includes(value?.idleSeconds) ? value.idleSeconds : DEFAULT_SETTINGS.idleSeconds,
     countAudible: typeof value?.countAudible === 'boolean' ? value.countAudible : DEFAULT_SETTINGS.countAudible,
-    siteMerge: MERGE_MODES.includes(value?.siteMerge) ? value.siteMerge : DEFAULT_SETTINGS.siteMerge,
     recordMode: RECORD_MODES.includes(value?.recordMode) ? value.recordMode : DEFAULT_SETTINGS.recordMode,
     ignored: hostList(value?.ignored),
     allowed: hostList(value?.allowed),

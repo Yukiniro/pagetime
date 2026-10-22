@@ -30,5 +30,5 @@ Fresh preview context or fresh extension profile. English. Listen for downloads 
 - Preview export reads `pagetime-preview` through `previewSnapshot`. It will not contain extension IndexedDB rows. Extension export reads `pagetime-ledger`.
 - `Exporting…` is guaranteed by the e2e that writes a year of 200 sites inside the service worker. This journey does not write that fixture. Missing `Exporting…` on an empty file is not a failure. A missing download, or a status other than `Saved pagetime-<date>.<ext>.`, is a failure.
 - The status node is `role="status"`. The error node is `role="alert"`. Do not treat the static note as the status.
-- CSV rows use the raw hostname. Grouping (`prefix` / `registrable`) does not merge export rows.
+- CSV rows use the raw hostname. Stripping a leading `www.`, `m.`, or `mobile.` does not merge export rows.
 - A proof that only checks the button labels is incomplete; the download body is the side effect. Restore is covered by [restore.md](restore.md), not by this journey.

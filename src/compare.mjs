@@ -9,7 +9,7 @@ export async function readComparison(db, { range, now, since, domains, days, seg
   const window = previousWindow(range, now);
   const blocks = compareBlocks(window, { since, now });
   if (blocks.ms) return { window, summary: compareSummary(null, null, blocks) };
-  const options = { site: range.focus || '', siteMerge: range.siteMerge };
+  const options = { site: range.focus || '' };
   const totals = async ({ start, end }, wholeDays) => {
     const cutDay = midnight(end);
     const cut = cutDay < end;

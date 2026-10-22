@@ -116,13 +116,6 @@
     "recording": { "title": "Registro de navegação" },
     "audible": { "title": "Continuar contando enquanto houver áudio" },
     "idle": { "title": "Limite de ociosidade", "description": "Sem teclado ou mouse por este tempo, o navegador conta como ocioso.", "label": "Limite de ociosidade: {{duration}}", "option_one": "{{count}} minuto", "option_many": "{{count}} minutos", "option_other": "{{count}} minutos" },
-    "siteMerge": {
-      "title": "Agrupar subdomínios",
-      "label": "Agrupamento de subdomínios: {{mode}}",
-      "none": "Não agrupar",
-      "prefix": "Agrupar www, m e mobile",
-      "registrable": "Agrupar por domínio registrável"
-    },
     "recordMode": { "title": "Escopo do registro", "blacklist": "Lista negra", "whitelist": "Lista branca", "blacklistHint": "Registrar todos os sites, exceto os da lista abaixo.", "whitelistHint": "Registrar somente os sites da lista abaixo." },
     "ignored": { "title": "Sites ignorados", "input": "Host a ignorar", "placeholder": "example.com (inclui subdomínios)", "add": "Adicionar", "remove": "Remover {{domain}}", "emptyTitle": "Nenhum site ignorado", "error": "Informe um host válido, como example.com", "limit": "Você pode ignorar até {{count}} hosts." },
     "allowed": { "title": "Sites permitidos", "input": "Host a permitir", "placeholder": "example.com (inclui subdomínios)", "add": "Adicionar", "remove": "Remover {{domain}}", "emptyTitle": "Nenhum site permitido", "limit": "Você pode permitir até {{count}} hosts.", "emptyWarning": "A lista branca está vazia, então nenhum site é registrado", "error": "Informe um host válido, como example.com" },

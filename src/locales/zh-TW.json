@@ -106,13 +106,6 @@
     "recording": { "title": "瀏覽紀錄" },
     "audible": { "title": "播放音訊時繼續計時" },
     "idle": { "title": "閒置判定時間", "description": "多久沒有鍵盤滑鼠操作後視為閒置。", "label": "閒置判定時間：{{duration}}", "option_other": "{{count}} 分鐘" },
-    "siteMerge": {
-      "title": "網站合併方式",
-      "label": "網站合併方式：{{mode}}",
-      "none": "不合併",
-      "prefix": "合併 www、m、mobile",
-      "registrable": "按可註冊網域合併"
-    },
     "recordMode": { "title": "記錄範圍", "blacklist": "黑名單", "whitelist": "白名單", "blacklistHint": "除了下面列出的網站外，其他網站都會記錄。", "whitelistHint": "只記錄下面列出的網站。" },
     "ignored": { "title": "忽略的網站", "input": "要忽略的網域", "placeholder": "example.com（含子網域）", "add": "新增", "remove": "移除 {{domain}}", "emptyTitle": "沒有忽略的網站", "error": "請輸入有效網域，如 example.com", "limit": "最多忽略 {{count}} 個網站。" },
     "allowed": { "title": "允許的網站", "input": "要允許的網域", "placeholder": "example.com（含子網域）", "add": "新增", "remove": "移除 {{domain}}", "emptyTitle": "沒有允許的網站", "limit": "最多允許 {{count}} 個網站。", "emptyWarning": "白名單為空，目前不記錄任何網站", "error": "請輸入有效網域，如 example.com" },

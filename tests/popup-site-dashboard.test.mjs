@@ -51,7 +51,6 @@ test('a site hash is the grouped name and never a full URL', () => {
     lastEnd: now - 10_000,
     now,
     host: 'www.github.com',
-    siteMerge: 'prefix',
   });
   assert.equal(figures.site, 'github.com');
   assert.ok(figures.siteMs > 0);

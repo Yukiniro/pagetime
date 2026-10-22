@@ -22,7 +22,7 @@ function useExtensionLedger(range) {
       db ??= openLedger();
       const { browser } = await import('wxt/browser');
       const [domains, head, stored] = await Promise.all([readDomains(db), readHead(db), browser.storage.session.get('session')]);
-      const ids = new Set(domains.filter(row => range.site ? siteOf(row.host, range.siteMerge) === range.site : row.host.includes(range.search)).map(row => row.id));
+      const ids = new Set(domains.filter(row => range.site ? siteOf(row.host) === range.site : row.host.includes(range.search)).map(row => row.id));
       const cursor = head.cursor?.session === stored.session ? head.cursor : null;
       const now = Date.now();
       const displayFrom = dateKey(range.start);
@@ -50,7 +50,7 @@ function useExtensionLedger(range) {
         cursor,
         lastEnd: head.lastEnd,
       };
-      const detailIds = range.detail ? domains.filter(row => siteOf(row.host, range.siteMerge) === range.detail).map(row => row.id) : [];
+      const detailIds = range.detail ? domains.filter(row => siteOf(row.host) === range.detail).map(row => row.id) : [];
       // Daily bars follow the trend tab. Hour buckets stay on the selected range.
       const detailArgs = range.detail ? detailSeriesArgs(range, now) : null;
       const [detailDays, detailHours] = detailArgs ? await Promise.all([
@@ -68,7 +68,6 @@ function useExtensionLedger(range) {
         today: range.today,
         search: '',
         site: range.focus || '',
-        siteMerge: range.siteMerge,
         now,
       }).days;
       const compare = await readComparison(db, {
@@ -97,7 +96,7 @@ function useExtensionLedger(range) {
       console.error('PageTime could not read the ledger', error);
       return { rangeKey, error: 'read' };
     }
-  }, [range.start, range.end, range.today, range.search, range.site, range.siteMerge, range.detail, range.focus, attempt]);
+  }, [range.start, range.end, range.today, range.search, range.site, range.detail, range.focus, attempt]);
   const settled = result?.rangeKey === rangeKey;
   return {
     view: result?.view,
@@ -121,7 +120,7 @@ function usePreviewLedger(range) {
     rangeSince: data ? customRangeSince(data.since, data, now) : undefined,
     view: data ? viewFromSnapshot(data, range) : undefined,
     compare: data ? compareFromSnapshot(data, range, now) : undefined,
-    trendDays: data ? viewFromSnapshot(data, { start: trend.start, end: trend.end, today: range.today, site: range.focus || '', siteMerge: range.siteMerge }).days : undefined,
+    trendDays: data ? viewFromSnapshot(data, { start: trend.start, end: trend.end, today: range.today, site: range.focus || '' }).days : undefined,
     detail: data && range.detail ? siteSeriesFromSnapshot(data, detailSeriesArgs(range, now)) : null,
     detailSite: range.detail || '',
     pending: !data,
