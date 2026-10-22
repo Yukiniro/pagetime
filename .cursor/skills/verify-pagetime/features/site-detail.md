@@ -1,12 +1,12 @@
 # 站点详情抽屉与点选过滤
 
-A ranking row filters the overview to that site. The caret opens a drawer with that site's time, visits, and active sessions for the chart day. Closing the drawer clears the open site and leaves the filter.
+A ranking row filters the overview to that site. The caret opens a drawer with that site's time and visits. A single local day also lists that day's active sessions. A multi-day range leaves that list out. Closing the drawer clears the open site and leaves the filter.
 
 ## Sub-features
 
 - Filter: the row button `Filter to <domain>` toggles `filterSite`. A status chip reads `Filtered to <domain>` and offers `Clear filter`. The expanded Active hours heatmap follows this filter; that journey is [heatmap-site-filter.md](heatmap-site-filter.md).
-- Drawer: `Details for <domain>` opens a dialog `Site details`. The description includes the current range chip. Close is `Close details`. Session rows follow the chart day. Today, and any multi-day range, uses the heading `Today's active sessions`. A single earlier day that still has session rows uses a heading that contains that date. A single day past detail retention leaves the session heading and the list out.
-- Daily trend: one local day shows the 7 local days ending on that day, the same window as the overview trend tab. A multi-day range shows that whole span. Time of day and the session list stay on the selected range. A day before recording started stays `Not recorded` when it has no time. Clicking a recorded bar in this trend is [detail-trend-day-click.md](detail-trend-day-click.md).
+- Drawer: `Details for <domain>` opens a dialog `Site details`. The description includes the current range chip. Close is `Close details`. On a single local day, session rows follow that day. Today uses the heading `Today's active sessions`. A single earlier day that still has session rows uses a heading that contains that date. A single day past detail retention leaves the session heading and the list out. A multi-day range (Last 7 days, Last 30 days, or any longer custom span) leaves the session heading, the list, and the empty line out. Totals, daily trend, time of day, and subdomain breakdown stay.
+- Daily trend: one local day shows the 7 local days ending on that day, the same window as the overview trend tab. A multi-day range shows that whole span. Time of day stays on the selected range. A day before recording started stays `Not recorded` when it has no time. Clicking a recorded bar in this trend is [detail-trend-day-click.md](detail-trend-day-click.md).
 - From the drawer, `View visits` goes to Visit history with the search filled by that site. This journey stops before `Delete this site's records` and before `Stop recording this site` / `Add to whitelist`.
 
 ## How to get to it (user POV)
@@ -20,8 +20,8 @@ This journey needs a rank row. On the extension, load the built dashboard only a
 1. Assert `[data-status="ready"]`. If the status is `empty`, stop and fail with the Gotcha. Do not insert a host.
 2. Click `getByRole('button', { name: 'Filter to <domain>' })` for a domain that is visible (the e2e visit host is `a.test`). Assert `getByRole('button', { name: 'Filter to <domain>', pressed: true })` and a status whose text is `Filtered to <domain>`.
 3. Open `getByRole('button', { name: /^Date range/ })` and choose `Last 7 days`. The chip still says `Filtered to <domain>` (the filter key is kept and recomputed for the new range).
-4. Click `getByRole('button', { name: 'Details for <domain>' })`. Assert `getByRole('dialog')` contains heading `Site details`, the domain text, and `Today's active sessions` (Last 7 days still shows today's sessions). Screenshot the open drawer.
-5. Click `getByRole('button', { name: 'Close details' })`. The dialog is gone. The status `Filtered to <domain>` is still there.
+4. Click `getByRole('button', { name: 'Details for <domain>' })`. Assert `getByRole('dialog')` contains heading `Site details`, the domain text, heading `Daily trend`, and heading `Time of day`. Assert the dialog text does not include `Today's active sessions`, `Active sessions on`, `No active sessions today`, or `No active sessions on`. Screenshot the open drawer.
+5. Click `getByRole('button', { name: 'Close details' })`. The dialog is gone. The status `Filtered to <domain>` is still there. Open `getByRole('button', { name: /^Date range/ })` and choose `Today`. Open the drawer again. The dialog contains `Today's active sessions`. Close it. The status `Filtered to <domain>` is still there.
 6. Click `Clear filter`. The status chip is gone and the filter button is not pressed.
 7. Open the drawer again and click `View visits`. The heading is `Visit history`, and the searchbox `Search sites` has the domain.
 

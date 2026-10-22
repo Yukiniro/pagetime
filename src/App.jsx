@@ -13,7 +13,7 @@ import { Alert, AlertTitle, AlertDescription } from '@app/components/ui/alert';
 import { Empty, EmptyHeader, EmptyTitle } from '@app/components/ui/empty';
 import { useTranslation } from 'react-i18next';
 import { midnight } from './model.mjs';
-import { activeRange, defaultChart, singleDayRange, timelineDay } from './range.mjs';
+import { activeRange, dayCount, defaultChart, singleDayRange, timelineDay } from './range.mjs';
 import { RangeControl } from './RangeControl.jsx';
 import { rangeChip, trendLabel as trendTitle } from './range-label.mjs';
 import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, RECORD_MODES, THEME_MODES, isAllowed, isIgnored, normalizeHost, validateSettings } from './settings.mjs';
@@ -234,6 +234,7 @@ export function App() {
     sessions={sessions}
     isDark={isDark}
     day={timelineDay(active, today)}
+    dayCount={dayCount(start, end)}
     now={now}
     busy={busy}
     listField={listField}
