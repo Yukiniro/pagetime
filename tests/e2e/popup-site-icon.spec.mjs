@@ -149,7 +149,7 @@ function within(ms, task, label) {
 
 async function openPopup(context, debugPort) {
   focusChrome();
-  await within(8_000, dismissPopup(debugPort), 'dismiss popup');
+  await dismissPopup(debugPort);
   const sw = await worker(context);
   const opened = await within(8_000, sw.evaluate(async () => {
     try {
