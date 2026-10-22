@@ -42,9 +42,6 @@
     "open": "打開儀表板",
     "viewSite": "在儀表板查看 {{site}}"
   },
-  "summary": {
-    "sites_other": "<b>{{count}}</b> 個網站"
-  },
   "kpi": { "label": "{{range}}彙總", "sites": "網站數" },
   "compare": {"yesterday": "較昨天", "previous7": "較前 7 天", "previous30": "較前 30 天", "previousPeriod": "較上一週期", "asOf": "{{period}}（截至 {{time}}）", "change": "{{diff}}（{{percent}}）", "unchanged": "無變化", "underMinute": "{{sign}}不足 1 分鐘", "basis": "上一週期：{{range}}", "basisAsOf": "上一週期：{{range}}。兩個週期都只統計到最後一天的 {{time}}。", "unavailable": "已記錄的資料不足，無法比較。"},
   "filter": {

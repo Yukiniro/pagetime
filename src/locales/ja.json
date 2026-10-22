@@ -42,9 +42,6 @@
     "open": "ダッシュボードを開く",
     "viewSite": "ダッシュボードで {{site}} を見る"
   },
-  "summary": {
-    "sites_other": "<b>{{count}}</b> サイト"
-  },
   "kpi": { "label": "{{range}}の合計", "sites": "サイト数" },
   "compare": {"yesterday": "昨日比", "previous7": "直前の 7 日間との比較", "previous30": "直前の 30 日間との比較", "previousPeriod": "直前の期間との比較", "asOf": "{{period}}（{{time}} 時点）", "change": "{{diff}}（{{percent}}）", "unchanged": "変化なし", "underMinute": "{{sign}}1 分未満", "basis": "比較対象の期間：{{range}}", "basisAsOf": "比較対象の期間：{{range}}。どちらの期間も最終日の {{time}} までを集計しています。", "unavailable": "記録が足りないため比較できません。"},
   "filter": {

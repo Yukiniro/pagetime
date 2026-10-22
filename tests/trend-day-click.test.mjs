@@ -199,7 +199,7 @@ test('the overview trend and a day click do not clear the site filter or the ope
   const app = readFileSync(new URL('../src/App.jsx', import.meta.url), 'utf8');
   assert.equal([...overview.matchAll(/<Trend /g)].length, 1);
   assert.match(overview, /<Trend days=\{trendDays\} className="primary-trend" isDark=\{isDark\} onSelectDay=\{onSelectDay\} \/>/);
-  const handler = app.slice(app.indexOf('const onSelectDay'), app.indexOf('const dayReady'));
+  const handler = app.slice(app.indexOf('const onSelectDay'), app.indexOf('const removeHosts'));
   assert.match(handler, /singleDayRange\(at, midnight\(Date\.now\(\)\), rangeSince\)/);
   assert.match(handler, /if \(next\) setRange\(next\)/);
   assert.doesNotMatch(handler, /setFilterSite|setSelected/);
