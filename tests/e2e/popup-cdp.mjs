@@ -88,20 +88,26 @@ export async function attachPopup(debugPort) {
 
 // A popup that is already closing can remain in /json/list after its page socket
 // stops answering. Waiting to attach to that socket, then for the global expect
-// timeout, is the flake: absence is success, and a silent socket is abandoned.
+// timeout, is the flake. Only a list we actually read, with no popup page, is
+// dismissal. A timed-out or unreadable list is retried, and still failing at the
+// end is not success. A silent page socket is abandoned.
 export async function dismissPopup(debugPort, { budgetMs = 10_000, probeMs = 1_000 } = {}) {
   const deadline = Date.now() + budgetMs;
   for (;;) {
     const list = await devtoolsList(debugPort, probeMs);
-    if (list && !list.some(isPopupPage)) return;
-    const target = list?.find(isPopupPage);
+    if (popupDismissed(list)) return;
+    const target = Array.isArray(list) ? list.find(isPopupPage) : undefined;
     if (target) await closePopupPage(target, probeMs).catch(() => {});
     if (Date.now() >= deadline) break;
     await delay(50);
   }
   const last = await devtoolsList(debugPort, probeMs);
-  if (!last?.some(isPopupPage)) return;
-  throw new Error('popup stayed open');
+  if (popupDismissed(last)) return;
+  throw new Error(Array.isArray(last) ? 'popup stayed open' : 'devtools list unavailable');
+}
+
+function popupDismissed(list) {
+  return Array.isArray(list) && !list.some(isPopupPage);
 }
 
 function isPopupPage(item) {

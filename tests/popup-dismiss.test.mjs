@@ -199,3 +199,24 @@ test('dismissPopup abandons a stalled devtools list instead of hanging', { timeo
     await server.close();
   }
 });
+
+test('dismissPopup rejects when every devtools list read fails', { timeout: 2_000 }, async () => {
+  let reads = 0;
+  const server = await devtools({
+    list: () => {
+      reads += 1;
+      return null;
+    },
+  });
+  const started = Date.now();
+  try {
+    await assert.rejects(
+      () => dismissPopup(server.port, { budgetMs: 180, probeMs: 40 }),
+      /devtools list unavailable/,
+    );
+    assert.ok(reads >= 2);
+    assert.ok(Date.now() - started < 1_500);
+  } finally {
+    await server.close();
+  }
+});
