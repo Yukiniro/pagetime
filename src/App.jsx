@@ -82,6 +82,7 @@ export function App() {
       setDeleteTarget(null);
       setConfirmDay(false);
       setIgnoreTarget(null);
+      setFilterSite('');
       setRange({ preset: 'today', start: 0, end: 0 });
       window.clearTimeout(timer);
       // Let a settings page or open dialog leave first, then open the drawer.

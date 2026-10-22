@@ -185,6 +185,9 @@ test('clicking the popup site name opens that site’s detail on today', async (
     await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
     await dashboard.evaluate(() => localStorage.setItem('pagetime-language', 'en'));
     await dashboard.reload();
+    await dashboard.getByRole('button', { name: `Filter to ${host}` }).first().click();
+    await expect(dashboard.getByRole('status').filter({ hasText: `Filtered to ${host}` })).toBeVisible();
+    notes.push(`filter was on for ${host}`);
     await dashboard.getByRole('button', { name: /^Date range/ }).click();
     await dashboard.getByRole('menuitemradio', { name: 'Last 7 days' }).click();
     await dashboard.getByRole('button', { name: 'Settings', exact: true }).click();
@@ -223,7 +226,7 @@ test('clicking the popup site name opens that site’s detail on today', async (
     expect(await dashboard.evaluate(() => window.__stay)).toBe(1);
     expect(await dashboard.evaluate(() => location.hash)).toBe('');
     await saveShot(dashboard, 'dashboard-site-detail-after.png');
-    notes.push('drawer open on today; one tab; hash cleared; no reload');
+    notes.push('drawer open on today; one tab; hash cleared; filter cleared; no reload');
 
     await dashboard.getByRole('button', { name: 'Close details' }).click();
     await expect(dashboard.getByRole('dialog')).toHaveCount(0);
