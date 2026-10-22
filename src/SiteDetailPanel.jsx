@@ -47,12 +47,12 @@ function DetailActions({ busy, listField, alreadyListed, scopeHost, listLimit, o
   </SheetFooter>;
 }
 
-export function SiteDetailPanel({ siteKey, row, detail, sessions, day, now, isDark = false, onSelectDay, ...actions }) {
+export function SiteDetailPanel({ siteKey, row, detail, sessions, day, now, dayCount, isDark = false, onSelectDay, ...actions }) {
   const { t } = useTranslation();
   const icon = iconForSite(siteKey, row?.hosts) || siteKey;
   const hosts = row?.hosts ?? [];
   const merged = hosts.length >= 2;
-  const copy = daySessionCopy(day, now);
+  const copy = dayCount > 1 ? null : daySessionCopy(day, now);
   const pieces = copy ? clipDaySessions(sessions, day) : [];
   const date = copy && !copy.today ? singleDayLabel(day) : '';
   return <>
