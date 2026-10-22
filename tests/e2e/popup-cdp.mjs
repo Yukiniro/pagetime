@@ -86,16 +86,113 @@ export async function attachPopup(debugPort) {
   };
 }
 
-export async function dismissPopup(debugPort) {
-  const list = await fetch(`http://127.0.0.1:${debugPort}/json/list`).then(response => response.json()).catch(() => []);
-  const target = list.find(item => item.type === 'page' && item.url?.endsWith('/popup.html'));
-  if (!target) return;
-  const popup = await attachPopup(debugPort);
-  await popup.close();
-  await expect.poll(async () => {
-    const next = await fetch(`http://127.0.0.1:${debugPort}/json/list`).then(response => response.json());
-    return next.some(item => item.url?.endsWith('/popup.html'));
-  }).toBe(false);
+// A popup that is already closing can remain in /json/list after its page socket
+// stops answering. Waiting to attach to that socket, then for the global expect
+// timeout, is the flake: absence is success, and a silent socket is abandoned.
+export async function dismissPopup(debugPort, { budgetMs = 10_000, probeMs = 1_000 } = {}) {
+  const deadline = Date.now() + budgetMs;
+  for (;;) {
+    const list = await devtoolsList(debugPort, probeMs);
+    if (list && !list.some(isPopupPage)) return;
+    const target = list?.find(isPopupPage);
+    if (target) await closePopupPage(target, probeMs).catch(() => {});
+    if (Date.now() >= deadline) break;
+    await delay(50);
+  }
+  const last = await devtoolsList(debugPort, probeMs);
+  if (!last?.some(isPopupPage)) return;
+  throw new Error('popup stayed open');
+}
+
+function isPopupPage(item) {
+  return item?.type === 'page' && typeof item.url === 'string' && item.url.endsWith('/popup.html');
+}
+
+async function devtoolsList(debugPort, timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(`http://127.0.0.1:${debugPort}/json/list`, { signal: controller.signal });
+    if (!response.ok) return null;
+    const body = await response.json();
+    return Array.isArray(body) ? body : null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function settleOnce() {
+  let settled = false;
+  return fn => {
+    if (settled) return false;
+    settled = true;
+    fn();
+    return true;
+  };
+}
+
+function opened(ws, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const once = settleOnce();
+    const timer = setTimeout(() => once(() => reject(new Error('debugger socket timed out'))), timeoutMs);
+    const finish = fn => once(() => {
+      clearTimeout(timer);
+      fn();
+    });
+    ws.addEventListener('open', () => finish(resolve), { once: true });
+    ws.addEventListener('error', () => finish(() => reject(new Error('debugger socket failed'))), { once: true });
+    ws.addEventListener('close', () => finish(() => reject(new Error('debugger socket closed'))), { once: true });
+  });
+}
+
+function command(ws, method, params, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const once = settleOnce();
+    const timer = setTimeout(() => once(() => reject(new Error(`${method} timed out`))), timeoutMs);
+    const finish = fn => once(() => {
+      clearTimeout(timer);
+      ws.removeEventListener('message', onMessage);
+      ws.removeEventListener('close', onClose);
+      fn();
+    });
+    const onClose = () => finish(() => reject(new Error('debugger socket closed')));
+    const onMessage = event => {
+      let message;
+      try {
+        message = JSON.parse(event.data);
+      } catch {
+        return;
+      }
+      if (message.id !== 1) return;
+      if (message.error) finish(() => reject(new Error(message.error.message || 'debugger command failed')));
+      else finish(() => resolve(message.result));
+    };
+    ws.addEventListener('message', onMessage);
+    ws.addEventListener('close', onClose);
+    try {
+      ws.send(JSON.stringify({ id: 1, method, params }));
+    } catch (error) {
+      finish(() => reject(error));
+    }
+  });
+}
+
+async function closePopupPage(target, timeoutMs) {
+  if (!target?.webSocketDebuggerUrl) return;
+  let ws;
+  try {
+    ws = new WebSocket(target.webSocketDebuggerUrl);
+    await opened(ws, timeoutMs);
+    await command(ws, 'Runtime.evaluate', { expression: 'window.close()', returnByValue: true }, timeoutMs);
+  } finally {
+    ws?.close();
+  }
 }
 
 function matches(node, role, name, exact) {
