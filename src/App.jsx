@@ -144,7 +144,9 @@ export function App() {
   const minDay = dateKey(view?.since ?? now);
   const rangeSince = ledger.rangeSince ?? now;
   const onSelectDay = at => {
-    const next = singleDayRange(at, today, rangeSince);
+    // `today` is from the last render. A dashboard left open across midnight would
+    // otherwise treat yesterday's bar as the today preset and open the new day.
+    const next = singleDayRange(at, midnight(Date.now()), rangeSince);
     if (next) setRange(next);
   };
   const maxDay = dateKey(today);

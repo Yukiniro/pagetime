@@ -200,7 +200,7 @@ test('the overview trend and a day click do not clear the site filter or the ope
   assert.equal([...overview.matchAll(/<Trend /g)].length, 1);
   assert.match(overview, /<Trend days=\{trendDays\} className="primary-trend" isDark=\{isDark\} onSelectDay=\{onSelectDay\} \/>/);
   const handler = app.slice(app.indexOf('const onSelectDay'), app.indexOf('const dayReady'));
-  assert.match(handler, /singleDayRange\(at, today, rangeSince\)/);
+  assert.match(handler, /singleDayRange\(at, midnight\(Date\.now\(\)\), rangeSince\)/);
   assert.match(handler, /if \(next\) setRange\(next\)/);
   assert.doesNotMatch(handler, /setFilterSite|setSelected/);
   assert.match(app, /onSelectDay=\{onSelectDay\}/);
