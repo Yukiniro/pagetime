@@ -151,7 +151,7 @@ test('each selectable trend day is a button on the same path as the canvas click
   }
 });
 
-test('the site detail trend does not register a day click', async () => {
+test('the site detail trend does not register a day click without onSelectDay', async () => {
   const view = await render(SiteTrend, { days, domain: 'github.com' });
   try {
     const chart = trendCharts().at(-1);
@@ -166,6 +166,93 @@ test('the site detail trend does not register a day click', async () => {
   }
 });
 
+test('clicking a site detail trend bar calls onSelectDay with that column\'s day', async () => {
+  const selected = [];
+  const view = await render(SiteTrend, { days, domain: 'github.com', onSelectDay: at => selected.push(at) });
+  try {
+    const chart = trendCharts().at(-1);
+    assert.deepEqual(chart.option.series[0].data, [null, 0, 1, 60_000 / 3_600_000]);
+    assert.equal(chart.option.series[0].cursor, 'pointer');
+    assert.equal(chart.option.series[0].barMinHeight, 1);
+    assert.equal(view.host.querySelector('[role="img"]').getAttribute('tabindex'), '-1');
+    click(chart, { componentType: 'series', dataIndex: 2 });
+    click(chart, { componentType: 'series', dataIndex: 1 });
+    click(chart, { componentType: 'series', dataIndex: 3 });
+    assert.deepEqual(selected, [3_000, 2_000, 4_000]);
+  } finally {
+    await unmount(view);
+  }
+});
+
+test('an unrecorded site detail column does not select a day', async () => {
+  const selected = [];
+  const view = await render(SiteTrend, { days, domain: 'github.com', onSelectDay: at => selected.push(at) });
+  try {
+    const chart = trendCharts().at(-1);
+    click(chart, { componentType: 'series', dataIndex: 0 });
+    click(chart, { componentType: 'series', dataIndex: 1.5 });
+    click(chart, { componentType: 'series', dataIndex: 4 });
+    click(chart, { componentType: 'xAxis', dataIndex: 2 });
+    assert.deepEqual(selected, []);
+  } finally {
+    await unmount(view);
+  }
+});
+
+test('a detail day button is inside the trend frame that contains its focus label', async () => {
+  const view = await render(SiteTrend, { days, domain: 'github.com', onSelectDay() {} });
+  try {
+    const frame = view.host.querySelector('.detail-trend-frame');
+    const button = frame?.querySelector('button.timeline-segment');
+    assert.ok(frame);
+    assert.equal(frame.querySelector('.detail-trend')?.parentElement, frame);
+    assert.equal(button?.closest('.detail-trend-frame'), frame);
+    assert.equal(button.closest('.detail-trend'), null);
+  } finally {
+    await unmount(view);
+  }
+});
+
+test('the overview trend does not use the detail focus frame', async () => {
+  const view = await render(Trend, { days, onSelectDay() {} });
+  try {
+    assert.equal(view.host.querySelector('.detail-trend-frame'), null);
+    assert.ok(view.host.querySelector('button.timeline-segment'));
+  } finally {
+    await unmount(view);
+  }
+});
+
+test('each selectable site detail day is a button on the same path as the canvas click', async () => {
+  const selected = [];
+  const view = await render(SiteTrend, { days, domain: 'github.com', onSelectDay: at => selected.push(at) });
+  try {
+    const buttons = [...view.host.querySelectorAll('button.timeline-segment')];
+    assert.equal(buttons.length, 3);
+    assert.ok(buttons.every(button => button.type === 'button' && button.textContent.length > 0));
+    buttons[1].click();
+    buttons[0].click();
+    assert.deepEqual(selected, [3_000, 2_000]);
+    click(trendCharts().at(-1), { componentType: 'series', dataIndex: 3 });
+    assert.deepEqual(selected, [3_000, 2_000, 4_000]);
+  } finally {
+    await unmount(view);
+  }
+});
+
+});
+
+test('the detail trend frame is the containing block for the shared focus label', () => {
+  const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
+  const frame = css.match(/\.detail-trend-frame\{[^}]*\}/)?.[0] ?? '';
+  assert.match(frame, /position:relative/);
+  assert.match(frame, /overflow:visible/);
+  const rule = css.match(/\.timeline-segment:focus,\.timeline-segment:focus-visible\{[^}]*\}/)?.[0] ?? '';
+  assert.match(rule, /position:absolute/);
+  assert.match(rule, /top:0/);
+  const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
+  const trend = charts.slice(charts.indexOf('export function Trend'), charts.indexOf('export function SiteTrend'));
+  assert.match(trend, /detail\?<div className="detail-trend-frame">/);
 });
 
 test('hour bars are not part of the day click', () => {
@@ -194,14 +281,23 @@ test('selecting today keeps the today preset and any other recorded day is a one
   assert.equal(singleDayRange(wednesday, Number.NaN, since), null);
 });
 
-test('the overview trend and a day click do not clear the site filter or the open detail', () => {
+test('the overview trend and the site detail trend share a day click that keeps the filter and the open site', () => {
   const overview = readFileSync(new URL('../src/Overview.jsx', import.meta.url), 'utf8');
   const app = readFileSync(new URL('../src/App.jsx', import.meta.url), 'utf8');
+  const panel = readFileSync(new URL('../src/SiteDetailPanel.jsx', import.meta.url), 'utf8');
+  const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
   assert.equal([...overview.matchAll(/<Trend /g)].length, 1);
   assert.match(overview, /<Trend days=\{trendDays\} className="primary-trend" isDark=\{isDark\} onSelectDay=\{onSelectDay\} \/>/);
   const handler = app.slice(app.indexOf('const onSelectDay'), app.indexOf('const removeHosts'));
   assert.match(handler, /singleDayRange\(at, midnight\(Date\.now\(\)\), rangeSince\)/);
   assert.match(handler, /if \(next\) setRange\(next\)/);
   assert.doesNotMatch(handler, /setFilterSite|setSelected/);
-  assert.match(app, /onSelectDay=\{onSelectDay\}/);
+  const sheet = app.slice(app.indexOf('<SiteDetailSheet'), app.indexOf('</TooltipProvider>'));
+  assert.match(sheet, /onSelectDay=\{onSelectDay\}/);
+  assert.doesNotMatch(sheet, /onSelectDay=\{[^}]*setSelected|onSelectDay=\{[^}]*setFilterSite/);
+  assert.match(panel, /<SiteTrend days=\{detail\.days\} domain=\{siteKey\} isDark=\{isDark\} onSelectDay=\{onSelectDay\} \/>/);
+  assert.match(panel, /<SiteDetailPanel siteKey=\{siteKey\} onSelectDay=\{onSelectDay\} \{\.\.\.panel\} \/>/);
+  const siteTrend = charts.slice(charts.indexOf('export function SiteTrend'), charts.indexOf('export function HourChart'));
+  assert.match(siteTrend, /onSelectDay=\{onSelectDay\}/);
+  assert.doesNotMatch(siteTrend, /onClick|setSelected|setFilterSite/);
 });

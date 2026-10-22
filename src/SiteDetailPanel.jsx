@@ -47,7 +47,7 @@ function DetailActions({ busy, listField, alreadyListed, scopeHost, listLimit, o
   </SheetFooter>;
 }
 
-export function SiteDetailPanel({ siteKey, row, detail, sessions, day, now, isDark = false, ...actions }) {
+export function SiteDetailPanel({ siteKey, row, detail, sessions, day, now, isDark = false, onSelectDay, ...actions }) {
   const { t } = useTranslation();
   const icon = iconForSite(siteKey, row?.hosts) || siteKey;
   const hosts = row?.hosts ?? [];
@@ -64,7 +64,7 @@ export function SiteDetailPanel({ siteKey, row, detail, sessions, day, now, isDa
       </div>
       {detail && <section className="detail-chart min-w-0">
         <h3>{t('detail.trend.title')}</h3>
-        <SiteTrend days={detail.days} domain={siteKey} isDark={isDark} />
+        <SiteTrend days={detail.days} domain={siteKey} isDark={isDark} onSelectDay={onSelectDay} />
         <h3>{t('detail.hours.title')}</h3>
         <HourChart hours={detail.hours} dayCount={detail.hourDays} domain={siteKey} isDark={isDark} />
       </section>}
@@ -78,7 +78,7 @@ export function SiteDetailPanel({ siteKey, row, detail, sessions, day, now, isDa
   </>;
 }
 
-export function SiteDetailSheet({ open, onOpenChange, finalFocus, siteKey, ready, ...panel }) {
+export function SiteDetailSheet({ open, onOpenChange, finalFocus, siteKey, ready, onSelectDay, ...panel }) {
   const { t } = useTranslation();
   const narrow = useNarrowDrawer();
 
@@ -90,7 +90,7 @@ export function SiteDetailSheet({ open, onOpenChange, finalFocus, siteKey, ready
         </div>
         <SheetClose render={<Button variant="ghost" size="icon-sm" className="shrink-0" />} aria-label={t('detail.close')}><X /></SheetClose>
       </SheetHeader>
-      {siteKey && ready && <SiteDetailPanel siteKey={siteKey} {...panel} />}
+      {siteKey && ready && <SiteDetailPanel siteKey={siteKey} onSelectDay={onSelectDay} {...panel} />}
     </SheetContent>
   </Sheet>;
 }

@@ -245,6 +245,7 @@ export function App() {
     onListAdd={() => setIgnoreTarget(selected)}
     onViewVisits={() => { goRecords(selected); setSelected(null); }}
     onDelete={() => setDeleteTarget(selected)}
+    onSelectDay={onSelectDay}
   />
   </TooltipProvider>;
 }
