@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ArrowRight, Pause, Play } from '@phosphor-icons/react';
+import { ArrowRight, CaretRight, Pause, Play } from '@phosphor-icons/react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@app/components/ui/button';
 import { Switch } from '@app/components/ui/switch';
@@ -89,6 +89,12 @@ export function Popup() {
     const { browser } = await import('wxt/browser');
     await openDashboardPage(browser);
   });
+  const onOpenSite = () => run(async () => {
+    const site = figures?.site;
+    if (!site || !(figures.siteMs > 0)) return;
+    const { browser } = await import('wxt/browser');
+    await openDashboardPage(browser, site);
+  });
 
   if (!settled) {
     if (!problem) return <PopupSkeleton />;
@@ -106,7 +112,9 @@ export function Popup() {
   return <main className="popup" data-status="ready" data-paused={enabled ? 'false' : 'true'} data-theme={isDark ? 'dark' : 'light'} data-total-ms={figures.total}>
     <p className="popup-status"><span className={`status-dot ${enabled ? '' : 'paused'}`} /><strong>{enabled ? t('status.recording') : t('status.paused')}</strong></p>
     <div className="popup-figures">
-      <h1 className="popup-host">{figures.site ?? t('popup.totalOnly')}</h1>
+      <h1 className="popup-host">{figures.site && figures.siteMs > 0
+        ? <Button variant="link" className="popup-host-link h-auto min-h-0 shrink min-w-0 max-w-full justify-start gap-0.5 px-0 font-semibold" aria-label={t('popup.viewSite', { site: figures.site })} disabled={busy} onClick={onOpenSite}><span>{figures.site}</span><CaretRight aria-hidden="true" weight="bold" /></Button>
+        : (figures.site ?? t('popup.totalOnly'))}</h1>
       <p className="popup-figure" data-figure={figures.site ? 'site' : 'total'} data-site-ms={figures.site ? figures.siteMs : undefined} aria-label={t('popup.siteToday', { duration: primary })}>{primary}</p>
       {figures.site && <p className="popup-total">{t('popup.total', { duration: total })}</p>}
     </div>

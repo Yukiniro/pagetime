@@ -39,7 +39,8 @@
     "unallow": "Dejar de registrar este sitio",
     "pause": "Pausar registro",
     "resume": "Reanudar registro",
-    "open": "Abrir el panel"
+    "open": "Abrir el panel",
+    "viewSite": "Ver {{site}} en el panel"
   },
   "summary": {
     "sites_one": "<b>{{count}}</b> sitio",

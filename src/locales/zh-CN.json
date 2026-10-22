@@ -39,7 +39,8 @@
     "unallow": "不再记录此站",
     "pause": "暂停记录",
     "resume": "恢复记录",
-    "open": "打开仪表盘"
+    "open": "打开仪表盘",
+    "viewSite": "在仪表盘查看 {{site}}"
   },
   "summary": {
     "sites_other": "<b>{{count}}</b> 个站点"

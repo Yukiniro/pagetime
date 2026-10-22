@@ -92,3 +92,4 @@ html.dark .range-panel{box-shadow:0 8px 24px rgba(0,0,0,.35)}
 .range-control{flex:0 1 auto;min-width:0;max-width:100%}.range-control .range{flex:0 1 auto;min-width:0}.range-step{flex:none}.range-text{display:contents}.range-title{min-width:0;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:480px){.range-control .range{gap:6px;padding:2px 10px}.range-control .range>svg:first-child{display:none}.range-text{display:flex;flex-direction:column;align-items:flex-start;min-width:0;line-height:1.15}.range-dates{font-size:12px}}
 @media(min-width:1101px) and (max-height:1100px){.primary-hours{height:180px}}
+.page-header h1:focus-visible{outline:2px solid var(--blue);outline-offset:4px}

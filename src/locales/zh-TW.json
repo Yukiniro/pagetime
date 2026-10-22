@@ -39,7 +39,8 @@
     "unallow": "不再記錄此站",
     "pause": "暫停記錄",
     "resume": "恢復記錄",
-    "open": "打開儀表板"
+    "open": "打開儀表板",
+    "viewSite": "在儀表板查看 {{site}}"
   },
   "summary": {
     "sites_other": "<b>{{count}}</b> 個網站"

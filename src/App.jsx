@@ -31,6 +31,7 @@ import { Overview } from './Overview.jsx';
 import { DashboardSkeleton } from './DashboardSkeleton.jsx';
 import { LedgerEmpty } from './EmptyState.jsx';
 import { dashboardStatus } from './dashboard-status.mjs';
+import { siteFromLocationHash } from './popup-model.mjs';
 import { toggleSiteFilter } from './site-filter.mjs';
 import { duration, formatDate, languages, timeLabel } from './i18n.js';
 import { useDocumentTheme } from './use-theme.js';
@@ -43,6 +44,13 @@ export function App() {
   const [chosenDay, setChosenDay] = useState(''), [dayDone, setDayDone] = useState(''), [confirmDay, setConfirmDay] = useState(false), [deleteTarget, setDeleteTarget] = useState(null);
   const dayQuery = /^\d{4}-\d{2}-\d{2}$/.test(chosenDay) ? chosenDay : '';
   const detailTrigger = useRef(null);
+  const headingRef = useRef(null);
+  const [jumpSite] = useState(() => siteFromLocationHash(location.hash));
+  const detailFocus = () => {
+    const trigger = detailTrigger.current;
+    if (trigger?.isConnected) return trigger;
+    return headingRef.current;
+  };
   const now = Date.now(), today = midnight(now);
   const active = activeRange(range, today);
   const start = active.start, end = active.end;
@@ -62,6 +70,33 @@ export function App() {
     finally { setBusy(false); }
   }
   useEffect(() => { act(); }, []);
+  useEffect(() => {
+    let live = true;
+    let timer = 0;
+    const open = site => {
+      if (!site) return;
+      detailTrigger.current = null;
+      if (location.hash) history.replaceState(null, '', `${location.pathname}${location.search}`);
+      setPage('overview');
+      setConfirmClear(false);
+      setDeleteTarget(null);
+      setConfirmDay(false);
+      setIgnoreTarget(null);
+      setFilterSite('');
+      setRange({ preset: 'today', start: 0, end: 0 });
+      window.clearTimeout(timer);
+      // Let a settings page or open dialog leave first, then open the drawer.
+      timer = window.setTimeout(() => { if (live) setSelected(site); }, 0);
+    };
+    const onHash = () => open(siteFromLocationHash(location.hash));
+    if (jumpSite) open(jumpSite);
+    window.addEventListener('hashchange', onHash);
+    return () => {
+      live = false;
+      window.clearTimeout(timer);
+      window.removeEventListener('hashchange', onHash);
+    };
+  }, [jumpSite]);
   useEffect(() => {
     if (!isExtension) return undefined;
     let stop = () => {};
@@ -129,7 +164,7 @@ export function App() {
           <Button variant="outline" className="action-button" disabled={busy || !shown} onClick={() => act('toggle')}>{enabled ? <Pause weight="fill" /> : <Play weight="fill" />}{enabled ? t('actions.pause') : t('actions.resume')}</Button>
         </header>
         <main>
-          <div className="page-header"><div><h1>{t(`pages.${page}.title`)}</h1></div>
+          <div className="page-header"><div><h1 ref={headingRef} tabIndex={-1}>{t(`pages.${page}.title`)}</h1></div>
             {page !== 'settings' && <RangeControl range={active} today={today} since={rangeSince} onChange={setRange} />}
           </div>
           {problem && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => { ledger.retry(); act(); }}>{t('error.retry')}</Button></AlertDescription></Alert>}
@@ -208,7 +243,7 @@ export function App() {
   <SiteDetailSheet
     open={Boolean(selected)}
     onOpenChange={open => { if (!open) setSelected(null); }}
-    finalFocus={detailTrigger}
+    finalFocus={detailFocus}
     siteKey={selected ?? ''}
     ready={Boolean(stats)}
     row={selectedRow}

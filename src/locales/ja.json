@@ -39,7 +39,8 @@
     "unallow": "このサイトを記録から外す",
     "pause": "記録を一時停止",
     "resume": "記録を再開",
-    "open": "ダッシュボードを開く"
+    "open": "ダッシュボードを開く",
+    "viewSite": "ダッシュボードで {{site}} を見る"
   },
   "summary": {
     "sites_other": "<b>{{count}}</b> サイト"

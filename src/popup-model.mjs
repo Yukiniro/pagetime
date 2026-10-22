@@ -69,20 +69,72 @@ export async function activeRecordableHost(query) {
   return recordableHost(tab.url);
 }
 
-export async function openDashboardPage(browser) {
+// A grouped site key, never a full URL. The same string the dashboard uses as a row key.
+function dashboardSite(site) {
+  if (typeof site !== 'string' || !site || site.length > 253 || site !== site.trim()) return null;
+  if (/[/?#\s\\%]/.test(site) || site.includes('://')) return null;
+  return normalizeHost(site) === site ? site : null;
+}
+
+export function dashboardSiteHash(site) {
+  const key = dashboardSite(site);
+  return key ? `site=${encodeURIComponent(key)}` : '';
+}
+
+export function siteFromLocationHash(hash) {
+  if (typeof hash !== 'string' || !hash || hash.length > 512) return null;
+  const body = hash.startsWith('#') ? hash.slice(1) : hash;
+  let site;
+  try { site = new URLSearchParams(body).get('site'); }
+  catch { return null; }
+  return dashboardSite(site);
+}
+
+function sameDashboard(value, dashboardUrl) {
+  if (typeof value !== 'string' || !value || typeof dashboardUrl !== 'string') return false;
+  try {
+    const page = new URL(value);
+    const target = new URL(dashboardUrl);
+    // chrome-extension URLs have an opaque origin in some URL parsers, so match the document by host and path.
+    return page.protocol === target.protocol && page.host === target.host && page.pathname === target.pathname;
+  } catch {
+    return false;
+  }
+}
+
+function withSiteHash(pageUrl, site) {
+  const hash = dashboardSiteHash(site);
+  if (!hash || typeof pageUrl !== 'string') return '';
+  return `${pageUrl.split('#')[0]}#${hash}`;
+}
+
+export async function openDashboardPage(browser, site) {
   const url = browser.runtime.getURL('/dashboard.html');
-  const action = dashboardAction(await browser.tabs.query({}), url);
+  const action = dashboardAction(await browser.tabs.query({}), url, site);
   if (action.type === 'focus') {
-    await browser.tabs.update(action.tabId, { active: true });
+    // A hash-only URL is a same-document navigation: the open page stays up and receives hashchange.
+    const update = { active: true };
+    if (action.url) update.url = action.url;
+    await browser.tabs.update(action.tabId, update);
     if (action.windowId !== undefined) await browser.windows.update(action.windowId, { focused: true });
     return;
   }
   await browser.tabs.create({ url: action.url });
 }
 
-// An open dashboard tab is focused. Anything else opens one.
-export function dashboardAction(tabs, dashboardUrl) {
-  const open = Array.isArray(tabs) ? tabs.find(tab => tab && tab.id !== undefined && (tab.url === dashboardUrl || tab.pendingUrl === dashboardUrl)) : undefined;
-  if (open) return { type: 'focus', tabId: open.id, windowId: open.windowId };
-  return { type: 'create', url: dashboardUrl };
+// An open dashboard tab is focused. Query and hash are ignored when matching.
+// A site adds `#site=` on that same document, or on the new tab when none is open.
+export function dashboardAction(tabs, dashboardUrl, site) {
+  const list = Array.isArray(tabs) ? tabs : [];
+  const open = list.find(tab => tab && tab.id !== undefined && [tab.url, tab.pendingUrl].some(value => sameDashboard(value, dashboardUrl)));
+  const key = dashboardSite(site);
+  if (open) {
+    const focus = { type: 'focus', tabId: open.id, windowId: open.windowId };
+    const current = [open.url, open.pendingUrl].find(value => sameDashboard(value, dashboardUrl));
+    const next = key && current ? withSiteHash(current, key) : '';
+    if (next && next !== current) return { ...focus, url: next };
+    return focus;
+  }
+  const hash = key ? dashboardSiteHash(key) : '';
+  return { type: 'create', url: hash ? `${dashboardUrl.split('#')[0]}#${hash}` : dashboardUrl };
 }

@@ -37,5 +37,6 @@ Playwright's `context.pages()` does not include the toolbar popup: Chrome lists 
 - The list button stores the normalized hostname, not the full URL and not the grouped site name. `www.example.com` is stored as `www.example.com`.
 - Adding a host does not delete ledger rows. Do not click `Clear data`, `Delete this day`, or `Delete this site's records`.
 - The popup sends only `snapshot`, `toggle`, and `settings`. It cannot clear or delete.
+- When the site's time today is above zero, the site name is a button inside the heading. Its accessible name is `View <site> in the dashboard`. The heading text is still the site. That journey is [popup-site-detail.md](popup-site-detail.md). `Open dashboard` does not open the drawer.
 - Today's numbers include the still-open cursor, capped the same way as the dashboard. Compare them after the active tab is `about:blank`, when no cursor is open.
 - Do not seed `pagetime-preview` or IndexedDB. A real http navigation is what puts a hostname on screen.

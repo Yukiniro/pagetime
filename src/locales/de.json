@@ -39,7 +39,8 @@
     "unallow": "Diese Website nicht mehr aufzeichnen",
     "pause": "Aufzeichnung pausieren",
     "resume": "Aufzeichnung fortsetzen",
-    "open": "Dashboard öffnen"
+    "open": "Dashboard öffnen",
+    "viewSite": "{{site}} im Dashboard ansehen"
   },
   "summary": {
     "sites_one": "<b>{{count}}</b> Website",
