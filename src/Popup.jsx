@@ -114,7 +114,7 @@ export function Popup() {
     <p className="popup-status"><span className={`status-dot ${enabled ? '' : 'paused'}`} /><strong>{enabled ? t('status.recording') : t('status.paused')}</strong></p>
     <div className="popup-figures">
       <h1 className="popup-host">
-        {figures.site ? <span className="popup-host-icon" aria-hidden="true"><SiteIcon domain={figures.site} site={figures.site} /></span> : null}
+        {figures.site ? <span className="popup-host-icon" aria-hidden="true"><SiteIcon domain={host} site={figures.site} /></span> : null}
         {figures.site && figures.siteMs > 0
           ? <Button variant="link" className="popup-host-link h-auto min-h-0 shrink min-w-0 max-w-full justify-start gap-0.5 px-0 font-semibold" aria-label={t('popup.viewSite', { site: figures.site })} disabled={busy} onClick={onOpenSite}><span>{figures.site}</span><CaretRight aria-hidden="true" weight="bold" /></Button>
           : <span className="popup-host-name">{figures.site ?? t('popup.totalOnly')}</span>}

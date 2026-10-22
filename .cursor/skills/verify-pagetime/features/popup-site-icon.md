@@ -25,7 +25,7 @@ Extension only. Fresh profile. Language is English. `tests/e2e/popup-site-icon.s
 
 ## Gotchas
 
-- `_favicon` is a `chrome-extension://` cache URL. It is not a fetch of the site. The preview is not this journey.
+- `_favicon` is a `chrome-extension://` cache URL for the raw tab hostname (`www.example.com`), not the grouped site (`example.com`). The packaged SVG still uses the grouped site. It is not a fetch of the site. The preview is not this journey.
 - A fresh profile has no cached favicon for `127.0.0.1` or the long hostname, so those rows settle on the globe after the cache probe. Wait until the image has a natural width or the probe has requested `_favicon` and the globe remains.
 - Do not click `Clear data` or `Delete this site's records`. Do not change the list, pause, or badge in this journey.
 - The site-name button is covered by [popup-site-detail.md](popup-site-detail.md). This journey only checks that the button is still there.
