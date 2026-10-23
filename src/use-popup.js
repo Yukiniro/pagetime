@@ -3,7 +3,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { isExtension, watchLedgerError } from './data.js';
 import { daysBetween, openLedger, readDomains, readHead } from './ledger.mjs';
 import { dateKey } from './model.mjs';
-import { popupToday } from './popup-model.mjs';
+import { popupToday, popupTopSites } from './popup-model.mjs';
 
 let db;
 
@@ -25,7 +25,8 @@ function useExtensionPopup(host) {
       ]);
       const cursor = head.cursor?.session === stored.session ? head.cursor : null;
       const enabled = head.state?.enabled ?? true;
-      return { hostKey, enabled, ...popupToday({ domains, days, cursor, lastEnd: head.lastEnd, now, enabled, host }) };
+      const input = { domains, days, cursor, lastEnd: head.lastEnd, now, enabled };
+      return { hostKey, enabled, ...popupToday({ ...input, host }), top: popupTopSites(input) };
     } catch (error) {
       console.error('PageTime could not read the ledger', error);
       return { hostKey, error: 'read' };
@@ -42,7 +43,7 @@ function usePreviewPopup(host) {
   return {
     pending: false,
     error: undefined,
-    figures: { hostKey: host ?? '', enabled: true, total: 0, site: null, siteMs: 0 },
+    figures: { hostKey: host ?? '', enabled: true, total: 0, site: null, siteMs: 0, top: [] },
   };
 }
 
