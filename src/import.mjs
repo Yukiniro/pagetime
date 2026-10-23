@@ -146,6 +146,36 @@ export async function parseLedgerBackupPaused(input, pause) {
   return packBackup(document, tables);
 }
 
+const VERSION_PATTERN = /^[\w.+-]{1,32}$/;
+
+/**
+ * Read-only facts about a backup that parsed cleanly, shown before the overwrite confirm.
+ * `document` is the raw file; `backup` is what parseLedgerBackup returned for it.
+ * `exportedAt` and `appVersion` are null when the file has no usable value. Start and end come from day-total rows.
+ * `includesSettings` is false when the file has no settings object, so the restore writes the defaults.
+ * @param {unknown} document
+ * @param {ReturnType<typeof parseLedgerBackup>} backup
+ */
+export function backupSummary(document, backup) {
+  const source = isObject(document) ? document : {};
+  let startDay = null;
+  let endDay = null;
+  for (const { date } of backup.tables.days) {
+    if (startDay === null || date < startDay) startDay = date;
+    if (endDay === null || date > endDay) endDay = date;
+  }
+  const exportedAt = typeof source.exportedAt === 'string' ? Date.parse(source.exportedAt) : NaN;
+  return {
+    exportedAt: instant(exportedAt) ? exportedAt : null,
+    schemaVersion: backup.schemaVersion,
+    startDay,
+    endDay,
+    rows: Object.fromEntries(EXPORT_TABLES.map(name => [name, backup.tables[name].length])),
+    includesSettings: isObject(source.settings),
+    appVersion: typeof source.appVersion === 'string' && VERSION_PATTERN.test(source.appVersion) ? source.appVersion : null,
+  };
+}
+
 /**
  * Replaces the five ledger tables, then `meta.state`, and deletes `cursor`, in one transaction.
  * Clear runs before each table's puts, and every await is a call on that transaction's tables.

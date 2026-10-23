@@ -17,7 +17,7 @@ globalThis.Worker = class {
 };
 
 const { ImportError, PARSE_CHUNK } = await import('../src/import.mjs');
-const { restoreBackupFile } = await import('../src/import-file.js');
+const { readBackupFile } = await import('../src/import-file.js');
 
 const workerScript = readFileSync(new URL('../public/import-parse-worker.js', import.meta.url), 'utf8');
 const at = (day, hour, minute = 0) => new Date(2026, 9, day, hour, minute).getTime();
@@ -42,7 +42,7 @@ test('the parse worker returns JSON and reports read or format failures', async 
 
 test('the page waits on the worker, then yields between row chunks before rejecting a cross-day span', async () => {
   const file = { text: async () => { throw new Error('read on the page'); } };
-  const pending = restoreBackupFile(file);
+  const pending = readBackupFile(file);
   const worker = workers.at(-1);
   assert.equal(String(worker.url), 'chrome-extension://test/import-parse-worker.js');
   assert.equal(worker.options, undefined);
@@ -73,10 +73,10 @@ test('the page waits on the worker, then yields between row chunks before reject
   assert.equal(worker.terminated, true);
 });
 
-test('a worker that fails to start does not restore, and a second reply is ignored', async () => {
+test('a worker that fails to start rejects the file, and a second reply is ignored', async () => {
   const file = { text: async () => { throw new Error('read on the page'); } };
   let settled = 0;
-  const pending = restoreBackupFile(file).then(() => { settled += 1; }, () => { settled += 1; });
+  const pending = readBackupFile(file).then(() => { settled += 1; }, () => { settled += 1; });
   const worker = workers.at(-1);
   worker.onerror();
   worker.onmessage({ data: { code: 'version' } });

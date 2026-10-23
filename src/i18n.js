@@ -42,6 +42,7 @@ i18n.use(LanguageDetector).use(initReactI18next).init({
 });
 
 export const formatDate = (at, options) => new Date(at).toLocaleDateString(i18n.resolvedLanguage, options);
+export const formatNumber = value => new Intl.NumberFormat(i18n.resolvedLanguage).format(value);
 export const timeLabel = at => new Date(at).toLocaleTimeString(i18n.resolvedLanguage, { hour: '2-digit', minute: '2-digit', hour12: false });
 
 // A change that rounds to zero keeps its direction.
