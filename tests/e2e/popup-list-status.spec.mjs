@@ -195,7 +195,10 @@ test('the popup says this site is not timing because of its list, and global pau
   const debugPort = await freePort();
   const { context, userDataDir } = await launch(debugPort);
   const notes = [];
+  const log = notes.push.bind(notes);
+  notes.push = (...a) => { console.log('DBG', ...a); return log(...a); };
   try {
+    console.log('DBG start');
     const sw = await worker(context);
     const page = await context.newPage();
     await page.goto(`http://${host}:${port}/`);
@@ -282,6 +285,9 @@ test('the popup says this site is not timing because of its list, and global pau
 
     fs.mkdirSync(evidence, { recursive: true });
     fs.writeFileSync(path.join(evidence, 'result.txt'), notes.map(line => `ok ${line}`).join('\n') + '\n');
+  } catch (error) {
+    console.log('DBG FAIL', String(error).slice(0, 1500));
+    throw error;
   } finally {
     await context.close().catch(() => {});
     fs.rmSync(userDataDir, { recursive: true, force: true });
