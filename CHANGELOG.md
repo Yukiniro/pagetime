@@ -6,6 +6,28 @@
 
 - 概览默认合并常见前缀：去掉开头的 `www.`、`m.`、`mobile.`（例如 `www.youtube.com` 与 `m.youtube.com` 显示为 `youtube.com`）。这是默认行为变化。已经保存的记录仍按原始主机名存放，可在设置里改回不合并，或改为按可注册域名合并（例如 `a.b.example.co.uk` 显示为 `example.co.uk`）。
 
+## 1.4.0
+
+### Minor Changes
+
+- [#110](https://github.com/Yukiniro/pagetime/pull/110) [`ea6b42a`](https://github.com/Yukiniro/pagetime/commit/ea6b42ad354b6cb384fd066305f75212e6e02565) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 单日站点详情里，点击「一天中的时段」中的某小时，活跃时段列表只保留与该小时相交的片段。没有活动的小时也能点到整列，键盘可以选每个小时。再次点击同一小时或清除后恢复全天。多日范围和已过明细保留期的单日仍不可点。
+
+- [#103](https://github.com/Yukiniro/pagetime/pull/103) [`9ee40f8`](https://github.com/Yukiniro/pagetime/commit/9ee40f8ee5f2bf50ec435c59290587c5bc278414) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 工具栏 popup 在当前站点名旁显示与仪表盘相同的站点图标。没有当前站点时不显示图标。图标固定为 24px，过长的站点名在 320px 弹窗内省略。
+
+- [#98](https://github.com/Yukiniro/pagetime/pull/98) [`e5bb131`](https://github.com/Yukiniro/pagetime/commit/e5bb13145977fddbc7395e7a8276f3f92ff2ef2b) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 设置页不再提供按某一天删除记录。仍可在站点详情里删除该站点的记录，或在设置里清空全部记录。
+
+- [#101](https://github.com/Yukiniro/pagetime/pull/101) [`a552e78`](https://github.com/Yukiniro/pagetime/commit/a552e784e88da1ad0a5a71d46b85f44c615e5b63) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 设置页不再提供站点合并方式。概览、排行、趋势和详情固定去掉开头的 www.、m.、mobile. 再分组；访问记录仍显示原始主机名，已存记录不改写。
+
+- [#94](https://github.com/Yukiniro/pagetime/pull/94) [`8cfa96e`](https://github.com/Yukiniro/pagetime/commit/8cfa96eb564c883d036b74d132c9c413038a1ed1) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 在近 7 天、近 30 天或多日趋势上点击有记录的柱，或用键盘激活对应的日期按钮，日期范围切到那一天，主图打开该日时间线。今天以点击时的本地日为准。已有的站点过滤保留。只有访问、没有时长的已记录天仍显示可点的柱。未记录的空柱不跳转。
+
+### Patch Changes
+
+- [#100](https://github.com/Yukiniro/pagetime/pull/100) [`a82d2c9`](https://github.com/Yukiniro/pagetime/commit/a82d2c9163c71798efb64fd6dd227dd66db8399a) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 在站点详情里点击按日趋势中有记录的柱，或用键盘激活对应的日期按钮，日期范围切到那一天。抽屉保持打开同一站点，已有的站点过滤保留。未记录的空柱不跳转。键盘聚焦时，日期按钮显示在趋势图上。
+
+- [#107](https://github.com/Yukiniro/pagetime/pull/107) [`87e1b31`](https://github.com/Yukiniro/pagetime/commit/87e1b3146e028e28669f38e727d96222ecd61e38) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 多日日期范围下，站点详情不再显示「今日」活跃时段。单日范围仍显示所选那天的活跃时段。
+
+- [#113](https://github.com/Yukiniro/pagetime/pull/113) [`8b19eb5`](https://github.com/Yukiniro/pagetime/commit/8b19eb55403aafea15cbbf7cf207ce11d17cefc5) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 单日站点详情按小时过滤活跃时段时，「一天中的时段」图里选中的那根柱会高亮，其余柱变淡；清除过滤后恢复原样。
+
 ## 1.3.0
 
 ### Minor Changes
