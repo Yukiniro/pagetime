@@ -27,6 +27,11 @@ function Chart({option,label,className,height,onClick}){
   },[option,onClick]);
   return <div ref={ref} role="img" aria-label={label} className={className} style={height?{height}:undefined} tabIndex={onClick?-1:undefined}/>;
 }
+const DIMMED_BAR_ALPHA=0.4;
+function withAlpha(hex,alpha){
+  const value=parseInt(hex.slice(1),16);
+  return `rgba(${value>>16&255},${value>>8&255},${value&255},${alpha})`;
+}
 function chartTheme(isDark){
   const theme=getChartTheme(isDark);
   const fontFamily=getComputedStyle(document.documentElement).fontFamily;
@@ -79,7 +84,7 @@ function hourColumnHits(count, ceiling){
     return {type:'rect',cursor:'pointer',shape:{x:base[0]-band/2,y,width:band,height},style:{fill:'rgba(0,0,0,0)'}};
   }};
 }
-export function HourChart({hours, dayCount, domain, isDark=false, onSelectHour}){
+export function HourChart({hours, dayCount, domain, isDark=false, onSelectHour, selectedHour=null}){
   const {t}=useTranslation();
   const {theme,fontFamily,tooltip}=chartTheme(isDark);
   const average=ms=>duration(dayCount?ms/dayCount:0);
@@ -91,7 +96,9 @@ export function HourChart({hours, dayCount, domain, isDark=false, onSelectHour})
     onSelectHour(row.hour);
   }:undefined;
   const ceiling=Math.max(1,...hours.map(row=>Math.ceil(row.ms/3_600_000)));
-  const bars={type:'bar',barMaxWidth:14,itemStyle:{color:theme.bar,borderRadius:[2,2,0,0]},data:hours.map(row=>row.ms/3_600_000),z:2};
+  const selectedIndex=selectedHour===null?-1:hours.findIndex(row=>row.hour===selectedHour);
+  const barColor=selectedIndex<0?theme.bar:params=>params.dataIndex===selectedIndex?theme.emphasis:withAlpha(theme.bar,DIMMED_BAR_ALPHA);
+  const bars={type:'bar',barMaxWidth:14,itemStyle:{color:barColor,borderRadius:[2,2,0,0]},data:hours.map(row=>row.ms/3_600_000),z:2};
   if(onSelectHour)bars.cursor='pointer';
   const rowAt=params=>{const list=Array.isArray(params)?params:[];return hours[list.find(point=>point?.seriesType==='bar')?.dataIndex??list[0]?.dataIndex];};
   const option={animation:false,backgroundColor:'transparent',textStyle:{fontFamily,color:theme.label},grid:{left:4,right:8,top:8,bottom:4,containLabel:true},

@@ -5,6 +5,7 @@ On a single local day whose session list is visible, each column under `Time of 
 ## Sub-features
 
 - Filter: with the drawer open on one local day, click an hour bar that a session overlaps. The dialog stays open. The session list shows only pieces that overlap that hour, including a piece whose start is in the previous hour. A status above the list shows the hour range, such as `14:00–15:00`, and a `Clear filter` button.
+- Selected bar: while an hour is filtered, that bar keeps the full bar color (the lighter emphasis color in dark theme) and every other bar is dimmed. Clear filter, the same bar again, another day or site, or closing the drawer restores one plain color. Bar heights and the tooltip do not change.
 - Toggle: click that same hour bar again. The chip is gone and the list is the full day.
 - Clear: filter an hour, then click the chip's `Clear filter`. The chip is gone and the list is the full day.
 - Empty hour: click the column of an hour no piece overlaps, above the baseline. The heading stays. The chip stays. The list is replaced by `No active sessions`.

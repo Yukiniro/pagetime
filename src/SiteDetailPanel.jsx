@@ -105,7 +105,7 @@ export function SiteDetailPanel({ siteKey, row, detail, sessions, day, now, dayC
         <h3>{t('detail.trend.title')}</h3>
         <SiteTrend days={detail.days} domain={siteKey} isDark={isDark} onSelectDay={onSelectDay} />
         <h3>{t('detail.hours.title')}</h3>
-        <HourChart hours={detail.hours} dayCount={detail.hourDays} domain={siteKey} isDark={isDark} onSelectHour={copy ? selectHour : undefined} />
+        <HourChart hours={detail.hours} dayCount={detail.hourDays} domain={siteKey} isDark={isDark} onSelectHour={copy ? selectHour : undefined} selectedHour={activeHour} />
       </section>}
       {merged && <><h3>{t('detail.breakdown.title')}</h3><Breakdown hosts={hosts} isDark={isDark} /></>}
       {copy && <DaySessionBlock copy={copy} pieces={pieces} day={day} merged={merged} activeHour={activeHour} onClear={clearHour} />}
