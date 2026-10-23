@@ -1,9 +1,10 @@
 import { addDays, dateKey, domainOf, groupSites, midnight, openCredit, overlapMs } from './model.mjs';
-import { IGNORED_LIMIT, normalizeHost } from './settings.mjs';
+import { IGNORED_LIMIT, coveringHost, normalizeHost } from './settings.mjs';
 import { siteOf } from './site.mjs';
 
 const ADD = { blacklist: 'ignore', whitelist: 'allow' };
 const REMOVE = { blacklist: 'unignore', whitelist: 'unallow' };
+const COVERED = { blacklist: 'ignoreCovered', whitelist: 'allowCovered' };
 
 // http(s) hostname only. The path, query, and title stay in the tab and are not returned.
 export function recordableHost(url) {
@@ -36,19 +37,23 @@ export function popupToday({ domains = [], days = [], cursor = null, lastEnd, no
   return { total: grouped.ms, site, siteMs: row?.ms ?? 0 };
 }
 
-// Exact host in the current mode's list. A second call removes that host. A parent rule is left as it is.
+// The hostname this click writes. A covering parent is that hostname, so the click removes it.
+// An exact entry wins over a broader parent. The next click then removes the parent that remains.
 export function listAction(settings, host) {
   const normalized = normalizeHost(host);
   if (!normalized) return null;
   const mode = settings?.recordMode === 'whitelist' ? 'whitelist' : 'blacklist';
   const field = mode === 'whitelist' ? 'allowed' : 'ignored';
   const list = Array.isArray(settings?.[field]) ? settings[field] : [];
-  const listed = list.includes(normalized);
+  const rule = coveringHost(normalized, list);
+  const listed = rule !== null;
+  const covered = listed && rule !== normalized;
   return {
     field,
-    host: normalized,
+    host: rule ?? normalized,
     listed,
-    label: listed ? REMOVE[mode] : ADD[mode],
+    covered,
+    label: covered ? COVERED[mode] : listed ? REMOVE[mode] : ADD[mode],
     disabled: !listed && list.length >= IGNORED_LIMIT,
   };
 }

@@ -72,7 +72,7 @@ test('only an http(s) hostname is recordable', () => {
 test('the list button writes the exact host and the next click removes it', () => {
   const blacklist = { recordMode: 'blacklist', ignored: [], allowed: ['kept.test'] };
   assert.deepEqual(listAction(blacklist, 'https://Example.com/path'), {
-    field: 'ignored', host: 'example.com', listed: false, label: 'ignore', disabled: false,
+    field: 'ignored', host: 'example.com', listed: false, covered: false, label: 'ignore', disabled: false,
   });
   const added = toggleListedHost(blacklist.ignored, 'https://Example.com/path');
   assert.deepEqual(blacklist.ignored, []);

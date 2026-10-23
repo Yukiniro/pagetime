@@ -37,6 +37,8 @@
     "unignore": "恢复记录此站",
     "allow": "记录此站",
     "unallow": "不再记录此站",
+    "ignoreCovered": "已被 {{host}} 覆盖，撤销该规则",
+    "allowCovered": "已由 {{host}} 允许，撤销该规则",
     "pause": "暂停记录",
     "resume": "恢复记录",
     "open": "打开仪表盘",

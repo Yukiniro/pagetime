@@ -37,6 +37,8 @@
     "unignore": "Enregistrer à nouveau ce site",
     "allow": "Enregistrer ce site",
     "unallow": "Ne plus enregistrer ce site",
+    "ignoreCovered": "Couvert par {{host}}. Révoquer cette règle",
+    "allowCovered": "Autorisé par {{host}}. Révoquer cette règle",
     "pause": "Suspendre l’enregistrement",
     "resume": "Reprendre l’enregistrement",
     "open": "Ouvrir le tableau de bord",

@@ -37,6 +37,8 @@
     "unignore": "Diese Website wieder aufzeichnen",
     "allow": "Diese Website aufzeichnen",
     "unallow": "Diese Website nicht mehr aufzeichnen",
+    "ignoreCovered": "Durch {{host}} abgedeckt. Regel aufheben",
+    "allowCovered": "Durch {{host}} erlaubt. Regel aufheben",
     "pause": "Aufzeichnung pausieren",
     "resume": "Aufzeichnung fortsetzen",
     "open": "Dashboard öffnen",

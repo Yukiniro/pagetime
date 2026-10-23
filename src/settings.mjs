@@ -61,16 +61,27 @@ export function normalizeHost(input) {
   return null;
 }
 
+function hostCoveredBy(host, rule) {
+  if (isAddress(host) || isAddress(rule)) return host === rule;
+  return host === rule || host.endsWith(`.${rule}`);
+}
+
+// The most specific stored hostname that covers `domain`, or null.
 // An entry matches that host and its subdomains. An address matches only itself.
-function hostMatches(domain, list) {
+export function coveringHost(domain, list) {
   const host = normalizeHost(domain);
-  if (!host || !Array.isArray(list)) return false;
-  return list.some(entry => {
+  if (!host || !Array.isArray(list)) return null;
+  let match = null;
+  for (const entry of list) {
     const rule = typeof entry === 'string' ? normalizeHost(entry) : null;
-    if (!rule) return false;
-    if (isAddress(host) || isAddress(rule)) return host === rule;
-    return host === rule || host.endsWith(`.${rule}`);
-  });
+    if (!rule || !hostCoveredBy(host, rule)) continue;
+    if (match === null || rule.length > match.length) match = rule;
+  }
+  return match;
+}
+
+function hostMatches(domain, list) {
+  return coveringHost(domain, list) !== null;
 }
 
 export function isIgnored(domain, ignored) {

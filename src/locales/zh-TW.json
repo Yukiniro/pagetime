@@ -37,6 +37,8 @@
     "unignore": "恢復記錄此站",
     "allow": "記錄此站",
     "unallow": "不再記錄此站",
+    "ignoreCovered": "已被 {{host}} 覆蓋，撤銷該規則",
+    "allowCovered": "已由 {{host}} 允許，撤銷該規則",
     "pause": "暫停記錄",
     "resume": "恢復記錄",
     "open": "打開儀表板",
