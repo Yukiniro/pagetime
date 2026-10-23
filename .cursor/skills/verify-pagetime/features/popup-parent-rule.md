@@ -20,9 +20,9 @@ Extension only. Fresh profile. Language is English. `tests/e2e/popup-parent-rule
 
 1. Focus `http://mail.example.test:<port>/` until today's active time for that host is above zero. The popup button is `Don't record this site`.
 2. On Settings, add `example.test` to Ignored sites. Focus the site tab again. The credited time stops increasing. Reopen the popup. The button is `Covered by example.test. Revoke that rule`. The heading is `mail.example.test`. `scrollWidth` is at most 320. `ignored` is `['example.test']` and `allowed` is `[]`.
-3. Open `Details for mail.example.test`. The button `This site is already ignored` is disabled.
+3. Open `Details for mail.example.test`. The button `This site is already ignored` is disabled. Close the drawer. Switching to the dashboard closes the popup, so open it again before the next click.
 4. Click the popup's covered button. `ignored` is `[]`. The popup button is `Don't record this site`. The drawer button is `Stop recording this site`. Focus the site tab. Credited time increases.
-5. Choose `Whitelist` and add `example.test`. The popup button is `Allowed by example.test. Revoke that rule`. The drawer button is `This site is already allowed`. Click the popup button. `allowed` is `[]`. The popup button is `Record this site`. The drawer button is `Add to whitelist`. Credited time stops increasing.
+5. Choose `Whitelist` and add `example.test`. The popup button is `Allowed by example.test. Revoke that rule`. The drawer button is `This site is already allowed`. Reopen the popup and click that button. `allowed` is `[]`. The popup button is `Record this site`. The drawer button is `Add to whitelist`. Credited time stops increasing.
 
 ## Gotchas
 
