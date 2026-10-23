@@ -289,10 +289,15 @@ test('scale: one year × 200 sites builds in many short parts, so the page can p
     }
     return { slowest, total, size, count };
   };
-  const json = measure(ledgerJsonParts(snapshot, meta));
-  const csv = measure(dailyCsvParts(snapshot));
+  const span = { startDay: null, endDay: null };
+  const csvSpan = { startDay: null, endDay: null };
+  const json = measure(ledgerJsonParts(snapshot, meta, span));
+  const csv = measure(dailyCsvParts(snapshot, csvSpan));
   console.log(`scale: ${days.length} day rows, ${hours.length} hour rows; JSON ${(json.size / 1e6).toFixed(1)} MB in ${json.count} parts, ${Math.round(json.total)} ms total, slowest part ${Math.round(json.slowest)} ms; CSV ${(csv.size / 1e6).toFixed(1)} MB, ${Math.round(csv.total)} ms total, slowest part ${Math.round(csv.slowest)} ms`);
   assert.equal(days.length, 73_000);
+  assert.equal(span.startDay, dateKey(first));
+  assert.equal(span.endDay, dateKey(addDays(first, DAYS - 1)));
+  assert.deepEqual(csvSpan, { startDay: span.startDay, endDay: span.endDay });
   assert.ok(json.count > 100, 'JSON is split into many parts');
   assert.ok(json.total < 10_000, `JSON took ${json.total} ms`);
   assert.ok(csv.total < 5_000, `CSV took ${csv.total} ms`);

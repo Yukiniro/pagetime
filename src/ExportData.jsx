@@ -6,6 +6,7 @@ import { Alert, AlertTitle, AlertDescription } from '@app/components/ui/alert';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@app/components/ui/alert-dialog';
 import { isExtension } from './data.js';
 import { exportLedger } from './export-file.js';
+import { ExportSummary } from './ExportSummary.jsx';
 import { restoreBackupFile } from './import-file.js';
 
 const KINDS = ['json', 'csv'];
@@ -24,6 +25,7 @@ export function ExportData() {
   const busy = useRef(false);
   const [pending, setPending] = useState('');
   const [saved, setSaved] = useState('');
+  const [summary, setSummary] = useState(null);
   const [restored, setRestored] = useState(false);
   const [failed, setFailed] = useState(false);
   const [restoreError, setRestoreError] = useState('');
@@ -32,6 +34,7 @@ export function ExportData() {
 
   function resetNotices() {
     setSaved('');
+    setSummary(null);
     setRestored(false);
     setFailed(false);
     setRestoreError('');
@@ -40,9 +43,14 @@ export function ExportData() {
   async function run(kind) {
     setPending(kind);
     resetNotices();
-    try { setSaved(await exportLedger(kind)); }
-    catch (error) { console.error('PageTime could not export the ledger', error); setFailed(true); }
-    finally { setPending(''); }
+    try {
+      const result = await exportLedger(kind);
+      setSaved(result.name);
+      setSummary(result.summary);
+    } catch (error) {
+      console.error('PageTime could not export the ledger', error);
+      setFailed(true);
+    } finally { setPending(''); }
   }
 
   function chooseFile(event) {
@@ -88,7 +96,10 @@ export function ExportData() {
       <p className="flex items-start gap-2"><ShieldCheck size={18} className="privacy-icon mt-1" />{t('settings.export.note')}</p>
       {!isExtension && <p>{t('settings.export.restorePreview')}</p>}
       {pending && <p role="status">{pending === 'restore' ? t('settings.export.restoring') : t('settings.export.exporting')}</p>}
-      {saved && <p role="status">{t('settings.export.done', { file: saved })}</p>}
+      {saved && <div className="export-saved">
+        <p role="status" aria-describedby={summary ? 'export-summary' : undefined}>{t('settings.export.done', { file: saved })}</p>
+        <ExportSummary summary={summary} />
+      </div>}
       {restored && <p role="status">{t('settings.export.restored')}</p>}
       {failed && <Alert variant="destructive" className="mt-4"><WarningCircle /><AlertTitle>{t('settings.export.errorTitle')}</AlertTitle><AlertDescription>{t('settings.export.error')}</AlertDescription></Alert>}
       {restoreKey && !confirmRestore && <Alert variant="destructive" className="mt-4"><WarningCircle /><AlertTitle>{t('settings.export.restoreErrorTitle')}</AlertTitle><AlertDescription>{t(`settings.export.${restoreKey}`)}</AlertDescription></Alert>}

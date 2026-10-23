@@ -108,7 +108,7 @@ Stable handles, from `src/App.jsx`, `src/Overview.jsx`, `src/RangeControl.jsx`, 
 | Recording scope | `getByRole('radiogroup', { name: 'Recording scope' })`, radios whose names start with `Blacklist` and `Whitelist` |
 | Ignore / allow | textbox `Host to ignore` or `Host to allow`, button `Add`, remove `Remove <domain>` |
 | Docs links | `getByRole('link', { name: 'Timing rules and privacy notes' })` and `getByRole('link', { name: 'Privacy policy' })`, last row of Settings |
-| Export | heading `Export data`, buttons `Export JSON` and `Export CSV`, `status` `Saved pagetime-<date>.json.` or `.csv.` |
+| Export | heading `Export data`, buttons `Export JSON` and `Export CSV`, `status` `Saved pagetime-<date>.json.` or `.csv.`, list `Export summary` beside that status |
 | Restore | button `Restore from backup`, hidden `input[type=file]`, dialog `Replace all local records?`, status `Restoring…` or `Restored.` Preview disables the button |
 
 One feature per drive. The steps live in `features/`. A missing precondition is a failed journey; the reason is already in that file's Gotchas. Do not write sample rows into `pagetime-preview` or IndexedDB to make a journey pass.

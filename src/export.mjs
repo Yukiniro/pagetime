@@ -1,4 +1,4 @@
-import { addDays, dateKey, midnight, splitByHour } from './model.mjs';
+import { addDays, dateKey, dateKeyStart, midnight, splitByHour } from './model.mjs';
 
 export const EXPORT_FORMAT = 'pagetime-ledger';
 export const EXPORT_SCHEMA_VERSION = 1;
@@ -34,6 +34,16 @@ const TABLES = {
 
 const CHUNK_ROWS = 5_000;
 const sortedRows = (snapshot, name) => [...(snapshot[name] ?? [])].sort(TABLES[name].order);
+
+// Filled while a caller pulls export chunks, so a long day table does not build a Date for every row up front.
+function noteDaySlice(span, rows) {
+  for (const row of rows) {
+    const date = row?.date;
+    if (dateKeyStart(date) === null) continue;
+    if (span.startDay === null || date < span.startDay) span.startDay = date;
+    if (span.endDay === null || date > span.endDay) span.endDay = date;
+  }
+}
 const indent = value => JSON.stringify(value, null, 2).replaceAll('\n', '\n  ');
 
 /**
@@ -41,9 +51,10 @@ const indent = value => JSON.stringify(value, null, 2).replaceAll('\n', '\n  ');
  * Rows are sorted by primary key, one row per line, so two exports of the same ledger differ only in `exportedAt`.
  * @param {{ state?: { enabled: boolean, since: number }, domains: object[], days: object[], hours: object[], spans: object[], visits: object[] }} snapshot
  * @param {{ exportedAt: number, timeZone: string, appVersion: string, settings: object }} meta
+ * @param {{ startDay: string | null, endDay: string | null }} [span] Day-total extrema, updated as day chunks are pulled.
  * @returns {Generator<string>}
  */
-export function* ledgerJsonParts(snapshot, { exportedAt, timeZone, appVersion, settings }) {
+export function* ledgerJsonParts(snapshot, { exportedAt, timeZone, appVersion, settings }, span) {
   const head = {
     format: EXPORT_FORMAT,
     schemaVersion: EXPORT_SCHEMA_VERSION,
@@ -58,7 +69,9 @@ export function* ledgerJsonParts(snapshot, { exportedAt, timeZone, appVersion, s
     const rows = sortedRows(snapshot, name);
     yield `    ${JSON.stringify(name)}: ${rows.length ? '[\n' : '[]'}`;
     for (let from = 0; from < rows.length; from += CHUNK_ROWS) {
-      const lines = rows.slice(from, from + CHUNK_ROWS).map(row => `      ${JSON.stringify(TABLES[name].row(row))}`);
+      const slice = rows.slice(from, from + CHUNK_ROWS);
+      if (span && name === 'days') noteDaySlice(span, slice);
+      const lines = slice.map(row => `      ${JSON.stringify(TABLES[name].row(row))}`);
       yield `${from ? ',\n' : ''}${lines.join(',\n')}`;
     }
     yield `${rows.length ? '\n    ]' : ''}${index < EXPORT_TABLES.length - 1 ? ',' : ''}\n`;
@@ -66,8 +79,33 @@ export function* ledgerJsonParts(snapshot, { exportedAt, timeZone, appVersion, s
   yield '  }\n}\n';
 }
 
-/** @param {Parameters<typeof ledgerJsonParts>[0]} snapshot @param {Parameters<typeof ledgerJsonParts>[1]} meta */
-export const toLedgerJson = (snapshot, meta) => [...ledgerJsonParts(snapshot, meta)].join('');
+/** @param {Parameters<typeof ledgerJsonParts>[0]} snapshot @param {Parameters<typeof ledgerJsonParts>[1]} meta @param {Parameters<typeof ledgerJsonParts>[2]} [span] */
+export const toLedgerJson = (snapshot, meta, span) => [...ledgerJsonParts(snapshot, meta, span)].join('');
+
+/**
+ * Read-only facts for a file that was just saved. Counts are the ledger table lengths.
+ * Start and end days come from `span`, which the JSON and CSV generators fill while their chunks are pulled.
+ * They stay null when that walk saw no real day-total date. JSON includes settings and the extension version. CSV leaves both out.
+ * @param {{ domains?: object[], days?: { date?: string }[] }} snapshot
+ * @param {{ exportedAt: number, timeZone: string, appVersion?: string }} meta
+ * @param {'json' | 'csv'} kind
+ * @param {{ startDay: string | null, endDay: string | null } | null} [span]
+ */
+export function ledgerExportSummary(snapshot, { exportedAt, timeZone, appVersion }, kind, span) {
+  const days = Array.isArray(snapshot?.days) ? snapshot.days : [];
+  const domains = Array.isArray(snapshot?.domains) ? snapshot.domains : [];
+  const json = kind === 'json';
+  return {
+    exportedAt,
+    timeZone,
+    startDay: span?.startDay ?? null,
+    endDay: span?.endDay ?? null,
+    siteCount: domains.length,
+    dayRows: days.length,
+    includesSettings: json,
+    appVersion: json ? appVersion ?? null : null,
+  };
+}
 
 /** RFC 4180: a field with a comma, quote, or line break is quoted, and quotes inside it are doubled. */
 export function csvField(value) {
@@ -80,22 +118,29 @@ const csvLine = row => `${row.map(csvField).join(',')}\r\n`;
 /**
  * One row per stored local date and raw hostname, sorted by date then host, in parts like ledgerJsonParts.
  * Starts with a UTF-8 byte order mark so spreadsheet apps detect the encoding.
+ * @param {{ startDay: string | null, endDay: string | null }} [span] Day-total extrema, updated per chunk before the file text is sorted.
  * @returns {Generator<string>}
  */
-export function* dailyCsvParts({ domains, days }) {
+export function* dailyCsvParts({ domains, days }, span) {
   const host = new Map(domains.map(row => [row.id, row.host]));
   const rows = [];
-  for (const day of days) {
-    const name = host.get(day.domainId);
-    if (name !== undefined) rows.push([day.date, name, day.ms, day.visits]);
+  for (let from = 0; from < days.length; from += CHUNK_ROWS) {
+    const slice = days.slice(from, from + CHUNK_ROWS);
+    if (span) noteDaySlice(span, slice);
+    for (const day of slice) {
+      const name = host.get(day.domainId);
+      if (name !== undefined) rows.push([day.date, name, day.ms, day.visits]);
+    }
+    // Empty parts do not change the file. They give the caller a turn between day chunks, including rows the CSV later skips.
+    yield '';
   }
   rows.sort((a, b) => compare(a[0], b[0]) || compare(a[1], b[1]));
   yield `\uFEFF${csvLine(CSV_COLUMNS)}`;
   for (let from = 0; from < rows.length; from += CHUNK_ROWS) yield rows.slice(from, from + CHUNK_ROWS).map(csvLine).join('');
 }
 
-/** @param {Parameters<typeof dailyCsvParts>[0]} snapshot */
-export const toDailyCsv = snapshot => [...dailyCsvParts(snapshot)].join('');
+/** @param {Parameters<typeof dailyCsvParts>[0]} snapshot @param {Parameters<typeof dailyCsvParts>[1]} [span] */
+export const toDailyCsv = (snapshot, span) => [...dailyCsvParts(snapshot, span)].join('');
 
 export const exportFileName = (kind, now) => `pagetime-${dateKey(now)}.${kind}`;
 
