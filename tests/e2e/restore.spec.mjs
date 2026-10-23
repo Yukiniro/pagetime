@@ -80,11 +80,8 @@ test('restoring a JSON backup from settings replaces the empty ledger', async ()
       mimeType: 'text/csv',
       buffer: Buffer.from('date,host,active_ms,visits\r\n'),
     });
-    await expect(dashboard.getByRole('heading', { name: 'Replace all local records?' })).toBeVisible();
-    await shot(dashboard, 'restore-confirm.png');
-    await dashboard.getByRole('button', { name: 'Replace records', exact: true }).click();
     await expect(dashboard.getByRole('alert')).toContainText("This file isn't a PageTime backup. Nothing was changed.");
-    await dashboard.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await expect(dashboard.getByRole('heading', { name: 'Replace all local records?' })).toHaveCount(0);
     await dashboard.getByRole('button', { name: 'Overview', exact: true }).click();
     await expect(dashboard.getByText('Your browsing will show up here')).toBeVisible();
 
@@ -94,6 +91,8 @@ test('restoring a JSON backup from settings replaces the empty ledger', async ()
       mimeType: 'application/json',
       buffer: Buffer.from(JSON.stringify(backup())),
     });
+    await expect(dashboard.getByRole('region', { name: 'Backup summary' })).toBeVisible();
+    await shot(dashboard, 'restore-confirm.png');
     await dashboard.getByRole('button', { name: 'Replace records', exact: true }).click();
     await expect(dashboard.getByRole('status').filter({ hasText: 'Restored.' })).toBeVisible();
     await expect(dashboard.getByRole('button', { name: 'Remove skip.restore' })).toBeVisible();
