@@ -67,18 +67,26 @@ export function SiteTrend({days, domain, isDark=false, onSelectDay}){
   const item=day=>t('detail.trend.item',{date:formatDate(day.at),duration:trendUnrecorded(day)?t('detail.trend.unrecorded'):duration(day.ms)});
   return <><Trend days={days} variant="detail" className="detail-trend" isDark={isDark} onSelectDay={onSelectDay} label={t('detail.trend.label',{domain,days:days.map(item).join(t('detail.trend.separator'))})}/><ul className="sr-only">{days.map(day=><li key={day.at}>{item(day)}</li>)}</ul></>;
 }
-export function HourChart({hours, dayCount, domain, isDark=false}){
+export function HourChart({hours, dayCount, domain, isDark=false, onSelectHour}){
   const {t}=useTranslation();
   const {theme,fontFamily,tooltip}=chartTheme(isDark);
   const average=ms=>duration(dayCount?ms/dayCount:0);
   const slot=hour=>{const from=new Date(2000,0,1,hour,0,0,0);return t('detail.hours.slot',{from:timeLabel(from),to:timeLabel(from.getTime()+3_600_000)});};
   const item=row=>t('detail.hours.item',{hour:slot(row.hour),duration:duration(row.ms),average:t('detail.hours.average',{duration:average(row.ms)})});
+  const onClick=onSelectHour?(params)=>{
+    const row=hours[params?.dataIndex];
+    if(!row||!Number.isInteger(row.hour))return;
+    onSelectHour(row.hour);
+  }:undefined;
+  const bars={type:'bar',barMaxWidth:14,itemStyle:{color:theme.bar,borderRadius:[2,2,0,0]},data:hours.map(row=>row.ms/3_600_000)};
+  // A zero-height hour still has to accept the click, including an hour with no sessions.
+  if(onSelectHour){bars.barMinHeight=1;bars.cursor='pointer';}
   const option={animation:false,backgroundColor:'transparent',textStyle:{fontFamily,color:theme.label},grid:{left:4,right:8,top:8,bottom:4,containLabel:true},
     tooltip:tooltip({trigger:'axis',renderMode:'richText',formatter:p=>{const row=hours[p[0]?.dataIndex];if(!row)return '';return `${slot(row.hour)}\n${t('active',{duration:duration(row.ms)})}\n${t('detail.hours.average',{duration:average(row.ms)})}`;}}),
     xAxis:{type:'category',data:hours.map(row=>row.hour),axisTick:{show:false},axisLine:{lineStyle:{color:theme.axis}},axisLabel:{color:theme.label,fontSize:11,interval:2,hideOverlap:true}},
     yAxis:{type:'value',min:0,minInterval:1,max:Math.max(1,...hours.map(row=>Math.ceil(row.ms/3_600_000))),splitNumber:2,axisLabel:{color:theme.label,fontSize:11,formatter:v=>v?t('trend.hours',{count:v}):'0'},splitLine:{lineStyle:{color:theme.split}}},
-    series:[{type:'bar',barMaxWidth:14,itemStyle:{color:theme.bar,borderRadius:[2,2,0,0]},data:hours.map(row=>row.ms/3_600_000)}]};
-  return <><Chart option={option} className="hour-chart" label={t('detail.hours.label',{domain,hours:hours.map(item).join(t('detail.hours.separator'))})}/><ul className="sr-only">{hours.map(row=><li key={row.hour}>{item(row)}</li>)}</ul></>;
+    series:[bars]};
+  return <><Chart option={option} className="hour-chart" label={t('detail.hours.label',{domain,hours:hours.map(item).join(t('detail.hours.separator'))})} onClick={onClick}/><ul className="sr-only">{hours.map(row=><li key={row.hour}>{item(row)}</li>)}</ul></>;
 }
 export function DayHourChart({hours, isDark=false}){
   const {t}=useTranslation();

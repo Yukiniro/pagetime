@@ -13,6 +13,7 @@ Drive one file per journey. Selectors assume English (`pagetime-language` = `en`
 | 时间线色块打开站点详情 | [timeline-click.md](timeline-click.md) | Preview or extension with a single-day segment timeline. Keyboard uses each segment button. An empty ledger has no blocks. |
 | 点趋势柱跳到那一天 | [trend-day-click.md](trend-day-click.md) | Preview or extension with a multi-day trend. An empty ledger has no bars. |
 | 详情抽屉按日趋势点柱跳到那一天 | [detail-trend-day-click.md](detail-trend-day-click.md) | Preview or extension with a site detail drawer. An empty ledger has no rank row. |
+| 单日详情点时段柱过滤活跃时段 | [detail-hour-filter.md](detail-hour-filter.md) | Preview or extension with a single-day site detail drawer. An empty ledger has no rank row. Multi-day and past-retention days leave the hour bars unclickable. |
 | 设置页记录范围（黑名单 / 白名单） | [recording-scope.md](recording-scope.md) | Preview (`pagetime-preview-settings`) or extension settings message. |
 | 设置页底部文档链接 | [settings-docs.md](settings-docs.md) | Preview or extension. Links open repository docs; no request is made by the page. |
 | 导出 JSON / CSV | [export.md](export.md) | Preview or extension. The file is a blob download in the page. |

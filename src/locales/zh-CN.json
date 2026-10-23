@@ -144,7 +144,8 @@
       "item": "{{hour}}，{{duration}}，{{average}}",
       "separator": "；",
       "slot": "{{from}}–{{to}}",
-      "average": "日均 {{duration}}"
+      "average": "日均 {{duration}}",
+      "empty": "暂无活跃时段"
     },
     "breakdown": {
       "title": "子域名构成",

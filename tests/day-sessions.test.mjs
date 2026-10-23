@@ -6,7 +6,7 @@ const { addDays, midnight } = await import('../src/model.mjs');
 const { viewFromSnapshot } = await import('../src/ledger-view.mjs');
 const { focusSpans, focusSummary } = await import('../src/site-filter.mjs');
 const { presetRange, timelineDay } = await import('../src/range.mjs');
-const { clipDaySessions, daySessionCopy } = await import('../src/day-sessions.mjs');
+const { clipDaySessions, daySessionCopy, sessionsOverlappingHour } = await import('../src/day-sessions.mjs');
 
 const at = (month, day, hour = 0, minute = 0) => new Date(2026, month - 1, day, hour, minute).getTime();
 const pieceMs = pieces => pieces.reduce((sum, piece) => sum + piece.to - piece.from, 0);
@@ -106,6 +106,46 @@ test('a session that crosses midnight is split across the two days', () => {
   const springAfter = clipDaySessions([spring], at(3, 8));
   assert.equal(pieceMs(springBefore) + pieceMs(springAfter), spring.end - spring.start);
   assert.equal(at(3, 9) - at(3, 8), 23 * 3_600_000);
+});
+
+test('an hour filter keeps pieces that overlap the clock hour, including ones that only cross into it', () => {
+  const day = yesterday;
+  const crossing = { domain: 'github.com', site: 'github.com', start: at(10, 19, 14, 50), end: at(10, 19, 15, 10), from: at(10, 19, 14, 50), to: at(10, 19, 15, 10) };
+  const endsAt15 = { domain: 'github.com', site: 'github.com', start: at(10, 19, 13), end: at(10, 19, 15), from: at(10, 19, 14), to: at(10, 19, 15) };
+  const startsAt15 = { domain: 'github.com', site: 'github.com', start: at(10, 19, 15), end: at(10, 19, 15, 20), from: at(10, 19, 15), to: at(10, 19, 15, 20) };
+  const clipped = { domain: 'github.com', site: 'github.com', start: at(10, 18, 23), end: at(10, 19, 1, 30), from: at(10, 19), to: at(10, 19, 1, 30) };
+  const pieces = [crossing, endsAt15, startsAt15, clipped];
+  const frozen = pieces.map(piece => ({ ...piece }));
+
+  assert.deepEqual(sessionsOverlappingHour(pieces, day, 14), [crossing, endsAt15]);
+  assert.deepEqual(sessionsOverlappingHour(pieces, day, 15), [crossing, startsAt15]);
+  assert.deepEqual(sessionsOverlappingHour(pieces, day, 13), []);
+  assert.deepEqual(sessionsOverlappingHour(pieces, day, 0), [clipped]);
+  assert.deepEqual(sessionsOverlappingHour(pieces, day, 23), []);
+  assert.equal(sessionsOverlappingHour(pieces, day, 14)[0], crossing);
+  assert.deepEqual(pieces, frozen);
+  assert.deepEqual(sessionsOverlappingHour(pieces, today, 14), []);
+  assert.deepEqual(sessionsOverlappingHour(pieces, day, 24), []);
+  assert.deepEqual(sessionsOverlappingHour(pieces, day, -1), []);
+  assert.deepEqual(sessionsOverlappingHour(pieces, day, 14.5), []);
+  assert.deepEqual(sessionsOverlappingHour(null, day, 14), []);
+});
+
+test('a repeated fall-back hour still matches, and the missing spring hour matches nothing', () => {
+  const fallDay = new Date(2026, 10, 1).getTime();
+  const secondHour = { from: Date.parse('2026-11-01T06:00:00Z'), to: Date.parse('2026-11-01T06:30:00Z') };
+  assert.deepEqual(sessionsOverlappingHour([secondHour], fallDay, 1), [secondHour]);
+  assert.deepEqual(sessionsOverlappingHour([secondHour], fallDay, 2), []);
+  assert.deepEqual(sessionsOverlappingHour([secondHour], fallDay, 0), []);
+
+  const springDay = new Date(2026, 2, 8).getTime();
+  const acrossGap = { from: Date.parse('2026-03-08T06:30:00Z'), to: Date.parse('2026-03-08T07:30:00Z') };
+  const stopsAtThree = { from: Date.parse('2026-03-08T06:30:00Z'), to: Date.parse('2026-03-08T07:00:00Z') };
+  assert.deepEqual(sessionsOverlappingHour([acrossGap], springDay, 1), [acrossGap]);
+  assert.deepEqual(sessionsOverlappingHour([acrossGap], springDay, 2), []);
+  assert.deepEqual(sessionsOverlappingHour([acrossGap], springDay, 3), [acrossGap]);
+  assert.deepEqual(sessionsOverlappingHour([stopsAtThree], springDay, 1), [stopsAtThree]);
+  assert.deepEqual(sessionsOverlappingHour([stopsAtThree], springDay, 3), []);
 });
 
 test('paging with a site filter keeps the open site on the chart day', () => {

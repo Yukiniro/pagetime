@@ -150,7 +150,8 @@
       "item": "{{hour}}, {{duration}}, {{average}}",
       "separator": "; ",
       "slot": "{{from}}–{{to}}",
-      "average": "Daily average {{duration}}"
+      "average": "Daily average {{duration}}",
+      "empty": "No active sessions"
     },
     "breakdown": {
       "title": "Subdomain breakdown",
