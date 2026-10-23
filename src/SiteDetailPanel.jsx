@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Trash, X } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { ScrollArea } from '@app/components/ui/scroll-area';
@@ -34,15 +34,22 @@ function useSessionHour(siteKey, day, showSessions) {
 
 function DaySessionBlock({ copy, pieces, day, merged, activeHour, onClear }) {
   const { t } = useTranslation();
+  const result = useRef(null);
   const date = copy.today ? '' : singleDayLabel(day);
   const shown = activeHour === null ? pieces : sessionsOverlappingHour(pieces, day, activeHour);
   const emptyKey = activeHour === null ? copy.emptyKey : 'detail.hours.empty';
+  useEffect(() => {
+    if (activeHour === null) return;
+    result.current?.scrollIntoView?.({ block: 'nearest' });
+  }, [activeHour, shown.length]);
   return <>
     <h3>{t(copy.titleKey, { date })}</h3>
-    {activeHour !== null && <div className="session-filter" role="status">
-      <div className="filter-chip"><span>{hourSlot(activeHour, t)}</span><Button variant="ghost" size="sm" onClick={onClear}>{t('filter.clear')}</Button></div>
-    </div>}
-    {shown.length ? <SessionList pieces={shown} merged={merged} /> : <p className="muted">{t(emptyKey, { date })}</p>}
+    <div ref={result}>
+      {activeHour !== null && <div className="session-filter" role="status">
+        <div className="filter-chip"><span>{hourSlot(activeHour, t)}</span><Button variant="ghost" size="sm" onClick={onClear}>{t('filter.clear')}</Button></div>
+      </div>}
+      {shown.length ? <SessionList pieces={shown} merged={merged} /> : <p className="muted">{t(emptyKey, { date })}</p>}
+    </div>
   </>;
 }
 
