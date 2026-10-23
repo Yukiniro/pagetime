@@ -37,6 +37,8 @@
     "unignore": "Volver a registrar este sitio",
     "allow": "Registrar este sitio",
     "unallow": "Dejar de registrar este sitio",
+    "ignoreCovered": "Cubierto por {{host}}. Revocar esa regla",
+    "allowCovered": "Permitido por {{host}}. Revocar esa regla",
     "pause": "Pausar registro",
     "resume": "Reanudar registro",
     "open": "Abrir el panel",

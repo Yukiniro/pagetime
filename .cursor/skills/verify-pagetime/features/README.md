@@ -19,6 +19,7 @@ Drive one file per journey. Selectors assume English (`pagetime-language` = `en`
 | 导出 JSON / CSV | [export.md](export.md) | Preview or extension. The file is a blob download in the page. |
 | 从备份恢复 | [restore.md](restore.md) | Extension. Preview disables the control and does not write preview storage. |
 | 工具栏 popup | [toolbar-popup.md](toolbar-popup.md) | Extension. The toolbar icon opens `popup.html`. |
+| popup 父规则覆盖 | [popup-parent-rule.md](popup-parent-rule.md) | Extension. A parent list entry covers the current host. |
 | popup 站点名打开详情 | [popup-site-detail.md](popup-site-detail.md) | Extension. The popup site name opens today's detail drawer. |
 | popup 当前站点图标 | [popup-site-icon.md](popup-site-icon.md) | Extension. A current site shows `SiteIcon` beside the name. No site shows no icon. |
 | 站点图标 | [site-favicon.md](site-favicon.md) | Preview shows packaged SVG or the globe and never calls `_favicon`. Extension rankings use the browser favicon cache after a real https visit. |

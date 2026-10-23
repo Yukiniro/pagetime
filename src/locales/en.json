@@ -37,6 +37,8 @@
     "unignore": "Record this site again",
     "allow": "Record this site",
     "unallow": "Stop recording this site",
+    "ignoreCovered": "Covered by {{host}}. Revoke that rule",
+    "allowCovered": "Allowed by {{host}}. Revoke that rule",
     "pause": "Pause recording",
     "resume": "Resume recording",
     "open": "Open dashboard",

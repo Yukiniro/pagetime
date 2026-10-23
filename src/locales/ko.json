@@ -37,6 +37,8 @@
     "unignore": "이 사이트 다시 기록",
     "allow": "이 사이트 기록",
     "unallow": "이 사이트 기록 중지",
+    "ignoreCovered": "{{host}} 규칙이 적용됨. 이 규칙 취소",
+    "allowCovered": "{{host}} 규칙으로 허용됨. 이 규칙 취소",
     "pause": "기록 일시중지",
     "resume": "기록 다시 시작",
     "open": "대시보드 열기",

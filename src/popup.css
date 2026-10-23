@@ -16,7 +16,7 @@ body { overflow: hidden; background: var(--background); }
 .popup[data-paused="true"] .popup-total { color: var(--paused); }
 .popup-total { color: var(--ink-soft); font-size: 13px; line-height: 1.4; }
 .popup-actions { display: flex; flex-direction: column; gap: 8px; }
-.popup-actions [data-slot="button"] { width: 100%; height: auto; min-height: 36px; justify-content: center; white-space: normal; text-align: center; }
+.popup-actions [data-slot="button"] { width: 100%; height: auto; min-height: 36px; justify-content: center; white-space: normal; overflow-wrap: anywhere; text-align: center; }
 .popup-badge { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--ink); font-size: 14px; font-weight: 650; }
 .popup-badge span { min-width: 0; }
 .popup-open { align-self: flex-start; height: 32px; padding-left: 0; }
