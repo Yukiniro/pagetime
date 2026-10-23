@@ -29,7 +29,7 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
   - `npm run build`
   - `npm run verify-build`
   - `xvfb-run -a npm run test:e2e`
-- **本地 e2e 依赖**：跑 `npm run test:e2e`（含 verify-pagetime 的 e2e 路径）前先确认 `openbox` 已安装，缺少时 e2e 会因 `ENOENT` 或 `openbox did not start` 失败。Debian/Ubuntu 镜像：`sudo apt-get install -y xvfb openbox xdotool x11-utils`（与 CI 的 `e2e` job 一致），再用 `xvfb-run -a` 运行。
+- **本地 e2e 依赖**：跑 `npm run test:e2e`（含 verify-pagetime 的 e2e 路径）前无条件装齐依赖，不要只检查 `openbox`：Debian/Ubuntu 镜像执行 `sudo apt-get install -y xvfb openbox xdotool x11-utils`（与 CI 的 `e2e` job 一致，已装的包会跳过）。缺 `openbox`、`xdotool`、`xprop`（`x11-utils`）或 `xvfb-run`（`xvfb`）任一项，e2e 都会因 `ENOENT` 或 `openbox did not start` 失败。再用 `xvfb-run -a` 运行。
 - **界面验证**：按 [`.cursor/skills/verify-pagetime/SKILL.md`](.cursor/skills/verify-pagetime/SKILL.md) 启动预览或扩展，先跑 Doctor，再按 `features/` 里的用户路径驱动并留下证据。地图过期时用 `/maintain-verification-skill`。
 
 ## 完成定义
