@@ -108,7 +108,10 @@
     "visitedAt": "Date de visite",
     "details": "Détails",
     "view": "Voir",
-    "empty": "Aucune visite correspondante"
+    "empty": "Aucune visite correspondante",
+    "expired_one": "Les détails des visites ne sont conservés que sur une période de {{count}} jour. Les totaux quotidiens restent dans l’aperçu.",
+    "expired_many": "Les détails des visites ne sont conservés que pour les {{count}} derniers jours. Les totaux quotidiens restent dans l’aperçu.",
+    "expired_other": "Les détails des visites ne sont conservés que pour les {{count}} derniers jours. Les totaux quotidiens restent dans l’aperçu."
   },
   "settings": {
     "language": { "title": "Langue", "label": "Langue d’affichage : {{language}}" },

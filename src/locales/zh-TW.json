@@ -98,7 +98,8 @@
     "visitedAt": "造訪時間",
     "details": "詳情",
     "view": "查看",
-    "empty": "沒有符合條件的造訪紀錄"
+    "empty": "沒有符合條件的造訪紀錄",
+    "expired_other": "造訪明細只保留最近 {{count}} 天，日彙總仍可在概覽查看。"
   },
   "settings": {
     "language": { "title": "語言", "label": "介面語言：{{language}}" },
