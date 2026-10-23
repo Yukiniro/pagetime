@@ -124,7 +124,7 @@ export function Popup() {
     </div>
     {problem && <Alert variant="destructive"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{t([`error.${problem}`, 'error.connect'])}</AlertDescription></Alert>}
     <div className="popup-actions">
-      {action && <Button variant="outline" className="action-button" disabled={busy || action.disabled} title={action.disabled ? t(`settings.${action.field}.limit`, { count: IGNORED_LIMIT }) : undefined} onClick={onList}>{t(`popup.${action.label}`)}</Button>}
+      {action && <Button variant="outline" className="action-button" disabled={busy || action.disabled} title={action.disabled ? t(`settings.${action.field}.limit`, { count: IGNORED_LIMIT }) : undefined} data-list-state={action.covered ? 'covered' : action.listed ? 'listed' : 'open'} onClick={onList}>{t(`popup.${action.label}`, { host: action.host })}</Button>}
       <Button variant="outline" className="action-button" disabled={busy} onClick={onPause}>{enabled ? <Pause weight="fill" /> : <Play weight="fill" />}{enabled ? t('popup.pause') : t('popup.resume')}</Button>
     </div>
     <div className="popup-badge">

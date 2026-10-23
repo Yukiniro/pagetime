@@ -37,6 +37,8 @@
     "unignore": "Diese Website wieder aufzeichnen",
     "allow": "Diese Website aufzeichnen",
     "unallow": "Diese Website nicht mehr aufzeichnen",
+    "ignoreCovered": "Durch {{host}} abgedeckt. Regel aufheben",
+    "allowCovered": "Durch {{host}} erlaubt. Regel aufheben",
     "pause": "Aufzeichnung pausieren",
     "resume": "Aufzeichnung fortsetzen",
     "open": "Dashboard öffnen",
@@ -103,7 +105,9 @@
     "visitedAt": "Besucht am",
     "details": "Details",
     "view": "Anzeigen",
-    "empty": "Keine passenden Besuche"
+    "empty": "Keine passenden Besuche",
+    "expired_one": "Besuchsdetails werden nur für den letzten {{count}} Tag aufbewahrt. Die Tagessummen bleiben in der Übersicht.",
+    "expired_other": "Besuchsdetails werden nur für die letzten {{count}} Tage aufbewahrt. Die Tagessummen bleiben in der Übersicht."
   },
   "settings": {
     "language": { "title": "Sprache", "label": "Anzeigesprache: {{language}}" },

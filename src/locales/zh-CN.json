@@ -37,6 +37,8 @@
     "unignore": "恢复记录此站",
     "allow": "记录此站",
     "unallow": "不再记录此站",
+    "ignoreCovered": "已被 {{host}} 覆盖，撤销该规则",
+    "allowCovered": "已由 {{host}} 允许，撤销该规则",
     "pause": "暂停记录",
     "resume": "恢复记录",
     "open": "打开仪表盘",
@@ -98,7 +100,8 @@
     "visitedAt": "访问时间",
     "details": "详情",
     "view": "查看",
-    "empty": "没有符合条件的访问记录"
+    "empty": "没有符合条件的访问记录",
+    "expired_other": "访问明细只保留最近 {{count}} 天，日汇总仍可在概览查看。"
   },
   "settings": {
     "language": { "title": "语言", "label": "界面语言：{{language}}" },

@@ -37,6 +37,8 @@
     "unignore": "Registrar este site de novo",
     "allow": "Registrar este site",
     "unallow": "Parar de registrar este site",
+    "ignoreCovered": "Coberto por {{host}}. Revogar essa regra",
+    "allowCovered": "Permitido por {{host}}. Revogar essa regra",
     "pause": "Pausar registro",
     "resume": "Retomar registro",
     "open": "Abrir o painel",
@@ -108,7 +110,10 @@
     "visitedAt": "Data da visita",
     "details": "Detalhes",
     "view": "Ver",
-    "empty": "Nenhuma visita encontrada"
+    "empty": "Nenhuma visita encontrada",
+    "expired_one": "Os detalhes das visitas são mantidos apenas pelo último {{count}} dia. Os totais diários continuam na visão geral.",
+    "expired_many": "Os detalhes das visitas são mantidos apenas pelos últimos {{count}} dias. Os totais diários continuam na visão geral.",
+    "expired_other": "Os detalhes das visitas são mantidos apenas pelos últimos {{count}} dias. Os totais diários continuam na visão geral."
   },
   "settings": {
     "language": { "title": "Idioma", "label": "Idioma de exibição: {{language}}" },

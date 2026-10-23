@@ -37,6 +37,8 @@
     "unignore": "Record this site again",
     "allow": "Record this site",
     "unallow": "Stop recording this site",
+    "ignoreCovered": "Covered by {{host}}. Revoke that rule",
+    "allowCovered": "Allowed by {{host}}. Revoke that rule",
     "pause": "Pause recording",
     "resume": "Resume recording",
     "open": "Open dashboard",
@@ -103,7 +105,9 @@
     "visitedAt": "Visited at",
     "details": "Details",
     "view": "View",
-    "empty": "No matching visits"
+    "empty": "No matching visits",
+    "expired_one": "Visit details are kept for the last {{count}} day only. Day totals are still on the overview.",
+    "expired_other": "Visit details are kept for the last {{count}} days only. Day totals are still on the overview."
   },
   "settings": {
     "language": { "title": "Language", "label": "Display language: {{language}}" },
