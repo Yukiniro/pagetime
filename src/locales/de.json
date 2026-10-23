@@ -2,7 +2,7 @@
   "appTitle": "PageTime · Dein Surf-Verlauf",
   "nav": { "label": "Hauptnavigation", "overview": "Übersicht", "records": "Besuche", "settings": "Einstellungen" },
   "localNote": "Daten bleiben auf diesem Gerät",
-  "status": { "recording": "Surfaktivität wird aufgezeichnet", "paused": "Aufzeichnung pausiert", "since": "Seit {{date}}" },
+  "status": { "recording": "Surfaktivität wird aufgezeichnet", "paused": "Aufzeichnung pausiert", "siteIgnored": "Diese Website wird nicht erfasst: ignoriert", "siteNotAllowed": "Diese Website wird nicht erfasst: nicht erlaubt", "since": "Seit {{date}}" },
   "actions": { "pause": "Pausieren", "resume": "Fortsetzen", "enable": "Aufzeichnung starten" },
   "pages": {
     "overview": { "title": "Surf-Übersicht" },

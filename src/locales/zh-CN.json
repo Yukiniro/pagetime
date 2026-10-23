@@ -2,7 +2,7 @@
   "appTitle": "PageTime · 浏览足迹",
   "nav": { "label": "主要导航", "overview": "概览", "records": "访问记录", "settings": "设置" },
   "localNote": "数据仅保存在此设备",
-  "status": { "recording": "正在记录浏览数据", "paused": "已暂停记录", "since": "自 {{date}} 开始" },
+  "status": { "recording": "正在记录浏览数据", "paused": "已暂停记录", "siteIgnored": "此站不计时：已在忽略名单", "siteNotAllowed": "此站不计时：不在允许名单", "since": "自 {{date}} 开始" },
   "actions": { "pause": "暂停记录", "resume": "继续记录", "enable": "开启记录" },
   "pages": {
     "overview": { "title": "浏览概览" },

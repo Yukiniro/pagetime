@@ -8,7 +8,7 @@ import { Skeleton } from '@app/components/ui/skeleton';
 import { command, isExtension } from './data.js';
 import { duration } from './i18n.js';
 import { DEFAULT_SETTINGS, IGNORED_LIMIT } from './settings.mjs';
-import { activeRecordableHost, listAction, openDashboardPage, toggleListedHost } from './popup-model.mjs';
+import { activeRecordableHost, listAction, openDashboardPage, popupStatus, toggleListedHost } from './popup-model.mjs';
 import { SiteIcon } from './SiteIcon.jsx';
 import { usePopupQuery } from './use-popup.js';
 import { useDocumentTheme } from './use-theme.js';
@@ -110,8 +110,9 @@ export function Popup() {
   const enabled = figures.enabled !== false;
   const primary = duration(figures.site ? figures.siteMs : figures.total);
   const total = duration(figures.total);
-  return <main className="popup" data-status="ready" data-paused={enabled ? 'false' : 'true'} data-theme={isDark ? 'dark' : 'light'} data-total-ms={figures.total}>
-    <p className="popup-status"><span className={`status-dot ${enabled ? '' : 'paused'}`} /><strong>{enabled ? t('status.recording') : t('status.paused')}</strong></p>
+  const status = popupStatus(enabled, settings, host);
+  return <main className="popup" data-status="ready" data-paused={enabled ? 'false' : 'true'} data-status-kind={status} data-theme={isDark ? 'dark' : 'light'} data-total-ms={figures.total}>
+    <p className="popup-status"><span className={`status-dot ${status === 'recording' ? '' : 'paused'}`} /><strong>{t(`status.${status}`)}</strong></p>
     <div className="popup-figures">
       <h1 className="popup-host">
         {figures.site ? <span className="popup-host-icon" aria-hidden="true"><SiteIcon domain={host} site={figures.site} /></span> : null}

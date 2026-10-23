@@ -2,7 +2,7 @@
   "appTitle": "PageTime · Sua pegada de navegação",
   "nav": { "label": "Navegação principal", "overview": "Visão geral", "records": "Visitas", "settings": "Configurações" },
   "localNote": "Os dados ficam neste dispositivo",
-  "status": { "recording": "Registrando a navegação", "paused": "Registro pausado", "since": "Desde {{date}}" },
+  "status": { "recording": "Registrando a navegação", "paused": "Registro pausado", "siteIgnored": "Este site não é registrado: ignorado", "siteNotAllowed": "Este site não é registrado: não permitido", "since": "Desde {{date}}" },
   "actions": { "pause": "Pausar registro", "resume": "Retomar registro", "enable": "Ativar registro" },
   "pages": {
     "overview": { "title": "Visão geral da navegação" },

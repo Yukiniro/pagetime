@@ -2,7 +2,7 @@
   "appTitle": "PageTime · 브라우징 기록",
   "nav": { "label": "기본 탐색", "overview": "개요", "records": "방문 기록", "settings": "설정" },
   "localNote": "데이터는 이 기기에만 저장됩니다",
-  "status": { "recording": "브라우징 데이터 기록 중", "paused": "기록 일시 중지됨", "since": "{{date}}부터 기록" },
+  "status": { "recording": "브라우징 데이터 기록 중", "paused": "기록 일시 중지됨", "siteIgnored": "이 사이트는 기록하지 않음: 무시 목록", "siteNotAllowed": "이 사이트는 기록하지 않음: 허용 목록에 없음", "since": "{{date}}부터 기록" },
   "actions": { "pause": "기록 일시 중지", "resume": "기록 재개", "enable": "기록 켜기" },
   "pages": {
     "overview": { "title": "브라우징 개요" },

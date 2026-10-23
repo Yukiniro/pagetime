@@ -2,7 +2,7 @@
   "appTitle": "PageTime · 瀏覽足跡",
   "nav": { "label": "主要導覽", "overview": "概覽", "records": "造訪紀錄", "settings": "設定" },
   "localNote": "資料僅儲存在此裝置",
-  "status": { "recording": "正在記錄瀏覽資料", "paused": "已暫停記錄", "since": "自 {{date}} 開始" },
+  "status": { "recording": "正在記錄瀏覽資料", "paused": "已暫停記錄", "siteIgnored": "此站不計時：已在忽略名單", "siteNotAllowed": "此站不計時：不在允許名單", "since": "自 {{date}} 開始" },
   "actions": { "pause": "暫停記錄", "resume": "繼續記錄", "enable": "開啟記錄" },
   "pages": {
     "overview": { "title": "瀏覽概覽" },

@@ -1,5 +1,5 @@
 import { addDays, dateKey, domainOf, groupSites, midnight, openCredit, overlapMs } from './model.mjs';
-import { IGNORED_LIMIT, coveringHost, normalizeHost } from './settings.mjs';
+import { IGNORED_LIMIT, coveringHost, normalizeHost, shouldRecord } from './settings.mjs';
 import { siteOf } from './site.mjs';
 
 const ADD = { blacklist: 'ignore', whitelist: 'allow' };
@@ -56,6 +56,18 @@ export function listAction(settings, host) {
     label: covered ? COVERED[mode] : listed ? REMOVE[mode] : ADD[mode],
     disabled: !listed && list.length >= IGNORED_LIMIT,
   };
+}
+
+// Why this recordable host is not timing: its list, not a global pause. Null when it is timing or has no host.
+export function siteListStatus(settings, host) {
+  const normalized = normalizeHost(host);
+  if (!normalized || shouldRecord(normalized, settings)) return null;
+  return settings?.recordMode === 'whitelist' ? 'siteNotAllowed' : 'siteIgnored';
+}
+
+export function popupStatus(enabled, settings, host) {
+  if (!enabled) return 'paused';
+  return siteListStatus(settings, host) ?? 'recording';
 }
 
 export function toggleListedHost(list, host) {
