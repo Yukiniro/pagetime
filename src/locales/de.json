@@ -103,7 +103,9 @@
     "visitedAt": "Besucht am",
     "details": "Details",
     "view": "Anzeigen",
-    "empty": "Keine passenden Besuche"
+    "empty": "Keine passenden Besuche",
+    "expired_one": "Besuchsdetails werden nur für den letzten {{count}} Tag aufbewahrt. Die Tagessummen bleiben in der Übersicht.",
+    "expired_other": "Besuchsdetails werden nur für die letzten {{count}} Tage aufbewahrt. Die Tagessummen bleiben in der Übersicht."
   },
   "settings": {
     "language": { "title": "Sprache", "label": "Anzeigesprache: {{language}}" },
