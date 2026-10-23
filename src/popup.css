@@ -2,7 +2,7 @@ html, body, #root { width: 320px; max-width: 320px; }
 body { overflow: hidden; background: var(--background); }
 .popup { display: flex; flex-direction: column; gap: 10px; width: 320px; padding: 14px 14px 10px; background: var(--background); color: var(--foreground); }
 .popup-status { display: flex; align-items: center; gap: 8px; color: var(--ink); font-size: 13px; line-height: 1.3; }
-.popup-status strong { font-weight: 650; }
+.popup-status strong { min-width: 0; font-weight: 650; overflow-wrap: anywhere; }
 .popup-host { display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; overflow: hidden; color: var(--ink-mid); font-size: 14px; font-weight: 650; letter-spacing: 0; line-height: 1.3; white-space: nowrap; }
 .popup-host:focus-within { overflow: visible; }
 .popup-host-icon { display: flex; flex: 0 0 24px; width: 24px; height: 24px; align-items: center; justify-content: center; }

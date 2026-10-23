@@ -2,7 +2,7 @@
   "appTitle": "PageTime · Tu huella de navegación",
   "nav": { "label": "Navegación principal", "overview": "Resumen", "records": "Visitas", "settings": "Ajustes" },
   "localNote": "Los datos se quedan en este dispositivo",
-  "status": { "recording": "Registrando la navegación", "paused": "Registro en pausa", "since": "Desde el {{date}}" },
+  "status": { "recording": "Registrando la navegación", "paused": "Registro en pausa", "siteIgnored": "Este sitio no se registra: ignorado", "siteNotAllowed": "Este sitio no se registra: no permitido", "since": "Desde el {{date}}" },
   "actions": { "pause": "Pausar registro", "resume": "Reanudar registro", "enable": "Activar registro" },
   "pages": {
     "overview": { "title": "Resumen de navegación" },

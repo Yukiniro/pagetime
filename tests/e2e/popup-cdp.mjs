@@ -79,8 +79,9 @@ export async function attachPopup(debugPort) {
       await mkdir(file.slice(0, file.lastIndexOf('/')), { recursive: true });
       await writeFile(file, Buffer.from(data, 'base64'));
     },
+    // The page can go away before it answers window.close(), so a reply is not awaited for long.
     async close() {
-      await evaluate('window.close()').catch(() => {});
+      await Promise.race([evaluate('window.close()').catch(() => {}), new Promise(resolve => setTimeout(resolve, 1_000))]);
       ws.close();
     },
   };

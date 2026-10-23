@@ -2,7 +2,7 @@
   "appTitle": "PageTime · Browsing footprint",
   "nav": { "label": "Main navigation", "overview": "Overview", "records": "Visits", "settings": "Settings" },
   "localNote": "Data stays on this device",
-  "status": { "recording": "Recording browsing activity", "paused": "Recording paused", "since": "Since {{date}}" },
+  "status": { "recording": "Recording browsing activity", "paused": "Recording paused", "siteIgnored": "Not recording this site: ignored", "siteNotAllowed": "Not recording this site: not allowed", "since": "Since {{date}}" },
   "actions": { "pause": "Pause recording", "resume": "Resume recording", "enable": "Turn on recording" },
   "pages": {
     "overview": { "title": "Browsing overview" },

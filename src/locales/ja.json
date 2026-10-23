@@ -2,7 +2,7 @@
   "appTitle": "PageTime · 閲覧の足跡",
   "nav": { "label": "メインナビゲーション", "overview": "概要", "records": "訪問履歴", "settings": "設定" },
   "localNote": "データはこのデバイスにのみ保存されます",
-  "status": { "recording": "閲覧データを記録中", "paused": "記録を一時停止中", "since": "{{date}} から記録" },
+  "status": { "recording": "閲覧データを記録中", "paused": "記録を一時停止中", "siteIgnored": "このサイトは記録しません：無視リスト", "siteNotAllowed": "このサイトは記録しません：許可リスト外", "since": "{{date}} から記録" },
   "actions": { "pause": "記録を一時停止", "resume": "記録を再開", "enable": "記録をオン" },
   "pages": {
     "overview": { "title": "閲覧の概要" },

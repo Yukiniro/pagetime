@@ -2,7 +2,7 @@
   "appTitle": "PageTime · Votre empreinte de navigation",
   "nav": { "label": "Navigation principale", "overview": "Aperçu", "records": "Visites", "settings": "Paramètres" },
   "localNote": "Les données restent sur cet appareil",
-  "status": { "recording": "Enregistrement de la navigation", "paused": "Enregistrement en pause", "since": "Depuis le {{date}}" },
+  "status": { "recording": "Enregistrement de la navigation", "paused": "Enregistrement en pause", "siteIgnored": "Ce site n'est pas enregistré : ignoré", "siteNotAllowed": "Ce site n'est pas enregistré : non autorisé", "since": "Depuis le {{date}}" },
   "actions": { "pause": "Suspendre", "resume": "Reprendre", "enable": "Activer l’enregistrement" },
   "pages": {
     "overview": { "title": "Aperçu de la navigation" },
