@@ -62,7 +62,7 @@ await dashboard.evaluate(() => localStorage.setItem('pagetime-language', 'en'));
 await dashboard.reload();
 ```
 
-A journey that must accrue time also needs the e2e window focus path (`xdotool`, and `openbox` when `xprop -root _NET_ACTIVE_WINDOW` is missing). Run that under `xvfb-run -a` when `DISPLAY` is unset. Dashboard clicks that do not accrue time do not need `xdotool`.
+A journey that must accrue time also needs the e2e window focus path (`xdotool`, and `openbox` when `xprop -root _NET_ACTIVE_WINDOW` is missing). Run that under `xvfb-run -a` when `DISPLAY` is unset. Before running `npm run test:e2e` or any extension journey that accrues time, install the full set the `e2e` CI job uses, unconditionally: `apt-get install -y xvfb openbox xdotool x11-utils` (use `sudo` when not root; it is a no-op for packages already present). Do not gate on `command -v openbox` alone: a missing `openbox`, `xdotool`, `xprop` (`x11-utils`) or `xvfb-run` (`xvfb`) each fails the e2e (`ENOENT`, `openbox did not start`). Dashboard clicks that do not accrue time do not need `xdotool`.
 
 The toolbar popup is `popup.html` on that same origin. Open it from the service worker with `chrome.action.openPopup()`, then use the page whose URL ends in `popup.html`. That leaves the browser tab underneath active, which is the tab the popup reads. Do not `goto` `popup.html` in the active tab: that tab would become the current page, and the site row would stay hidden.
 
