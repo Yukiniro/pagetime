@@ -42,7 +42,9 @@
     "pause": "기록 일시중지",
     "resume": "기록 다시 시작",
     "open": "대시보드 열기",
-    "viewSite": "대시보드에서 {{site}} 보기"
+    "viewSite": "대시보드에서 {{site}} 보기",
+    "topSites": "오늘의 상위 사이트",
+    "openTopSite": "대시보드에서 {{site}}({{duration}}) 열기"
   },
   "kpi": { "label": "{{range}} 합계", "sites": "사이트 수" },
   "compare": {"yesterday": "어제 대비", "previous7": "이전 7일 대비", "previous30": "이전 30일 대비", "previousPeriod": "이전 기간 대비", "asOf": "{{period}} ({{time}} 기준)", "change": "{{diff}} ({{percent}})", "unchanged": "변화 없음", "underMinute": "{{sign}}1분 미만", "basis": "이전 기간: {{range}}", "basisAsOf": "이전 기간: {{range}}. 두 기간 모두 마지막 날 {{time}}까지만 집계합니다.", "unavailable": "기록된 데이터가 부족해 비교할 수 없습니다."},

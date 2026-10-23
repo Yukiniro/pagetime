@@ -15,6 +15,15 @@ body { overflow: hidden; background: var(--background); }
 .popup[data-paused="true"] .popup-figure,
 .popup[data-paused="true"] .popup-total { color: var(--paused); }
 .popup-total { color: var(--ink-soft); font-size: 13px; line-height: 1.4; }
+.popup-top { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.popup-top h2 { color: var(--ink-soft); font-size: 12px; font-weight: 650; letter-spacing: 0; line-height: 1.3; }
+.popup-top ol { display: flex; flex-direction: column; margin: 0 -6px; padding: 0; list-style: none; }
+.popup-top .popup-top-row { width: 100%; height: 28px; min-width: 0; justify-content: flex-start; gap: 8px; padding: 0 6px; color: var(--ink); font-size: 13px; font-weight: 550; }
+.popup-top-icon { display: flex; flex: 0 0 16px; width: 16px; height: 16px; align-items: center; justify-content: center; }
+.popup-top-icon .site-icon { width: 16px; height: 16px; min-width: 16px; max-width: 16px; min-height: 16px; max-height: 16px; flex: 0 0 16px; }
+.popup-top-icon .site-icon svg { width: 16px; height: 16px; }
+.popup-top-name { min-width: 0; flex: 1 1 auto; overflow: hidden; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+.popup-top-time { flex: 0 0 auto; color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .popup-actions { display: flex; flex-direction: column; gap: 8px; }
 .popup-actions [data-slot="button"] { width: 100%; height: auto; min-height: 36px; justify-content: center; white-space: normal; overflow-wrap: anywhere; text-align: center; }
 .popup-badge { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--ink); font-size: 14px; font-weight: 650; }

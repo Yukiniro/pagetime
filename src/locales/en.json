@@ -42,7 +42,9 @@
     "pause": "Pause recording",
     "resume": "Resume recording",
     "open": "Open dashboard",
-    "viewSite": "View {{site}} in the dashboard"
+    "viewSite": "View {{site}} in the dashboard",
+    "topSites": "Top sites today",
+    "openTopSite": "Open {{site}} ({{duration}}) in the dashboard"
   },
   "kpi": { "label": "{{range}} totals", "sites": "Sites" },
   "compare": {"yesterday": "vs yesterday", "previous7": "vs previous 7 days", "previous30": "vs previous 30 days", "previousPeriod": "vs previous period", "asOf": "{{period}}, as of {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "No change", "underMinute": "{{sign}}under 1 min", "basis": "Previous period: {{range}}", "basisAsOf": "Previous period: {{range}}. Both periods are counted up to {{time}} on their last day.", "unavailable": "Not enough recorded data to compare."},

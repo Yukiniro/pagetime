@@ -42,7 +42,9 @@
     "pause": "暂停记录",
     "resume": "恢复记录",
     "open": "打开仪表盘",
-    "viewSite": "在仪表盘查看 {{site}}"
+    "viewSite": "在仪表盘查看 {{site}}",
+    "topSites": "今日站点排行",
+    "openTopSite": "在仪表盘打开 {{site}}（{{duration}}）"
   },
   "kpi": { "label": "{{range}}汇总", "sites": "站点数" },
   "compare": {"yesterday": "较昨天", "previous7": "较前 7 天", "previous30": "较前 30 天", "previousPeriod": "较上一周期", "asOf": "{{period}}（截至 {{time}}）", "change": "{{diff}}（{{percent}}）", "unchanged": "无变化", "underMinute": "{{sign}}不足 1 分钟", "basis": "上一周期：{{range}}", "basisAsOf": "上一周期：{{range}}。两个周期都只统计到最后一天的 {{time}}。", "unavailable": "已记录的数据不足，无法对比。"},

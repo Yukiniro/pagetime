@@ -42,7 +42,9 @@
     "pause": "Pausar registro",
     "resume": "Retomar registro",
     "open": "Abrir o painel",
-    "viewSite": "Ver {{site}} no painel"
+    "viewSite": "Ver {{site}} no painel",
+    "topSites": "Principais sites de hoje",
+    "openTopSite": "Abrir {{site}} ({{duration}}) no painel"
   },
   "kpi": { "label": "Totais de {{range}}", "sites": "Sites" },
   "compare": {"yesterday": "em relação a ontem", "previous7": "em relação aos 7 dias anteriores", "previous30": "em relação aos 30 dias anteriores", "previousPeriod": "em relação ao período anterior", "asOf": "{{period}}, até {{time}}", "change": "{{diff}} ({{percent}})", "unchanged": "Sem alteração", "underMinute": "{{sign}}menos de 1 min", "basis": "Período anterior: {{range}}", "basisAsOf": "Período anterior: {{range}}. Os dois períodos são contados só até {{time}} no último dia.", "unavailable": "Não há dados registrados suficientes para comparar."},

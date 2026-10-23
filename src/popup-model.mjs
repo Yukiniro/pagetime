@@ -12,12 +12,7 @@ export function recordableHost(url) {
   return normalizeHost(domainOf(url));
 }
 
-/**
- * Today's active time in the same shape as the dashboard's today stats:
- * today's day rows plus the still-open cursor, clipped to the local day and grouped.
- * @param {{ domains?: { id: number, host: string }[], days?: { date: string, domainId: number, ms: number, visits?: number }[], cursor?: { domain: string, since: number } | null, lastEnd?: number, now: number, enabled?: boolean, host?: string | null }} input
- */
-export function popupToday({ domains = [], days = [], cursor = null, lastEnd, now, enabled = true, host = null }) {
+function todayGroups({ domains = [], days = [], cursor = null, lastEnd, now, enabled = true }) {
   const key = dateKey(now);
   const start = midnight(now);
   const hostOf = new Map(domains.map(row => [row.id, row.host]));
@@ -31,10 +26,33 @@ export function popupToday({ domains = [], days = [], cursor = null, lastEnd, no
   const segment = enabled ? openCredit(cursor, lastEnd, now) : null;
   const piece = overlapMs(segment, start, addDays(start, 1));
   if (piece) entries.push({ domain: segment.domain, ms: piece, visits: 0 });
-  const grouped = groupSites(entries, siteOf);
+  return groupSites(entries, siteOf);
+}
+
+/**
+ * Today's active time in the same shape as the dashboard's today stats:
+ * today's day rows plus the still-open cursor, clipped to the local day and grouped.
+ * @param {{ domains?: { id: number, host: string }[], days?: { date: string, domainId: number, ms: number, visits?: number }[], cursor?: { domain: string, since: number } | null, lastEnd?: number, now: number, enabled?: boolean, host?: string | null }} input
+ */
+export function popupToday({ host = null, ...input }) {
+  const grouped = todayGroups(input);
   const site = typeof host === 'string' && host ? siteOf(host) : null;
   const row = site ? grouped.rows.find(item => item.domain === site) : undefined;
   return { total: grouped.ms, site, siteMs: row?.ms ?? 0 };
+}
+
+export const TOP_SITES_LIMIT = 5;
+
+/**
+ * The first rows of the dashboard's today ranking: same grouping and order, sites with active time only.
+ * `hosts` are the raw hostnames merged into the site, for choosing its icon.
+ * @param {Parameters<typeof popupToday>[0]} input
+ */
+export function popupTopSites(input, limit = TOP_SITES_LIMIT) {
+  return todayGroups(input).rows
+    .filter(row => row.ms > 0)
+    .slice(0, limit)
+    .map(row => ({ site: row.domain, ms: row.ms, hosts: row.hosts }));
 }
 
 // The hostname this click writes. A covering parent is that hostname, so the click removes it.

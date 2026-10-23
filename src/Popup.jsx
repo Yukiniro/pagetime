@@ -5,7 +5,7 @@ import { Button } from '@app/components/ui/button';
 import { Switch } from '@app/components/ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '@app/components/ui/alert';
 import { Skeleton } from '@app/components/ui/skeleton';
-import { command, isExtension } from './data.js';
+import { command, iconForSite, isExtension } from './data.js';
 import { duration } from './i18n.js';
 import { DEFAULT_SETTINGS, IGNORED_LIMIT } from './settings.mjs';
 import { activeRecordableHost, listAction, openDashboardPage, popupStatus, toggleListedHost } from './popup-model.mjs';
@@ -90,12 +90,13 @@ export function Popup() {
     const { browser } = await import('wxt/browser');
     await openDashboardPage(browser);
   });
-  const onOpenSite = () => run(async () => {
-    const site = figures?.site;
-    if (!site || !(figures.siteMs > 0)) return;
+  const openSite = site => run(async () => {
     const { browser } = await import('wxt/browser');
     await openDashboardPage(browser, site);
   });
+  const onOpenSite = () => {
+    if (figures?.site && figures.siteMs > 0) openSite(figures.site);
+  };
 
   if (!settled) {
     if (!problem) return <PopupSkeleton />;
@@ -110,6 +111,7 @@ export function Popup() {
   const enabled = figures.enabled !== false;
   const primary = duration(figures.site ? figures.siteMs : figures.total);
   const total = duration(figures.total);
+  const top = figures.top ?? [];
   const status = popupStatus(enabled, settings, host);
   return <main className="popup" data-status="ready" data-paused={enabled ? 'false' : 'true'} data-status-kind={status} data-theme={isDark ? 'dark' : 'light'} data-total-ms={figures.total}>
     <p className="popup-status"><span className={`status-dot ${status === 'recording' ? '' : 'paused'}`} /><strong>{t(`status.${status}`)}</strong></p>
@@ -123,6 +125,22 @@ export function Popup() {
       <p className="popup-figure" data-figure={figures.site ? 'site' : 'total'} data-site-ms={figures.site ? figures.siteMs : undefined} aria-label={t('popup.siteToday', { duration: primary })}>{primary}</p>
       {figures.site && <p className="popup-total">{t('popup.total', { duration: total })}</p>}
     </div>
+    {top.length > 0 && <section className="popup-top" aria-labelledby="popup-top-title">
+      <h2 id="popup-top-title">{t('popup.topSites')}</h2>
+      <ol>
+        {top.map(row => {
+          const time = duration(row.ms);
+          const icon = iconForSite(row.site, row.hosts) || row.site;
+          return <li key={row.site}>
+            <Button variant="ghost" className="popup-top-row" aria-label={t('popup.openTopSite', { site: row.site, duration: time })} disabled={busy} onClick={() => openSite(row.site)}>
+              <span className="popup-top-icon" aria-hidden="true"><SiteIcon domain={icon} site={icon} /></span>
+              <span className="popup-top-name">{row.site}</span>
+              <span className="popup-top-time">{time}</span>
+            </Button>
+          </li>;
+        })}
+      </ol>
+    </section>}
     {problem && <Alert variant="destructive"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{t([`error.${problem}`, 'error.connect'])}</AlertDescription></Alert>}
     <div className="popup-actions">
       {action && <Button variant="outline" className="action-button" disabled={busy || action.disabled} title={action.disabled ? t(`settings.${action.field}.limit`, { count: IGNORED_LIMIT }) : undefined} data-list-state={action.covered ? 'covered' : action.listed ? 'listed' : 'open'} onClick={onList}>{t(`popup.${action.label}`, { host: action.host })}</Button>}
