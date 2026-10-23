@@ -17,7 +17,7 @@ html.dark{--blue:#8eb6ff;--ink:#e8eef8;--ink-strong:#e8eef8;--ink-mid:#d0dbed;--
 h1,h2,h3{font-weight:700}.nav-item svg{width:23px;height:23px}@media(max-width:760px){.nav-item svg{width:17px;height:17px}}
 
 @media(max-width:760px){.sidebar{flex-wrap:wrap;gap:12px}.sidebar-navigation{flex:0 1 auto}.nav-item{font-size:12px;padding:8px 6px}.brand{flex-shrink:0}}
-.detail-chart{min-width:0;max-width:100%}.detail-chart h3{margin-top:16px}.detail-trend,.hour-chart,.breakdown-chart{display:block;width:100%;max-width:100%;min-width:0;overflow:hidden}.detail-trend-frame{position:relative;min-width:0;max-width:100%;overflow:visible}.detail-trend{height:168px}.hour-chart{height:128px}.detail-trend canvas,.hour-chart canvas,.breakdown-chart canvas{max-width:100%}
+.detail-chart{min-width:0;max-width:100%}.detail-chart h3{margin-top:16px}.detail-trend,.hour-chart,.breakdown-chart{display:block;width:100%;max-width:100%;min-width:0;overflow:hidden}.detail-trend-frame{position:relative;min-width:0;max-width:100%;overflow:visible}.hour-chart-frame{position:relative;min-width:0;max-width:100%;overflow:visible}.detail-trend{height:168px}.hour-chart{height:128px}.detail-trend canvas,.hour-chart canvas,.breakdown-chart canvas{max-width:100%}
 .site-detail{display:flex;flex-direction:column;gap:0;overflow:hidden;padding:0;background:var(--card)}
 .site-detail[data-side="right"]{width:400px;max-width:min(400px,100vw);height:100%}
 .site-detail[data-side="bottom"]{max-height:85vh;border-radius:16px 16px 0 0}

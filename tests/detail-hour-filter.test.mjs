@@ -192,7 +192,9 @@ test('clicking an hour keeps only the pieces that overlap it, and the same bar o
     const fullHours = chart.option.series[0].data.map(value => value);
     assert.equal(chart.listenerCount('click'), 1);
     assert.equal(chart.option.series[0].cursor, 'pointer');
-    assert.equal(chart.option.series[0].barMinHeight, 1);
+    assert.equal(chart.option.series[0].barMinHeight, undefined);
+    assert.equal(chart.option.series[1].type, 'custom');
+    assert.equal(view.host.querySelectorAll('.hour-chart-frame button.timeline-segment').length, 24);
     assert.equal(view.host.querySelector('.hour-chart').getAttribute('tabindex'), '-1');
     assert.match(listText(view), /08:00/);
     assert.match(listText(view), /09:00/);
@@ -233,6 +235,46 @@ test('clicking an hour keeps only the pieces that overlap it, and the same bar o
     assert.match(listText(view), /08:00/);
     assert.match(listText(view), /09:00/);
     assert.match(listText(view), /14:50/);
+  } finally {
+    await unmount(view);
+  }
+});
+
+test('an empty hour is a full-column target and a keyboard button', async () => {
+  const view = await render({ ...panelProps, day: today, dayCount: 1 });
+  try {
+    const chart = hourChart();
+    assert.equal(chart.option.series[0].data[11], 0);
+    assert.equal(chart.option.series[0].barMinHeight, undefined);
+    const hit = chart.option.series[1];
+    const seen = [];
+    const graphic = hit.renderItem({ dataIndex: 11 }, {
+      coord(pair) { seen.push(pair); return [pair[0] * 20 + 10, 80 - pair[1] * 50]; },
+      size() { return [20, 0]; },
+    });
+    assert.equal(graphic.cursor, 'pointer');
+    assert.equal(graphic.shape.width, 20);
+    assert.ok(graphic.shape.height > 1);
+    assert.deepEqual(seen[0], [11, 0]);
+    assert.equal(seen[1][0], 11);
+    assert.ok(seen[1][1] > 0);
+    const button = view.host.querySelectorAll('.hour-chart-frame button.timeline-segment')[11];
+    assert.equal(button.type, 'button');
+    assert.match(button.className, /pointer-events-none/);
+    assert.match(button.textContent, /11:00/);
+    await React.act(async () => { button.click(); });
+    assert.equal(view.host.querySelector('.session-list'), null);
+    assert.match(view.host.textContent, /No active sessions/);
+    assert.match(view.host.querySelector('.session-filter').textContent, /11:00/);
+    assert.match(view.host.querySelector('.session-filter').textContent, /Clear filter/);
+    await React.act(async () => { button.click(); });
+    assert.equal(view.host.querySelector('.session-filter'), null);
+    assert.match(listText(view), /08:00/);
+    await React.act(async () => {
+      hourChart().fire('click', { componentType: 'series', seriesType: 'custom', dataIndex: 11 });
+    });
+    assert.match(view.host.querySelector('.session-filter').textContent, /11:00/);
+    assert.equal(view.host.querySelector('.session-list'), null);
   } finally {
     await unmount(view);
   }
@@ -292,8 +334,10 @@ test('a multi-day detail does not make the hour bars clickable', async () => {
   try {
     const chart = hourChart();
     assert.equal(chart.listenerCount('click'), 0);
+    assert.equal(chart.option.series.length, 1);
     assert.equal(chart.option.series[0].cursor, undefined);
     assert.equal(chart.option.series[0].barMinHeight, undefined);
+    assert.equal(view.host.querySelector('.hour-chart-frame'), null);
     assert.equal(view.host.querySelector('.hour-chart').getAttribute('tabindex'), null);
     assert.equal(view.host.querySelector('.session-list'), null);
     assert.equal(view.host.querySelector('.session-filter'), null);
@@ -314,7 +358,9 @@ test('a single day past detail retention does not make the hour bars clickable',
   try {
     const chart = hourChart();
     assert.equal(chart.listenerCount('click'), 0);
+    assert.equal(chart.option.series.length, 1);
     assert.equal(chart.option.series[0].cursor, undefined);
+    assert.equal(view.host.querySelector('.hour-chart-frame'), null);
     assert.equal(view.host.querySelector('.session-list'), null);
     assert.equal(view.host.querySelector('.session-filter'), null);
     assert.equal(view.host.textContent.includes('Active sessions'), false);
@@ -323,6 +369,18 @@ test('a single day past detail retention does not make the hour bars clickable',
   } finally {
     await unmount(view);
   }
+});
+
+test('the hour chart frame is the containing block for the focused hour button', () => {
+  const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
+  const frame = css.match(/\.hour-chart-frame\{[^}]*\}/)?.[0] ?? '';
+  assert.match(frame, /position:relative/);
+  assert.match(frame, /overflow:visible/);
+  const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
+  const hour = charts.slice(charts.indexOf('export function HourChart'), charts.indexOf('export function DayHourChart'));
+  assert.match(hour, /<div className="hour-chart-frame">/);
+  assert.match(hour, /hourColumnHits/);
+  assert.doesNotMatch(hour, /barMinHeight/);
 });
 
 test('overview hour bars and the heatmap stay outside the session-hour click', () => {
