@@ -7,7 +7,7 @@ const React = (await import('react')).default;
 const { createRoot } = await import('react-dom/client');
 const { parseHTML } = await import('linkedom');
 const { fileURLToPath } = await import('node:url');
-const { ledgerExportSummary, toDailyCsv, toLedgerJson } = await import('../src/export.mjs');
+const { dailyCsvParts, ledgerExportSummary, ledgerJsonParts, toDailyCsv, toLedgerJson } = await import('../src/export.mjs');
 
 const meta = { exportedAt: Date.parse('2026-10-23T12:05:00.000Z'), timeZone: 'Asia/Shanghai', appVersion: '1.4.0', settings: { recordMode: 'blacklist', ignored: ['skip.test'] } };
 const at = new Date(2026, 9, 23, 8, 5).getTime();
@@ -23,8 +23,16 @@ const ledger = {
   ],
 };
 
+function summaryOf(snapshot, kind, exportedAt = meta.exportedAt) {
+  const span = { startDay: null, endDay: null };
+  const facts = { ...meta, exportedAt };
+  if (kind === 'json') toLedgerJson(snapshot, facts, span);
+  else toDailyCsv(snapshot, span);
+  return ledgerExportSummary(snapshot, facts, kind, span);
+}
+
 test('a JSON summary matches the ledger tables and the file header', () => {
-  const summary = ledgerExportSummary(ledger, meta, 'json');
+  const summary = summaryOf(ledger, 'json');
   const document = JSON.parse(toLedgerJson(ledger, meta));
   assert.equal(new Date(summary.exportedAt).toISOString(), document.exportedAt);
   assert.equal(summary.exportedAt, meta.exportedAt);
@@ -43,10 +51,10 @@ test('a JSON summary matches the ledger tables and the file header', () => {
 });
 
 test('a zero-millisecond day still counts and sets the recorded span', () => {
-  const summary = ledgerExportSummary({
+  const summary = summaryOf({
     domains: [{ id: 1, host: 'a.test' }],
     days: [{ date: '2026-10-04', domainId: 1, ms: 0, visits: 0 }],
-  }, meta, 'json');
+  }, 'json');
   assert.equal(summary.dayRows, 1);
   assert.equal(summary.siteCount, 1);
   assert.equal(summary.startDay, '2026-10-04');
@@ -54,8 +62,8 @@ test('a zero-millisecond day still counts and sets the recorded span', () => {
 });
 
 test('CSV keeps the same counts and omits settings and the extension version', () => {
-  const json = ledgerExportSummary(ledger, meta, 'json');
-  const csv = ledgerExportSummary(ledger, meta, 'csv');
+  const json = summaryOf(ledger, 'json');
+  const csv = summaryOf(ledger, 'csv');
   assert.equal(csv.siteCount, json.siteCount);
   assert.equal(csv.dayRows, json.dayRows);
   assert.equal(csv.startDay, json.startDay);
@@ -70,7 +78,7 @@ test('CSV keeps the same counts and omits settings and the extension version', (
 });
 
 test('an empty ledger keeps zero counts and has no recorded days', () => {
-  const summary = ledgerExportSummary({ domains: [], days: [] }, meta, 'json');
+  const summary = summaryOf({ domains: [], days: [] }, 'json');
   assert.equal(summary.siteCount, 0);
   assert.equal(summary.dayRows, 0);
   assert.equal(summary.startDay, null);
@@ -80,13 +88,51 @@ test('an empty ledger keeps zero counts and has no recorded days', () => {
 });
 
 test('hostnames alone do not invent a recorded day', () => {
-  const summary = ledgerExportSummary({ domains: [{ id: 1, host: 'only.test' }], days: [] }, meta, 'csv');
+  const summary = summaryOf({ domains: [{ id: 1, host: 'only.test' }], days: [] }, 'csv');
   assert.equal(summary.siteCount, 1);
   assert.equal(summary.dayRows, 0);
   assert.equal(summary.startDay, null);
   assert.equal(summary.endDay, null);
   assert.equal(summary.includesSettings, false);
   assert.equal(summary.appVersion, null);
+});
+
+test('the summary does not walk days until export chunks are pulled', () => {
+  const untouched = ledgerExportSummary(ledger, meta, 'json');
+  assert.equal(untouched.startDay, null);
+  assert.equal(untouched.endDay, null);
+  assert.equal(untouched.dayRows, ledger.days.length);
+
+  const days = Array.from({ length: 5001 }, (_, i) => ({
+    date: i === 0 ? '2026-01-02' : i === 5000 ? '2026-12-31' : '2026-06-15',
+    domainId: i === 5000 ? 9 : 1,
+    ms: 0,
+    visits: 0,
+  }));
+  const snapshot = { domains: [{ id: 1, host: 'a.test' }], days };
+  const span = { startDay: null, endDay: null };
+  const json = ledgerJsonParts(snapshot, meta, span);
+  json.next();
+  assert.equal(span.startDay, null);
+  assert.equal(span.endDay, null);
+  let step = json.next();
+  while (!step.done && span.endDay !== '2026-12-31') step = json.next();
+  assert.equal(span.startDay, '2026-01-02');
+  assert.equal(span.endDay, '2026-12-31');
+
+  const csvSpan = { startDay: null, endDay: null };
+  const csv = dailyCsvParts(snapshot, csvSpan);
+  csv.next();
+  assert.notEqual(csvSpan.endDay, '2026-12-31');
+  let csvStep = csv.next();
+  while (!csvStep.done) csvStep = csv.next();
+  assert.equal(csvSpan.startDay, '2026-01-02');
+  assert.equal(csvSpan.endDay, '2026-12-31');
+  const summary = ledgerExportSummary(snapshot, meta, 'csv', csvSpan);
+  assert.equal(summary.dayRows, 5001);
+  assert.equal(summary.siteCount, 1);
+  assert.equal(summary.includesSettings, false);
+  assert.equal(toDailyCsv(snapshot).includes('2026-12-31'), false);
 });
 
 const { window } = parseHTML('<!doctype html><html><body></body></html>');
@@ -153,14 +199,14 @@ describe('export summary list', { concurrency: false }, () => {
     return result;
   }
 
-  const shown = ledgerExportSummary({
+  const shown = summaryOf({
     domains: [{ id: 1, host: 'a.test' }, { id: 2, host: 'b.test' }],
     days: [
       { date: '2026-10-23', domainId: 1, ms: 10, visits: 1 },
       { date: '2026-10-01', domainId: 2, ms: 4, visits: 0 },
       { date: '2026-10-01', domainId: 1, ms: 1, visits: 1 },
     ],
-  }, { ...meta, exportedAt: at }, 'json');
+  }, 'json', at);
 
   test('a successful JSON summary lists the ledger facts and stays out of the status role', async () => {
     await i18n.changeLanguage('en');
@@ -173,8 +219,8 @@ describe('export summary list', { concurrency: false }, () => {
       'Exported 10/23/2026 08:05',
       'Time zone Asia/Shanghai',
       'Recorded 10/1/2026 – 10/23/2026',
-      'Sites 2',
-      'Day-total rows 3',
+      '2 sites',
+      '3 day-total rows',
       'Settings included',
       'Extension 1.4.0',
     ]) assert.equal(view.text.includes(line), true, line);
@@ -183,8 +229,8 @@ describe('export summary list', { concurrency: false }, () => {
   test('a CSV summary omits settings and the extension version', async () => {
     await i18n.changeLanguage('en');
     const view = await render({ ...shown, includesSettings: false, appVersion: null });
-    assert.equal(view.text.includes('Sites 2'), true);
-    assert.equal(view.text.includes('Day-total rows 3'), true);
+    assert.equal(view.text.includes('2 sites'), true);
+    assert.equal(view.text.includes('3 day-total rows'), true);
     assert.equal(view.text.includes('Settings included'), false);
     assert.equal(view.text.includes('Extension'), false);
     assert.equal(view.text.includes('1.4.0'), false);
@@ -192,9 +238,9 @@ describe('export summary list', { concurrency: false }, () => {
 
   test('an empty ledger shows zero counts and no recorded span', async () => {
     await i18n.changeLanguage('en');
-    const view = await render(ledgerExportSummary({ domains: [], days: [] }, { ...meta, exportedAt: at }, 'json'));
-    assert.equal(view.text.includes('Sites 0'), true);
-    assert.equal(view.text.includes('Day-total rows 0'), true);
+    const view = await render(summaryOf({ domains: [], days: [] }, 'json', at));
+    assert.equal(view.text.includes('0 sites'), true);
+    assert.equal(view.text.includes('0 day-total rows'), true);
     assert.equal(view.text.includes('Recorded'), false);
     assert.equal(view.text.includes('Settings included'), true);
   });
@@ -213,11 +259,35 @@ describe('export summary list', { concurrency: false }, () => {
       '导出时间 2026/10/23 08:05',
       '时区 Asia/Shanghai',
       '记录 2026/10/1 – 2026/10/23',
-      '站点 2',
-      '日汇总行 3',
+      '2 个站点',
+      '3 行日汇总',
       '含设置',
       '扩展版本 1.4.0',
     ]) assert.equal(view.text.includes(line), true, line);
+    await i18n.changeLanguage('en');
+  });
+
+  test('one site and one day-total row use the singular', async () => {
+    await i18n.changeLanguage('en');
+    const view = await render({ ...shown, siteCount: 1, dayRows: 1 });
+    assert.equal(view.text.includes('1 site'), true);
+    assert.equal(view.text.includes('1 sites'), false);
+    assert.equal(view.text.includes('1 day-total row'), true);
+    assert.equal(view.text.includes('day-total rows'), false);
+  });
+
+  test('Russian counts use one, few, and many', async () => {
+    const base = { ...shown, includesSettings: false, appVersion: null, startDay: null, endDay: null };
+    await i18n.changeLanguage('ru');
+    const one = await render({ ...base, siteCount: 1, dayRows: 21 });
+    assert.equal(one.text.includes('1 сайт'), true);
+    assert.equal(one.text.includes('21 строка дневных итогов'), true);
+    const few = await render({ ...base, siteCount: 2, dayRows: 3 });
+    assert.equal(few.text.includes('2 сайта'), true);
+    assert.equal(few.text.includes('3 строки дневных итогов'), true);
+    const many = await render({ ...base, siteCount: 5, dayRows: 0 });
+    assert.equal(many.text.includes('5 сайтов'), true);
+    assert.equal(many.text.includes('0 строк дневных итогов'), true);
     await i18n.changeLanguage('en');
   });
 });

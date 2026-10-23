@@ -11,8 +11,8 @@ export function ExportSummary({ summary }) {
     <li>{t('settings.export.summary.exportedAt', { date: formatDate(summary.exportedAt), time: timeLabel(summary.exportedAt) })}</li>
     <li>{t('settings.export.summary.timeZone', { zone: summary.timeZone })}</li>
     {startAt !== null && endAt !== null && <li>{t('settings.export.summary.span', { start: formatDate(startAt), end: formatDate(endAt) })}</li>}
-    <li>{t('settings.export.summary.sites', { total: summary.siteCount })}</li>
-    <li>{t('settings.export.summary.dayRows', { total: summary.dayRows })}</li>
+    <li>{t('settings.export.summary.sites', { count: summary.siteCount })}</li>
+    <li>{t('settings.export.summary.dayRows', { count: summary.dayRows })}</li>
     {summary.includesSettings && <li>{t('settings.export.summary.settings')}</li>}
     {summary.appVersion && <li>{t('settings.export.summary.version', { version: summary.appVersion })}</li>}
   </ul>;

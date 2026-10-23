@@ -41,8 +41,8 @@ export async function exportLedger(kind) {
   const [settings, snapshot] = await Promise.all([command('settings'), readSnapshot()]);
   const now = Date.now();
   const meta = { exportedAt: now, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, appVersion: version, settings };
-  const summary = ledgerExportSummary(snapshot, meta, kind);
-  const parts = kind === 'json' ? ledgerJsonParts(snapshot, meta) : dailyCsvParts(snapshot);
+  const span = { startDay: null, endDay: null };
+  const parts = kind === 'json' ? ledgerJsonParts(snapshot, meta, span) : dailyCsvParts(snapshot, span);
   const url = URL.createObjectURL(new Blob(await collect(parts), { type: TYPES[kind] }));
   const name = exportFileName(kind, now);
   const link = Object.assign(document.createElement('a'), { href: url, download: name });
@@ -50,5 +50,5 @@ export async function exportLedger(kind) {
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), REVOKE_AFTER_MS);
-  return { name, summary };
+  return { name, summary: ledgerExportSummary(snapshot, meta, kind, span) };
 }
