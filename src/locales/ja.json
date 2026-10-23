@@ -100,7 +100,8 @@
     "visitedAt": "訪問日時",
     "details": "詳細",
     "view": "表示",
-    "empty": "条件に一致する訪問履歴はありません"
+    "empty": "条件に一致する訪問履歴はありません",
+    "expired_other": "訪問の詳細は直近 {{count}} 日分のみ保存されます。日ごとの合計は概要で確認できます。"
   },
   "settings": {
     "language": { "title": "言語", "label": "表示言語：{{language}}" },

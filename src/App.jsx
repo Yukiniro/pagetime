@@ -10,11 +10,11 @@ import { TooltipProvider } from '@app/components/ui/tooltip';
 import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from '@app/components/ui/input-group';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@app/components/ui/table';
 import { Alert, AlertTitle, AlertDescription } from '@app/components/ui/alert';
-import { Empty, EmptyHeader, EmptyTitle } from '@app/components/ui/empty';
 import { useTranslation } from 'react-i18next';
 import { midnight } from './model.mjs';
 import { activeRange, dayCount, defaultChart, singleDayRange, timelineDay } from './range.mjs';
 import { RangeControl } from './RangeControl.jsx';
+import { VisitEmpty } from './VisitEmpty.jsx';
 import { rangeChip, trendLabel as trendTitle } from './range-label.mjs';
 import { DEFAULT_SETTINGS, IDLE_OPTIONS, IGNORED_LIMIT, RECORD_MODES, THEME_MODES, isAllowed, isIgnored, normalizeHost, validateSettings } from './settings.mjs';
 import { hostsToDelete } from './site.mjs';
@@ -170,7 +170,7 @@ export function App() {
             <Table><TableHeader><TableRow><TableHead>{t('ranking.site')}</TableHead><TableHead>{t('records.visitedAt')}</TableHead><TableHead>{t('records.details')}</TableHead></TableRow></TableHeader><TableBody>
               {view.visits.map((visit, i) => <TableRow key={`${visit.at}-${i}`}><TableCell><div className="site-link"><SiteIcon domain={visit.domain} site={visit.site} />{visit.domain}</div></TableCell><TableCell>{formatDate(visit.at)} {timeLabel(visit.at)}</TableCell><TableCell><Button variant="link" className="px-0" onClick={event => openSite(visit.site ?? visit.domain, event)}>{t('records.view')}<ArrowRight /></Button></TableCell></TableRow>)}
             </TableBody></Table>
-            {!view.visits.length && <Empty><EmptyHeader><EmptyTitle>{t('records.empty')}</EmptyTitle></EmptyHeader></Empty>}
+            {!view.visits.length && <VisitEmpty end={end} days={view.days} filtered={Boolean(search.trim() || site.trim())} now={now} />}
           </section>) : <section className="settings">
             <div className="setting-row"><h2>{t('settings.language.title')}</h2><DropdownMenu>
               <DropdownMenuTrigger render={<Button variant="outline" className="action-button" />} aria-label={t('settings.language.label', { language: languageName })}><Translate />{languageName}<CaretDown /></DropdownMenuTrigger>

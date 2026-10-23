@@ -23,3 +23,4 @@ Drive one file per journey. Selectors assume English (`pagetime-language` = `en`
 | popup 站点名打开详情 | [popup-site-detail.md](popup-site-detail.md) | Extension. The popup site name opens today's detail drawer. |
 | popup 当前站点图标 | [popup-site-icon.md](popup-site-icon.md) | Extension. A current site shows `SiteIcon` beside the name. No site shows no icon. |
 | 站点图标 | [site-favicon.md](site-favicon.md) | Preview shows packaged SVG or the globe and never calls `_favicon`. Extension rankings use the browser favicon cache after a real https visit. |
+| 访问记录空状态：无匹配与明细已过期 | [visit-expired-empty.md](visit-expired-empty.md) | Extension with day totals older than 31 days. `tests/e2e/visit-expired.spec.mjs` seeds them. |

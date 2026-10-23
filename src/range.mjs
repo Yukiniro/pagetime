@@ -107,6 +107,17 @@ export function timelineUsesHours(day, now) {
   return midnight(day) < detailCutoff(now);
 }
 
+// Why the visit list has no rows. 'expired' when the range lies before the detail cut-off,
+// or reaches back past it and an older day still has totals. Search and site filters only
+// narrow what is left inside retention, so they keep the old copy for a straddling range.
+// `days` are the range's trend rows. `end` is the exclusive local midnight.
+export function visitEmptyKind({ end, days = [], filtered = false }, now) {
+  const cutoff = detailCutoff(now);
+  if (end <= cutoff) return 'expired';
+  if (filtered) return 'none';
+  return days.some(day => day.at < cutoff && (day.ms > 0 || day.visits > 0)) ? 'expired' : 'none';
+}
+
 // Move the closed interval by its own length. `direction` is -1 or 1.
 // The result is a custom range, or null when the step would start before the local day of `since`
 // or end after today. A partial step is not returned.
