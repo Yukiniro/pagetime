@@ -15,6 +15,7 @@ Drive one file per journey. Selectors assume English (`pagetime-language` = `en`
 | 详情抽屉按日趋势点柱跳到那一天 | [detail-trend-day-click.md](detail-trend-day-click.md) | Preview or extension with a site detail drawer. An empty ledger has no rank row. |
 | 单日详情点时段柱过滤活跃时段 | [detail-hour-filter.md](detail-hour-filter.md) | Preview or extension with a single-day site detail drawer. An empty ledger has no rank row. An empty hour is the full column and a keyboard button. Multi-day and past-retention days leave the hour chart unclickable. |
 | 设置页记录范围（黑名单 / 白名单） | [recording-scope.md](recording-scope.md) | Preview (`pagetime-preview-settings`) or extension settings message. |
+| 设置页名单过滤 | [list-filter.md](list-filter.md) | Preview (`pagetime-preview-settings`) or extension settings message. Pure frontend filter on the current mode's list. |
 | 设置页底部文档链接 | [settings-docs.md](settings-docs.md) | Preview or extension. Links open repository docs; no request is made by the page. |
 | 导出 JSON / CSV | [export.md](export.md) | Preview or extension. The file is a blob download in the page. |
 | 从备份恢复 | [restore.md](restore.md) | Extension. Preview disables the control and does not write preview storage. |
