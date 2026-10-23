@@ -1,4 +1,4 @@
-import { addDays, midnight } from './model.mjs';
+import { addDays, dateKey, midnight, splitByHour } from './model.mjs';
 import { timelineUsesHours } from './range.mjs';
 
 // The slice of each session that falls on this local day. A session that crosses
@@ -15,6 +15,20 @@ export function clipDaySessions(sessions, day) {
     pieces.push({ domain: session.domain, site: session.site, start: session.start, end: session.end, from, to });
   }
   return pieces;
+}
+
+// Pieces whose clipped [from, to) overlaps this local clock hour on `day`.
+// The hour buckets are the same ones the ledger stores, so a piece that only
+// touches the next hour at its end stays out, and one that crosses the hour stays in.
+// `start` / `end` are ignored: overlap is only `from` / `to`.
+export function sessionsOverlappingHour(pieces, day, hour) {
+  if (!Number.isInteger(hour) || hour < 0 || hour > 23) return [];
+  const date = dateKey(midnight(day));
+  const matched = [];
+  for (const piece of pieces ?? []) {
+    if (splitByHour(piece?.from, piece?.to).some(part => part.date === date && part.hour === hour)) matched.push(piece);
+  }
+  return matched;
 }
 
 // Null when this day is past detail retention: the block is not rendered.

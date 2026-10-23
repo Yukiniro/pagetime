@@ -144,7 +144,8 @@
       "item": "{{hour}}、{{duration}}、{{average}}",
       "separator": "、",
       "slot": "{{from}}–{{to}}",
-      "average": "1日平均 {{duration}}"
+      "average": "1日平均 {{duration}}",
+      "empty": "アクティブな時間帯はありません"
     },
     "breakdown": {
       "title": "サブドメインの内訳",

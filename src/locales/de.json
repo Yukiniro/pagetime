@@ -150,7 +150,8 @@
       "item": "{{hour}}, {{duration}}, {{average}}",
       "separator": "; ",
       "slot": "{{from}}–{{to}}",
-      "average": "Tagesdurchschnitt {{duration}}"
+      "average": "Tagesdurchschnitt {{duration}}",
+      "empty": "Keine aktiven Sitzungen"
     },
     "breakdown": {
       "title": "Zusammensetzung der Subdomains",

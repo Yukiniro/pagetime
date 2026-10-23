@@ -156,7 +156,8 @@
       "item": "{{hour}}, {{duration}}, {{average}}",
       "separator": "; ",
       "slot": "{{from}}–{{to}}",
-      "average": "Promedio diario {{duration}}"
+      "average": "Promedio diario {{duration}}",
+      "empty": "No hay sesiones activas"
     },
     "breakdown": {
       "title": "Desglose por subdominio",

@@ -156,7 +156,8 @@
       "item": "{{hour}}, {{duration}}, {{average}}",
       "separator": " ; ",
       "slot": "{{from}}–{{to}}",
-      "average": "Moyenne quotidienne {{duration}}"
+      "average": "Moyenne quotidienne {{duration}}",
+      "empty": "Aucune session active"
     },
     "breakdown": {
       "title": "Répartition par sous-domaine",

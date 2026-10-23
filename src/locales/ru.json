@@ -179,7 +179,8 @@
       "item": "{{hour}}, {{duration}}, {{average}}",
       "separator": "; ",
       "slot": "{{from}}–{{to}}",
-      "average": "В среднем за день {{duration}}"
+      "average": "В среднем за день {{duration}}",
+      "empty": "Активных сеансов нет"
     },
     "breakdown": {
       "title": "Состав поддоменов",

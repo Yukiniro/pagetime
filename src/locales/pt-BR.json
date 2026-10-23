@@ -156,7 +156,8 @@
       "item": "{{hour}}, {{duration}}, {{average}}",
       "separator": "; ",
       "slot": "{{from}}–{{to}}",
-      "average": "Média diária {{duration}}"
+      "average": "Média diária {{duration}}",
+      "empty": "Nenhuma sessão ativa"
     },
     "breakdown": {
       "title": "Composição por subdomínio",

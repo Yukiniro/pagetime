@@ -144,7 +144,8 @@
       "item": "{{hour}}, {{duration}}, {{average}}",
       "separator": "; ",
       "slot": "{{from}}–{{to}}",
-      "average": "일평균 {{duration}}"
+      "average": "일평균 {{duration}}",
+      "empty": "활성 구간이 없습니다"
     },
     "breakdown": {
       "title": "하위 도메인 구성",

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Trash, X } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { ScrollArea } from '@app/components/ui/scroll-area';
@@ -6,13 +6,52 @@ import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle }
 import { useTranslation } from 'react-i18next';
 import { Breakdown, HourChart, SiteTrend } from './Charts.jsx';
 import { iconForSite } from './data.js';
-import { clipDaySessions, daySessionCopy } from './day-sessions.mjs';
+import { clipDaySessions, daySessionCopy, sessionsOverlappingHour } from './day-sessions.mjs';
 import { duration, timeLabel } from './i18n.js';
 import { IGNORED_LIMIT } from './settings.mjs';
 import { singleDayLabel } from './range-label.mjs';
 import { SiteIcon } from './SiteIcon.jsx';
 
 const NARROW_DRAWER = '(max-width: 760px)';
+
+function hourSlot(hour, t) {
+  const from = new Date(2000, 0, 1, hour, 0, 0, 0);
+  return t('detail.hours.slot', { from: timeLabel(from), to: timeLabel(from.getTime() + 3_600_000) });
+}
+
+function useSessionHour(siteKey, day, showSessions) {
+  const [hourFilter, setHourFilter] = useState(null);
+  const [hourScope, setHourScope] = useState({ siteKey, day, showSessions });
+  const scopeChanged = hourScope.siteKey !== siteKey || hourScope.day !== day || hourScope.showSessions !== showSessions;
+  if (scopeChanged) {
+    setHourScope({ siteKey, day, showSessions });
+    setHourFilter(null);
+  }
+  const activeHour = scopeChanged ? null : hourFilter;
+  const selectHour = hour => setHourFilter(current => current === hour ? null : hour);
+  return { activeHour, selectHour, clearHour: () => setHourFilter(null) };
+}
+
+function DaySessionBlock({ copy, pieces, day, merged, activeHour, onClear }) {
+  const { t } = useTranslation();
+  const result = useRef(null);
+  const date = copy.today ? '' : singleDayLabel(day);
+  const shown = activeHour === null ? pieces : sessionsOverlappingHour(pieces, day, activeHour);
+  const emptyKey = activeHour === null ? copy.emptyKey : 'detail.hours.empty';
+  useEffect(() => {
+    if (activeHour === null) return;
+    result.current?.scrollIntoView?.({ block: 'nearest' });
+  }, [activeHour, shown.length]);
+  return <>
+    <h3>{t(copy.titleKey, { date })}</h3>
+    <div ref={result}>
+      {activeHour !== null && <div className="session-filter" role="status">
+        <div className="filter-chip"><span>{hourSlot(activeHour, t)}</span><Button variant="ghost" size="sm" onClick={onClear}>{t('filter.clear')}</Button></div>
+      </div>}
+      {shown.length ? <SessionList pieces={shown} merged={merged} /> : <p className="muted">{t(emptyKey, { date })}</p>}
+    </div>
+  </>;
+}
 
 function useNarrowDrawer() {
   const [narrow, setNarrow] = useState(() => window.matchMedia(NARROW_DRAWER).matches);
@@ -53,8 +92,8 @@ export function SiteDetailPanel({ siteKey, row, detail, sessions, day, now, dayC
   const hosts = row?.hosts ?? [];
   const merged = hosts.length >= 2;
   const copy = dayCount > 1 ? null : daySessionCopy(day, now);
+  const { activeHour, selectHour, clearHour } = useSessionHour(siteKey, day, Boolean(copy));
   const pieces = copy ? clipDaySessions(sessions, day) : [];
-  const date = copy && !copy.today ? singleDayLabel(day) : '';
   return <>
     <div className="site-detail-scroll">
       <div className="detail-site"><SiteIcon domain={icon} site={icon} /><h3>{siteKey}</h3></div>
@@ -66,13 +105,10 @@ export function SiteDetailPanel({ siteKey, row, detail, sessions, day, now, dayC
         <h3>{t('detail.trend.title')}</h3>
         <SiteTrend days={detail.days} domain={siteKey} isDark={isDark} onSelectDay={onSelectDay} />
         <h3>{t('detail.hours.title')}</h3>
-        <HourChart hours={detail.hours} dayCount={detail.hourDays} domain={siteKey} isDark={isDark} />
+        <HourChart hours={detail.hours} dayCount={detail.hourDays} domain={siteKey} isDark={isDark} onSelectHour={copy ? selectHour : undefined} />
       </section>}
       {merged && <><h3>{t('detail.breakdown.title')}</h3><Breakdown hosts={hosts} isDark={isDark} /></>}
-      {copy && <>
-        <h3>{t(copy.titleKey, { date })}</h3>
-        {pieces.length ? <SessionList pieces={pieces} merged={merged} /> : <p className="muted">{t(copy.emptyKey, { date })}</p>}
-      </>}
+      {copy && <DaySessionBlock copy={copy} pieces={pieces} day={day} merged={merged} activeHour={activeHour} onClear={clearHour} />}
     </div>
     <DetailActions {...actions} />
   </>;

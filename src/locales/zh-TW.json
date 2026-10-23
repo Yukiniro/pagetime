@@ -144,7 +144,8 @@
       "item": "{{hour}}，{{duration}}，{{average}}",
       "separator": "；",
       "slot": "{{from}}–{{to}}",
-      "average": "日均 {{duration}}"
+      "average": "日均 {{duration}}",
+      "empty": "暫無活躍時段"
     },
     "breakdown": {
       "title": "子網域組成",

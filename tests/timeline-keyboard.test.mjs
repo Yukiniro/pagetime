@@ -17,9 +17,12 @@ test('each selectable timeline segment is a button on the same openSite path as 
   assert.match(timeline, /<ul className=\{onSelectSite\?'timeline-segments':'sr-only'\}>/);
 });
 
-test('hour bars and the heatmap do not grow segment buttons', () => {
-  assert.doesNotMatch(dayHour, /<button|onSelectSite|timelineDomainAt/);
-  assert.doesNotMatch(heatmap, /<button|onSelectSite|timelineDomainAt/);
+test('overview hour bars and the heatmap do not grow segment buttons', () => {
+  assert.doesNotMatch(dayHour, /<button|onSelectSite|timelineDomainAt|onSelectHour/);
+  assert.doesNotMatch(heatmap, /<button|onSelectSite|timelineDomainAt|onSelectHour/);
+  const hour = charts.slice(charts.indexOf('export function HourChart'), charts.indexOf('export function DayHourChart'));
+  assert.match(hour, /onSelectHour\s*\?/);
+  assert.match(hour, /<button type="button" className="sr-only timeline-segment pointer-events-none" onClick=\{\(\)=>onSelectHour\(row\.hour\)\}>/);
 });
 
 test('a focused segment button leaves the screen-reader clip and can be clicked', () => {
