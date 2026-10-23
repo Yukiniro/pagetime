@@ -1,6 +1,6 @@
 import { version } from '../package.json';
 import { command, isExtension } from './data.js';
-import { dailyCsvParts, exportFileName, ledgerJsonParts, previewSnapshot } from './export.mjs';
+import { dailyCsvParts, exportFileName, ledgerExportSummary, ledgerJsonParts, previewSnapshot } from './export.mjs';
 import { openLedger, readLedgerSnapshot } from './ledger.mjs';
 
 const TYPES = { json: 'application/json', csv: 'text/csv;charset=utf-8' };
@@ -32,15 +32,17 @@ async function readSnapshot() {
 
 /**
  * Builds the JSON or CSV file in this page and saves it through a download link.
- * Nothing leaves the device and no extra permission is used. Resolves to the file name.
+ * Nothing leaves the device and no extra permission is used.
+ * Resolves to the file name and a summary of the snapshot that was written.
+ * Throws before that when the file is not saved, so a failure has no summary.
  * @param {'json' | 'csv'} kind
  */
 export async function exportLedger(kind) {
   const [settings, snapshot] = await Promise.all([command('settings'), readSnapshot()]);
   const now = Date.now();
-  const parts = kind === 'json'
-    ? ledgerJsonParts(snapshot, { exportedAt: now, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, appVersion: version, settings })
-    : dailyCsvParts(snapshot);
+  const meta = { exportedAt: now, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, appVersion: version, settings };
+  const span = { startDay: null, endDay: null };
+  const parts = kind === 'json' ? ledgerJsonParts(snapshot, meta, span) : dailyCsvParts(snapshot, span);
   const url = URL.createObjectURL(new Blob(await collect(parts), { type: TYPES[kind] }));
   const name = exportFileName(kind, now);
   const link = Object.assign(document.createElement('a'), { href: url, download: name });
@@ -48,5 +50,5 @@ export async function exportLedger(kind) {
   link.click();
   link.remove();
   setTimeout(() => URL.revokeObjectURL(url), REVOKE_AFTER_MS);
-  return name;
+  return { name, summary: ledgerExportSummary(snapshot, meta, kind, span) };
 }
