@@ -1,4 +1,4 @@
-import { addDays, dateKey, midnight, splitByHour } from './model.mjs';
+import { addDays, dateKey, dateKeyStart, midnight, splitByHour } from './model.mjs';
 
 export const EXPORT_FORMAT = 'pagetime-ledger';
 export const EXPORT_SCHEMA_VERSION = 1;
@@ -68,6 +68,38 @@ export function* ledgerJsonParts(snapshot, { exportedAt, timeZone, appVersion, s
 
 /** @param {Parameters<typeof ledgerJsonParts>[0]} snapshot @param {Parameters<typeof ledgerJsonParts>[1]} meta */
 export const toLedgerJson = (snapshot, meta) => [...ledgerJsonParts(snapshot, meta)].join('');
+
+/**
+ * Read-only facts for a file that was just saved. Counts are the ledger tables in that snapshot.
+ * Start and end days are day-total dates, and stay null when none of those dates are real local days.
+ * JSON includes settings and the extension version. CSV leaves both out.
+ * @param {{ domains?: object[], days?: { date?: string }[] }} snapshot
+ * @param {{ exportedAt: number, timeZone: string, appVersion?: string }} meta
+ * @param {'json' | 'csv'} kind
+ */
+export function ledgerExportSummary(snapshot, { exportedAt, timeZone, appVersion }, kind) {
+  const days = Array.isArray(snapshot?.days) ? snapshot.days : [];
+  const domains = Array.isArray(snapshot?.domains) ? snapshot.domains : [];
+  let startDay = null;
+  let endDay = null;
+  for (const row of days) {
+    const date = row?.date;
+    if (dateKeyStart(date) === null) continue;
+    if (startDay === null || date < startDay) startDay = date;
+    if (endDay === null || date > endDay) endDay = date;
+  }
+  const json = kind === 'json';
+  return {
+    exportedAt,
+    timeZone,
+    startDay,
+    endDay,
+    siteCount: domains.length,
+    dayRows: days.length,
+    includesSettings: json,
+    appVersion: json ? appVersion ?? null : null,
+  };
+}
 
 /** RFC 4180: a field with a comma, quote, or line break is quoted, and quotes inside it are doubled. */
 export function csvField(value) {
