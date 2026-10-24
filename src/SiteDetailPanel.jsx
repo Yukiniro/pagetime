@@ -120,9 +120,9 @@ export function SiteDetailSheet({ open, onOpenChange, finalFocus, siteKey, ready
 
   return <Sheet open={open} onOpenChange={onOpenChange}>
     <SheetContent side={narrow ? 'bottom' : 'right'} showCloseButton={false} finalFocus={finalFocus} className="site-detail">
-      <SheetHeader className="site-detail-head flex-row items-start justify-between gap-3 border-b px-5 pt-5 pb-4">
+      <SheetHeader className="site-detail-head">
         <div className="min-w-0 flex-1">
-          <SheetTitle className="text-xl">{t('detail.title')}</SheetTitle>
+          <SheetTitle>{t('detail.title')}</SheetTitle>
         </div>
         <SheetClose render={<Button variant="ghost" size="icon-sm" className="shrink-0" />} aria-label={t('detail.close')}><X /></SheetClose>
       </SheetHeader>

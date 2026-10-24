@@ -17,7 +17,7 @@ export function DashboardSkeleton() {
       <div className="kpi-item"><Skeleton className="skel-label" /><Skeleton className="skel-kpi" /><Skeleton className="skel-compare" /></div>
     </section>
     <section className="chart-card ledger-card" aria-hidden="true">
-      <div className="chart-head"><Skeleton className="skel-title" /><Skeleton className="skel-tabs" /></div>
+      <div className="chart-head"><Skeleton className="skel-tabs" /></div>
       <Skeleton className="skel-chart" />
     </section>
     <section className="rank-section" aria-hidden="true">

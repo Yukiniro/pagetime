@@ -24,9 +24,9 @@ export function IgnoredSites({ settings, busy, onSave, field = 'ignored' }) {
     setDraft('');
     if (!hosts.includes(host)) onSave({ ...settings, [field]: [...hosts, host] });
   }
-  return <div className="mt-4 flex min-w-0 flex-col gap-3">
+  return <div className="host-list mt-4 flex min-w-0 flex-col gap-3">
     <form className="flex flex-wrap items-center gap-2" onSubmit={add}>
-      <InputGroup className="h-11 min-w-48 flex-1">
+      <InputGroup className="h-9 min-w-0 flex-1">
         <InputGroupInput aria-label={text('input')} placeholder={text('placeholder')} value={draft} aria-invalid={problem === 'error' || undefined} onChange={event => { setDraft(event.target.value); setProblem(''); }} />
       </InputGroup>
       <Button type="submit" variant="outline" className="action-button" disabled={busy}>{text('add')}</Button>
@@ -37,11 +37,11 @@ export function IgnoredSites({ settings, busy, onSave, field = 'ignored' }) {
       <InputGroupInput aria-label={text('filter')} placeholder={text('filterPlaceholder')} value={query} onChange={event => setQuery(event.target.value)} />
       {query && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-xs" aria-label={text('filterClear')} onClick={() => setQuery('')}><X /></InputGroupButton></InputGroupAddon>}
     </InputGroup>}
-    {shown.length ? <ul className="flex flex-col gap-2">
-      {shown.map(host => <li key={host} className="flex items-center justify-between gap-3 rounded-lg border px-3 py-1.5">
+    {shown.length ? <ul className="flex flex-col">
+      {shown.map(host => <li key={host} className="flex items-center justify-between gap-3 border-b py-2">
         <span className="min-w-0 break-all text-sm">{host}</span>
         <Button type="button" variant="ghost" size="icon-sm" aria-label={text('remove', { domain: host })} disabled={busy} onClick={() => onSave({ ...settings, [field]: hosts.filter(item => item !== host) })}><X /></Button>
       </li>)}
-    </ul> : <Empty className="flex-none border border-dashed py-6"><EmptyHeader><EmptyTitle>{hosts.length ? text('noMatch') : text('emptyTitle')}</EmptyTitle></EmptyHeader></Empty>}
+    </ul> : <Empty className="flex-none py-6"><EmptyHeader><EmptyTitle>{hosts.length ? text('noMatch') : text('emptyTitle')}</EmptyTitle></EmptyHeader></Empty>}
   </div>;
 }

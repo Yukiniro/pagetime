@@ -27,7 +27,7 @@ function RankRows({ rows, metric, filterSite, onFilter, onOpen }) {
   const { t } = useTranslation();
   const max = Math.max(1, ...rows.map(row => metric === 'visits' ? row.visits : row.ms));
   return <ol className="rank-list">
-    {rows.map(row => {
+    {rows.map((row, index) => {
       const value = metric === 'visits' ? row.visits : row.ms;
       const share = Math.round(value * 100 / max);
       const icon = iconForSite(row.domain, row.hosts) || row.domain;
@@ -35,6 +35,7 @@ function RankRows({ rows, metric, filterSite, onFilter, onOpen }) {
       const time = duration(row.ms);
       const visits = t('records.count', { count: row.visits });
       return <li key={row.domain} className="rank-line">
+        <span className="rank-position" aria-hidden="true">{index + 1}</span>
         <Button variant="ghost" className={active ? 'rank-row is-filtered' : 'rank-row'} aria-pressed={active} aria-label={t('ranking.filterSite', { domain: row.domain })} onClick={() => onFilter(row.domain)}>
           <span className="rank-bar" style={{ width: `${share}%` }} aria-hidden="true" />
           <span className="rank-main"><SiteIcon domain={icon} site={icon} /><span>{row.domain}</span></span>
@@ -91,7 +92,7 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
     </div>}
     <section className="kpi ledger-card" aria-label={t('kpi.label', { range: rangeLabel })}>
       <div className="kpi-item primary">
-        <div className="kpi-label"><span>{t('ranking.activeTime')}</span><span className="kpi-today">{rangeLabel}</span></div>
+        <div className="kpi-label"><span>{t('ranking.activeTime')}</span></div>
         <div className="kpi-value">{duration(kpi.ms)}</div>
         <KpiCompare metric="ms" compare={compare} preset={preset} />
       </div>
@@ -108,7 +109,7 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
     </section>
     <section className="chart-card ledger-card" aria-label={t('chart.label')}>
       <div className="chart-head">
-        <h2>{chart === 'timeline' ? timelineTitle : trendTitle}</h2>
+        <h2 className="sr-only">{chart === 'timeline' ? timelineTitle : trendTitle}</h2>
         <div className="chart-tabs" role="tablist" aria-label={t('chart.label')}>
           {tabs.map(([key, label]) => <Button key={key} variant="ghost" size="sm" role="tab" id={`chart-tab-${key}`} className="chart-tab" aria-selected={chart === key} aria-controls="primary-chart" onClick={() => setChart(key)}>{label}</Button>)}
         </div>

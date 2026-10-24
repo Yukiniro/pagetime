@@ -247,7 +247,7 @@ test('the detail trend frame is the containing block for the shared focus label'
   const frame = css.match(/\.detail-trend-frame\{[^}]*\}/)?.[0] ?? '';
   assert.match(frame, /position:relative/);
   assert.match(frame, /overflow:visible/);
-  const rule = css.match(/\.timeline-segment:focus,\.timeline-segment:focus-visible\{[^}]*\}/)?.[0] ?? '';
+  const rule = css.match(/\.timeline-segment:focus,\.timeline-segment:focus-visible\s*\{[^}]*\}/)?.[0] ?? '';
   assert.match(rule, /position:absolute/);
   assert.match(rule, /top:0/);
   const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');

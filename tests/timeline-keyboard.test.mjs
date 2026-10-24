@@ -27,7 +27,7 @@ test('overview hour bars and the heatmap do not grow segment buttons', () => {
 
 test('a focused segment button leaves the screen-reader clip and can be clicked', () => {
   const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
-  const rule = css.match(/\.timeline-segment:focus,\.timeline-segment:focus-visible\{[^}]*\}/)?.[0] ?? '';
+  const rule = css.match(/\.timeline-segment:focus,\.timeline-segment:focus-visible\s*\{[^}]*\}/)?.[0] ?? '';
   assert.match(rule, /clip-path:none/);
   assert.match(rule, /pointer-events:auto/);
   assert.match(rule, /position:absolute/);

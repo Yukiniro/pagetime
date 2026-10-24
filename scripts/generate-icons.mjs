@@ -1,73 +1,63 @@
 import fs from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
-import { execFileSync } from 'node:child_process';
+import assert from 'node:assert/strict';
+import { chromium } from '@playwright/test';
 
-const chrome = process.env.CHROME_PATH ?? '/opt/google/chrome/chrome';
 const publicDir = new URL('../public/', import.meta.url);
-
-const background = `<defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#4f8ff7"/>
-      <stop offset="0.55" stop-color="#1f63d8"/>
-      <stop offset="1" stop-color="#1747a6"/>
-    </linearGradient>
-  </defs>
-  <rect width="128" height="128" rx="30" fill="url(#bg)"/>`;
-
-const fullMark = `<circle cx="64" cy="64" r="41" fill="none" stroke="#fff" stroke-opacity="0.28" stroke-width="14"/>
-  <circle cx="64" cy="64" r="41" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-dasharray="180 258" transform="rotate(-90 64 64)"/>
-  <rect x="43" y="62" width="11" height="20" rx="3.5" fill="#fff"/>
-  <rect x="58.5" y="46" width="11" height="36" rx="3.5" fill="#fff"/>
-  <rect x="74" y="55" width="11" height="27" rx="3.5" fill="#fff"/>`;
-
-// Snapped to the 16px pixel grid (8 units per pixel); the time ring is unreadable at this size.
-const toolbarMark = `<rect x="32" y="64" width="16" height="40" rx="4" fill="#fff"/>
-  <rect x="56" y="32" width="16" height="72" rx="4" fill="#fff"/>
-  <rect x="80" y="48" width="16" height="56" rx="4" fill="#fff"/>`;
-
-const svg = (mark) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  ${background}
-  ${mark}
-</svg>
-`;
-
-// Chrome expects 128px install icons to keep 16px transparent padding; smaller sizes fill the canvas.
-const icons = [
-  { size: 16, svg: svg(toolbarMark), padding: 0 },
-  { size: 32, svg: svg(fullMark), padding: 0 },
-  { size: 48, svg: svg(fullMark), padding: 0 },
-  { size: 96, svg: svg(fullMark), padding: 0 },
-  { size: 128, svg: svg(fullMark), padding: 16 },
-];
-
-const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'pagetime-icons-'));
-const page = path.join(tmp, 'render.html');
-await fs.writeFile(page, `<!doctype html><body><script>
-(async () => {
+const source = await fs.readFile(new URL('../assets/branding/pagetime-logo.png', import.meta.url));
+// The install icon keeps 16px clearspace; toolbar sizes use the full mark.
+const icons = [16, 32, 48, 96, 128].map(size => ({ size, padding: size === 128 ? 16 : 0 }));
+const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_PATH });
+let rendered;
+try {
+  const page = await browser.newPage();
+  rendered = await page.evaluate(async ({ source, icons }) => {
+  const image = new Image();
+  image.src = 'data:image/png;base64,' + source;
+  await image.decode();
+  const original = document.createElement('canvas');
+  original.width = image.naturalWidth;
+  original.height = image.naturalHeight;
+  const originalContext = original.getContext('2d', { willReadFrequently: true });
+  originalContext.drawImage(image, 0, 0);
+  const pixels = originalContext.getImageData(0, 0, original.width, original.height).data;
+  let left = original.width, top = original.height, right = -1, bottom = -1;
+  for (let y = 0; y < original.height; y++) {
+    for (let x = 0; x < original.width; x++) {
+      if (pixels[(y * original.width + x) * 4 + 3] <= 200) continue;
+      left = Math.min(left, x); top = Math.min(top, y);
+      right = Math.max(right, x); bottom = Math.max(bottom, y);
+    }
+  }
+  if (right <= left || bottom <= top) throw new Error('Logo has no opaque mark');
+  const width = right - left + 1, height = bottom - top + 1;
   const out = [];
-  for (const { size, svg, padding } of ${JSON.stringify(icons)}) {
-    const image = new Image();
-    image.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-    await image.decode();
+  for (const { size, padding } of icons) {
     const canvas = document.createElement('canvas');
     canvas.width = canvas.height = size;
-    canvas.getContext('2d').drawImage(image, padding, padding, size - padding * 2, size - padding * 2);
-    out.push(size + ' ' + canvas.toDataURL('image/png'));
+    const scale = (size - padding * 2) / Math.max(width, height);
+    const context = canvas.getContext('2d');
+    context.drawImage(image, left, top, width, height,
+      (size - width * scale) / 2, (size - height * scale) / 2, width * scale, height * scale);
+    const alpha = context.getImageData(0, 0, size, size).data;
+    const opaque = alpha.filter((value, index) => index % 4 === 3 && value > 200).length;
+    if (opaque < size * size / 8) throw new Error('Rendered logo is too small or empty');
+    out.push({ size, png: canvas.toDataURL('image/png').split(',')[1] });
   }
-  document.body.textContent = out.join('\\n');
-})();
-</script></body>`);
+  return out;
+  }, { source: source.toString('base64'), icons });
+} finally {
+  await browser.close();
+}
 
-const dom = execFileSync(chrome, [
-  '--headless', '--no-sandbox', '--disable-gpu', `--user-data-dir=${path.join(tmp, 'profile')}`,
-  '--virtual-time-budget=5000', '--dump-dom', `file://${page}`,
-], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
-await fs.rm(tmp, { recursive: true, force: true });
-
-const rendered = [...dom.matchAll(/(\d+) data:image\/png;base64,([A-Za-z0-9+/=]+)/g)];
-if (rendered.length !== icons.length) throw new Error(`Rendered ${rendered.length}/${icons.length} icons`);
-
+// Validate every result before replacing any packaged icon.
+assert.equal(rendered.length, icons.length);
+for (const { size, png } of rendered) {
+  const bytes = Buffer.from(png, 'base64');
+  assert.equal(bytes.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+  assert.equal(bytes.readUInt32BE(16), size);
+  assert.equal(bytes.readUInt32BE(20), size);
+}
 await fs.mkdir(new URL('icon/', publicDir), { recursive: true });
-for (const [, size, data] of rendered) await fs.writeFile(new URL(`icon/${size}.png`, publicDir), Buffer.from(data, 'base64'));
-await fs.writeFile(new URL('favicon.svg', publicDir), svg(fullMark));
+for (const { size, png } of rendered) await fs.writeFile(new URL(`icon/${size}.png`, publicDir), Buffer.from(png, 'base64'));
+await fs.copyFile(new URL('icon/32.png', publicDir), new URL('favicon.png', publicDir));
+console.log(`Generated ${rendered.length} PageTime icons and favicon from the selected logo.`);

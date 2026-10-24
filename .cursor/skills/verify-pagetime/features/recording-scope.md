@@ -1,5 +1,7 @@
 # 设置页记录范围（黑名单 / 白名单）
 
+Settings uses 14px option labels, lightweight section dividers and full-width recording groups; narrow controls wrap inside the section instead of widening the page.
+
 Settings chooses a blacklist or a whitelist. The two lists are stored separately. Switching mode does not clear the other list and does not delete or hide existing records. `example.com` matches that host and its subdomains; `mail.example.com` does not match `example.com`. An empty whitelist records nothing.
 
 ## Sub-features

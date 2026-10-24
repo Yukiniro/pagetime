@@ -147,7 +147,7 @@ export function App() {
   return <TooltipProvider><AlertDialog open={confirmClear} onOpenChange={setConfirmClear}>
     <SidebarProvider className="app-shell">
       <Sidebar collapsible="none" className="sidebar">
-        <SidebarHeader className="p-0"><div className="brand"><ChartBar size={32} weight="bold" /><span>PageTime</span></div></SidebarHeader>
+        <SidebarHeader className="p-0"><div className="brand"><img src="/icon/48.png" alt="" aria-hidden="true" width="22" height="22" /><span>PageTime</span></div></SidebarHeader>
         <SidebarContent className="sidebar-navigation"><nav aria-label={t('nav.label')}><SidebarMenu className="navigation-menu">
           {[['overview', ChartBar], ['records', Clock], ['settings', GearSix]].map(([key, Icon]) =>
             <SidebarMenuItem key={key}><SidebarMenuButton className="nav-item" size="lg" isActive={page === key} aria-current={page === key ? 'page' : undefined} onClick={() => setPage(key)}><Icon /><span>{t(`nav.${key}`)}</span></SidebarMenuButton></SidebarMenuItem>)}
@@ -156,19 +156,22 @@ export function App() {
       </Sidebar>
       <div className="workspace">
         <header className="topbar">
+          <span className="topbar-page">{t(`nav.${page}`)}</span>
+          <div className="topbar-actions">
           <div className="record-status"><span className={`status-dot ${enabled ? '' : 'paused'}`} /><div><strong>{enabled ? t('status.recording') : t('status.paused')}</strong><small>{t('status.since', { date: formatDate(view?.since ?? now) })}</small></div></div>
           <Button variant="outline" className="action-button" disabled={busy || !shown} onClick={() => act('toggle')}>{enabled ? <Pause weight="fill" /> : <Play weight="fill" />}{enabled ? t('actions.pause') : t('actions.resume')}</Button>
+          </div>
         </header>
-        <main>
+        <main className={page === 'overview' ? 'overview-page' : undefined}>
           <div className="page-header"><div><h1 ref={headingRef} tabIndex={-1}>{t(`pages.${page}.title`)}</h1></div>
             {page !== 'settings' && <RangeControl range={active} today={today} since={rangeSince} onChange={setRange} />}
           </div>
           {problem && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => { ledger.retry(); act(); }}>{t('error.retry')}</Button></AlertDescription></Alert>}
           {page === 'overview' ? (overviewStatus === 'loading' ? <DashboardSkeleton /> : overviewStatus === 'empty' ? <LedgerEmpty /> : overviewStatus === 'ready' ? <Overview compare={ledger.compare} preset={active.preset} todayStats={todayStats} stats={stats} trendDays={ledger.trendDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={chip} chartMode={defaultChart(active)} trendLabel={trendTitle(t, active, today)} filterSite={filterSite} onFilter={onFilter} openSite={openSite} onSelectDay={onSelectDay} isDark={isDark} /> : null) : !shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'records' ? (ledger.pending ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : <section className="records">
-            <InputGroup className="h-11 max-w-[460px]"><InputGroupInput aria-label={t('records.search')} placeholder={t('records.placeholder')} value={search} onChange={e => { setSearch(e.target.value); setSite(''); }} /><InputGroupAddon><MagnifyingGlass /></InputGroupAddon>{search && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-sm" aria-label={t('records.clearSearch')} onClick={() => { setSearch(''); setSite(''); }}><X /></InputGroupButton></InputGroupAddon>}</InputGroup>
+            <InputGroup className="records-search h-9 max-w-[420px]"><InputGroupInput aria-label={t('records.search')} placeholder={t('records.placeholder')} value={search} onChange={e => { setSearch(e.target.value); setSite(''); }} /><InputGroupAddon><MagnifyingGlass /></InputGroupAddon>{search && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-sm" aria-label={t('records.clearSearch')} onClick={() => { setSearch(''); setSite(''); }}><X /></InputGroupButton></InputGroupAddon>}</InputGroup>
             <p className="muted">{t('records.count', { count: view.visitCount })}{view.visitCount > VISIT_LIST_LIMIT ? t('records.limited') : ''}</p>
             <Table><TableHeader><TableRow><TableHead>{t('ranking.site')}</TableHead><TableHead>{t('records.visitedAt')}</TableHead><TableHead>{t('records.details')}</TableHead></TableRow></TableHeader><TableBody>
-              {view.visits.map((visit, i) => <TableRow key={`${visit.at}-${i}`}><TableCell><div className="site-link"><SiteIcon domain={visit.domain} site={visit.site} />{visit.domain}</div></TableCell><TableCell>{formatDate(visit.at)} {timeLabel(visit.at)}</TableCell><TableCell><Button variant="link" className="px-0" onClick={event => openSite(visit.site ?? visit.domain, event)}>{t('records.view')}<ArrowRight /></Button></TableCell></TableRow>)}
+              {view.visits.map((visit, i) => <TableRow key={`${visit.at}-${i}`}><TableCell><div className="site-link"><SiteIcon domain={visit.domain} site={visit.site} /><span>{visit.domain}</span></div></TableCell><TableCell>{formatDate(visit.at)} {timeLabel(visit.at)}</TableCell><TableCell><Button variant="link" className="px-0" onClick={event => openSite(visit.site ?? visit.domain, event)}>{t('records.view')}<ArrowRight /></Button></TableCell></TableRow>)}
             </TableBody></Table>
             {!view.visits.length && <VisitEmpty end={end} days={view.days} filtered={Boolean(search.trim() || site.trim())} now={now} />}
           </section>) : <section className="settings">
@@ -185,12 +188,12 @@ export function App() {
               </DropdownMenuRadioGroup></DropdownMenuContent>
             </DropdownMenu></div>
             <div className="setting-row"><h2 id="toolbar-badge">{t('settings.badge.title')}</h2><Switch className="shrink-0" checked={settings.badge} onCheckedChange={checked => saveSettings({ ...settings, badge: checked })} disabled={busy} aria-labelledby="toolbar-badge" /></div>
-            <div className="setting-row"><div className="min-w-0 flex-1"><h2>{t('settings.recording.title')}</h2>
-              <div className="mt-4 flex flex-col gap-4">
-                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="count-audible">{t('settings.audible.title')}</h3></div><Switch checked={settings.countAudible} onCheckedChange={checked => saveSettings({ ...settings, countAudible: checked })} disabled={busy} aria-labelledby="count-audible" /></div>
-                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-48 flex-1"><h3 id="idle-threshold">{t('settings.idle.title')}</h3><p>{t('settings.idle.description')}</p></div><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.idle.label', { duration: idleLabel })} disabled={busy}>{idleLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={String(settings.idleSeconds)} onValueChange={value => saveSettings({ ...settings, idleSeconds: Number(value) })}>{IDLE_OPTIONS.map(seconds => <DropdownMenuRadioItem closeOnClick key={seconds} value={String(seconds)}>{t('settings.idle.option', { count: seconds / 60 })}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div>
-              </div></div><Button variant="outline" className="action-button self-start" disabled={busy} onClick={() => act('toggle')}>{enabled ? t('actions.pause') : t('actions.enable')}</Button></div>
-            <div className="setting-row"><div className="min-w-0 flex-1"><h2 id="record-mode">{t('settings.recordMode.title')}</h2>
+            <div className="setting-row setting-group"><div className="setting-group-head"><h2>{t('settings.recording.title')}</h2><Button variant="outline" className="action-button" disabled={busy} onClick={() => act('toggle')}>{enabled ? t('actions.pause') : t('actions.enable')}</Button></div>
+              <div className="setting-fields">
+                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-0 flex-1"><h3 id="count-audible">{t('settings.audible.title')}</h3></div><Switch checked={settings.countAudible} onCheckedChange={checked => saveSettings({ ...settings, countAudible: checked })} disabled={busy} aria-labelledby="count-audible" /></div>
+                <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2"><div className="min-w-0 flex-1"><h3 id="idle-threshold">{t('settings.idle.title')}</h3><p>{t('settings.idle.description')}</p></div><DropdownMenu><DropdownMenuTrigger render={<Button variant="outline" className="action-button shrink-0" />} aria-label={t('settings.idle.label', { duration: idleLabel })} disabled={busy}>{idleLabel}<CaretDown /></DropdownMenuTrigger><DropdownMenuContent align="end" className="w-auto min-w-(--anchor-width)"><DropdownMenuRadioGroup value={String(settings.idleSeconds)} onValueChange={value => saveSettings({ ...settings, idleSeconds: Number(value) })}>{IDLE_OPTIONS.map(seconds => <DropdownMenuRadioItem closeOnClick key={seconds} value={String(seconds)}>{t('settings.idle.option', { count: seconds / 60 })}</DropdownMenuRadioItem>)}</DropdownMenuRadioGroup></DropdownMenuContent></DropdownMenu></div>
+              </div></div>
+            <div className="setting-row setting-group"><div className="min-w-0 flex-1"><h2 id="record-mode">{t('settings.recordMode.title')}</h2>
               <RadioGroup className="mt-4 gap-3" aria-labelledby="record-mode" value={settings.recordMode} disabled={busy} onValueChange={value => { if (value !== settings.recordMode) saveSettings({ ...settings, recordMode: value }); }}>
                 {RECORD_MODES.map(mode => <label key={mode} className="flex items-start gap-3"><RadioGroupItem value={mode} className="mt-1" /><span className="min-w-0"><strong>{t(`settings.recordMode.${mode}`)}</strong><p>{t(`settings.recordMode.${mode}Hint`)}</p></span></label>)}
               </RadioGroup>
