@@ -106,8 +106,8 @@ export function ExportData() {
   }
 
   const restoreKey = RESTORE_ERRORS[restoreError];
-  return <div className="setting-row flex-wrap" aria-busy={Boolean(pending)}>
-    <div className="min-w-64 flex-1"><h2>{t('settings.export.title')}</h2><p>{t('settings.export.description')}</p>
+  return <div className="setting-row setting-group" aria-busy={Boolean(pending)}>
+    <div className="min-w-0"><h2>{t('settings.export.title')}</h2><p>{t('settings.export.description')}</p>
       <p className="flex items-start gap-2"><ShieldCheck size={18} className="privacy-icon mt-1" />{t('settings.export.note')}</p>
       {!isExtension && <p>{t('settings.export.restorePreview')}</p>}
       {pending && <p role="status">{t(PENDING_STATUS[pending] ?? 'settings.export.exporting')}</p>}
@@ -119,7 +119,7 @@ export function ExportData() {
       {failed && <Alert variant="destructive" className="mt-4"><WarningCircle /><AlertTitle>{t('settings.export.errorTitle')}</AlertTitle><AlertDescription>{t('settings.export.error')}</AlertDescription></Alert>}
       {restoreKey && !confirmRestore && <Alert variant="destructive" className="mt-4"><WarningCircle /><AlertTitle>{t('settings.export.restoreErrorTitle')}</AlertTitle><AlertDescription>{t(`settings.export.${restoreKey}`)}</AlertDescription></Alert>}
     </div>
-    <div className="flex shrink-0 flex-wrap gap-2">
+    <div className="setting-actions">
       {KINDS.map(kind => <Button key={kind} variant="outline" className="action-button" disabled={Boolean(pending)} onClick={() => run(kind)}>
         {pending === kind ? <CircleNotch className="animate-spin" /> : <DownloadSimple />}{t(`settings.export.${kind}`)}
       </Button>)}

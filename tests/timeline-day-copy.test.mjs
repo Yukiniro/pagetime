@@ -113,7 +113,7 @@ test('the chart title follows the selected day, and hour bars do not add a secon
   const hours = overview.slice(overview.indexOf('hoursMode ? ('), overview.indexOf(': (showTimeline'));
   assert.match(overview, /const copy = timelineCopy\(chartDay, today\)/);
   assert.match(overview, /const timelineTitle = t\(copy\.titleKey\)/);
-  assert.match(overview, /<h2>\{chart === 'timeline' \? timelineTitle : trendTitle\}<\/h2>/);
+  assert.match(overview, /<h2(?: className="sr-only")?>\{chart === 'timeline' \? timelineTitle : trendTitle\}<\/h2>/);
   assert.match(overview, /showEmpty labelKey=\{copy\.labelKey\} emptyKey=\{copy\.emptyKey\} date=\{timelineDate\}/);
   assert.doesNotMatch(overview, /t\('timeline\.title'\)|midnight\(chartDay\) === midnight\(today\)/);
   assert.doesNotMatch(hours, /<Timeline|timeline-empty/);

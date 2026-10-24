@@ -1,5 +1,7 @@
 # 站点详情抽屉与点选过滤
 
+The detail sheet follows the overview's restrained type and dividers: 16px sheet title, 14px section headings, 24px content spacing and a 440px desktop sheet; the existing bottom-sheet breakpoint and interactions stay the same.
+
 A ranking row filters the overview to that site. The caret opens a drawer with that site's time and visits. A single local day also lists that day's active sessions. A multi-day range leaves that list out. Closing the drawer clears the open site and leaves the filter.
 
 ## Sub-features

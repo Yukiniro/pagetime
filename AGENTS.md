@@ -1,6 +1,8 @@
 # Prototype Instructions
 
-Product name: PageTime. Preserve existing storage keys and record formats when changing branding.
+Product name: PageTime. Preserve existing storage keys and record formats when changing branding. The selected brand mark is the page-and-clock symbol in `assets/branding/pagetime-logo.png`; generate packaged sizes with `npm run icons`.
+
+Design feedback (2026-10-24): the current UI's typography is too large and its spacing is too tight. Future UI work should reduce oversized text and give content more breathing room, with font size and spacing designed together. The selected overview direction combines Linear's light navigation with Plausible's open analytics canvas: borderless KPIs, underlined chart tabs, two aligned ranking lists, and subtle relative row bars. Apply the same typography, spacing and light dividers to Visits, Settings and site detail sheets.
 
 The UI is localized with react-i18next in Simplified Chinese, Traditional Chinese, English, Japanese, Korean, German, Spanish, French, Brazilian Portuguese, and Russian. Never hardcode user-facing text: add every string to every file in `src/locales/` (with all plural forms the language needs), format dates/times/durations through `src/i18n.js`, and keep manifest text in `public/_locales`. `npm test` enforces key, placeholder, and plural parity.
 
