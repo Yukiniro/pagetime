@@ -136,8 +136,8 @@ test('rank colors and the neutral gray stay apart on the timeline background', (
 test('timeline coloring does not read known sites or the domain hash', () => {
   const source = [
     readFileSync(new URL('../src/timeline-colors.mjs', import.meta.url), 'utf8'),
-    readFileSync(new URL('../src/Overview.jsx', import.meta.url), 'utf8'),
-    readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8'),
+    readFileSync(new URL('../src/overview.jsx', import.meta.url), 'utf8'),
+    readFileSync(new URL('../src/charts.jsx', import.meta.url), 'utf8'),
   ].join('\n');
   assert.doesNotMatch(source, /knownSites|charCodeAt|colorOf\(/);
   assert.doesNotMatch(readFileSync(new URL('../src/data.js', import.meta.url), 'utf8'), /colorOf|palette/);

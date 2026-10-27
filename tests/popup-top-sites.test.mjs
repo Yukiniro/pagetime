@@ -77,7 +77,7 @@ test('a row carries only the grouped site, its time, and raw hostnames, never a 
 });
 
 test('the popup list is hidden when empty and opens the site through the shared dashboard path', () => {
-  const source = readFileSync(new URL('../src/Popup.jsx', import.meta.url), 'utf8');
+  const source = readFileSync(new URL('../src/popup.jsx', import.meta.url), 'utf8');
   assert.match(source, /top\.length > 0 && <section/);
   assert.match(source, /openSite\(row\.site\)/);
   assert.match(source, /openDashboardPage\(browser, site\)/);

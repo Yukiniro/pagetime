@@ -1,0 +1,129 @@
+{
+  "home": {
+    "title": "PageTime · 看清瀏覽時間",
+    "skip": "跳到正文",
+    "features": "功能",
+    "privacy": "隱私",
+    "headline": "看清<accent>時間</accent>，花在了哪裡。",
+    "description": "自動記錄瀏覽足跡，讓每一天的時間分配清晰可見。",
+    "download": "下載擴充功能",
+    "github": "查看 GitHub",
+    "compatibility": "支援 Chrome 與 Edge · 無需註冊",
+    "dashboardAlt": "PageTime 儀表板示意：活躍時間、每日趨勢及網站排名，展示 10 月 18 日至 24 日的範例記錄。",
+    "trust": {
+      "local": {
+        "title": "本機儲存",
+        "description": "所有瀏覽記錄儲存在你的裝置上"
+      },
+      "account": {
+        "title": "無需帳號",
+        "description": "安裝即可使用，無需註冊或登入"
+      },
+      "open": {
+        "title": "開源透明",
+        "description": "程式碼公開，歡迎查看與參與"
+      }
+    },
+    "timelineTitle": "從一天的瀏覽，看見自己的節奏。",
+    "timelineDescription": "沿著時間軸回顧當天的瀏覽活動，了解時間在不同網站間的分配。",
+    "timelineAlt": "一天中活躍瀏覽與閒置時段交替的時間軸示意。",
+    "timelineTotal": "合計 {{duration}}",
+    "timelineActive": "活躍瀏覽",
+    "timelineIdle": "閒置時段",
+    "install": {
+      "title": "安裝 PageTime",
+      "description": "適用於電腦版 Chrome 和 Edge，透過下載擴充套件安裝。",
+      "close": "關閉安裝說明",
+      "getTitle": "下載並解壓縮",
+      "getDescription": "在 GitHub 發布頁下載 pagetime ZIP 擴充套件，解壓縮至固定資料夾。",
+      "release": "前往 GitHub 下載擴充套件",
+      "openTitle": "開啟擴充功能管理",
+      "openDescription": "在瀏覽器網址列輸入 Chrome 或 Edge 對應的位址，然後開啟開發人員模式。",
+      "loadTitle": "載入擴充功能",
+      "loadDescription": "按下「載入未封裝項目」，選擇剛才解壓縮的資料夾。將 PageTime 釘選到工具列，開始瀏覽即可記錄。"
+    },
+    "details": {
+      "eyebrow": "了解瀏覽習慣",
+      "title": "從總覽，到每一個細節。",
+      "description": "先看一天的全貌，再沿著日期和網站，找到你關心的瀏覽活動。",
+      "rankingTitle": "哪些網站，占據了你的時間？",
+      "rankingDescription": "活躍時間和造訪次數，回答的是不同的問題。對照兩份排名，開啟網站詳情，看看它在一天裡出現的時刻。",
+      "rankingAlt": "範例網站排名：依活躍時間和造訪次數排序，以淺藍色相對長條呈現。",
+      "rankingCaption": "同一批網站，兩個觀察角度。",
+      "points": {
+        "range": "今天、近 7 天、近 30 天，或自行選擇日期區間。",
+        "site": "依網站篩選總覽，單獨看它的時間分配。",
+        "visits": "在造訪記錄裡，回顧每一次開啟網站的時間。"
+      },
+      "capabilities": {
+        "popup": {
+          "title": "工具列裡，一眼知道今天",
+          "description": "查看目前網站的今日時間、今日總時間和常用網站，無需每次開啟儀表板。"
+        },
+        "scope": {
+          "title": "記錄哪些網站，由你決定",
+          "description": "忽略不想記錄的網站，或只記錄你選定的清單。目前網站的規則，在彈出面板裡就能切換。"
+        },
+        "pause": {
+          "title": "需要時，隨時暫停",
+          "description": "在工具列暫停或繼續記錄。音訊計時和閒置偏好，也可以在設定裡調整。"
+        },
+        "export": {
+          "title": "自己的記錄，隨時帶走",
+          "description": "匯出完整 JSON 備份，或依日期與網站彙總的 CSV。在擴充功能裡可還原通過驗證的 JSON 備份。"
+        }
+      }
+    },
+    "setup": {
+      "eyebrow": "開始使用",
+      "title": "裝好擴充功能，從下一頁開始。",
+      "update": "更新手動載入的版本時，以新檔案覆蓋原資料夾，再重新載入擴充功能，可保留擴充功能身分與本機記錄。"
+    },
+    "faq": {
+      "eyebrow": "安裝之前",
+      "title": "常見問題",
+      "description": "開始記錄前，你可能還想知道這些。",
+      "support": "在 GitHub 提問",
+      "nav": "常見問題",
+      "browsers": {
+        "question": "支援哪些瀏覽器？",
+        "answer": "支援電腦版 Chrome 和 Edge。下載發布頁的 ZIP 擴充套件，依照上方步驟安裝即可。"
+      },
+      "privacy": {
+        "question": "需要帳號或上傳瀏覽記錄嗎？",
+        "answer": "無需註冊或登入。瀏覽記錄儲存在這台裝置的擴充功能裡，不會上傳。"
+      },
+      "history": {
+        "question": "會讀取網頁內容或記錄無痕瀏覽嗎？",
+        "answer": "只記錄主機名稱、造訪時間與活躍時間，不儲存網頁正文、完整網址或標題，也不記錄無痕視窗。"
+      },
+      "backup": {
+        "question": "記錄可以匯出和還原嗎？",
+        "answer": "JSON 可儲存完整備份，CSV 提供依日期與網站的彙總。還原 JSON 須在已安裝的擴充功能裡進行，確認後會取代目前帳本與設定。"
+      },
+      "empty": {
+        "question": "為什麼剛安裝時沒有歷史記錄？",
+        "answer": "記錄從安裝後開始，不會匯入瀏覽器過去的歷史記錄。官網的產品示意圖與自己的瀏覽記錄相互獨立。"
+      }
+    },
+    "closing": {
+      "title": "讓時間，多一分清晰。",
+      "description": "裝上 PageTime，從下一次瀏覽開始，慢慢看見自己的節奏。"
+    }
+  },
+  "nav": {
+    "label": "主要導覽"
+  },
+  "language": {
+    "label": "介面語言：{{language}}"
+  },
+  "docs": {
+    "timing": "計時規則與隱私說明",
+    "privacy": "隱私權政策"
+  },
+  "duration": {
+    "underMinute": "不到 1 分鐘",
+    "minutes_other": "{{count}} 分鐘",
+    "hours": "{{hours}} 小時 {{minutes}} 分鐘"
+  }
+}

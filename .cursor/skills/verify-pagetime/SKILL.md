@@ -91,7 +91,7 @@ Import `chromium` from `@playwright/test`. Viewport `1280×800`. Pin English in 
 
 Preview origin is the URL launch printed (`http://127.0.0.1:4173/` unless `PAGETIME_PREVIEW_PORT` moved it). Extension origin is the service worker's `dashboard.html`.
 
-Stable handles, from `src/App.jsx`, `src/Overview.jsx`, `src/RangeControl.jsx`, and the e2e file:
+Stable handles, from `src/app.jsx`, `src/overview.jsx`, `src/range-control.jsx`, and the e2e file:
 
 | Step | Handle |
 | --- | --- |

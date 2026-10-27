@@ -1,0 +1,130 @@
+{
+  "home": {
+    "title": "PageTime · Deine Browserzeit im Blick",
+    "skip": "Zum Inhalt springen",
+    "features": "Funktionen",
+    "privacy": "Datenschutz",
+    "headline": "Sieh, wohin deine <accent>Zeit</accent> geht.",
+    "description": "Erfasse deine Browsernutzung automatisch und behalte jeden Tag im Blick.",
+    "download": "Erweiterung herunterladen",
+    "github": "Auf GitHub ansehen",
+    "compatibility": "Für Chrome und Edge · Kein Konto nötig",
+    "dashboardAlt": "Beispiel eines PageTime-Dashboards mit aktiver Zeit, Tagestrends und Website-Ranglisten vom 18. bis 24. Oktober.",
+    "trust": {
+      "local": {
+        "title": "Lokal gespeichert",
+        "description": "Deine Browseraufzeichnungen bleiben auf deinem Gerät"
+      },
+      "account": {
+        "title": "Ohne Konto",
+        "description": "Installieren und loslegen, ohne Anmeldung"
+      },
+      "open": {
+        "title": "Open Source",
+        "description": "Code auf GitHub ansehen und mitwirken"
+      }
+    },
+    "timelineTitle": "Entdecke den Rhythmus deines Surftages.",
+    "timelineDescription": "Sieh in der Zeitleiste, wie sich deine Zeit auf Websites verteilt.",
+    "timelineAlt": "Beispiel einer Tageszeitleiste mit aktiver Browsernutzung und Leerlauf.",
+    "timelineTotal": "Gesamt {{duration}}",
+    "timelineActive": "Aktive Browsernutzung",
+    "timelineIdle": "Leerlauf",
+    "install": {
+      "title": "PageTime installieren",
+      "description": "Für Chrome und Edge auf dem Desktop. Installation über das ZIP-Paket.",
+      "close": "Installationsanleitung schließen",
+      "getTitle": "Herunterladen und entpacken",
+      "getDescription": "Lade das pagetime-ZIP-Paket unter GitHub Releases herunter und entpacke es in einen festen Ordner.",
+      "release": "Erweiterungspaket auf GitHub öffnen",
+      "openTitle": "Erweiterungen verwalten",
+      "openDescription": "Gib die Adresse für Chrome oder Edge in die Adressleiste ein und aktiviere den Entwicklermodus.",
+      "loadTitle": "Erweiterung laden",
+      "loadDescription": "Wähle „Entpackte Erweiterung laden“ und den entpackten Ordner. Hefte PageTime an die Symbolleiste. Die Aufzeichnung beginnt beim Surfen."
+    },
+    "details": {
+      "eyebrow": "Deine Browsernutzung verstehen",
+      "title": "Vom Überblick bis ins Detail.",
+      "description": "Sieh den ganzen Tag auf einen Blick und gehe dann den Aktivitäten einzelner Tage oder Websites nach.",
+      "rankingTitle": "Welche Websites bekommen deine Zeit?",
+      "rankingDescription": "Aktive Zeit und Besuche erzählen unterschiedliche Geschichten. Vergleiche die Ranglisten und öffne eine Website für ihre Details.",
+      "rankingAlt": "Beispielranglisten nach aktiver Zeit und Besuchen mit relativen blauen Balken.",
+      "rankingCaption": "Dieselben Websites, zwei nützliche Perspektiven.",
+      "points": {
+        "range": "Heute, die letzten 7 oder 30 Tage oder ein eigener Zeitraum.",
+        "site": "Filtere die Übersicht nach einer Website.",
+        "visits": "Prüfe im Besuchsverlauf, wann du eine Website geöffnet hast."
+      },
+      "capabilities": {
+        "popup": {
+          "title": "Ein Blick in die Symbolleiste",
+          "description": "Sieh die heutige Zeit der aktuellen Website, die Gesamtzeit und die meistgenutzten Websites, ohne das Dashboard zu öffnen."
+        },
+        "scope": {
+          "title": "Du bestimmst, was erfasst wird",
+          "description": "Schließe einzelne Websites aus oder erfasse nur eine ausgewählte Liste. Die aktuelle Website lässt sich direkt im Popup umstellen."
+        },
+        "pause": {
+          "title": "Bei Bedarf einfach pausieren",
+          "description": "Pausiere und starte die Aufzeichnung über die Symbolleiste. Audio- und Leerlaufeinstellungen findest du in den Einstellungen."
+        },
+        "export": {
+          "title": "Deine Aufzeichnungen zum Mitnehmen",
+          "description": "Speichere eine vollständige JSON-Sicherung oder CSV nach Datum und Website. Geprüfte JSON-Sicherungen lassen sich in der Erweiterung wiederherstellen."
+        }
+      }
+    },
+    "setup": {
+      "eyebrow": "Loslegen",
+      "title": "Einmal installieren. Ab der nächsten Seite.",
+      "update": "Ersetze beim Aktualisieren einer manuell geladenen Version die Dateien im selben Ordner und lade die Erweiterung neu, um ihre Identität und die lokalen Aufzeichnungen zu behalten."
+    },
+    "faq": {
+      "eyebrow": "Vor der Installation",
+      "title": "Häufige Fragen",
+      "description": "Was du vor dem Start wissen möchtest.",
+      "support": "Auf GitHub fragen",
+      "nav": "FAQ",
+      "browsers": {
+        "question": "Welche Browser werden unterstützt?",
+        "answer": "PageTime unterstützt Chrome und Edge auf dem Desktop. Lade die Release-ZIP-Datei herunter und folge der Anleitung oben."
+      },
+      "privacy": {
+        "question": "Brauche ich ein Konto oder muss ich Daten hochladen?",
+        "answer": "Keine Registrierung und keine Anmeldung. Deine Browseraufzeichnungen bleiben in der Erweiterung auf diesem Gerät und werden nicht hochgeladen."
+      },
+      "history": {
+        "question": "Werden Seiteninhalte oder private Fenster erfasst?",
+        "answer": "Erfasst werden Hostnamen, Besuchszeiten und aktive Zeit. Seitentexte, vollständige URLs und Titel werden nicht gespeichert; Inkognitofenster werden nicht erfasst."
+      },
+      "backup": {
+        "question": "Kann ich meine Aufzeichnungen exportieren und wiederherstellen?",
+        "answer": "JSON dient als vollständige Sicherung, CSV enthält Summen nach Datum und Website. JSON wird in der installierten Erweiterung wiederhergestellt; die Bestätigung ersetzt das aktuelle Journal und die Einstellungen."
+      },
+      "empty": {
+        "question": "Warum gibt es direkt nach der Installation keine Aufzeichnungen?",
+        "answer": "Die Aufzeichnung beginnt erst nach der Installation. Alter Browserverlauf wird nicht importiert. Die Produktbilder auf der Website sind unabhängig von deinen eigenen Aufzeichnungen."
+      }
+    },
+    "closing": {
+      "title": "Deine Zeit. Etwas klarer im Blick.",
+      "description": "Füge PageTime hinzu und entdecke deinen Rhythmus ab dem nächsten Surftag."
+    }
+  },
+  "nav": {
+    "label": "Hauptnavigation"
+  },
+  "language": {
+    "label": "Anzeigesprache: {{language}}"
+  },
+  "docs": {
+    "timing": "Zeitmessung und Datenschutz",
+    "privacy": "Datenschutzerklärung"
+  },
+  "duration": {
+    "underMinute": "Unter 1 Min.",
+    "minutes_one": "{{count}} Min.",
+    "minutes_other": "{{count}} Min.",
+    "hours": "{{hours}} Std. {{minutes}} Min."
+  }
+}

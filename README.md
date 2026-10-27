@@ -50,7 +50,7 @@
 
 时间范围使用 DropdownMenu + RadioGroup，当前不使用 Select 或原生 select。优先复用 `src/components/ui`，已有组件不另写交互实现；`src/styles.css` 仅保留产品布局、排版与图表样式。ECharts 继续负责统计图和今日时间线。
 
-界面文案使用 i18next + react-i18next，资源位于 `src/locales/<语言>.json`，日期、时间和时长格式在 `src/i18n.js` 中按当前语言输出；manifest 文案位于 `public/_locales`。新增文案需补齐所有语言及其所需的复数形式，`npm test` 会校验键、插值和复数形式是否齐全。新增语言时添加 `src/locales/<代码>.json`、在 `src/i18n.js` 注册，并补充 `public/_locales/<代码>/messages.json`。
+界面文案使用 i18next + react-i18next，插件资源位于 `src/locales/<语言>.json`，官网资源位于 `website/locales/<语言>.json`，日期、时间和时长由各自的 `i18n.js` 按当前语言输出；manifest 文案位于 `public/_locales`。新增文案需补齐所有语言及其所需的复数形式，`npm test` 会校验键、插值和复数形式是否齐全。新增语言时添加 `src/locales/<代码>.json`、在 `src/i18n.js` 注册，并补充 `public/_locales/<代码>/messages.json`。官网语言独立维护，在 `website/locales/` 添加资源并在 `website/i18n.js` 注册。
 
 `components.json` 已配置，新增组件用 `npx shadcn@latest add <组件名>`。源码使用 `@app/*` 指向 `src/*`，避开 WXT 内置的 `@/*` 根目录别名。CLI 生成的 `cn` 合并工具保持官方依赖。
 
@@ -72,6 +72,8 @@ npm run verify:zip     # 校验当前版本 ZIP 内的实际文件
 
 本地界面预览与真实扩展使用同一套 React 组件。预览不采集浏览活动，打开时也没有预置浏览记录：
 
+官网源码、样式、图片及独立十语言资源位于根目录 `website/`，`home.html` 仅作为公开入口；仪表盘预览仍在 `/`。官网使用自己的 i18n 实例和 `pagetime-website-language` 偏好，不加载插件语言资源。官网包含功能介绍、产品示意图、GitHub ZIP 安装说明与常见问题，支持相同的十种语言；含文字的产品图提供中英双版，中文界面显示中文版，其余语言显示英文版。示意图不写入浏览账本。`npm run build:preview` 同时构建这两个入口，官网图片不进入扩展安装包。
+
 ```powershell
 npm run dev -- --host 127.0.0.1 --port 4173
 npm run build:preview
@@ -79,6 +81,10 @@ npm test
 ```
 
 `npm test` 包含预览构建产物检查，需先运行 `npm run build:preview`。WXT 和预览各自独立打包；已有 Sites 运行脚本保留，但未发布到 Sites。
+
+线上官网：[PageTime](https://pagetime.yukiniro.workers.dev/home.html)；[空账本预览](https://pagetime.yukiniro.workers.dev/)。
+
+Cloudflare Workers 发布使用 `wrangler.jsonc` 和现有静态资源 Worker。先用 `npx wrangler login` 登录目标账号，再运行 `npm run deploy:cloudflare`，会重新构建并发布 `dist/client`。官网路径为 `/home.html`，根路径保留空账本预览；仅上传构建产物，不上传源码或本地记录。配置说明见 [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/)。
 
 图标来源：Phosphor Icons（MIT）、Simple Icons（CC0）。文档参考：[WXT 入口](https://wxt.dev/guide/essentials/entrypoints.html)、[Chrome webNavigation](https://developer.chrome.com/docs/extensions/reference/api/webNavigation)、[Chrome idle](https://developer.chrome.com/docs/extensions/reference/api/idle)。
 

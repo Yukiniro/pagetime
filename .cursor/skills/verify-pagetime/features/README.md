@@ -4,6 +4,8 @@ Drive one file per journey. Selectors assume English (`pagetime-language` = `en`
 
 | Feature | File | Surface |
 | --- | --- | --- |
+| 官网首页与安装说明 | [website-homepage.md](website-homepage.md) | Preview at `/home.html`. Marketing illustrations are separate from the empty dashboard at `/`. |
+| 官网内容、FAQ 与中英产品图 | [website-content.md](website-content.md) | Preview at `/home.html`. Ten page locales and Chinese/English text-bearing artwork. |
 | PageTime 品牌图标 | [brand-mark.md](brand-mark.md) | Preview and extension. Empty ledger is sufficient. |
 | 一页账本概览与日期范围 | [overview-range.md](overview-range.md) | Preview or extension. KPI, chart, and heatmap need a non-empty ledger. |
 | 自定义日期不能早于记录开始日 | [custom-range-since.md](custom-range-since.md) | Preview or extension. An empty ledger's `since` is today. |

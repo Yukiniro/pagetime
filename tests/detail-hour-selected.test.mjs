@@ -121,7 +121,7 @@ before(async () => {
     appType: 'custom',
     ssr: { external: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-i18next', 'i18next', 'i18next-browser-languagedetector'] },
   });
-  ({ SiteDetailPanel } = await server.ssrLoadModule('/src/SiteDetailPanel.jsx'));
+  ({ SiteDetailPanel } = await server.ssrLoadModule('/src/site-detail-panel.jsx'));
 });
 
 after(async () => {

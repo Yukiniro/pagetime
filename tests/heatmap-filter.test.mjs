@@ -129,9 +129,9 @@ test('preview and ledger hour rows carry the merged site, including the open cur
 });
 
 test('the overview heatmap uses the site match and the clear-filter empty state', () => {
-  const overview = readFileSync(new URL('../src/Overview.jsx', import.meta.url), 'utf8');
+  const overview = readFileSync(new URL('../src/overview.jsx', import.meta.url), 'utf8');
   const panel = overview.slice(overview.indexOf('heatmap-fold'));
-  const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
+  const charts = readFileSync(new URL('../src/charts.jsx', import.meta.url), 'utf8');
   const heatmap = charts.slice(charts.indexOf('export function Heatmap'), charts.indexOf('export function Timeline'));
   assert.match(overview, /const showHeatmap = !filtered \|\| heatmapHasActivity\(hourRows, start, end, since, today, filterSite\)/);
   assert.match(panel, /site=\{filterSite\}/);

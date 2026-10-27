@@ -1,4 +1,4 @@
-// Shared with the Vite module that Charts.jsx imports, so a click fired here
+// Shared with the Vite module that charts.jsx imports, so a click fired here
 // is the listener Trend registered through Chart.
 const slot = globalThis.__pagetimeTrendClicks ??= { charts: [] };
 

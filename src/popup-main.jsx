@@ -1,7 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './i18n.js';
-import { Popup } from './Popup.jsx';
+import { Popup } from './popup.jsx';
 import './shadcn.css';
 import './styles.css';
 import './popup.css';

@@ -1,0 +1,131 @@
+{
+  "home": {
+    "title": "PageTime · Tu tiempo de navegación, a la vista",
+    "skip": "Ir al contenido",
+    "features": "Funciones",
+    "privacy": "Privacidad",
+    "headline": "Descubre adónde va tu <accent>tiempo</accent>.",
+    "description": "Registra tu navegación automáticamente y descubre cómo distribuyes cada día.",
+    "download": "Descargar extensión",
+    "github": "Ver en GitHub",
+    "compatibility": "Para Chrome y Edge · Sin cuenta",
+    "dashboardAlt": "Ejemplo del panel de PageTime con tiempo activo, tendencias diarias y clasificación de sitios del 18 al 24 de octubre.",
+    "trust": {
+      "local": {
+        "title": "Almacenamiento local",
+        "description": "Tus registros de navegación se quedan en tu dispositivo"
+      },
+      "account": {
+        "title": "Sin cuenta",
+        "description": "Instala y empieza, sin registrarte ni iniciar sesión"
+      },
+      "open": {
+        "title": "Código abierto",
+        "description": "Consulta el código y contribuye en GitHub"
+      }
+    },
+    "timelineTitle": "Descubre el ritmo de tu día de navegación.",
+    "timelineDescription": "Revisa la línea de tiempo para ver cómo repartes tu tiempo entre sitios.",
+    "timelineAlt": "Ejemplo de una línea de tiempo diaria con navegación activa y períodos de inactividad.",
+    "timelineTotal": "Total {{duration}}",
+    "timelineActive": "Navegación activa",
+    "timelineIdle": "Inactividad",
+    "install": {
+      "title": "Instalar PageTime",
+      "description": "Para Chrome y Edge de escritorio. Se instala desde el paquete ZIP de la extensión.",
+      "close": "Cerrar guía de instalación",
+      "getTitle": "Descargar y descomprimir",
+      "getDescription": "Descarga el ZIP de pagetime en GitHub Releases y descomprímelo en una carpeta permanente.",
+      "release": "Obtener el paquete en GitHub",
+      "openTitle": "Abrir la gestión de extensiones",
+      "openDescription": "Introduce la dirección de Chrome o Edge en la barra de direcciones y activa el modo de desarrollador.",
+      "loadTitle": "Cargar la extensión",
+      "loadDescription": "Selecciona “Cargar descomprimida” y elige la carpeta que descomprimiste. Fija PageTime en la barra de herramientas y empieza a navegar para registrar tu actividad."
+    },
+    "details": {
+      "eyebrow": "Entiende tu navegación",
+      "title": "Del panorama general a cada detalle.",
+      "description": "Empieza por el día completo y explora después los detalles de una fecha o un sitio que te interese.",
+      "rankingTitle": "¿Qué sitios reciben tu tiempo?",
+      "rankingDescription": "El tiempo activo y las visitas cuentan historias diferentes. Compara sus clasificaciones y abre un sitio para explorar su actividad.",
+      "rankingAlt": "Ejemplo de clasificaciones por tiempo activo y visitas con barras azules relativas.",
+      "rankingCaption": "Los mismos sitios, dos perspectivas útiles.",
+      "points": {
+        "range": "Hoy, los últimos 7 o 30 días o tu propio intervalo.",
+        "site": "Filtra el resumen por sitio para ver su tiempo en contexto.",
+        "visits": "Revisa en el historial cuándo abriste cada sitio."
+      },
+      "capabilities": {
+        "popup": {
+          "title": "Un vistazo desde la barra",
+          "description": "Consulta el tiempo de hoy del sitio actual, el total y los sitios principales sin abrir el panel."
+        },
+        "scope": {
+          "title": "Elige qué se registra",
+          "description": "Excluye algunos sitios o registra solo una lista elegida. Cambia la regla del sitio actual desde el panel emergente."
+        },
+        "pause": {
+          "title": "Una pausa cuando la necesites",
+          "description": "Pausa y reanuda el registro desde la barra. Ajusta el registro con audio y la inactividad en Configuración."
+        },
+        "export": {
+          "title": "Tus registros, listos para llevar",
+          "description": "Guarda una copia JSON completa o un CSV por fecha y sitio. Restaura una copia JSON validada desde la extensión."
+        }
+      }
+    },
+    "setup": {
+      "eyebrow": "Primeros pasos",
+      "title": "Instala una vez. Empieza en la próxima página.",
+      "update": "Al actualizar una versión cargada manualmente, reemplaza los archivos en la misma carpeta y recarga la extensión para conservar su identidad y tus registros locales."
+    },
+    "faq": {
+      "eyebrow": "Antes de instalar",
+      "title": "Preguntas frecuentes",
+      "description": "Un poco de contexto antes de empezar a registrar.",
+      "support": "Preguntar en GitHub",
+      "nav": "Preguntas",
+      "browsers": {
+        "question": "¿Qué navegadores son compatibles?",
+        "answer": "PageTime es compatible con Chrome y Edge de escritorio. Descarga el ZIP de la versión y sigue los pasos de instalación anteriores."
+      },
+      "privacy": {
+        "question": "¿Necesito una cuenta o subir mis registros?",
+        "answer": "No necesitas registrarte ni iniciar sesión. Tus registros de navegación se quedan en la extensión de este dispositivo y no se suben."
+      },
+      "history": {
+        "question": "¿Lee el contenido de las páginas o registra ventanas privadas?",
+        "answer": "Registra nombres de host, horas de visita y tiempo activo. No guarda el texto, las URL completas ni los títulos, y no registra ventanas de incógnito."
+      },
+      "backup": {
+        "question": "¿Puedo exportar y restaurar mis registros?",
+        "answer": "Exporta JSON para una copia completa o CSV para totales por fecha y sitio. Restaura el JSON desde la extensión instalada; al confirmar se sustituyen el registro y los ajustes actuales."
+      },
+      "empty": {
+        "question": "¿Por qué no hay registros justo después de instalar?",
+        "answer": "El registro empieza tras la instalación. PageTime no importa tu historial anterior. Las imágenes del producto de esta web son independientes de tus registros."
+      }
+    },
+    "closing": {
+      "title": "Tu tiempo, un poco más claro.",
+      "description": "Añade PageTime y descubre tu ritmo desde el próximo día de navegación."
+    }
+  },
+  "nav": {
+    "label": "Navegación principal"
+  },
+  "language": {
+    "label": "Idioma de la interfaz: {{language}}"
+  },
+  "docs": {
+    "timing": "Reglas de medición y privacidad",
+    "privacy": "Política de privacidad"
+  },
+  "duration": {
+    "underMinute": "Menos de 1 min",
+    "minutes_one": "{{count}} min",
+    "minutes_many": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours": "{{hours}} h {{minutes}} min"
+  }
+}

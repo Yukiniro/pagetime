@@ -1,0 +1,130 @@
+{
+  "home": {
+    "title": "PageTime · See where your browsing time goes",
+    "skip": "Skip to content",
+    "features": "Features",
+    "privacy": "Privacy",
+    "headline": "See where your <accent>time</accent> goes.",
+    "description": "Automatically track your browsing and see how you spend each day.",
+    "download": "Download extension",
+    "github": "View GitHub",
+    "compatibility": "For Chrome and Edge · No account needed",
+    "dashboardAlt": "Illustrative PageTime dashboard showing active time, daily trends and site rankings with example records for October 18–24.",
+    "trust": {
+      "local": {
+        "title": "Stored locally",
+        "description": "Your browsing records stay on your device"
+      },
+      "account": {
+        "title": "No account needed",
+        "description": "Install and start, without signing up or logging in"
+      },
+      "open": {
+        "title": "Open source",
+        "description": "Explore the code and contribute on GitHub"
+      }
+    },
+    "timelineTitle": "See the rhythm of your browsing day.",
+    "timelineDescription": "Look back along the timeline to see how your time is shared across websites.",
+    "timelineAlt": "An illustrative day timeline alternating between active browsing and idle periods.",
+    "timelineTotal": "Total {{duration}}",
+    "timelineActive": "Active browsing",
+    "timelineIdle": "Idle time",
+    "install": {
+      "title": "Install PageTime",
+      "description": "For desktop Chrome and Edge. Install from the extension ZIP package.",
+      "close": "Close installation guide",
+      "getTitle": "Download and unzip",
+      "getDescription": "Download the pagetime extension ZIP from GitHub Releases and unzip it into a permanent folder.",
+      "release": "Get the extension package on GitHub",
+      "openTitle": "Open extension management",
+      "openDescription": "Enter the address for Chrome or Edge in your browser’s address bar, then turn on Developer mode.",
+      "loadTitle": "Load the extension",
+      "loadDescription": "Choose “Load unpacked” and select the folder you unzipped. Pin PageTime to the toolbar and start browsing to begin recording."
+    },
+    "details": {
+      "eyebrow": "Understand your browsing",
+      "title": "A clearer picture of your time.",
+      "description": "Start with the big picture, then follow a day or a site into the details that matter to you.",
+      "rankingTitle": "Which sites get your time?",
+      "rankingDescription": "Active time and visit counts tell different stories. Compare their rankings, then open a site to explore its activity.",
+      "rankingAlt": "Example active-time and visit-count rankings, with relative blue bars.",
+      "rankingCaption": "Same sites, two useful ways to look at them.",
+      "points": {
+        "range": "Today, the last 7 or 30 days, or your own date range.",
+        "site": "Filter the overview to a site and look at it in context.",
+        "visits": "Open visit history to review when you stopped by."
+      },
+      "capabilities": {
+        "popup": {
+          "title": "A glance from the toolbar",
+          "description": "See this site’s active time today, your total and today’s top sites without opening the dashboard."
+        },
+        "scope": {
+          "title": "Choose what gets recorded",
+          "description": "Ignore selected sites, or only record a chosen list. Change the current site’s rule from the popup."
+        },
+        "pause": {
+          "title": "A pause whenever you need it",
+          "description": "Pause and resume recording from the toolbar. Audio counting and idle preferences are in Settings."
+        },
+        "export": {
+          "title": "Your records, ready to take along",
+          "description": "Save a JSON backup or date-and-site CSV. Restore a checked JSON backup inside the extension."
+        }
+      }
+    },
+    "setup": {
+      "eyebrow": "Get started",
+      "title": "Install once. Start with your next page.",
+      "update": "When updating a manually loaded version, replace the files in the same folder and reload the extension to keep its identity and local records."
+    },
+    "faq": {
+      "eyebrow": "Before you install",
+      "title": "A few common questions.",
+      "description": "A little context before you start recording.",
+      "support": "Ask on GitHub",
+      "nav": "FAQ",
+      "browsers": {
+        "question": "Which browsers are supported?",
+        "answer": "PageTime supports desktop Chrome and Edge. Download the release ZIP and follow the installation steps above."
+      },
+      "privacy": {
+        "question": "Do I need an account or have to upload my records?",
+        "answer": "No signup or login is needed. Your browsing records stay in the extension on this device and are not uploaded."
+      },
+      "history": {
+        "question": "Does it read page contents or record private windows?",
+        "answer": "It records hostnames, visit times and active time. It does not save page text, full URLs or titles, and does not record incognito windows."
+      },
+      "backup": {
+        "question": "Can I export and restore my records?",
+        "answer": "Export JSON for a complete backup, or CSV for date-and-site totals. Restore JSON inside the installed extension; confirming replaces your current ledger and settings."
+      },
+      "empty": {
+        "question": "Why are there no records just after installation?",
+        "answer": "Recording starts after installation. PageTime does not import your old browser history. The website’s product illustrations are separate from your own records."
+      }
+    },
+    "closing": {
+      "title": "Your time. A little more visible.",
+      "description": "Add PageTime and let your next browsing day tell its own story."
+    }
+  },
+  "nav": {
+    "label": "Main navigation"
+  },
+  "language": {
+    "label": "Display language: {{language}}"
+  },
+  "docs": {
+    "timing": "Timing rules and privacy notes",
+    "privacy": "Privacy policy"
+  },
+  "duration": {
+    "underMinute": "Under 1 min",
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours": "{{hours}} hr {{minutes}} min"
+  }
+}

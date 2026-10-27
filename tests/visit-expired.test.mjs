@@ -75,7 +75,7 @@ before(async () => {
     ssr: { external: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-i18next', 'i18next', 'i18next-browser-languagedetector'] },
   });
   ({ default: i18n } = await server.ssrLoadModule('/src/i18n.js'));
-  ({ VisitEmpty } = await server.ssrLoadModule('/src/VisitEmpty.jsx'));
+  ({ VisitEmpty } = await server.ssrLoadModule('/src/visit-empty.jsx'));
 });
 
 after(async () => {

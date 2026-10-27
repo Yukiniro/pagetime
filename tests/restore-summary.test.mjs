@@ -184,7 +184,7 @@ describe('backup summary in the confirm dialog', { concurrency: false }, () => {
       ssr: { external: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-i18next', 'i18next', 'i18next-browser-languagedetector'] },
     });
     ({ default: i18n } = await server.ssrLoadModule('/src/i18n.js'));
-    ({ BackupSummary } = await server.ssrLoadModule('/src/BackupSummary.jsx'));
+    ({ BackupSummary } = await server.ssrLoadModule('/src/backup-summary.jsx'));
   });
 
   after(async () => {

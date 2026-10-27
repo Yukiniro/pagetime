@@ -68,7 +68,7 @@ test('dark tokens keep body text, muted text, and the focus ring readable', asyn
   assert.ok(contrast(ledger['--ink-soft'], shadcn['--card']) >= 4.5);
   assert.equal(getChartTheme(true).cell, shadcn['--card']);
   const styles = await fs.readFile(new URL('src/styles.css', root), 'utf8');
-  const charts = await fs.readFile(new URL('src/Charts.jsx', root), 'utf8');
+  const charts = await fs.readFile(new URL('src/charts.jsx', root), 'utf8');
   assert.doesNotMatch(styles, /background:\s*#fff\b|background:\s*#ffffff\b/);
   assert.doesNotMatch(charts, /#fff|#ffffff|#dfe6f2|#64748b|#122040|#f2f5fa/);
 });

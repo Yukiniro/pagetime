@@ -43,7 +43,7 @@ before(async () => {
     ssr: { external: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-i18next', 'i18next', 'i18next-browser-languagedetector'] },
   });
   await server.ssrLoadModule('/src/i18n.js');
-  ({ IgnoredSites } = await server.ssrLoadModule('/src/IgnoredSites.jsx'));
+  ({ IgnoredSites } = await server.ssrLoadModule('/src/ignored-sites.jsx'));
 });
 
 after(async () => {
@@ -167,6 +167,6 @@ test('switching between blacklist and whitelist remounts the list and resets the
 });
 
 test('the settings page keys the list by mode so a mode switch resets the filter', () => {
-  const app = readFileSync(new URL('../src/App.jsx', import.meta.url), 'utf8');
+  const app = readFileSync(new URL('../src/app.jsx', import.meta.url), 'utf8');
   assert.match(app, /<IgnoredSites key=\{listField\} field=\{listField\}/);
 });

@@ -121,7 +121,7 @@ before(async () => {
     appType: 'custom',
     ssr: { external: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-i18next', 'i18next', 'i18next-browser-languagedetector'] },
   });
-  ({ SiteDetailPanel } = await server.ssrLoadModule('/src/SiteDetailPanel.jsx'));
+  ({ SiteDetailPanel } = await server.ssrLoadModule('/src/site-detail-panel.jsx'));
 });
 
 after(async () => {
@@ -204,11 +204,11 @@ test('a single day past detail retention still omits the session list', async ()
 });
 
 test('the dashboard passes the selected range length and does not add a second range flag', () => {
-  const app = readFileSync(new URL('../src/App.jsx', import.meta.url), 'utf8');
+  const app = readFileSync(new URL('../src/app.jsx', import.meta.url), 'utf8');
   const sheet = app.slice(app.indexOf('<SiteDetailSheet'), app.indexOf('</TooltipProvider>'));
   assert.match(sheet, /dayCount=\{dayCount\(start, end\)\}/);
   assert.match(app, /import \{ activeRange, dayCount, defaultChart, singleDayRange, timelineDay \}/);
   assert.doesNotMatch(sheet, /showSessions|multiDay|isMulti/);
-  const panel = readFileSync(new URL('../src/SiteDetailPanel.jsx', import.meta.url), 'utf8');
+  const panel = readFileSync(new URL('../src/site-detail-panel.jsx', import.meta.url), 'utf8');
   assert.match(panel, /dayCount > 1 \? null : daySessionCopy\(day, now\)/);
 });

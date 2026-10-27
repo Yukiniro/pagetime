@@ -33,10 +33,13 @@ export function unusedKeys(keys, source) {
   });
 }
 
-test('every English locale key is used by the app', async () => {
-  const en = JSON.parse(await fs.readFile(new URL('src/locales/en.json', root), 'utf8'));
+for (const [surface, locale, dirs, shared = []] of [
+  ['extension', 'src/locales/en.json', ['src/', 'entrypoints/']],
+  ['website', 'website/locales/en.json', ['website/'], ['src/duration.mjs']],
+]) test(`every English locale key is used by the ${surface}`, async () => {
+  const en = JSON.parse(await fs.readFile(new URL(locale, root), 'utf8'));
   const keys = [...new Set(flatten(en).map(key => key.replace(PLURAL, '')))];
-  const files = [...await sourceFiles('src/'), ...await sourceFiles('entrypoints/')];
+  const files = [...(await Promise.all(dirs.map(sourceFiles))).flat(), ...shared];
   const source = (await Promise.all(files.map(file => fs.readFile(new URL(file, root), 'utf8')))).join('\n');
   assert.deepEqual(unusedKeys(keys, source), []);
 });

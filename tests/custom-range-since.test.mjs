@@ -156,7 +156,7 @@ test('a restored ledger with since null applies custom on the earliest stored da
 });
 
 test('RangeControl receives the derived bound and limits both custom date inputs to the since day and today', () => {
-  const source = readFileSync(new URL('../src/RangeControl.jsx', import.meta.url), 'utf8');
+  const source = readFileSync(new URL('../src/range-control.jsx', import.meta.url), 'utf8');
   assert.equal(source.match(/min=\{dateKey\(since\)\}/g).length, 2);
   assert.equal(source.match(/max=\{dateKey\(today\)\}/g).length, 2);
   const apply = source.match(/function applyCustom\(\) \{[\s\S]*?\n  \}/)[0];
@@ -165,7 +165,7 @@ test('RangeControl receives the derived bound and limits both custom date inputs
   assert.ok(apply.indexOf('onChange') < apply.indexOf('setDrafting(false)'));
   assert.equal(apply.match(/onChange/g).length, 1);
   assert.match(source, /disabled=\{!draftRange\}/);
-  const app = readFileSync(new URL('../src/App.jsx', import.meta.url), 'utf8');
+  const app = readFileSync(new URL('../src/app.jsx', import.meta.url), 'utf8');
   const hook = readFileSync(new URL('../src/use-ledger.js', import.meta.url), 'utf8');
   assert.match(app, /const rangeSince = ledger\.rangeSince \?\? now;/);
   assert.match(app, /<RangeControl range=\{active\} today=\{today\} since=\{rangeSince\} onChange=\{setRange\} \/>/);

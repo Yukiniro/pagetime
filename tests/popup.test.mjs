@@ -120,8 +120,8 @@ test('opening the dashboard focuses an existing tab before creating one', async 
 test('the popup shows SiteIcon beside a site and keeps the name inside 320px', () => {
   const root = fileURLToPath(new URL('..', import.meta.url));
   const read = path => readFileSync(join(root, path), 'utf8');
-  const popup = read('src/Popup.jsx');
-  assert.match(popup, /import \{ SiteIcon \} from '\.\/SiteIcon\.jsx'/);
+  const popup = read('src/popup.jsx');
+  assert.match(popup, /import \{ SiteIcon \} from '\.\/site-icon\.jsx'/);
   assert.match(popup, /figures\.site \? <span className="popup-host-icon" aria-hidden="true"><SiteIcon domain=\{host\} site=\{figures\.site\} \/><\/span> : null/);
   assert.doesNotMatch(popup, /SiteIcon domain=\{figures\.site\}/);
   assert.match(popup, /aria-label=\{t\('popup\.viewSite', \{ site: figures\.site \}\)\}/);
