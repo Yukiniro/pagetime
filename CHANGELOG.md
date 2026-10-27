@@ -6,6 +6,38 @@
 
 - 概览默认合并常见前缀：去掉开头的 `www.`、`m.`、`mobile.`（例如 `www.youtube.com` 与 `m.youtube.com` 显示为 `youtube.com`）。这是默认行为变化。已经保存的记录仍按原始主机名存放，可在设置里改回不合并，或改为按可注册域名合并（例如 `a.b.example.co.uk` 显示为 `example.co.uk`）。
 
+## 1.5.0
+
+### Minor Changes
+
+- [#126](https://github.com/Yukiniro/pagetime/pull/126) [`7fcd84b`](https://github.com/Yukiniro/pagetime/commit/7fcd84bd1a28ec69de99e41a5c26666025c2f071) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 导出 JSON 或 CSV 成功后，在保存提示旁显示只读账本摘要：导出时间、时区、有记录时的起止日、站点数和日汇总行数。JSON 同时标明包含设置，并显示扩展版本号。导出失败时不显示摘要。
+
+- [#125](https://github.com/Yukiniro/pagetime/pull/125) [`eb6fa43`](https://github.com/Yukiniro/pagetime/commit/eb6fa43bc955b6cc78db0c05ed3ded563ba747ea) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 工具栏 popup 的状态行在整机未暂停、但当前站点因忽略名单或白名单未包含而不计时时，改为说明此站不计时的站点级原因；整机暂停仍优先。chrome:// 等不可记录页只显示今日总时长，不出现名单文案。
+
+- [#124](https://github.com/Yukiniro/pagetime/pull/124) [`0d775d7`](https://github.com/Yukiniro/pagetime/commit/0d775d715ca545163e031bf8c86ef86ea34ce772) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 工具栏 popup 的名单按钮与设置页、站点详情使用同一套父子域匹配。父规则已覆盖当前站点时，按钮指出该规则，并可以撤销它。
+
+- [#128](https://github.com/Yukiniro/pagetime/pull/128) [`c368d69`](https://github.com/Yukiniro/pagetime/commit/c368d6945ae61d80c60531787ce67068cf6ea3a3) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 工具栏 popup 在今日总时长下方新增今日活跃时长前 5 名的站点短列表（站名、时长、站点图标），顺序与仪表盘今日排行一致。点某一行打开或聚焦仪表盘，并打开该站今日详情；今日没有数据时不显示列表。
+
+- [#127](https://github.com/Yukiniro/pagetime/pull/127) [`96a77e2`](https://github.com/Yukiniro/pagetime/commit/96a77e2da4ab3a26d8ead8908375040ee6fbe579) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 从备份恢复时，选择 JSON 文件后先在本机解析并检查，检查通过才打开覆盖确认，确认框里显示只读的备份摘要：导出时间、格式版本、记录起止日期、站点数、各表行数、是否包含设置，以及文件带有的扩展版本。格式、版本或结构不对的文件只显示错误，不进入确认，本机记录不变。仍然只接受 JSON，确认一次后整库覆盖；预览里仍不能恢复。
+
+- [#123](https://github.com/Yukiniro/pagetime/pull/123) [`2f1e53b`](https://github.com/Yukiniro/pagetime/commit/2f1e53bd2abf78dd8e3d8ea27d9d10815b8f48e4) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 设置页的忽略名单和允许名单上方新增过滤输入：按主机名子串（不区分大小写）筛选当前模式下已添加的条目，清除后回到完整名单，没有匹配时显示空状态。切换黑名单和白名单会重置过滤。移除条目仍写回同一设置字段，过滤不影响添加新域名。
+
+- [#122](https://github.com/Yukiniro/pagetime/pull/122) [`e542cf5`](https://github.com/Yukiniro/pagetime/commit/e542cf534c4c11db943488f49c1aea02962fb1c2) Thanks [@Yukiniro](https://github.com/Yukiniro)! - 访问记录在所选范围落在明细保留期之外时，空状态改为说明明细只保留最近 31 天、日汇总仍在概览；范围在保留期内且没有匹配时仍显示「没有符合条件的访问记录」。
+
+- [#130](https://github.com/Yukiniro/pagetime/pull/130) [`8df1e4a`](https://github.com/Yukiniro/pagetime/commit/8df1e4a793bfdaf855a95b86f64973719ac2b9dd) Thanks [@Yukiniro](https://github.com/Yukiniro)! - Add a standalone, localized PageTime website homepage with bilingual product illustrations, detailed feature sections, an accessible FAQ and a GitHub ZIP installation guide, preserving the existing dashboard preview and extension behavior.
+  
+  Give the homepage more breathing room with responsive section spacing, two-column capabilities, and roomier installation and FAQ layouts.
+  
+  Add repeatable Cloudflare Workers deployment using Wrangler and the existing static asset Worker.
+  
+  Keep website source and independent translations in the root website directory, with kebab-case filenames for all frontend components.
+
+### Patch Changes
+
+- [#129](https://github.com/Yukiniro/pagetime/pull/129) [`a0bddbf`](https://github.com/Yukiniro/pagetime/commit/a0bddbf34244be8dc8d9f8bd74eecf23e9c4d9e7) Thanks [@Yukiniro](https://github.com/Yukiniro)! - Unify the overview, visit history, settings and site details with smaller typography, open layouts, light dividers and aligned controls.
+  
+  Replace the analytics-bar brand mark with the selected page-and-clock logo across the dashboard, extension icons and favicons.
+
 ## 1.4.0
 
 ### Minor Changes
