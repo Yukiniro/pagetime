@@ -65,14 +65,14 @@ export function Home() {
         <img className="home-dashboard" src={dashboardImage} width="1383" height="1137" alt={t('home.dashboardAlt')} fetchPriority="high" />
       </section>
 
+      <HomeFeatures dashboardImage={dashboardImage} />
+
       <section id="privacy" className="home-trust home-container" aria-label={t('home.privacy')}>
         {[['local', Laptop], ['account', LockSimple], ['open', Code]].map(([key, Icon]) => <div className="home-trust-item" key={key}>
           <span className="home-trust-icon"><Icon size={26} aria-hidden="true" /></span>
           <div><h2>{t(`home.trust.${key}.title`)}</h2><p>{t(`home.trust.${key}.description`)}</p></div>
         </div>)}
       </section>
-
-      <HomeFeatures dashboardImage={dashboardImage} />
 
       <section className="home-story home-container" aria-labelledby="home-story-heading">
         <h2 id="home-story-heading">{t('home.timelineTitle')}</h2>
