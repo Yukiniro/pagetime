@@ -16,6 +16,7 @@
     "test:e2e": "playwright test",
     "postinstall": "wxt prepare",
     "preview": "vite preview",
+    "deploy:cloudflare": "npm run build:preview && wrangler deploy",
     "test:sites": "node --test tests/sites-worker.test.mjs",
     "changeset": "changeset",
     "changeset:status": "changeset status",
@@ -54,6 +55,7 @@
     "fflate": "^0.8.3",
     "simple-icons": "^16.0.0",
     "typescript": "^5.9.3",
+    "wrangler": "^4.153.0",
     "wxt": "0.21.4"
   }
 }

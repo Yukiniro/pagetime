@@ -14,7 +14,7 @@ A ranking row filters the overview to that site. The caret opens a drawer with t
 
 ## How to get to it (user POV)
 
-Overview, after at least one recorded site. The two ranking columns are under the chart. The row body filters. The icon button at the end of the row opens details. The drawer is on the right when the viewport is wider than 760px, and a bottom sheet at or below that (`NARROW_DRAWER` in `src/SiteDetailPanel.jsx`).
+Overview, after at least one recorded site. The two ranking columns are under the chart. The row body filters. The icon button at the end of the row opens details. The drawer is on the right when the viewport is wider than 760px, and a bottom sheet at or below that (`NARROW_DRAWER` in `src/site-detail-panel.jsx`).
 
 ## Driving it with Playwright
 

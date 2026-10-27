@@ -100,7 +100,7 @@ test('permission notes match wxt.config.ts and state the install warning', () =>
 });
 
 test('site icons read the browser favicon cache and do not fetch a remote icon', () => {
-  for (const path of ['src/SiteIcon.jsx', 'src/site-icon.mjs']) {
+  for (const path of ['src/site-icon.jsx', 'src/site-icon.mjs']) {
     const source = text(path);
     assert.doesNotMatch(source, NETWORK_API, path);
     assert.doesNotMatch(source, /favicon\.ico|google\.com\/s2|icons\.duckduckgo|gstatic\.com|faviconkit/i, path);
@@ -108,7 +108,7 @@ test('site icons read the browser favicon cache and do not fetch a remote icon',
   const icon = text('src/site-icon.mjs');
   assert.match(icon, /_favicon/);
   assert.match(icon, /https:\/\/\$\{host\}/);
-  assert.match(text('src/SiteIcon.jsx'), /isExtension/);
+  assert.match(text('src/site-icon.jsx'), /isExtension/);
   for (const path of ['PRIVACY.md', 'PRIVACY.zh-CN.md', 'README.md']) {
     const note = text(path);
     assert.match(note, /favicon/);

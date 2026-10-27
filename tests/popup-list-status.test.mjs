@@ -72,7 +72,7 @@ test('undoing the list click returns the status to recording in both modes', () 
 });
 
 test('the popup renders the status from popupStatus and the copy exists in every locale', () => {
-  const popup = read('src/Popup.jsx');
+  const popup = read('src/popup.jsx');
   assert.match(popup, /popupStatus\(enabled, settings, host\)/);
   assert.match(popup, /t\(`status\.\$\{status\}`\)/);
   for (const locale of locales) {

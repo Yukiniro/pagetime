@@ -92,7 +92,7 @@ test('an unreadable generic icon does not hide a real favicon, and a thrown load
 });
 
 test('SiteIcon keeps the globe fallback and does not fetch remote icons', () => {
-  const source = text('src/SiteIcon.jsx');
+  const source = text('src/site-icon.jsx');
   assert.match(source, /GlobeHemisphereWest size=\{23\}/);
   assert.match(source, /object-contain/);
   assert.match(source, /isExtension/);

@@ -170,7 +170,7 @@ describe('export summary list', { concurrency: false }, () => {
       ssr: { external: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-i18next', 'i18next', 'i18next-browser-languagedetector'] },
     });
     ({ default: i18n } = await server.ssrLoadModule('/src/i18n.js'));
-    ({ ExportSummary } = await server.ssrLoadModule('/src/ExportSummary.jsx'));
+    ({ ExportSummary } = await server.ssrLoadModule('/src/export-summary.jsx'));
   });
 
   after(async () => {

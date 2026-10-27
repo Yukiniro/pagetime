@@ -1,0 +1,131 @@
+{
+  "home": {
+    "title": "PageTime · Votre temps de navigation en clair",
+    "skip": "Aller au contenu",
+    "features": "Fonctionnalités",
+    "privacy": "Confidentialité",
+    "headline": "Voyez où passe votre <accent>temps</accent>.",
+    "description": "Suivez automatiquement votre navigation et découvrez comment se répartit chaque journée.",
+    "download": "Télécharger l’extension",
+    "github": "Voir sur GitHub",
+    "compatibility": "Pour Chrome et Edge · Sans compte",
+    "dashboardAlt": "Exemple du tableau de bord PageTime affichant le temps actif, les tendances et les sites les plus visités du 18 au 24 octobre.",
+    "trust": {
+      "local": {
+        "title": "Stockage local",
+        "description": "Vos données de navigation restent sur votre appareil"
+      },
+      "account": {
+        "title": "Sans compte",
+        "description": "Installez et démarrez, sans inscription ni connexion"
+      },
+      "open": {
+        "title": "Code ouvert",
+        "description": "Consultez le code et contribuez sur GitHub"
+      }
+    },
+    "timelineTitle": "Découvrez le rythme de vos journées en ligne.",
+    "timelineDescription": "Parcourez la chronologie pour voir le temps passé sur chaque site.",
+    "timelineAlt": "Exemple de chronologie quotidienne alternant navigation active et périodes d’inactivité.",
+    "timelineTotal": "Total {{duration}}",
+    "timelineActive": "Navigation active",
+    "timelineIdle": "Inactivité",
+    "install": {
+      "title": "Installer PageTime",
+      "description": "Pour Chrome et Edge sur ordinateur. Installation depuis le fichier ZIP de l’extension.",
+      "close": "Fermer le guide d’installation",
+      "getTitle": "Télécharger et décompresser",
+      "getDescription": "Téléchargez le ZIP pagetime sur GitHub Releases et décompressez-le dans un dossier permanent.",
+      "release": "Obtenir l’extension sur GitHub",
+      "openTitle": "Ouvrir la gestion des extensions",
+      "openDescription": "Saisissez l’adresse de Chrome ou Edge dans la barre d’adresse, puis activez le mode développeur.",
+      "loadTitle": "Charger l’extension",
+      "loadDescription": "Choisissez « Charger l’extension non empaquetée » et sélectionnez le dossier décompressé. Épinglez PageTime dans la barre d’outils et commencez à naviguer pour enregistrer votre activité."
+    },
+    "details": {
+      "eyebrow": "Comprendre votre navigation",
+      "title": "De la vue d’ensemble à chaque détail.",
+      "description": "Commencez par la journée entière, puis explorez une date ou un site qui vous intéresse.",
+      "rankingTitle": "Quels sites prennent votre temps ?",
+      "rankingDescription": "Le temps actif et les visites racontent des choses différentes. Comparez leurs classements, puis ouvrez un site pour en explorer l’activité.",
+      "rankingAlt": "Exemple de classements par temps actif et visites, avec des barres bleues relatives.",
+      "rankingCaption": "Les mêmes sites, deux perspectives utiles.",
+      "points": {
+        "range": "Aujourd’hui, les 7 ou 30 derniers jours, ou votre propre période.",
+        "site": "Filtrez la vue d’ensemble par site pour examiner son temps.",
+        "visits": "Consultez l’historique pour retrouver vos heures de visite."
+      },
+      "capabilities": {
+        "popup": {
+          "title": "Un regard dans la barre d’outils",
+          "description": "Voyez le temps du site actuel aujourd’hui, votre total et les principaux sites sans ouvrir le tableau de bord."
+        },
+        "scope": {
+          "title": "Choisissez ce qui est enregistré",
+          "description": "Excluez certains sites ou n’enregistrez qu’une liste choisie. Changez la règle du site actuel depuis la fenêtre contextuelle."
+        },
+        "pause": {
+          "title": "Une pause quand vous voulez",
+          "description": "Mettez l’enregistrement en pause ou reprenez-le depuis la barre. Les préférences audio et d’inactivité sont dans les réglages."
+        },
+        "export": {
+          "title": "Vos données à emporter",
+          "description": "Sauvegardez tout en JSON ou exportez un CSV par date et site. Restaurez une sauvegarde JSON validée dans l’extension."
+        }
+      }
+    },
+    "setup": {
+      "eyebrow": "Bien démarrer",
+      "title": "Installez une fois. Commencez à la prochaine page.",
+      "update": "Pour mettre à jour une version chargée manuellement, remplacez les fichiers dans le même dossier puis rechargez l’extension pour conserver son identité et vos données locales."
+    },
+    "faq": {
+      "eyebrow": "Avant d’installer",
+      "title": "Questions fréquentes",
+      "description": "Quelques réponses avant de commencer.",
+      "support": "Poser une question sur GitHub",
+      "nav": "FAQ",
+      "browsers": {
+        "question": "Quels navigateurs sont compatibles ?",
+        "answer": "PageTime fonctionne avec Chrome et Edge sur ordinateur. Téléchargez le ZIP de la version et suivez les étapes ci-dessus."
+      },
+      "privacy": {
+        "question": "Faut-il un compte ou envoyer mes données ?",
+        "answer": "Aucune inscription ni connexion. Vos données de navigation restent dans l’extension sur cet appareil et ne sont pas envoyées."
+      },
+      "history": {
+        "question": "L’extension lit-elle les pages ou enregistre-t-elle la navigation privée ?",
+        "answer": "Elle enregistre les noms d’hôte, les heures de visite et le temps actif. Elle ne conserve ni texte, ni URL complète, ni titre, et n’enregistre pas les fenêtres privées."
+      },
+      "backup": {
+        "question": "Puis-je exporter et restaurer mes données ?",
+        "answer": "Le JSON fournit une sauvegarde complète et le CSV des totaux par date et site. Restaurez le JSON dans l’extension installée ; la confirmation remplace le journal et les réglages actuels."
+      },
+      "empty": {
+        "question": "Pourquoi n’y a-t-il aucune donnée juste après l’installation ?",
+        "answer": "L’enregistrement commence après l’installation, sans importer votre ancien historique. Les illustrations du site sont indépendantes de vos propres données."
+      }
+    },
+    "closing": {
+      "title": "Votre temps, un peu plus clair.",
+      "description": "Ajoutez PageTime et découvrez votre rythme dès votre prochaine journée de navigation."
+    }
+  },
+  "nav": {
+    "label": "Navigation principale"
+  },
+  "language": {
+    "label": "Langue d’affichage : {{language}}"
+  },
+  "docs": {
+    "timing": "Règles de mesure et confidentialité",
+    "privacy": "Politique de confidentialité"
+  },
+  "duration": {
+    "underMinute": "Moins d’1 min",
+    "minutes_one": "{{count}} min",
+    "minutes_many": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours": "{{hours}} h {{minutes}} min"
+  }
+}

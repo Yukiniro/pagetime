@@ -9,7 +9,7 @@ import { command, iconForSite, isExtension } from './data.js';
 import { duration } from './i18n.js';
 import { DEFAULT_SETTINGS, IGNORED_LIMIT } from './settings.mjs';
 import { activeRecordableHost, listAction, openDashboardPage, popupStatus, toggleListedHost } from './popup-model.mjs';
-import { SiteIcon } from './SiteIcon.jsx';
+import { SiteIcon } from './site-icon.jsx';
 import { usePopupQuery } from './use-popup.js';
 import { useDocumentTheme } from './use-theme.js';
 

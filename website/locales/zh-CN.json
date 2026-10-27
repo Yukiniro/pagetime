@@ -1,0 +1,129 @@
+{
+  "home": {
+    "title": "PageTime · 看清浏览时间",
+    "skip": "跳到正文",
+    "features": "功能",
+    "privacy": "隐私",
+    "headline": "看清<accent>时间</accent>，花在了哪里。",
+    "description": "自动记录浏览足迹，让每一天的时间分配清晰可见。",
+    "download": "下载扩展",
+    "github": "查看 GitHub",
+    "compatibility": "支持 Chrome 与 Edge · 无需注册",
+    "dashboardAlt": "PageTime 仪表盘示意：活跃时长、每日趋势和站点排行，展示 10 月 18 日至 24 日的示例记录。",
+    "trust": {
+      "local": {
+        "title": "本机存储",
+        "description": "所有浏览记录保存在你的设备上"
+      },
+      "account": {
+        "title": "无需账号",
+        "description": "安装即可使用，无需注册或登录"
+      },
+      "open": {
+        "title": "开源透明",
+        "description": "代码公开，欢迎查看与参与"
+      }
+    },
+    "timelineTitle": "从一天的浏览，看见自己的节奏。",
+    "timelineDescription": "按时间线回顾当天的浏览活动，了解时间在不同网站间的分配。",
+    "timelineAlt": "一天中活跃浏览与空闲时段交替的时间线示意。",
+    "timelineTotal": "总计 {{duration}}",
+    "timelineActive": "活跃浏览",
+    "timelineIdle": "空闲时段",
+    "install": {
+      "title": "安装 PageTime",
+      "description": "适用于桌面版 Chrome 和 Edge，通过下载扩展包安装。",
+      "close": "关闭安装说明",
+      "getTitle": "下载并解压",
+      "getDescription": "在 GitHub 发布页下载 pagetime ZIP 扩展包，解压到一个固定文件夹。",
+      "release": "前往 GitHub 下载扩展包",
+      "openTitle": "打开扩展管理",
+      "openDescription": "在浏览器地址栏输入 Chrome 或 Edge 对应的地址，然后开启开发者模式。",
+      "loadTitle": "加载扩展",
+      "loadDescription": "点击“加载已解压的扩展程序”，选择刚才解压的文件夹。把 PageTime 固定到工具栏，开始浏览即可记录。"
+    },
+    "details": {
+      "eyebrow": "了解浏览习惯",
+      "title": "从总览，到每一个细节。",
+      "description": "先看一天的全貌，再沿着日期和站点，找到你关心的浏览活动。",
+      "rankingTitle": "哪些网站，占据了你的时间？",
+      "rankingDescription": "活跃时长和访问次数，回答的是不同的问题。对照两份排行，打开站点详情，再看看它在一天里出现的时刻。",
+      "rankingAlt": "示例站点排行：按活跃时长和访问次数排序，以浅蓝色相对条展示。",
+      "rankingCaption": "同一批网站，两个观察角度。",
+      "points": {
+        "range": "今天、近 7 天、近 30 天，或自己选一段日期。",
+        "site": "按站点过滤概览，单独看它的时间分配。",
+        "visits": "在访问记录里，回看每一次打开网站的时间。"
+      },
+      "capabilities": {
+        "popup": {
+          "title": "工具栏里，一眼知道今天",
+          "description": "查看当前站点的今日时长、今日总时长和常用站点，无需每次打开仪表盘。"
+        },
+        "scope": {
+          "title": "记录哪些网站，由你决定",
+          "description": "忽略不想记录的网站，或只记录你选定的名单。当前站点的规则，在弹出面板里就能切换。"
+        },
+        "pause": {
+          "title": "需要时，随时暂停",
+          "description": "在工具栏暂停或继续记录。音频计时和空闲偏好，也可以在设置里调整。"
+        },
+        "export": {
+          "title": "自己的记录，随时带走",
+          "description": "导出完整 JSON 备份，或按日期和站点汇总的 CSV。在扩展里可恢复校验通过的 JSON 备份。"
+        }
+      }
+    },
+    "setup": {
+      "eyebrow": "开始使用",
+      "title": "装好扩展，从下一页开始。",
+      "update": "更新手动加载的版本时，用新文件覆盖原文件夹，再重新加载扩展，可保留扩展身份和本地记录。"
+    },
+    "faq": {
+      "eyebrow": "安装之前",
+      "title": "常见问题",
+      "description": "开始记录前，你可能还想知道这些。",
+      "support": "在 GitHub 提问",
+      "nav": "常见问题",
+      "browsers": {
+        "question": "支持哪些浏览器？",
+        "answer": "支持桌面版 Chrome 和 Edge。下载发布页的 ZIP 扩展包，按照上方步骤安装即可。"
+      },
+      "privacy": {
+        "question": "需要账号或上传浏览记录吗？",
+        "answer": "无需注册或登录。浏览记录保存在这台设备的扩展里，不会上传。"
+      },
+      "history": {
+        "question": "会读取网页内容或记录无痕浏览吗？",
+        "answer": "只记录主机名、访问时间和活跃时长，不保存网页正文、完整网址或标题，也不记录无痕窗口。"
+      },
+      "backup": {
+        "question": "记录可以导出和恢复吗？",
+        "answer": "JSON 可保存完整备份，CSV 提供按日期和站点的汇总。恢复 JSON 需在已安装的扩展里进行，确认后会替换当前账本和设置。"
+      },
+      "empty": {
+        "question": "为什么刚安装时没有历史记录？",
+        "answer": "记录从安装后开始，不会导入浏览器以前的历史记录。官网里的产品示意图，与自己的浏览记录相互独立。"
+      }
+    },
+    "closing": {
+      "title": "让时间，多一分清晰。",
+      "description": "装上 PageTime，从下一次浏览开始，慢慢看见自己的节奏。"
+    }
+  },
+  "nav": {
+    "label": "主要导航"
+  },
+  "language": {
+    "label": "界面语言：{{language}}"
+  },
+  "docs": {
+    "timing": "计时规则与隐私说明",
+    "privacy": "隐私政策"
+  },
+  "duration": {
+    "underMinute": "不足 1 分钟",
+    "minutes_other": "{{count}} 分钟",
+    "hours": "{{hours}} 小时 {{minutes}} 分钟"
+  }
+}

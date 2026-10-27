@@ -191,12 +191,12 @@ test('the extension detail query uses the trend day keys and the selected hour k
 
 test('the dashboard feeds the trend window into detail days and keeps the hour average on the selected range', () => {
   const hook = readFileSync(new URL('../src/use-ledger.js', import.meta.url), 'utf8');
-  const panel = readFileSync(new URL('../src/SiteDetailPanel.jsx', import.meta.url), 'utf8');
+  const panel = readFileSync(new URL('../src/site-detail-panel.jsx', import.meta.url), 'utf8');
   assert.match(hook, /siteDays\(db, id, detailArgs\.dayFrom, detailArgs\.dayTo\)/);
   assert.match(hook, /siteHours\(db, id, displayFrom, displayTo\)/);
   assert.match(hook, /siteSeriesFromSnapshot\(data, detailSeriesArgs\(range, now\)\)/);
   assert.match(panel, /dayCount=\{detail\.hourDays\}/);
-  const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
+  const charts = readFileSync(new URL('../src/charts.jsx', import.meta.url), 'utf8');
   const siteTrend = charts.slice(charts.indexOf('export function SiteTrend'), charts.indexOf('export function HourChart'));
   assert.doesNotMatch(siteTrend, /onClick/);
 });

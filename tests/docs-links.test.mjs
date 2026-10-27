@@ -20,10 +20,10 @@ test('the settings links point into the repository and follow the interface lang
 });
 
 test('the settings page opens the docs in a new tab and the app keeps no timing-rules interface', () => {
-  const app = read('src/App.jsx');
+  const app = read('src/app.jsx');
   assert.match(app, /<a href=\{links\.timing\} target="_blank" rel="noreferrer noopener">/);
   assert.match(app, /<a href=\{links\.privacy\} target="_blank" rel="noreferrer noopener">/);
-  for (const file of ['src/HowItWorksDialog.jsx', 'src/LocalDataSection.jsx', 'src/local-data.mjs']) assert.equal(fs.existsSync(new URL(file, root)), false, file);
+  for (const file of ['src/how-it-works-dialog.jsx', 'src/local-data-section.jsx', 'src/local-data.mjs']) assert.equal(fs.existsSync(new URL(file, root)), false, file);
   assert.doesNotMatch(app, /HowItWorks|LocalData|useLocalData|timingCopy|settings\.method|settings\.privacy/);
 });
 

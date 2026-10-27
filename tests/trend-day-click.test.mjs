@@ -63,7 +63,7 @@ before(async () => {
     appType: 'custom',
     ssr: { external: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-i18next', 'i18next', 'i18next-browser-languagedetector'] },
   });
-  ({ Trend, SiteTrend } = await server.ssrLoadModule('/src/Charts.jsx'));
+  ({ Trend, SiteTrend } = await server.ssrLoadModule('/src/charts.jsx'));
 });
 
 after(async () => {
@@ -250,13 +250,13 @@ test('the detail trend frame is the containing block for the shared focus label'
   const rule = css.match(/\.timeline-segment:focus,\.timeline-segment:focus-visible\s*\{[^}]*\}/)?.[0] ?? '';
   assert.match(rule, /position:absolute/);
   assert.match(rule, /top:0/);
-  const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
+  const charts = readFileSync(new URL('../src/charts.jsx', import.meta.url), 'utf8');
   const trend = charts.slice(charts.indexOf('export function Trend'), charts.indexOf('export function SiteTrend'));
   assert.match(trend, /detail\?<div className="detail-trend-frame">/);
 });
 
 test('hour bars are not part of the day click', () => {
-  const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
+  const charts = readFileSync(new URL('../src/charts.jsx', import.meta.url), 'utf8');
   const hour = charts.slice(charts.indexOf('export function HourChart'), charts.indexOf('export function DayHourChart'));
   const dayHour = charts.slice(charts.indexOf('export function DayHourChart'), charts.indexOf('const weekdayAt'));
   assert.doesNotMatch(hour, /onSelectDay|trendDayAt/);
@@ -282,10 +282,10 @@ test('selecting today keeps the today preset and any other recorded day is a one
 });
 
 test('the overview trend and the site detail trend share a day click that keeps the filter and the open site', () => {
-  const overview = readFileSync(new URL('../src/Overview.jsx', import.meta.url), 'utf8');
-  const app = readFileSync(new URL('../src/App.jsx', import.meta.url), 'utf8');
-  const panel = readFileSync(new URL('../src/SiteDetailPanel.jsx', import.meta.url), 'utf8');
-  const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
+  const overview = readFileSync(new URL('../src/overview.jsx', import.meta.url), 'utf8');
+  const app = readFileSync(new URL('../src/app.jsx', import.meta.url), 'utf8');
+  const panel = readFileSync(new URL('../src/site-detail-panel.jsx', import.meta.url), 'utf8');
+  const charts = readFileSync(new URL('../src/charts.jsx', import.meta.url), 'utf8');
   assert.equal([...overview.matchAll(/<Trend /g)].length, 1);
   assert.match(overview, /<Trend days=\{trendDays\} className="primary-trend" isDark=\{isDark\} onSelectDay=\{onSelectDay\} \/>/);
   const handler = app.slice(app.indexOf('const onSelectDay'), app.indexOf('const removeHosts'));

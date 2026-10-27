@@ -6,8 +6,8 @@ import { Alert, AlertTitle, AlertDescription } from '@app/components/ui/alert';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@app/components/ui/alert-dialog';
 import { isExtension } from './data.js';
 import { exportLedger } from './export-file.js';
-import { ExportSummary } from './ExportSummary.jsx';
-import { BackupSummary } from './BackupSummary.jsx';
+import { ExportSummary } from './export-summary.jsx';
+import { BackupSummary } from './backup-summary.jsx';
 import { readBackupFile, restoreBackup } from './import-file.js';
 
 const KINDS = ['json', 'csv'];

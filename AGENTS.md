@@ -4,7 +4,9 @@ Product name: PageTime. Preserve existing storage keys and record formats when c
 
 Design feedback (2026-10-24): the current UI's typography is too large and its spacing is too tight. Future UI work should reduce oversized text and give content more breathing room, with font size and spacing designed together. The selected overview direction combines Linear's light navigation with Plausible's open analytics canvas: borderless KPIs, underlined chart tabs, two aligned ranking lists, and subtle relative row bars. Apply the same typography, spacing and light dividers to Visits, Settings and site detail sheets.
 
-The UI is localized with react-i18next in Simplified Chinese, Traditional Chinese, English, Japanese, Korean, German, Spanish, French, Brazilian Portuguese, and Russian. Never hardcode user-facing text: add every string to every file in `src/locales/` (with all plural forms the language needs), format dates/times/durations through `src/i18n.js`, and keep manifest text in `public/_locales`. `npm test` enforces key, placeholder, and plural parity.
+Website homepage decision (2026-10-25): selected the first displayed marketing concept, `exec-d6ce82a7-f468-4974-a543-7f6d60cffa47.png`: centered headline and download action, a large straight-on dashboard image, three light trust statements, and a browsing timeline below. Follow-up feedback: provide more substantive content, following OtterTap's product/features/privacy/install/FAQ reading path and using 21st as a component reference. Product images containing text must have Chinese and English editions: Chinese locales use Chinese imagery; other locales use English imagery while the page copy stays localized. The standalone website is `home.html`; preserve the empty dashboard preview at `/`. Homepage spacing feedback (2026-10-25): use generous section spacing and room between headings, copy, actions and images; keep capabilities in two spacious columns on desktop and one on mobile, with comfortable installation steps and FAQ rows. Avoid enlarging typography to create hierarchy. Marketing examples stay separate from the ledger. The download action explains the GitHub ZIP installation path.
+
+The UI is localized with react-i18next in Simplified Chinese, Traditional Chinese, English, Japanese, Korean, German, Spanish, French, Brazilian Portuguese, and Russian. Never hardcode user-facing text: keep extension resources in `src/locales/` and independent website resources in `website/locales/`; add each surface's strings to all ten of its locale files (with all plural forms the language needs), format dates/times/durations through that surface's `i18n.js`, and keep manifest text in `public/_locales`. `npm test` enforces key, placeholder, and plural parity.
 
 Use the official shadcn Base UI components for available primitives. Prefer DropdownMenu for dropdown choices; avoid Select and native select. Keep the WXT extension and local preview on the same component and theme foundation.
 
@@ -18,7 +20,7 @@ Before making substantial visual changes, use the Product Design plugin's `get-c
 
 When implementing from a selected generated mock, treat that image as the source of truth for layout, component anatomy, density, spacing, color, typography, visible content, and hierarchy.
 
-Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local prototype can be handed to Sites. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
+Build extension UI in `src/` and website UI, assets and independent localization in the repository-root `website/` directory. Keep `home.html` as its thin public entry; share UI primitives and theme, while website language selection uses its own preference. Keep `.openai/hosting.json`, `worker/index.js`, `scripts/prepare-sites-build.mjs`, and `tests/sites-worker.test.mjs` intact so the same local prototype can be handed to Sites. Before a Sites handoff, run `npm run build` and `npm run test:sites`; the build must leave `dist/client/index.html`, `dist/server/index.js`, and `dist/.openai/hosting.json`.
 
 ## 贡献与 PR（Agent / 维护者）
 
@@ -42,6 +44,8 @@ Build app UI in `src/`. Keep `.openai/hosting.json`, `worker/index.js`, `scripts
 - **自查与评审**：提交前对照 [`REVIEW.md`](REVIEW.md)（历史评审中反复出现的意见）。`.agents/skills/code-review` 以它为标准来源，规则只写在 `REVIEW.md`，这里和 skill 里都不重复。遇到重复意见就追加到 `REVIEW.md`。
 
 ## 工程设计原则
+
+- 所有前端组件文件名使用 kebab-case（如 `site-detail-panel.jsx`、`home-details.jsx`），React 组件标识符保持 PascalCase。
 
 - 不要维护向后兼容性。应移除废弃路径，而不是增加兼容层、回退方案或迁移逻辑。
 - 选择能够完全满足当前需求的最简单实现。避免臆测性的抽象、配置和间接层。

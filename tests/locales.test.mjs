@@ -46,3 +46,12 @@ test('every UI locale has matching non-empty manifest messages', async () => {
     for (const name of names) assert.ok(messages[name]?.message?.trim(), `${code} ${name}`);
   }
 });
+
+const websiteEn = await read('website/locales/en.json');
+for (const code of codes) test(`${code} website has independent complete translations`, async () => {
+  const website = await read(`website/locales/${code}.json`);
+  validateLocale(code, website, websiteEn);
+  assert.ok(website.home);
+  assert.equal((await read(`src/locales/${code}.json`)).home, undefined);
+  assert.equal(website.records, undefined);
+});

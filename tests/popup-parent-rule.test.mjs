@@ -112,7 +112,7 @@ test('a covered host can still revoke its parent when the list is full', () => {
 });
 
 test('the popup names the covering rule and stays inside the 320px popup', () => {
-  const popup = read('src/Popup.jsx');
+  const popup = read('src/popup.jsx');
   const model = read('src/popup-model.mjs');
   assert.match(popup, /data-list-state=\{action\.covered \? 'covered' : action\.listed \? 'listed' : 'open'\}/);
   assert.match(popup, /t\(`popup\.\$\{action\.label\}`, \{ host: action\.host \}\)/);
@@ -124,7 +124,7 @@ test('the popup names the covering rule and stays inside the 320px popup', () =>
   const css = read('src/popup.css');
   assert.match(css, /width: 320px/);
   assert.match(css, /\.popup-actions \[data-slot="button"\] \{[^}]*white-space: normal;[^}]*overflow-wrap: anywhere;/);
-  const app = read('src/App.jsx');
+  const app = read('src/app.jsx');
   assert.match(app, /isAllowed\(selected, settings\.allowed\)/);
   assert.match(app, /isIgnored\(selected, settings\.ignored\)/);
 });

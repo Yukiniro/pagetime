@@ -4,13 +4,13 @@ import { Button } from '@app/components/ui/button';
 import { ScrollArea } from '@app/components/ui/scroll-area';
 import { Sheet, SheetClose, SheetContent, SheetFooter, SheetHeader, SheetTitle } from '@app/components/ui/sheet';
 import { useTranslation } from 'react-i18next';
-import { Breakdown, HourChart, SiteTrend } from './Charts.jsx';
+import { Breakdown, HourChart, SiteTrend } from './charts.jsx';
 import { iconForSite } from './data.js';
 import { clipDaySessions, daySessionCopy, sessionsOverlappingHour } from './day-sessions.mjs';
 import { duration, timeLabel } from './i18n.js';
 import { IGNORED_LIMIT } from './settings.mjs';
 import { singleDayLabel } from './range-label.mjs';
-import { SiteIcon } from './SiteIcon.jsx';
+import { SiteIcon } from './site-icon.jsx';
 
 const NARROW_DRAWER = '(max-width: 760px)';
 

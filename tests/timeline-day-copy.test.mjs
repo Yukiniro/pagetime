@@ -107,8 +107,8 @@ test('every locale names another day without saying today, and keeps today’s s
 });
 
 test('the chart title follows the selected day, and hour bars do not add a second empty line', () => {
-  const overview = readFileSync(new URL('../src/Overview.jsx', import.meta.url), 'utf8');
-  const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
+  const overview = readFileSync(new URL('../src/overview.jsx', import.meta.url), 'utf8');
+  const charts = readFileSync(new URL('../src/charts.jsx', import.meta.url), 'utf8');
   const timeline = charts.slice(charts.indexOf('export function Timeline'), charts.indexOf('export function Breakdown'));
   const hours = overview.slice(overview.indexOf('hoursMode ? ('), overview.indexOf(': (showTimeline'));
   assert.match(overview, /const copy = timelineCopy\(chartDay, today\)/);

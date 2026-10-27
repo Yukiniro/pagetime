@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
+const charts = readFileSync(new URL('../src/charts.jsx', import.meta.url), 'utf8');
 const timeline = charts.slice(charts.indexOf('export function Timeline'), charts.indexOf('export function Breakdown'));
 const dayHour = charts.slice(charts.indexOf('export function DayHourChart'), charts.indexOf('const weekdayAt'));
 const heatmap = charts.slice(charts.indexOf('export function Heatmap'), charts.indexOf('export function Timeline'));

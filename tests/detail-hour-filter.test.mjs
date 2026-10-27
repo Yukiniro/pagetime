@@ -121,7 +121,7 @@ before(async () => {
     appType: 'custom',
     ssr: { external: ['react', 'react-dom', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-i18next', 'i18next', 'i18next-browser-languagedetector'] },
   });
-  ({ SiteDetailPanel } = await server.ssrLoadModule('/src/SiteDetailPanel.jsx'));
+  ({ SiteDetailPanel } = await server.ssrLoadModule('/src/site-detail-panel.jsx'));
 });
 
 after(async () => {
@@ -376,7 +376,7 @@ test('the hour chart frame is the containing block for the focused hour button',
   const frame = css.match(/\.hour-chart-frame\{[^}]*\}/)?.[0] ?? '';
   assert.match(frame, /position:relative/);
   assert.match(frame, /overflow:visible/);
-  const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
+  const charts = readFileSync(new URL('../src/charts.jsx', import.meta.url), 'utf8');
   const hour = charts.slice(charts.indexOf('export function HourChart'), charts.indexOf('export function DayHourChart'));
   assert.match(hour, /<div className="hour-chart-frame">/);
   assert.match(hour, /hourColumnHits/);
@@ -384,7 +384,7 @@ test('the hour chart frame is the containing block for the focused hour button',
 });
 
 test('overview hour bars and the heatmap stay outside the session-hour click', () => {
-  const charts = readFileSync(new URL('../src/Charts.jsx', import.meta.url), 'utf8');
+  const charts = readFileSync(new URL('../src/charts.jsx', import.meta.url), 'utf8');
   const hour = charts.slice(charts.indexOf('export function HourChart'), charts.indexOf('export function DayHourChart'));
   const dayHour = charts.slice(charts.indexOf('export function DayHourChart'), charts.indexOf('const weekdayAt'));
   const heatmap = charts.slice(charts.indexOf('export function Heatmap'), charts.indexOf('export function Timeline'));
@@ -392,7 +392,7 @@ test('overview hour bars and the heatmap stay outside the session-hour click', (
   assert.doesNotMatch(hour, /onSelectDay|trendDayAt/);
   assert.doesNotMatch(dayHour, /onSelectHour|onSelectDay/);
   assert.doesNotMatch(heatmap, /onSelectHour/);
-  const overview = readFileSync(new URL('../src/Overview.jsx', import.meta.url), 'utf8');
+  const overview = readFileSync(new URL('../src/overview.jsx', import.meta.url), 'utf8');
   assert.doesNotMatch(overview, /onSelectHour/);
   assert.match(overview, /Hour cells are not a filter/);
 });
