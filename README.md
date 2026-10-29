@@ -1,120 +1,53 @@
-# PageTime · 浏览足迹
+<p align="center"><img src="assets/branding/pagetime-logo.png" width="96" alt="PageTime"></p>
 
-基于 WXT + React + TypeScript + ECharts 的 Chrome / Edge Manifest V3 扩展。界面默认跟随系统的浅色或深色，也可在设置里固定为浅色或深色；主图有今日或所选日的时间线，以及多日趋势。
+# PageTime
 
-## 安装
+[English](README.md) · [简体中文](README.zh-CN.md)
 
-1. 将交付的 `pagetime-1.0.0-chrome.zip` 解压到一个固定文件夹，确认文件夹内直接包含 `manifest.json`。
-2. Chrome 打开 `chrome://extensions`，或 Edge 打开 `edge://extensions`。
-3. 开启“开发者模式”，点击“加载已解压的扩展程序”，选择解压文件夹。
-4. 点击工具栏的 PageTime 图标，弹出小窗。小窗显示当前站点今日时长和今日总时长，并可「不记录此站」（白名单下为「记录此站」）、暂停记录、开关角标。点「打开仪表盘」进入统计页面；已经打开时会切到原来的标签。插件安装后开始采集，不读取安装前的浏览历史。
+See where your browsing time goes. PageTime records visits and active browsing time locally, with timelines, trends, and site rankings.
 
-在本地运行 `npm run build` 后，也可以加载源码中的 `.output/chrome-mv3` 文件夹。扩展不会自动安装到你的浏览器。已有安装请覆盖原来的解压文件夹，再点击浏览器扩展页中的“重新加载”，保留扩展 ID 与本地记录；不要为改名更换安装文件夹。
+[Install from the Chrome Web Store](https://chromewebstore.google.com/detail/pagetime/mgkjfbmfjjinomnajdllibjbgjbdhipj) · [Website](https://pagetime.yukiniro.workers.dev/home.html)
 
-## 功能与口径
+![PageTime product illustration](website/assets/dashboard-en.webp)
 
-- 按今天、最近 7 天、最近 30 天查看活跃时长、访问次数、站点排行和每日趋势。
-- 日期范围是单日时，主图时间线显示该日，并可随范围前后翻页看到昨天等其他日期；多日范围下，时间线标签仍显示今天。活跃时段明细还在时，悬停查看站点、起止时间与时长，点击色块或图例打开站点详情。明细已过保留期的单日改为该日 24 根小时汇总柱，悬停只看该小时的合计时长，没有色块、图例，也不能从柱上打开详情。
-- 单击站点排行中的一行，按该站过滤整页的汇总与主图；行内按钮打开站点详情。时间线仍有色块或图例时，点击它们也打开详情。
-- 访问记录支持域名搜索，详情可跳转到该站点的访问记录。较多记录时显示最近 200 条。访问记录页仍显示原始主机名。
-- 概览合并常见前缀：去掉开头的 `www.`、`m.`、`mobile.`（`www.youtube.com` 与 `m.youtube.com` 显示为 `youtube.com`，`gist.github.com` 仍单独统计）。这只是查询视图：IndexedDB 里仍按原始主机名记录，不会改写或丢失记录。访问记录页仍显示原始主机名。从站点详情进入访问记录时，按合并后的站点筛选出它的全部主机名。一个站点包含两个及以上主机名时，详情里显示子域名构成。
-- 会计入：有焦点的普通窗口里，当前标签页上的 http/https 网页，按域名累计。同一标签跳到其他站点时，从跳转时刻起计入新站点。
-- 不计入：连续达到空闲判定时间仍没有键鼠操作时停止计入。默认 60 秒，可在设置里改为 2、5 或 10 分钟；判定前的那段仍计入。默认在前台窗口的当前标签播放未静音声音时，空闲也继续计入；关掉该开关、静音或声音停止后即停。锁屏、休眠、浏览器关闭、窗口最小化、切到其他应用、聚焦开发者工具、浏览器内部页面、扩展页面、本地文件、无痕窗口，以及暂停记录期间不计入。后台标签页不计时长。记录范围默认是黑名单：设置里忽略的站点不计时长、不记访问，行为和切到浏览器内部页面相同。可改为白名单：只有允许列表中的站点及其子域名会计入；空白名单不记录任何站点，并不等于记录全部。两份列表分开保存，切换模式不会清空另一份。条目 `example.com` 匹配该域名和所有子域名，条目 `mail.example.com` 不匹配 `example.com`。正在看的站点被当前模式排除时会立刻停表，包括把它加入黑名单，或切到一份不包含它的白名单。已有记录不删除、不隐藏。
-- 访问次数：页面加载与刷新各记一次（包括后台标签页中的导航）；切换标签页不重复计数。单页应用内部路由跳转不增加访问次数。
-- 每 30 秒设置持久检查点，并在标签切换、窗口焦点变化、空闲变化及查看面板时保存。意外关闭时最多丢失最近 30 秒。Manifest V3 服务工作线程重启时从账本里的检查点恢复；浏览器重启或扩展重新加载后检查点失效。
-- 两次检查点间隔超过 90 秒时，这段最多计入 90 秒，避免闹钟推迟把整段活跃时间丢掉，也避免长时间休眠或挂起造成虚增。这是近似的活跃时长统计，短暂休眠和异常退出可能造成几十秒偏差。
-- 只保存域名、时间和访问次数，不保存标题、正文或完整网址。数据只在本机扩展自己的 IndexedDB（`pagetime-ledger`），不上传。访问记录和活跃时段明细保留最近 31 天；每日和每小时汇总长期保留，直到手动清空，或按站点删除。删除即从本机数据库移除。早于 IndexedDB 账本的版本存在 `chrome.storage.local` 的 `data` 键里，新版不读取也不删除它，新账本从空开始。
-- 界面不讲计时规则。完整口径（计入与不计入、访问次数、与上一周期比较、站点合并、隐私与保留）在 [docs/timing.zh-CN.md](docs/timing.zh-CN.md)（[English](docs/timing.md)），设置页底部有链接；其中的秒数和天数来自 `src/model.mjs` 的常量，`tests/timing-docs.test.mjs` 检查两者一致。
-- 支持暂停 / 恢复。可以二次确认后删除某个站点的全部记录，也可以清空本地数据。删除、清空和卸载本身不能撤销。可以从设置里的备份 JSON 覆盖恢复本机账本和设置；没有回收站，也没有同步。
-- 设置里的「导出数据」可下载 JSON（全部表、记录状态和设置，`format: "pagetime-ledger"`）或 CSV（`date,host,active_ms,visits`，每天每个原始主机名一行，UTF-8 带 BOM）。文件在统计页本地生成后直接下载，不联网，也不需要 `downloads` 权限；只含主机名和时长，不含网址和标题。同一处的「从备份恢复」只读取本机的 PageTime JSON 文件，先检查格式并在确认框里显示备份摘要（导出时间、格式版本、记录日期、站点数、各表行数、是否含设置和扩展版本），检查不通过只报错；确认后覆盖账本和设置；不接受 CSV，不联网。预览里不能恢复。
-- 界面支持简体中文、繁體中文、English、日本語、한국어、Deutsch、Español、Français、Português (Brasil)、Русский：首次打开按浏览器语言选择（香港、澳门及 zh-Hant 使用繁體中文，无匹配时使用英文），可在“设置 → 语言”中切换，选择保存在本地。扩展名称说明与工具栏提示通过 `_locales` 随浏览器语言显示。
+*Product illustration with example data, not a capture of real browsing records. Your ledger starts empty.*
 
-## 隐私与权限
+## Features
 
-仅保存域名、访问时间和活跃时段，不保存网址路径、查询参数、标题、页面正文、Cookie 或输入内容。扩展无远程请求、账号、数据上传或外部字体。已知站点的 SVG 随安装包本地分发；扩展里其余站点读取浏览器已缓存的 favicon，不向站点或第三方图床请求，也不上传。读不到缓存或加载失败时仍是地球占位。本地预览不读这层缓存。保存字段、存放位置、`DETAIL_DAYS` 和删除方式见 [隐私说明（中文）](PRIVACY.zh-CN.md) 与 [Privacy](PRIVACY.md)。
+- Explore active time, visits, and site rankings for today, the last 7 or 30 days, or a custom date range.
+- Inspect daily trends, single-day timelines, and individual site details.
+- Check today's activity and top sites from the toolbar popup; pause or resume recording.
+- Control recording with an allowlist or blocklist, export JSON / CSV, and restore a valid JSON backup.
+- Choose from ten interface languages and system, light, or dark themes.
 
-| 权限 | 用途 |
-| --- | --- |
-| `tabs` | 读取前台标签页域名，并排除无痕页 |
-| `webNavigation` | 统计主框架页面加载与刷新 |
-| `idle` | 检测系统空闲或锁定 |
-| `alarms` | 定期保存活跃时段 |
-| `storage` | 在本地保存计时设置和写入失败标记，session 保存检查点所属的会话编号。账本在 IndexedDB，不需要额外权限 |
-| `favicon` | 在扩展页面读取浏览器已缓存的站点图标。不向站点或第三方请求，也不上传 |
+## Install and use
 
-不申请 `history`、网页正文访问或 content script 权限，也没有 host permission。`tabs` 和 `webNavigation` 会让 Chrome / Edge 在安装时显示 “Read your browsing history”。单独申请 `favicon` 会显示 “Read the icons of the websites you visit”；已经有 `tabs` 时这句被并掉，安装对话框不因此多一句。`storage`、`idle`、`alarms` 不触发安装警告。每一项能做什么、不能做什么见 [权限说明（中文）](docs/permissions.zh-CN.md) 与 [Permissions](docs/permissions.md)。
+Install from the Chrome Web Store above. Click the toolbar icon for today's activity and select “Open dashboard” for full statistics. PageTime does not import browsing history from before installation.
 
-## 组件基础
+For manual Chrome / Edge installation, download the Chrome ZIP from [GitHub Releases](https://github.com/Yukiniro/pagetime/releases/latest), extract it, enable Developer mode at `chrome://extensions` or `edge://extensions`, and choose “Load unpacked”. To update a sideloaded installation, replace the contents of the same folder and reload the extension to preserve its ID and local records.
 
-使用 shadcn `base-nova` 样式与 `@base-ui/react`，插件和预览共用 Tailwind CSS 4 主题。Button、Sidebar、Dialog、AlertDialog、InputGroup、Table、Alert、Empty、Avatar、ScrollArea 等均来自 shadcn 官方组件。
+## Privacy
 
-时间范围使用 DropdownMenu + RadioGroup，当前不使用 Select 或原生 select。优先复用 `src/components/ui`，已有组件不另写交互实现；`src/styles.css` 仅保留产品布局、排版与图表样式。ECharts 继续负责统计图和今日时间线。
+No account or data upload. Records stay on your device and contain hostnames and activity, not full URLs, page titles, or page content. Site icons use bundled assets or the browser favicon cache without fetching remote icons.
 
-界面文案使用 i18next + react-i18next，插件资源位于 `src/locales/<语言>.json`，官网资源位于 `website/locales/<语言>.json`，日期、时间和时长由各自的 `i18n.js` 按当前语言输出；manifest 文案位于 `public/_locales`。新增文案需补齐所有语言及其所需的复数形式，`npm test` 会校验键、插值和复数形式是否齐全。新增语言时添加 `src/locales/<代码>.json`、在 `src/i18n.js` 注册，并补充 `public/_locales/<代码>/messages.json`。官网语言独立维护，在 `website/locales/` 添加资源并在 `website/i18n.js` 注册。
+The overview groups `www.`, `m.`, and `mobile.` prefixes while storage keeps each original hostname. See [Timing rules](docs/timing.md), [Privacy](PRIVACY.md), and [Permissions](docs/permissions.md) for measurement and retention details. Export a backup before deleting records or uninstalling.
 
-`components.json` 已配置，新增组件用 `npx shadcn@latest add <组件名>`。源码使用 `@app/*` 指向 `src/*`，避开 WXT 内置的 `@/*` 根目录别名。CLI 生成的 `cn` 合并工具保持官方依赖。
+## Development and contributions
 
-参考：[shadcn Base UI](https://ui.shadcn.com/docs/components/base/dropdown-menu)、[Vite 安装](https://ui.shadcn.com/docs/installation/vite)。
+Use Node.js 24 and npm:
 
-## 开发
-
-Node.js 22.12+，npm：
-
-```powershell
+```sh
 npm ci
-npm run dev:extension  # WXT 开发模式，随后手动加载 .output/chrome-mv3
+npm run dev:extension
 npm run typecheck
-npm run build          # .output/chrome-mv3
-npm run verify-build   # 校验实际扩展产物、权限、版本、图标和语言资源
-npm run zip            # .output/pagetime-1.0.0-chrome.zip
-npm run verify:zip     # 校验当前版本 ZIP 内的实际文件
-```
-
-本地界面预览与真实扩展使用同一套 React 组件。预览不采集浏览活动，打开时也没有预置浏览记录：
-
-官网源码、样式、图片及独立十语言资源位于根目录 `website/`，`home.html` 仅作为公开入口；仪表盘预览仍在 `/`。官网使用自己的 i18n 实例和 `pagetime-website-language` 偏好，不加载插件语言资源。官网包含功能介绍、产品示意图、GitHub ZIP 安装说明与常见问题，支持相同的十种语言；含文字的产品图提供中英双版，中文界面显示中文版，其余语言显示英文版。示意图不写入浏览账本。`npm run build:preview` 同时构建这两个入口，官网图片不进入扩展安装包。
-
-```powershell
-npm run dev -- --host 127.0.0.1 --port 4173
 npm run build:preview
 npm test
+npm run build
+npm run verify-build
 ```
 
-`npm test` 包含预览构建产物检查，需先运行 `npm run build:preview`。WXT 和预览各自独立打包；已有 Sites 运行脚本保留，但未发布到 Sites。
+Run `npm run dev` for the empty dashboard at `/` and the website at `/home.html`. See the [development guide (Chinese)](docs/development.md), [contributor instructions](AGENTS.md), and [release guide (Chinese)](docs/releasing.md). Ordinary PRs require a Changeset; documentation-only changes may use an empty Changeset.
 
-线上官网：[PageTime](https://pagetime.yukiniro.workers.dev/home.html)；[空账本预览](https://pagetime.yukiniro.workers.dev/)。
+## License
 
-Cloudflare Workers 发布使用 `wrangler.jsonc` 和现有静态资源 Worker。先用 `npx wrangler login` 登录目标账号，再运行 `npm run deploy:cloudflare`，会重新构建并发布 `dist/client`。官网路径为 `/home.html`，根路径保留空账本预览；仅上传构建产物，不上传源码或本地记录。配置说明见 [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/)。
-
-图标来源：Phosphor Icons（MIT）、Simple Icons（CC0）。文档参考：[WXT 入口](https://wxt.dev/guide/essentials/entrypoints.html)、[Chrome webNavigation](https://developer.chrome.com/docs/extensions/reference/api/webNavigation)、[Chrome idle](https://developer.chrome.com/docs/extensions/reference/api/idle)。
-
-## 版本发布
-
-用户可见变更附带 Changesets 记录。维护者手动运行 GitHub Actions 的 Release 创建版本 PR；核对版本号、CHANGELOG 和 CI 后合并，自动完成检查、打包和 GitHub ZIP Release。每个 Release 同时上传 `SHA256SUMS`。发布先上传草稿附件再公开，支持失败重跑，拒绝冲突标签、不同内容的已有 ZIP，以及与已发布 ZIP 不一致的校验和。完整流程与仓库设置见 [版本发布说明](docs/releasing.md)。本流程不提交浏览器商店。
-
-把 ZIP 和 `SHA256SUMS` 放在同一目录后核对。文件是一行小写 SHA-256、两个空格和 ZIP 文件名：
-
-```text
-sha256sum -c SHA256SUMS
-shasum -a 256 -c SHA256SUMS
-```
-
-```powershell
-(Get-Content .\SHA256SUMS -Raw).Split(' ')[0] -eq (Get-FileHash .\pagetime-1.0.0-chrome.zip -Algorithm SHA256).Hash
-```
-
-`Get-FileHash` 输出大写十六进制，和文件里的小写比较时 PowerShell 的 `-eq` 不区分大小写。把示例里的文件名换成该版本的 ZIP。
-
-读取本地记录时会校验结构、域名和时间字段。格式异常会显示当前语言的错误提示，原始数据保留；重试不会覆盖或重置异常记录。
-
-## 验证状态
-
-自动检查覆盖域名过滤、跨午夜统计、连续时段合并与空闲间隔、保留上限、挂起保护、后台焦点 / 空闲 / 暂停 / 恢复 / 清空、无痕过滤和预览本地存储。
-
-本地浏览器验证了 DropdownMenu 鼠标选择和方向键 / Enter 操作、Dialog 的 Escape 关闭和焦点恢复、详情跳转、搜索与无结果状态、AlertDialog 取消及焦点恢复、暂停与恢复，以及桌面和窄屏布局。清空数据操作通过后台与预览存储自动测试验证，浏览器交互只验证确认与取消，不删除现有数据。设计对比见 `design-qa.md`。
-
-**尚未完成真实 Chrome / Edge 安装后的端到端采集与长期休眠测试。** Chrome 验证通道连接失败，内置浏览器用于界面验证；后台采集通过模拟浏览器 API 的实现测试。交付安装包可用于本地试用，不代表已通过商店审核。
-
-## 许可证
-
-Copyright 2026 Yukiniro。本项目以 Apache License 2.0 授权。`LICENSE` 是 Apache 许可证 2.0 的原文，版权声明在 `NOTICE`。`package.json` 的 `license` 为 `Apache-2.0`。
+[Apache-2.0](LICENSE) · Copyright 2026 Yukiniro. See [NOTICE](NOTICE) for notices.

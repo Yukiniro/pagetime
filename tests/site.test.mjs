@@ -320,7 +320,9 @@ test('timing notes and the readme describe prefix grouping and raw storage', () 
   assert.match(chinese, /原始主机名/);
   const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
   assert.match(readme, /www/);
-  assert.match(readme, /主机名/);
+  assert.match(readme, /original hostname/);
+  const chineseReadme = readFileSync(new URL('../README.zh-CN.md', import.meta.url), 'utf8');
+  assert.match(chineseReadme, /原始主机名/);
   assert.doesNotMatch(readme, /可注册域名|Public Suffix List/);
   const background = readFileSync(new URL('../entrypoints/background.ts', import.meta.url), 'utf8');
   const ledger = readFileSync(new URL('../src/ledger.mjs', import.meta.url), 'utf8');
