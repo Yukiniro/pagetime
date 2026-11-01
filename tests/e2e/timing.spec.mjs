@@ -798,9 +798,9 @@ test('the date control fits a 320px and a 375px page and its step buttons still 
         await dashboard.getByRole('menuitemradio').nth(2).click();
         expect(await fits(), `${language} ${width}px, 30 days`).toBe(true);
         const sizes = await dashboard.evaluate(() => [...document.querySelectorAll('.range-control > *:not(form)')].map(node => { const box = node.getBoundingClientRect(); return [Math.round(box.width), Math.round(box.height), node.scrollHeight <= node.clientHeight]; }));
-        expect(sizes[0], `${language} ${width}px, previous button size`).toEqual([38, 38, true]);
-        expect(sizes[2], `${language} ${width}px, next button size`).toEqual([38, 38, true]);
-        expect(sizes[1][1], `${language} ${width}px, date button height`).toBe(38);
+        expect(sizes[0], `${language} ${width}px, previous button size`).toEqual([44, 44, true]);
+        expect(sizes[2], `${language} ${width}px, next button size`).toEqual([44, 44, true]);
+        expect(sizes[1][1], `${language} ${width}px, date button height`).toBe(44);
         expect(sizes[1][2], `${language} ${width}px, date button text is not clipped`).toBe(true);
         await trigger.click();
         await dashboard.getByRole('menuitemradio').nth(1).click();
