@@ -21,7 +21,7 @@
   "loading": "Lokale Daten werden geladen…",
   "empty": {
     "title": "Nach dem Surfen erscheint es hier",
-    "description": "Sobald du eine Seite besuchst, erscheinen aktive Zeit, Zeitachse und Seitenrangliste auf dieser Seite."
+    "description": "Sobald du eine Seite besuchst, erscheinen aktive Zeit, der Anteil und die Seitenrangliste auf dieser Seite."
   },
   "active": "Aktiv {{duration}}",
   "badge": {
@@ -57,6 +57,13 @@
     "emptyRankingDescription": "{{domain}} hat in diesem Zeitraum keine Einträge."
   },
   "chart": { "label": "Hauptdiagramm" },
+  "share": {
+    "title": "Anteil",
+    "ofAll": "Anteil an allen Websites",
+    "rest": "Übrige Websites",
+    "empty": "Keine aktive Zeit in diesem Zeitraum",
+    "viewAllLabel": "Alle Websites anzeigen"
+  },
   "trend": { "label": "Aktive Surfzeit pro Tag. {{days}}", "separator": "; ", "hours_one": "{{count}} Std.", "hours_other": "{{count}} Std." },
   "timeline": {
     "title": "Heutige Zeitleiste",

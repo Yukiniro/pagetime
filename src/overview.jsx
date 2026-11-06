@@ -7,19 +7,14 @@ import { indicatorFrame, nextTabKey, reducedMotion, retarget } from './retarget-
 import { useSettle } from './use-retarget.js';
 import { EmptyState, FilterEmpty } from './empty-state.jsx';
 import { iconForSite } from './data.js';
-import { colorsFor } from './timeline-colors.mjs';
-import { timelineSwatchesFor } from './theme.mjs';
-import { DayHourChart, Heatmap, Timeline, Trend } from './charts.jsx';
+import { Heatmap, Trend } from './charts.jsx';
 import { heatmapHasActivity } from './heatmap.mjs';
 import { KpiCompare } from './kpi-compare.jsx';
 import { SiteIcon } from './site-icon.jsx';
-import { dayHourTotals } from './ledger-view.mjs';
-import { duration, formatDate } from './i18n.js';
-import { addDays, dateKey } from './model.mjs';
-import { dayCount, timelineDay, timelineUsesHours } from './range.mjs';
-import { focusSpans, focusSummary, timelineHasActivity, trendHasActivity } from './site-filter.mjs';
+import { duration } from './i18n.js';
+import { focusSummary, trendHasActivity } from './site-filter.mjs';
 import { formatSiteShare, SITE_LEDGER_LIMIT, siteShareWidth, visibleSites } from './site-ledger.mjs';
-import { timelineCopy } from './timeline-copy.mjs';
+import { SiteShareChart } from './site-share-chart.jsx';
 
 function RankRows({ rows, total, filterSite, onFilter, onOpen }) {
   const { t } = useTranslation();
@@ -45,9 +40,13 @@ function RankRows({ rows, total, filterSite, onFilter, onOpen }) {
   </ol>;
 }
 
-export function Overview({ compare, preset, todayStats, stats, trendDays = [], spans, hourRows, since, start, end, today, now, rangeLabel, chartMode = 'timeline', trendLabel, filterSite = '', onFilter, openSite, onSelectDay, isDark = false }) {
+function chartKey(mode) {
+  return mode === 'trend' ? 'trend' : 'share';
+}
+
+export function Overview({ compare, preset, stats, trendDays = [], hourRows, since, start, end, today, rangeLabel, chartMode = 'share', trendLabel, filterSite = '', onFilter, openSite, onSelectDay, isDark = false }) {
   const { t } = useTranslation();
-  const [chart, setChart] = useState(chartMode);
+  const [chart, setChart] = useState(() => chartKey(chartMode));
   const [metric, setMetric] = useState('time');
   const [expanded, setExpanded] = useState(false);
   const [query, setQuery] = useState('');
@@ -57,36 +56,19 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
   const markRef = useRef(null);
   const seenTab = useRef(null);
   const focusChart = useRef(false);
-  useEffect(() => { setChart(chartMode); }, [chartMode, start, end]);
+  useEffect(() => { setChart(chartKey(chartMode)); }, [chartMode, start, end]);
   const rows = stats?.rows ?? [];
   const total = stats?.ms ?? 0;
   const ledger = visibleSites(rows, { metric, query, expanded });
   const canToggle = !query.trim() && rows.length > SITE_LEDGER_LIMIT;
   const kpi = focusSummary(stats, filterSite);
-  const todayKpi = focusSummary(todayStats, filterSite);
-  const chartSpans = focusSpans(spans, filterSite);
   const filtered = Boolean(filterSite);
-  const single = dayCount(start, end) === 1;
-  const chartDay = timelineDay({ start, end }, today);
-  const chartKpi = single ? kpi : todayKpi;
-  const hoursMode = single && timelineUsesHours(chartDay, now);
-  const hourBars = dayHourTotals(hourRows, dateKey(chartDay), filterSite);
-  const showHours = !filtered || hourBars.some(row => row.ms > 0);
-  const showTimeline = !filtered || timelineHasActivity(chartSpans, chartDay, addDays(chartDay, 1));
   const showTrend = !filtered || trendHasActivity(trendDays);
   const showHeatmap = !filtered || heatmapHasActivity(hourRows, start, end, since, today, filterSite);
-  const swatches = timelineSwatchesFor(isDark);
-  const colors = colorsFor(chartKpi?.rows ?? [], swatches);
-  const legend = [...colors.keys()].filter(domain => colors.get(domain) !== swatches.other);
-  const showOther = colors.size > legend.length;
-  const chartDate = formatDate(chartDay, { month: 'long', day: 'numeric', weekday: 'long' });
-  const caption = <p className="chart-caption">{chartDate}<span>·</span>{t('active', { duration: duration(chartKpi.ms) })}</p>;
-  const copy = timelineCopy(chartDay, today);
-  const timelineDate = copy.today ? '' : chartDate;
-  const timelineTitle = t(copy.titleKey);
+  const shareTitle = t('share.title');
   const trendTitle = trendLabel || t('range.last7');
-  const tabs = [['timeline', timelineTitle], ['trend', trendTitle]];
-  const tabSignature = `${chart}:${timelineTitle}:${trendTitle}`;
+  const tabs = [['share', shareTitle], ['trend', trendTitle]];
+  const tabSignature = `${chart}:${shareTitle}:${trendTitle}`;
   useLayoutEffect(() => {
     const list = tabsRef.current;
     const mark = markRef.current;
@@ -140,25 +122,18 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
     </section>
     <section className="chart-card ledger-card" aria-label={t('chart.label')}>
       <div className="chart-head">
-        <h2 className="sr-only">{chart === 'timeline' ? timelineTitle : trendTitle}</h2>
+        <h2 className="sr-only">{chart === 'share' ? shareTitle : trendTitle}</h2>
         <div className="chart-tabs" role="tablist" aria-label={t('chart.label')} ref={tabsRef} onKeyDown={onTabKey}>
           <span className="chart-indicator" ref={markRef} aria-hidden="true" />
           {tabs.map(([key, label]) => <Button key={key} type="button" variant="ghost" size="sm" role="tab" id={`chart-tab-${key}`} className="chart-tab" tabIndex={chart === key ? 0 : -1} aria-selected={chart === key} aria-controls="primary-chart" onClick={() => setChart(key)}>{label}</Button>)}
         </div>
       </div>
       <div id="primary-chart" role="tabpanel" aria-labelledby={`chart-tab-${chart}`} className="chart-panel">
-        {chart === 'timeline' ? (hoursMode ? (showHours ? <>
-          {caption}
-          <DayHourChart hours={hourBars} isDark={isDark} />
-        </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />) : (showTimeline ? <>
-          {caption}
-          <Timeline spans={chartSpans} day={chartDay} className="primary-timeline" lane={36} isDark={isDark} showEmpty labelKey={copy.labelKey} emptyKey={copy.emptyKey} date={timelineDate} colorOf={domain => colors.get(domain) ?? swatches.other} onSelectSite={openSite} />
-          <div className="legend">{legend.map(domain => <Button variant="ghost" size="xs" key={domain} onClick={event => openSite(domain, event)}><i style={{ background: colors.get(domain) }} />{domain}</Button>)}{showOther && <span className="legend-other"><i style={{ background: swatches.other }} />{t('timeline.other')}</span>}</div>
-        </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)) : (showTrend ? <Trend days={trendDays} className="primary-trend" isDark={isDark} onSelectDay={onSelectDay} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
+        {chart === 'share' ? <SiteShareChart rows={rows} total={total} focusSite={filterSite} rangeLabel={rangeLabel} isDark={isDark} onOpenSite={openSite} /> : (showTrend ? <Trend days={trendDays} className="primary-trend" isDark={isDark} onSelectDay={onSelectDay} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
       </div>
     </section>
     </div>
-    <section className="rank-section" aria-label={t('ranking.title')}>
+    <section className="rank-section" id="site-ledger" tabIndex={-1} aria-label={t('ranking.title')}>
       {!rows.length ? (filtered ? <FilterEmpty className="ledger-card chart-empty" domain={filterSite} onClear={() => onFilter('')} title={t('filter.emptyRankingTitle')} description={t('filter.emptyRankingDescription', { domain: filterSite })} /> : <EmptyState className="ledger-card chart-empty" title={t('ranking.emptyTitle')} description={t('ranking.emptyDescription')} />) : <div className="rank-card ledger-card">
         <div className="rank-card-head">
           <div className="rank-card-title"><h2>{t('ranking.title')}</h2><p>{rangeLabel}</p></div>

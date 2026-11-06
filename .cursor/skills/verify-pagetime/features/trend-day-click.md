@@ -1,10 +1,10 @@
 # 点趋势柱跳到那一天
 
-On a multi-day trend (Last 7 days, Last 30 days, or a custom range of more than one day), clicking a bar that has a value sets the date range to that local day. The chart then opens on that day's timeline. Today uses the Today preset. Any other day is a one-day custom range. A site filter that is already on stays on. An unrecorded empty column does not change the range. Previous period and Next period still move that one-day range. The same click works on the 7-day trend tab of a single day. Each selectable day is also a button with the same result; the chart itself stays out of the tab order. A filtered site that only has visits, and no active time, on a recorded day still shows that one-pixel bar. A site with no rows in the range stays on the empty filter state. Hour bars are not part of this journey. The site-detail trend is [detail-trend-day-click.md](detail-trend-day-click.md).
+On a multi-day trend (Last 7 days, Last 30 days, or a custom range of more than one day), clicking a bar that has a value sets the date range to that local day. The chart then opens on that day's site share. Today uses the Today preset. Any other day is a one-day custom range. A site filter that is already on stays on. An unrecorded empty column does not change the range. Previous period and Next period still move that one-day range. The same click works on the 7-day trend tab of a single day. Each selectable day is also a button with the same result; the chart itself stays out of the tab order. A filtered site that only has visits, and no active time, on a recorded day still shows that one-pixel bar. A site with no rows in the range stays on the empty filter state. Hour bars are not part of this journey. The site-detail trend is [detail-trend-day-click.md](detail-trend-day-click.md).
 
 ## Sub-features
 
-- Bar: on `Last 7 days`, click a column that has active time. The trigger no longer starts with `Date range: Last 7 days`. The selected tab is `Timeline`, or `Today's timeline` when the column is today.
+- Bar: on the trend tab, click a column that has active time. The trigger no longer starts with `Date range: Last 7 days`. The selected tab is `Site share`.
 - Filter: with `Filtered to <domain>` showing, the same click leaves that status in place.
 - Empty column: a day with no recorded bar does not change the trigger.
 - Paging: after the jump, `Previous period` and `Next period` are the same controls as a one-day range. `Next period` is disabled when the selected day is today.
@@ -21,8 +21,8 @@ Overview, range is Last 7 days, Last 30 days, or a multi-day custom range. The t
 Language is English. Viewport 1280×800.
 
 1. Assert `[data-status="ready"]`. If the status is `empty`, stop. Do not insert a host.
-2. Open `getByRole('button', { name: /^Date range/ })` and choose `Last 7 days`. The selected tab is the trend tab, not `Today's timeline`.
-3. Click a trend column that has a bar (the same spot that shows that day's tooltip). The trigger's accessible name changes. The selected tab is `Timeline` when that day is not today, or `Today's timeline` when it is. The caption date matches that day.
+2. Open `getByRole('button', { name: /^Date range/ })` and choose `Last 7 days`. The selected tab is `Site share`. Open the trend tab.
+3. Click a trend column that has a bar (the same spot that shows that day's tooltip). The trigger's accessible name changes. The selected tab is `Site share`. The share caption names that day.
 4. Click `Filter to <domain>`, return to `Last 7 days` if the filter click left a single day, then click a recorded column again. The status `Filtered to <domain>` is still present.
 5. Click the empty part of the plot where a day has no bar. The trigger stays the same.
 6. Click `Previous period`. The trigger changes and the filter status, if it was on, is still present. `Next period` is enabled unless the range already ends today.

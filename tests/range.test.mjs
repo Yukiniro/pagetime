@@ -92,12 +92,12 @@ test('the same site filter is recomputed on the new range', () => {
   assert.equal(one.visits, 0);
 });
 
-test('today opens the timeline and keeps a 7-day trend; other ranges open their own trend', () => {
-  assert.equal(defaultChart(presetRange('today', today), today), 'timeline');
-  assert.equal(defaultChart(customRange('2026-10-19', '2026-10-19'), today), 'timeline');
-  assert.equal(defaultChart(presetRange('7d', today), today), 'trend');
-  assert.equal(defaultChart(presetRange('30d', today), today), 'trend');
-  assert.equal(defaultChart(customRange('2026-10-16', '2026-10-18'), today), 'trend');
+test('every range opens on site share and keeps its daily trend window', () => {
+  assert.equal(defaultChart(presetRange('today', today), today), 'share');
+  assert.equal(defaultChart(customRange('2026-10-19', '2026-10-19'), today), 'share');
+  assert.equal(defaultChart(presetRange('7d', today), today), 'share');
+  assert.equal(defaultChart(presetRange('30d', today), today), 'share');
+  assert.equal(defaultChart(customRange('2026-10-16', '2026-10-18'), today), 'share');
   assert.deepEqual(trendWindow(presetRange('today', today), today), { start: at(13), end: at(20) });
   assert.deepEqual(trendWindow(presetRange('30d', today), today), { start: at(19 - 29), end: at(20) });
   const past = customRange('2026-10-12', '2026-10-12');

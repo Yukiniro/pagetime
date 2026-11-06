@@ -21,7 +21,7 @@
   "loading": "正在读取本地记录…",
   "empty": {
     "title": "开始浏览后会出现在这里",
-    "description": "访问网页后，活跃时间、时间线和站点排行会显示在这一页。"
+    "description": "访问网页后，活跃时间、站点占比和站点排行会显示在这一页。"
   },
   "active": "活跃 {{duration}}",
   "badge": {
@@ -57,6 +57,13 @@
     "emptyRankingDescription": "{{domain}} 在当前范围内没有记录。"
   },
   "chart": { "label": "主图" },
+  "share": {
+    "title": "站点占比",
+    "ofAll": "占全站时长",
+    "rest": "其余站点",
+    "empty": "此范围没有活跃时长",
+    "viewAllLabel": "查看全部站点"
+  },
   "trend": { "label": "每日活跃浏览时长。{{days}}", "separator": "；", "hours_other": "{{count}} 小时" },
   "timeline": {
     "title": "今日时间线",

@@ -21,7 +21,7 @@
   "loading": "Loading local records…",
   "empty": {
     "title": "Your browsing will show up here",
-    "description": "After you visit a page, active time, the timeline, and site rankings appear on this page."
+    "description": "After you visit a page, active time, site share, and site rankings appear on this page."
   },
   "active": "Active {{duration}}",
   "badge": {
@@ -57,6 +57,13 @@
     "emptyRankingDescription": "{{domain}} has no records in this range."
   },
   "chart": { "label": "Primary chart" },
+  "share": {
+    "title": "Site share",
+    "ofAll": "Share of all sites",
+    "rest": "Other sites",
+    "empty": "No active time in this range",
+    "viewAllLabel": "View all sites"
+  },
   "trend": { "label": "Daily active browsing time. {{days}}", "separator": "; ", "hours_one": "{{count}} hr", "hours_other": "{{count}} hrs" },
   "timeline": {
     "title": "Today's timeline",
