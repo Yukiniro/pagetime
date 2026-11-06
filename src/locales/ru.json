@@ -108,7 +108,7 @@
     "title": "Топ сайтов",
     "timeTitle": "По активному времени",
     "visitsTitle": "По посещениям",
-    "metricLabel": "Сортировка правого столбца",
+    "metricLabel": "Сортировать по",
     "site": "Сайт",
     "activeTime": "Активное время",
     "visits": "Посещения",
@@ -120,7 +120,11 @@
     "showAll_many": "Показать все {{count}} сайтов",
     "showAll_other": "Показать все {{count}} сайта",
     "filterSite": "Фильтр по {{domain}}",
-    "openDetail": "Подробности {{domain}}"
+    "openDetail": "Подробности {{domain}}",
+    "search": "Поиск сайтов",
+    "searchPlaceholder": "Найти сайт, например github.com",
+    "clearSearch": "Очистить поиск",
+    "noMatch": "Нет подходящих сайтов"
   },
   "records": {
     "search": "Поиск сайтов",

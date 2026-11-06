@@ -82,7 +82,7 @@
     "title": "サイトランキング",
     "timeTitle": "アクティブ時間順",
     "visitsTitle": "訪問回数順",
-    "metricLabel": "右の列の順位",
+    "metricLabel": "並べ替え",
     "site": "サイト",
     "activeTime": "アクティブ時間",
     "visits": "訪問回数",
@@ -91,7 +91,11 @@
     "collapse": "一覧を閉じる",
     "showAll_other": "全 {{count}} サイトを表示",
     "filterSite": "{{domain}} で絞り込む",
-    "openDetail": "{{domain}} の詳細"
+    "openDetail": "{{domain}} の詳細",
+    "search": "サイトを検索",
+    "searchPlaceholder": "サイトを探す（例：github.com）",
+    "clearSearch": "検索をクリア",
+    "noMatch": "一致するサイトがありません"
   },
   "records": {
     "search": "サイトを検索",

@@ -11,7 +11,7 @@ The Active hours block stays collapsed until it is opened, then uses the selecte
 
 ## How to get to it (user POV)
 
-Overview, after the ledger is ready. The heatmap toggle is under the two ranking columns. The filter is the ranking row button `Filter to <domain>`.
+Overview, after the ledger is ready. The heatmap toggle is under the site ledger. The filter is the ranking row button `Filter to <domain>`.
 
 ## Driving it with Playwright
 

@@ -82,7 +82,7 @@
     "title": "站点排行",
     "timeTitle": "按时长",
     "visitsTitle": "按访问次数",
-    "metricLabel": "右侧排行依据",
+    "metricLabel": "排序方式",
     "site": "站点",
     "activeTime": "活跃时间",
     "visits": "访问次数",
@@ -91,7 +91,11 @@
     "collapse": "收起列表",
     "showAll_other": "查看全部 {{count}} 个站点",
     "filterSite": "按 {{domain}} 过滤",
-    "openDetail": "查看 {{domain}} 的详情"
+    "openDetail": "查看 {{domain}} 的详情",
+    "search": "搜索站点",
+    "searchPlaceholder": "查找站点，例如 github.com",
+    "clearSearch": "清空搜索",
+    "noMatch": "没有匹配的站点"
   },
   "records": {
     "search": "搜索站点",

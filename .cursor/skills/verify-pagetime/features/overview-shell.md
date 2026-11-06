@@ -1,6 +1,6 @@
 # 概览顶栏、阅读顺序与可中断过渡
 
-The dashboard has no fixed side column. A light top bar holds the brand, Overview, Visits, and Settings, the page title, the local note, and the recording status. Those three entries stay on this page. The overview ledger reads in one order at 1440px, 375px, and 320px: date control, site filter when one is on, primary active time, secondary visit count, site count, and neutral comparisons, the primary chart, the two ranking columns, then the collapsed hour heatmap. The primary figure is the largest number and stays a ledger figure. The first paint shows the loaded figures. A later date or chart choice replaces the previous one without playing the skipped state. Reduced motion drops movement. Closing site detail returns focus to the control that opened it.
+The dashboard has no fixed side column. A light top bar holds the brand, Overview, Visits, and Settings, the page title, the local note, and the recording status. Those three entries stay on this page. The overview ledger reads in one order at 1440px, 375px, and 320px: date control, site filter when one is on, primary active time, secondary visit count, site count, and neutral comparisons, the primary chart, the site ledger, then the collapsed hour heatmap. The primary figure is the largest number and stays a ledger figure. The first paint shows the loaded figures. A later date or chart choice replaces the previous one without playing the skipped state. Reduced motion drops movement. Closing site detail returns focus to the control that opened it.
 
 ## How to get to it (user POV)
 
@@ -20,5 +20,5 @@ Preview origin is the URL `launch` printed, or the extension `dashboard.html`. L
 ## Gotchas
 
 - An empty preview has no ranking row and no site filter. Report the ready-ledger and detail-focus steps as not run.
-- The primary chart is still the timeline or the daily trend. This journey does not require a site-share chart or a single ranking list.
+- The primary chart is still the timeline or the daily trend. This journey does not require a site-share chart. The ranking region is the one site ledger; its search and share behavior is [site-ledger.md](site-ledger.md).
 - Popup links that open today's site detail are covered by [popup-site-detail.md](popup-site-detail.md). This journey must not change that path.

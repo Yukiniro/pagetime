@@ -88,7 +88,7 @@
     "title": "Sitios principales",
     "timeTitle": "Por tiempo activo",
     "visitsTitle": "Por visitas",
-    "metricLabel": "Ordenar la columna derecha por",
+    "metricLabel": "Ordenar por",
     "site": "Sitio",
     "activeTime": "Tiempo activo",
     "visits": "Visitas",
@@ -99,7 +99,11 @@
     "showAll_many": "Ver los {{count}} sitios",
     "showAll_other": "Ver los {{count}} sitios",
     "filterSite": "Filtrar por {{domain}}",
-    "openDetail": "Detalles de {{domain}}"
+    "openDetail": "Detalles de {{domain}}",
+    "search": "Buscar sitios",
+    "searchPlaceholder": "Buscar un sitio, p. ej., github.com",
+    "clearSearch": "Borrar búsqueda",
+    "noMatch": "No hay sitios coincidentes"
   },
   "records": {
     "search": "Buscar sitios",
