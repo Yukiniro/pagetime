@@ -212,8 +212,8 @@ main{min-width:0;max-width:1440px}
   .kpi-item.primary .kpi-value{font-size:28px}
 }
 @media(prefers-reduced-motion:reduce){
-  .app-shell [data-slot=button]:active{transform:none}
+  .app-shell [data-slot=button]:active{transform:none;translate:none}
   .heatmap-caret{transition:none}
   [data-slot=sheet-content]{transition-property:opacity}
-  [data-slot=sheet-content][data-starting-style],[data-slot=sheet-content][data-ending-style]{transform:none}
+  [data-slot=sheet-content][data-starting-style],[data-slot=sheet-content][data-ending-style]{transform:none;translate:none}
 }

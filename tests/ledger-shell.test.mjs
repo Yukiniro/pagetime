@@ -29,7 +29,12 @@ test('the ledger source puts the date control ahead of the overview and drops th
   assert.equal(app.includes('detailFocusTarget'), true);
   assert.equal(sheet.includes('backdrop-blur'), false);
   assert.match(css, /prefers-reduced-motion:reduce/);
-  assert.match(css, /\[data-slot=sheet-content\]\[data-starting-style\].*transform:none/);
+  const reduced = css.slice(css.indexOf('@media(prefers-reduced-motion:reduce)'));
+  const sheetRule = reduced.match(/\[data-slot=sheet-content\]\[data-starting-style\][^{]*\{[^}]+\}/);
+  assert.ok(sheetRule, 'reduced motion sheet rule');
+  assert.match(sheetRule[0], /translate:\s*none/);
+  assert.match(sheetRule[0], /transform:\s*none/);
+  assert.equal(sheetRule[0].includes('data-ending-style'), true);
 });
 
 const { window } = parseHTML('<!doctype html><html><body></body></html>');

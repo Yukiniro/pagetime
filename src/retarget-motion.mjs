@@ -17,10 +17,35 @@ export function nextTabKey(keys, current, key) {
   return null;
 }
 
+// The underline is absolutely positioned inside the tab list. Its origin is
+// that list's padding edge. offsetLeft/Top are relative to offsetParent, which
+// is the list when the list is positioned. The list's own offsetLeft is its
+// place in a different parent, so subtracting it shifts the underline.
+export function offsetWithin(node, ancestor) {
+  if (node.offsetParent === ancestor) return { left: node.offsetLeft, top: node.offsetTop };
+  let left = 0;
+  let top = 0;
+  let current = node;
+  while (current && current !== ancestor) {
+    left += current.offsetLeft;
+    top += current.offsetTop;
+    const parent = current.offsetParent;
+    if (parent === ancestor) return { left, top };
+    if (!parent || parent === current) break;
+    current = parent;
+  }
+  if (typeof node.getBoundingClientRect === 'function' && typeof ancestor.getBoundingClientRect === 'function') {
+    const nodeBox = node.getBoundingClientRect();
+    const ancestorBox = ancestor.getBoundingClientRect();
+    return { left: nodeBox.left - ancestorBox.left, top: nodeBox.top - ancestorBox.top };
+  }
+  return { left: node.offsetLeft - ancestor.offsetLeft, top: node.offsetTop - ancestor.offsetTop };
+}
+
 export function indicatorFrame(tab, list) {
-  const left = tab.offsetLeft - list.offsetLeft;
-  const top = tab.offsetTop - list.offsetTop + tab.offsetHeight - 2;
-  return { transform: `translate3d(${left}px, ${top}px, 0)`, width: `${tab.offsetWidth}px` };
+  const origin = offsetWithin(tab, list);
+  const top = origin.top + tab.offsetHeight - 2;
+  return { transform: `translate3d(${origin.left}px, ${top}px, 0)`, width: `${tab.offsetWidth}px` };
 }
 
 function paint(node, frame) {

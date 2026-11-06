@@ -14,7 +14,7 @@ Preview origin is the URL `launch` printed, or the extension `dashboard.html`. L
 2. On an empty ledger, `[data-status="empty"]` is visible and the date trigger stays visible. Do not look for the KPI.
 3. When the ledger is ready, the filter chip (only while a site filter is on), the region whose name ends with `totals`, `Primary chart`, the ranking region, and `Active hours` (`aria-expanded="false"`) follow that order. `.kpi-item.primary` holds the active time. Visit count, site count, and `[data-compare]` sit in `.kpi-secondary` or under the primary figure as the comparison line.
 4. Choose `Last 7 days`, then `Last 30 days`, without waiting. The trigger matches `/^Date range: Last 30 days /`. The selected chart tab is that range's trend, not a transition through the 7-day chart.
-5. With `emulateMedia({ reducedMotion: 'reduce' })`, repeat the range change. The figures update in place. The site detail sheet does not slide: open it from a ranking detail button when a row exists, then `Close details`, and the detail button is focused again.
+5. With `emulateMedia({ reducedMotion: 'reduce' })`, repeat the range change. The figures update in place. The site detail sheet fades and does not move: its computed `translate` stays `none` while it opens and closes, on the right at a wide viewport and from the bottom below 760px. Open it from a ranking detail button when a row exists, then `Close details`, and the detail button is focused again. The chart underline sits on the selected tab; a quick second choice leaves it on that tab, including when the tab list wraps.
 6. Switch Appearance to Dark and repeat the 1440 and 375 checks. The same controls stay visible.
 
 ## Gotchas

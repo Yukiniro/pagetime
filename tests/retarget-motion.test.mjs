@@ -23,12 +23,23 @@ function fakeNode(computed = {}) {
   };
 }
 
-test('the chart indicator frame follows the selected tab, including a wrapped row', () => {
-  const list = { offsetLeft: 8, offsetTop: 4 };
-  const tab = { offsetLeft: 48, offsetTop: 40, offsetHeight: 36, offsetWidth: 72 };
+test('the chart indicator uses the tab offset inside the list, not the list offset in its parent', () => {
+  const list = { offsetLeft: 120, offsetTop: 80 };
+  const tab = { offsetLeft: 16, offsetTop: 0, offsetHeight: 44, offsetWidth: 90, offsetParent: list };
   const frame = indicatorFrame(tab, list);
-  assert.equal(frame.transform, 'translate3d(40px, 70px, 0)');
-  assert.equal(frame.width, '72px');
+  assert.equal(frame.transform, 'translate3d(16px, 42px, 0)');
+  assert.equal(frame.width, '90px');
+  const wrapped = { offsetLeft: 4, offsetTop: 48, offsetHeight: 36, offsetWidth: 70, offsetParent: list };
+  assert.equal(indicatorFrame(wrapped, list).transform, 'translate3d(4px, 82px, 0)');
+});
+
+test('a tab whose offset parent sits inside the list still excludes the list parent offset', () => {
+  const list = { offsetLeft: 200, offsetTop: 90 };
+  const mid = { offsetLeft: 12, offsetTop: 8, offsetParent: list };
+  const tab = { offsetLeft: 6, offsetTop: 2, offsetHeight: 20, offsetWidth: 40, offsetParent: mid };
+  const frame = indicatorFrame(tab, list);
+  assert.equal(frame.transform, 'translate3d(18px, 28px, 0)');
+  assert.equal(frame.width, '40px');
 });
 
 test('arrow keys select the next chart tab immediately, including wrap', () => {
