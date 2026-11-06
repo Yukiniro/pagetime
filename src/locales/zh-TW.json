@@ -82,7 +82,7 @@
     "title": "網站排行",
     "timeTitle": "按時長",
     "visitsTitle": "按造訪次數",
-    "metricLabel": "右側排行依據",
+    "metricLabel": "排序方式",
     "site": "網站",
     "activeTime": "活躍時間",
     "visits": "造訪次數",
@@ -91,7 +91,11 @@
     "collapse": "收合清單",
     "showAll_other": "查看全部 {{count}} 個網站",
     "filterSite": "依 {{domain}} 篩選",
-    "openDetail": "查看 {{domain}} 的詳情"
+    "openDetail": "查看 {{domain}} 的詳情",
+    "search": "搜尋網站",
+    "searchPlaceholder": "尋找網站，例如 github.com",
+    "clearSearch": "清除搜尋",
+    "noMatch": "沒有相符的網站"
   },
   "records": {
     "search": "搜尋網站",

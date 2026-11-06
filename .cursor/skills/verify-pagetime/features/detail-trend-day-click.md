@@ -34,4 +34,4 @@ Language is English. Viewport 1280×800 so the drawer is the right-hand sheet.
 - Do not click the hour bars under `Time of day`. On a single day those bars filter the session list and leave the date range unchanged. Do not click `Delete this site's records`, `Stop recording this site`, or `Add to whitelist`.
 - The click replaces the range. It does not close the drawer and it does not clear `Filtered to <domain>`.
 - While the dialog is open, ArrowLeft and ArrowRight do not shift the range. The period buttons still shift that one-day range. The open dialog marks the overview inert, and at 1280 the drawer covers `button.range`.
-- Ranking has two columns, so `Filter to <domain>` and `Details for <domain>` each match two buttons. Either one opens the same site.
+- The site ledger has one row per site, so `Filter to <domain>` and `Details for <domain>` each match one button.

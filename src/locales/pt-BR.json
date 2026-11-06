@@ -88,7 +88,7 @@
     "title": "Sites mais acessados",
     "timeTitle": "Por tempo ativo",
     "visitsTitle": "Por visitas",
-    "metricLabel": "Ordenar a coluna da direita por",
+    "metricLabel": "Ordenar por",
     "site": "Site",
     "activeTime": "Tempo ativo",
     "visits": "Visitas",
@@ -99,7 +99,11 @@
     "showAll_many": "Ver todos os {{count}} sites",
     "showAll_other": "Ver todos os {{count}} sites",
     "filterSite": "Filtrar por {{domain}}",
-    "openDetail": "Detalhes de {{domain}}"
+    "openDetail": "Detalhes de {{domain}}",
+    "search": "Pesquisar sites",
+    "searchPlaceholder": "Encontrar um site, ex.: github.com",
+    "clearSearch": "Limpar pesquisa",
+    "noMatch": "Nenhum site correspondente"
   },
   "records": {
     "search": "Pesquisar sites",

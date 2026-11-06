@@ -85,7 +85,7 @@
     "title": "Top-Websites",
     "timeTitle": "Nach aktiver Zeit",
     "visitsTitle": "Nach Besuchen",
-    "metricLabel": "Rechte Spalte ordnen nach",
+    "metricLabel": "Sortieren nach",
     "site": "Website",
     "activeTime": "Aktive Zeit",
     "visits": "Besuche",
@@ -95,7 +95,11 @@
     "showAll_one": "{{count}} Website anzeigen",
     "showAll_other": "Alle {{count}} Websites anzeigen",
     "filterSite": "Nach {{domain}} filtern",
-    "openDetail": "Details zu {{domain}}"
+    "openDetail": "Details zu {{domain}}",
+    "search": "Websites suchen",
+    "searchPlaceholder": "Website finden, z. B. github.com",
+    "clearSearch": "Suche löschen",
+    "noMatch": "Keine passenden Websites"
   },
   "records": {
     "search": "Websites suchen",

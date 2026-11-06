@@ -82,7 +82,7 @@
     "title": "사이트 순위",
     "timeTitle": "활성 시간순",
     "visitsTitle": "방문 횟수순",
-    "metricLabel": "오른쪽 순위 기준",
+    "metricLabel": "정렬 기준",
     "site": "사이트",
     "activeTime": "활성 시간",
     "visits": "방문 횟수",
@@ -91,7 +91,11 @@
     "collapse": "목록 접기",
     "showAll_other": "사이트 {{count}}개 모두 보기",
     "filterSite": "{{domain}}(으)로 필터",
-    "openDetail": "{{domain}} 상세"
+    "openDetail": "{{domain}} 상세",
+    "search": "사이트 검색",
+    "searchPlaceholder": "사이트 찾기 (예: github.com)",
+    "clearSearch": "검색 지우기",
+    "noMatch": "일치하는 사이트가 없습니다"
   },
   "records": {
     "search": "사이트 검색",

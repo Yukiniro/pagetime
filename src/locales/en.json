@@ -85,7 +85,7 @@
     "title": "Top sites",
     "timeTitle": "By active time",
     "visitsTitle": "By visits",
-    "metricLabel": "Rank the right column by",
+    "metricLabel": "Sort sites by",
     "site": "Site",
     "activeTime": "Active time",
     "visits": "Visits",
@@ -95,7 +95,11 @@
     "showAll_one": "View all {{count}} site",
     "showAll_other": "View all {{count}} sites",
     "filterSite": "Filter to {{domain}}",
-    "openDetail": "Details for {{domain}}"
+    "openDetail": "Details for {{domain}}",
+    "search": "Search sites",
+    "searchPlaceholder": "Find a site, e.g. github.com",
+    "clearSearch": "Clear search",
+    "noMatch": "No matching sites"
   },
   "records": {
     "search": "Search sites",

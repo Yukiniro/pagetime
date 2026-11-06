@@ -23,7 +23,7 @@ export function DashboardSkeleton() {
       <Skeleton className="skel-chart" />
     </section>
     <section className="rank-section" aria-hidden="true">
-      <div className="rank-grid"><RankSkeleton /><RankSkeleton /></div>
+      <RankSkeleton />
     </section>
     <Skeleton className="skel-heatmap ledger-card" aria-hidden="true" />
   </div>;

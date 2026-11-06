@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ArrowRight, CaretDown, CaretRight } from '@phosphor-icons/react';
+import { ArrowRight, CaretDown, CaretRight, MagnifyingGlass, X } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@app/components/ui/input-group';
 import { useTranslation } from 'react-i18next';
 import { indicatorFrame, nextTabKey, reducedMotion, retarget } from './retarget-motion.mjs';
 import { useSettle } from './use-retarget.js';
@@ -17,36 +18,28 @@ import { duration, formatDate } from './i18n.js';
 import { addDays, dateKey } from './model.mjs';
 import { dayCount, timelineDay, timelineUsesHours } from './range.mjs';
 import { focusSpans, focusSummary, timelineHasActivity, trendHasActivity } from './site-filter.mjs';
+import { formatSiteShare, SITE_LEDGER_LIMIT, siteShareWidth, visibleSites } from './site-ledger.mjs';
 import { timelineCopy } from './timeline-copy.mjs';
 
-const RANK_LIMIT = 8;
-
-function byVisits(rows) {
-  return [...rows].sort((a, b) => b.visits - a.visits || b.ms - a.ms || a.domain.localeCompare(b.domain));
-}
-
-function RankRows({ rows, metric, filterSite, onFilter, onOpen }) {
+function RankRows({ rows, total, filterSite, onFilter, onOpen }) {
   const { t } = useTranslation();
-  const max = Math.max(1, ...rows.map(row => metric === 'visits' ? row.visits : row.ms));
   return <ol className="rank-list">
     {rows.map((row, index) => {
-      const value = metric === 'visits' ? row.visits : row.ms;
-      const share = Math.round(value * 100 / max);
       const icon = iconForSite(row.domain, row.hosts) || row.domain;
       const active = filterSite === row.domain;
-      const time = duration(row.ms);
-      const visits = t('records.count', { count: row.visits });
+      const metricsId = `rank-metrics-${index}`;
       return <li key={row.domain} className="rank-line">
         <span className="rank-position" aria-hidden="true">{index + 1}</span>
-        <Button variant="ghost" className={active ? 'rank-row is-filtered' : 'rank-row'} aria-pressed={active} aria-label={t('ranking.filterSite', { domain: row.domain })} onClick={() => onFilter(row.domain)}>
-          <span className="rank-bar" style={{ width: `${share}%` }} aria-hidden="true" />
+        <Button variant="ghost" className={active ? 'rank-row is-filtered' : 'rank-row'} aria-pressed={active} aria-describedby={metricsId} aria-label={t('ranking.filterSite', { domain: row.domain })} onClick={() => onFilter(row.domain)}>
+          <span className="rank-bar" style={{ width: `${siteShareWidth(row.ms, total)}%` }} aria-hidden="true" />
           <span className="rank-main"><SiteIcon domain={icon} site={icon} /><span>{row.domain}</span></span>
-          <span className="rank-metrics">
-            <span className="rank-value">{metric === 'visits' ? row.visits : time}</span>
-            <span className="rank-secondary">{metric === 'visits' ? time : visits}</span>
+          <span className="rank-metrics" id={metricsId}>
+            <span className="rank-value">{duration(row.ms)}</span>
+            <span className="rank-share">{formatSiteShare(row.ms, total)}</span>
+            <span className="rank-secondary">{t('records.count', { count: row.visits })}</span>
           </span>
         </Button>
-        <Button variant="ghost" size="icon-sm" className="rank-detail" aria-label={t('ranking.openDetail', { domain: row.domain })} onClick={event => onOpen(row.domain, event)}><CaretRight /></Button>
+        <Button variant="ghost" size="icon-sm" className="rank-detail" aria-label={t('ranking.openDetail', { domain: row.domain })} onClick={event => { event.stopPropagation(); onOpen(row.domain, event); }}><CaretRight /></Button>
       </li>;
     })}
   </ol>;
@@ -55,8 +48,9 @@ function RankRows({ rows, metric, filterSite, onFilter, onOpen }) {
 export function Overview({ compare, preset, todayStats, stats, trendDays = [], spans, hourRows, since, start, end, today, now, rangeLabel, chartMode = 'timeline', trendLabel, filterSite = '', onFilter, openSite, onSelectDay, isDark = false }) {
   const { t } = useTranslation();
   const [chart, setChart] = useState(chartMode);
-  const [metric, setMetric] = useState('visits');
+  const [metric, setMetric] = useState('time');
   const [expanded, setExpanded] = useState(false);
+  const [query, setQuery] = useState('');
   const [hoursOpen, setHoursOpen] = useState(false);
   const figuresRef = useSettle(`${start}:${end}:${filterSite}`);
   const tabsRef = useRef(null);
@@ -65,9 +59,9 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
   const focusChart = useRef(false);
   useEffect(() => { setChart(chartMode); }, [chartMode, start, end]);
   const rows = stats?.rows ?? [];
-  const limit = expanded ? rows.length : RANK_LIMIT;
-  const timeRows = rows.slice(0, limit);
-  const rightRows = (metric === 'visits' ? byVisits(rows) : rows).slice(0, limit);
+  const total = stats?.ms ?? 0;
+  const ledger = visibleSites(rows, { metric, query, expanded });
+  const canToggle = !query.trim() && rows.length > SITE_LEDGER_LIMIT;
   const kpi = focusSummary(stats, filterSite);
   const todayKpi = focusSummary(todayStats, filterSite);
   const chartSpans = focusSpans(spans, filterSite);
@@ -165,25 +159,22 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
     </section>
     </div>
     <section className="rank-section" aria-label={t('ranking.title')}>
-      {!rows.length ? (filtered ? <FilterEmpty className="ledger-card chart-empty" domain={filterSite} onClear={() => onFilter('')} title={t('filter.emptyRankingTitle')} description={t('filter.emptyRankingDescription', { domain: filterSite })} /> : <EmptyState className="ledger-card chart-empty" title={t('ranking.emptyTitle')} description={t('ranking.emptyDescription')} />) : <>
-        <div className="rank-grid">
-          <div className="rank-card ledger-card">
-            <div className="rank-card-head"><h2>{t('ranking.title')}</h2><p>{rangeLabel}</p></div>
-            <RankRows rows={timeRows} metric="time" filterSite={filterSite} onFilter={onFilter} onOpen={openSite} />
-          </div>
-          <div className="rank-card ledger-card">
-            <div className="rank-card-head">
-              <h2>{metric === 'visits' ? t('ranking.visitsTitle') : t('ranking.timeTitle')}</h2>
-              <div className="metric-tabs" role="group" aria-label={t('ranking.metricLabel')}>
-                <Button size="xs" variant={metric === 'visits' ? 'secondary' : 'ghost'} aria-pressed={metric === 'visits'} onClick={() => setMetric('visits')}>{t('ranking.visits')}</Button>
-                <Button size="xs" variant={metric === 'time' ? 'secondary' : 'ghost'} aria-pressed={metric === 'time'} onClick={() => setMetric('time')}>{t('ranking.activeTime')}</Button>
-              </div>
-            </div>
-            <RankRows rows={rightRows} metric={metric} filterSite={filterSite} onFilter={onFilter} onOpen={openSite} />
+      {!rows.length ? (filtered ? <FilterEmpty className="ledger-card chart-empty" domain={filterSite} onClear={() => onFilter('')} title={t('filter.emptyRankingTitle')} description={t('filter.emptyRankingDescription', { domain: filterSite })} /> : <EmptyState className="ledger-card chart-empty" title={t('ranking.emptyTitle')} description={t('ranking.emptyDescription')} />) : <div className="rank-card ledger-card">
+        <div className="rank-card-head">
+          <div className="rank-card-title"><h2>{t('ranking.title')}</h2><p>{rangeLabel}</p></div>
+          <div className="metric-tabs" role="group" aria-label={t('ranking.metricLabel')}>
+            <Button size="xs" variant={metric === 'time' ? 'secondary' : 'ghost'} aria-pressed={metric === 'time'} onClick={() => setMetric('time')}>{t('ranking.timeTitle')}</Button>
+            <Button size="xs" variant={metric === 'visits' ? 'secondary' : 'ghost'} aria-pressed={metric === 'visits'} onClick={() => setMetric('visits')}>{t('ranking.visitsTitle')}</Button>
           </div>
         </div>
-        {rows.length > RANK_LIMIT && <div className="table-footer"><Button variant="link" className="px-0" onClick={() => setExpanded(open => !open)}>{expanded ? t('ranking.collapse') : t('ranking.showAll', { count: rows.length })}<ArrowRight /></Button></div>}
-      </>}
+        <InputGroup className="rank-search h-9">
+          <InputGroupAddon><MagnifyingGlass aria-hidden="true" /></InputGroupAddon>
+          <InputGroupInput aria-label={t('ranking.search')} placeholder={t('ranking.searchPlaceholder')} value={query} onChange={event => setQuery(event.target.value)} />
+          {query && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-xs" aria-label={t('ranking.clearSearch')} onClick={() => setQuery('')}><X /></InputGroupButton></InputGroupAddon>}
+        </InputGroup>
+        {ledger.rows.length ? <RankRows rows={ledger.rows} total={total} filterSite={filterSite} onFilter={onFilter} onOpen={openSite} /> : <div className="rank-empty" role="status"><p>{t('ranking.noMatch')}</p><Button variant="link" className="px-0" onClick={() => setQuery('')}>{t('ranking.clearSearch')}</Button></div>}
+        {canToggle && <div className="table-footer"><Button variant="link" className="px-0" onClick={() => setExpanded(open => !open)}>{expanded ? t('ranking.collapse') : t('ranking.showAll', { count: rows.length })}<ArrowRight /></Button></div>}
+      </div>}
     </section>
     <section className="heatmap-fold ledger-card" aria-labelledby="active-hours-title">
       <Button variant="ghost" className="heatmap-toggle" aria-expanded={hoursOpen} aria-controls="active-hours-panel" onClick={() => setHoursOpen(open => !open)}>
