@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowRight, CaretDown, CaretRight } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { indicatorFrame, nextTabKey, reducedMotion, retarget } from './retarget-motion.mjs';
+import { useSettle } from './use-retarget.js';
 import { EmptyState, FilterEmpty } from './empty-state.jsx';
 import { iconForSite } from './data.js';
 import { colorsFor } from './timeline-colors.mjs';
@@ -56,6 +58,11 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
   const [metric, setMetric] = useState('visits');
   const [expanded, setExpanded] = useState(false);
   const [hoursOpen, setHoursOpen] = useState(false);
+  const figuresRef = useSettle(`${start}:${end}:${filterSite}`);
+  const tabsRef = useRef(null);
+  const markRef = useRef(null);
+  const seenTab = useRef(null);
+  const focusChart = useRef(false);
   useEffect(() => { setChart(chartMode); }, [chartMode, start, end]);
   const rows = stats?.rows ?? [];
   const limit = expanded ? rows.length : RANK_LIMIT;
@@ -85,33 +92,64 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
   const timelineTitle = t(copy.titleKey);
   const trendTitle = trendLabel || t('range.last7');
   const tabs = [['timeline', timelineTitle], ['trend', trendTitle]];
+  const tabSignature = `${chart}:${timelineTitle}:${trendTitle}`;
+  useLayoutEffect(() => {
+    const list = tabsRef.current;
+    const mark = markRef.current;
+    const tab = list?.querySelector('[aria-selected="true"]');
+    if (!list || !mark || !tab || seenTab.current === tabSignature) return;
+    const first = seenTab.current === null;
+    seenTab.current = tabSignature;
+    retarget(mark, [indicatorFrame(tab, list)], { first, reduce: reducedMotion() });
+    if (tab.offsetWidth > 0) list.dataset.indicator = '1';
+  }, [tabSignature]);
+  useEffect(() => {
+    if (!focusChart.current) return;
+    focusChart.current = false;
+    tabsRef.current?.querySelector('[aria-selected="true"]')?.focus();
+  }, [chart]);
+  function onTabKey(event) {
+    if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    setChart(current => {
+      const next = nextTabKey(tabs.map(([key]) => key), current, event.key);
+      if (!next || next === current) return current;
+      focusChart.current = true;
+      return next;
+    });
+  }
 
   return <div className="contents" data-status="ready">
     {filtered && <div className="filter-bar" role="status">
       <div className="filter-chip"><span>{t('filter.active', { domain: filterSite })}</span><Button variant="ghost" size="sm" onClick={() => onFilter('')}>{t('filter.clear')}</Button></div>
     </div>}
+    <div className="ledger-figures" ref={figuresRef}>
     <section className="kpi ledger-card" aria-label={t('kpi.label', { range: rangeLabel })}>
       <div className="kpi-item primary">
         <div className="kpi-label"><span>{t('ranking.activeTime')}</span></div>
         <div className="kpi-value">{duration(kpi.ms)}</div>
         <KpiCompare metric="ms" compare={compare} preset={preset} />
       </div>
-      <div className="kpi-item">
-        <div className="kpi-label">{t('ranking.visits')}</div>
-        <div className="kpi-value">{kpi.visits}</div>
-        <KpiCompare metric="visits" compare={compare} preset={preset} />
-      </div>
-      <div className="kpi-item">
-        <div className="kpi-label">{t('kpi.sites')}</div>
-        <div className="kpi-value">{kpi.rows.length}</div>
-        <KpiCompare metric="sites" compare={compare} preset={preset} />
+      <div className="kpi-secondary">
+        <div className="kpi-item">
+          <div className="kpi-label">{t('ranking.visits')}</div>
+          <div className="kpi-value">{kpi.visits}</div>
+          <KpiCompare metric="visits" compare={compare} preset={preset} />
+        </div>
+        <div className="kpi-item">
+          <div className="kpi-label">{t('kpi.sites')}</div>
+          <div className="kpi-value">{kpi.rows.length}</div>
+          <KpiCompare metric="sites" compare={compare} preset={preset} />
+        </div>
       </div>
     </section>
     <section className="chart-card ledger-card" aria-label={t('chart.label')}>
       <div className="chart-head">
         <h2 className="sr-only">{chart === 'timeline' ? timelineTitle : trendTitle}</h2>
-        <div className="chart-tabs" role="tablist" aria-label={t('chart.label')}>
-          {tabs.map(([key, label]) => <Button key={key} variant="ghost" size="sm" role="tab" id={`chart-tab-${key}`} className="chart-tab" aria-selected={chart === key} aria-controls="primary-chart" onClick={() => setChart(key)}>{label}</Button>)}
+        <div className="chart-tabs" role="tablist" aria-label={t('chart.label')} ref={tabsRef} onKeyDown={onTabKey}>
+          <span className="chart-indicator" ref={markRef} aria-hidden="true" />
+          {tabs.map(([key, label]) => <Button key={key} type="button" variant="ghost" size="sm" role="tab" id={`chart-tab-${key}`} className="chart-tab" tabIndex={chart === key ? 0 : -1} aria-selected={chart === key} aria-controls="primary-chart" onClick={() => setChart(key)}>{label}</Button>)}
         </div>
       </div>
       <div id="primary-chart" role="tabpanel" aria-labelledby={`chart-tab-${chart}`} className="chart-panel">
@@ -125,6 +163,7 @@ export function Overview({ compare, preset, todayStats, stats, trendDays = [], s
         </> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)) : (showTrend ? <Trend days={trendDays} className="primary-trend" isDark={isDark} onSelectDay={onSelectDay} /> : <FilterEmpty domain={filterSite} onClear={() => onFilter('')} />)}
       </div>
     </section>
+    </div>
     <section className="rank-section" aria-label={t('ranking.title')}>
       {!rows.length ? (filtered ? <FilterEmpty className="ledger-card chart-empty" domain={filterSite} onClear={() => onFilter('')} title={t('filter.emptyRankingTitle')} description={t('filter.emptyRankingDescription', { domain: filterSite })} /> : <EmptyState className="ledger-card chart-empty" title={t('ranking.emptyTitle')} description={t('ranking.emptyDescription')} />) : <>
         <div className="rank-grid">

@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ChartBar, Clock, GearSix, ShieldCheck, Pause, Play, ArrowRight, MagnifyingGlass, X, Trash, CaretDown, Translate, WarningCircle } from '@phosphor-icons/react';
+import { ArrowRight, MagnifyingGlass, X, Trash, CaretDown, Translate, WarningCircle } from '@phosphor-icons/react';
 import { Button } from '@app/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from '@app/components/ui/dropdown-menu';
 import { RadioGroup, RadioGroupItem } from '@app/components/ui/radio-group';
 import { Switch } from '@app/components/ui/switch';
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@app/components/ui/alert-dialog';
-import { SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@app/components/ui/sidebar';
 import { TooltipProvider } from '@app/components/ui/tooltip';
 import { InputGroup, InputGroupInput, InputGroupAddon, InputGroupButton } from '@app/components/ui/input-group';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@app/components/ui/table';
@@ -26,6 +25,8 @@ import { docLinks } from './docs-links.mjs';
 import { VISIT_LIST_LIMIT } from './ledger-view.mjs';
 import { SiteIcon } from './site-icon.jsx';
 import { SiteDetailSheet } from './site-detail-panel.jsx';
+import { DashboardChrome } from './dashboard-chrome.jsx';
+import { detailFocusTarget } from './detail-focus.mjs';
 import { Overview } from './overview.jsx';
 import { DashboardSkeleton } from './dashboard-skeleton.jsx';
 import { LedgerEmpty } from './empty-state.jsx';
@@ -43,11 +44,7 @@ export function App() {
   const detailTrigger = useRef(null);
   const headingRef = useRef(null);
   const [jumpSite] = useState(() => siteFromLocationHash(location.hash));
-  const detailFocus = () => {
-    const trigger = detailTrigger.current;
-    if (trigger?.isConnected) return trigger;
-    return headingRef.current;
-  };
+  const detailFocus = () => detailFocusTarget(detailTrigger.current, headingRef.current);
   const now = Date.now(), today = midnight(now);
   const active = activeRange(range, today);
   const start = active.start, end = active.end;
@@ -145,27 +142,9 @@ export function App() {
   const removeHosts = target => hostsToDelete(target, view?.hosts ?? [], view?.openDomain);
 
   return <TooltipProvider><AlertDialog open={confirmClear} onOpenChange={setConfirmClear}>
-    <SidebarProvider className="app-shell">
-      <Sidebar collapsible="none" className="sidebar">
-        <SidebarHeader className="p-0"><div className="brand"><img src="/icon/48.png" alt="" aria-hidden="true" width="22" height="22" /><span>PageTime</span></div></SidebarHeader>
-        <SidebarContent className="sidebar-navigation"><nav aria-label={t('nav.label')}><SidebarMenu className="navigation-menu">
-          {[['overview', ChartBar], ['records', Clock], ['settings', GearSix]].map(([key, Icon]) =>
-            <SidebarMenuItem key={key}><SidebarMenuButton className="nav-item" size="lg" isActive={page === key} aria-current={page === key ? 'page' : undefined} onClick={() => setPage(key)}><Icon /><span>{t(`nav.${key}`)}</span></SidebarMenuButton></SidebarMenuItem>)}
-        </SidebarMenu></nav></SidebarContent>
-        <SidebarFooter className="local-note"><ShieldCheck size={21} className="shrink-0" /><span>{t('localNote')}</span></SidebarFooter>
-      </Sidebar>
-      <div className="workspace">
-        <header className="topbar">
-          <span className="topbar-page">{t(`nav.${page}`)}</span>
-          <div className="topbar-actions">
-          <div className="record-status"><span className={`status-dot ${enabled ? '' : 'paused'}`} /><div><strong>{enabled ? t('status.recording') : t('status.paused')}</strong><small>{t('status.since', { date: formatDate(view?.since ?? now) })}</small></div></div>
-          <Button variant="outline" className="action-button" disabled={busy || !shown} onClick={() => act('toggle')}>{enabled ? <Pause weight="fill" /> : <Play weight="fill" />}{enabled ? t('actions.pause') : t('actions.resume')}</Button>
-          </div>
-        </header>
+    <DashboardChrome page={page} onPage={setPage} headingRef={headingRef} enabled={enabled} recordingSince={view?.since ?? now} busy={busy} shown={shown} onToggle={() => act('toggle')}>
         <main className={page === 'overview' ? 'overview-page' : undefined}>
-          <div className="page-header"><div><h1 ref={headingRef} tabIndex={-1}>{t(`pages.${page}.title`)}</h1></div>
-            {page !== 'settings' && <RangeControl range={active} today={today} since={rangeSince} onChange={setRange} />}
-          </div>
+          {page !== 'settings' && <div className="ledger-range"><RangeControl range={active} today={today} since={rangeSince} onChange={setRange} /></div>}
           {problem && <Alert variant="destructive" className="my-4"><AlertTitle>{t('error.title')}</AlertTitle><AlertDescription>{errorText}<Button variant="link" size="sm" onClick={() => { ledger.retry(); act(); }}>{t('error.retry')}</Button></AlertDescription></Alert>}
           {page === 'overview' ? (overviewStatus === 'loading' ? <DashboardSkeleton /> : overviewStatus === 'empty' ? <LedgerEmpty /> : overviewStatus === 'ready' ? <Overview compare={ledger.compare} preset={active.preset} todayStats={todayStats} stats={stats} trendDays={ledger.trendDays ?? []} spans={view.spans} hourRows={view.hourRows ?? []} since={view.since} start={start} end={end} today={today} now={now} rangeLabel={chip} chartMode={defaultChart(active)} trendLabel={trendTitle(t, active, today)} filterSite={filterSite} onFilter={onFilter} openSite={openSite} onSelectDay={onSelectDay} isDark={isDark} /> : null) : !shown ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : page === 'records' ? (ledger.pending ? (!problem && <p className="py-8 text-center text-muted-foreground">{t('loading')}</p>) : <section className="records">
             <InputGroup className="records-search h-9 max-w-[420px]"><InputGroupInput aria-label={t('records.search')} placeholder={t('records.placeholder')} value={search} onChange={e => { setSearch(e.target.value); setSite(''); }} /><InputGroupAddon><MagnifyingGlass /></InputGroupAddon>{search && <InputGroupAddon align="inline-end"><InputGroupButton size="icon-sm" aria-label={t('records.clearSearch')} onClick={() => { setSearch(''); setSite(''); }}><X /></InputGroupButton></InputGroupAddon>}</InputGroup>
@@ -205,8 +184,7 @@ export function App() {
             <p className="settings-links"><a href={links.timing} target="_blank" rel="noreferrer noopener">{t('settings.docs.timing')}</a><span aria-hidden="true">·</span><a href={links.privacy} target="_blank" rel="noreferrer noopener">{t('settings.docs.privacy')}</a></p>
           </section>}
         </main>
-      </div>
-    </SidebarProvider>
+    </DashboardChrome>
     <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>{t('confirm.title')}</AlertDialogTitle><AlertDialogDescription>{t('confirm.description')}</AlertDialogDescription></AlertDialogHeader>
       {error && <Alert variant="destructive"><AlertDescription>{errorText}</AlertDescription></Alert>}
       <AlertDialogFooter><AlertDialogCancel disabled={busy}>{t('confirm.cancel')}</AlertDialogCancel><AlertDialogAction variant="destructive" disabled={busy} onClick={async () => { if (await act('clear')) { setConfirmClear(false); setFilterSite(''); setSelected(null); } }}>{busy ? t('confirm.clearing') : t('confirm.confirm')}</AlertDialogAction></AlertDialogFooter>

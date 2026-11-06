@@ -1,6 +1,6 @@
 # 一页账本概览与日期范围
 
-The overview is one page: a range control in the top bar, then either the empty ledger or the KPI bar, one primary chart, two ranking columns, and a collapsed hour heatmap. The overview uses the selected Linear/Plausible direction: borderless KPIs, underlined chart tabs, two aligned ranking lists with subtle relative row bars, and a collapsed heatmap separated by a rule. At narrow widths the rankings stack and the primary KPI stays above the two secondary KPIs. The default range is today. Last 7 days and last 30 days include today and split on local midnights. The choice is not stored.
+The overview is one page under a light top bar for Overview, Visits, and Settings. The ledger starts with the date control. With no records it shows the empty state. With records the order is any site filter, the primary active time with secondary visit count, site count, and neutral comparisons, one primary chart, two ranking columns, and a collapsed hour heatmap. The overview uses the selected Linear/Plausible direction: a quiet title, underlined chart tabs, two aligned ranking lists with subtle relative row bars, and a collapsed heatmap separated by a rule. At narrow widths the rankings stack and the primary figure stays above the two secondary figures. The default range is today. Last 7 days and last 30 days include today and split on local midnights. The choice is not stored.
 
 ## Sub-features
 
@@ -11,7 +11,7 @@ The overview is one page: a range control in the top bar, then either the empty 
 
 ## How to get to it (user POV)
 
-Open the extension toolbar button, or the preview at `http://127.0.0.1:4173/`. The first screen is Overview. The range button sits on the right of the page title `Browsing overview`.
+Open the extension toolbar button, or the preview at `http://127.0.0.1:4173/`. The first screen is Overview. The page title `Browsing overview` is in the top bar. The date control is the first control in the ledger.
 
 ## Driving it with Playwright
 
