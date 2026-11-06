@@ -168,3 +168,52 @@ html.dark .range-panel{box-shadow:0 8px 24px rgba(0,0,0,.35)}
 .backup-summary dl>div{display:flex;justify-content:space-between;align-items:baseline;gap:16px;min-width:0}
 .backup-summary dt{flex-shrink:0;color:var(--muted-foreground)}
 .backup-summary dd{margin:0;min-width:0;color:var(--foreground);text-align:right;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+
+/* Light top bar. The ledger column is full width; the side column is gone. */
+body{overflow-x:clip}
+.app-shell{display:flex;flex-direction:column;min-width:0;max-width:100%}
+.workspace{margin-left:0;width:100%;max-width:100%;min-width:0}
+.masthead{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;min-width:0;max-width:100%;padding:12px 32px;border-bottom:1px solid var(--line)}
+.masthead-lead{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;min-width:0;flex:1 1 auto}
+.masthead .brand{padding:0;flex:none;min-width:0}
+.masthead nav{margin:0;display:flex;flex-flow:row wrap;gap:4px;min-width:0}
+.masthead .nav-item{height:auto;min-height:32px;gap:6px;padding:4px 8px;font-size:13px;white-space:normal;flex-shrink:1;max-width:100%}
+.masthead .nav-item[aria-current=page]{background:var(--surface-tint);color:var(--blue);font-weight:500}
+.masthead-title{margin:0;min-width:0;font-size:15px;font-weight:500;line-height:1.4;color:var(--ink-mid);overflow-wrap:anywhere}
+.masthead-title:focus-visible{outline:2px solid var(--blue);outline-offset:4px}
+.masthead .local-note{display:flex;align-items:center;gap:6px;margin:0;padding:0;flex:0 1 240px;min-width:0;font-size:12px;line-height:1.4;color:var(--ink-soft)}
+.masthead .local-note span{overflow-wrap:anywhere}
+.masthead-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px 12px;min-width:0;max-width:100%;margin-left:auto}
+.masthead .action-button{height:auto;min-height:32px;max-width:100%;white-space:normal}
+.masthead .record-status{min-width:0;flex:1 1 140px}
+.masthead .record-status strong,.masthead .record-status small{overflow-wrap:anywhere}
+main{min-width:0;max-width:1440px}
+.ledger-range{display:flex;align-items:center;min-width:0;max-width:100%}
+.ledger-figures{min-width:0}
+.filter-bar{min-width:0;max-width:100%}
+.filter-chip{min-width:0}
+.filter-chip [data-slot=button]{flex:none}
+.kpi{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);align-items:end;gap:12px 32px}
+.kpi-secondary{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px 20px;min-width:0}
+.kpi-item{border-left:0;padding:0}
+.kpi-item.primary .kpi-value{font-size:30px;font-weight:500;line-height:1.2}
+.kpi-secondary .kpi-label{font-size:12px}
+.kpi-secondary .kpi-value{margin-top:4px;font-size:16px;font-weight:500}
+.chart-tabs{position:relative}
+.chart-indicator{position:absolute;left:0;top:0;height:2px;width:0;background:var(--blue);pointer-events:none}
+.chart-tabs[data-indicator="1"] .chart-tab{border-bottom-color:transparent}
+@media(min-width:900px){.masthead-lead{flex-wrap:nowrap}}
+@media(max-width:480px){
+  .masthead{padding:10px 12px;gap:8px 12px}
+  .masthead-actions{flex-basis:100%;margin-left:0;justify-content:space-between}
+  .masthead .record-status{flex-basis:100%}
+  main{padding:16px 12px 24px}
+  .kpi{grid-template-columns:minmax(0,1fr);gap:16px}
+  .kpi-item.primary .kpi-value{font-size:28px}
+}
+@media(prefers-reduced-motion:reduce){
+  .app-shell [data-slot=button]:active{transform:none}
+  .heatmap-caret{transition:none}
+  [data-slot=sheet-content]{transition-property:opacity}
+  [data-slot=sheet-content][data-starting-style],[data-slot=sheet-content][data-ending-style]{transform:none}
+}

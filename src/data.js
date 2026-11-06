@@ -3,7 +3,7 @@ import { blankData } from './model.mjs';
 import { siteOf } from './site.mjs';
 import { DEFAULT_SETTINGS, validateSettings } from './settings.mjs';
 import { validateData } from './validate-data.mjs';
-export const isExtension = ['chrome-extension:', 'moz-extension:'].includes(location.protocol);
+export const isExtension = ['chrome-extension:', 'moz-extension:'].includes(globalThis.location?.protocol);
 export const knownSites = ['github.com','wxt.dev','developer.mozilla.org','youtube.com','notion.so'];
 export function iconHost(domain, site = siteOf(domain)) {
   if (typeof site === 'string' && knownSites.includes(site)) return site;
