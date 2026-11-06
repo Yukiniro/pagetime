@@ -62,13 +62,13 @@ test('shiftRange stops on the local day of since and on today', () => {
   assert.equal(shiftRange({ start: today, end: today }, -1, today, since), null);
 });
 
-test('a single day opens that day’s timeline and a 7-day trend ending that day', () => {
+test('a single day opens on site share and keeps a 7-day trend ending that day', () => {
   const today = at(10, 20);
   const yesterday = customRange('2026-10-19', '2026-10-19');
-  assert.equal(defaultChart(presetRange('today', today)), 'timeline');
-  assert.equal(defaultChart(yesterday), 'timeline');
-  assert.equal(defaultChart(presetRange('7d', today)), 'trend');
-  assert.equal(defaultChart(customRange('2026-10-16', '2026-10-18')), 'trend');
+  assert.equal(defaultChart(presetRange('today', today)), 'share');
+  assert.equal(defaultChart(yesterday), 'share');
+  assert.equal(defaultChart(presetRange('7d', today)), 'share');
+  assert.equal(defaultChart(customRange('2026-10-16', '2026-10-18')), 'share');
   assert.deepEqual(trendWindow(presetRange('today', today)), { start: at(10, 14), end: at(10, 21) });
   assert.deepEqual(trendWindow(yesterday), { start: at(10, 13), end: at(10, 20) });
   assert.equal(timelineDay(yesterday, today), at(10, 19));

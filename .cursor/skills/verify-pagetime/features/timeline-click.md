@@ -1,38 +1,31 @@
-# 时间线色块打开站点详情
+# 占比色块或文字打开站点详情
 
-On a single-day segment timeline, a color block opens the same site detail sheet as its legend button. The domain is that block's `site || domain`. A gray block outside the top-five legend opens the real site. The legend label `Other` stays plain text. A click does not change the site filter. The hour bars used for a day past detail retention are not part of this journey.
+On site share, a named color segment and its text button open that site's detail. The click does not change the site filter. `Other` is not a site: it moves to the ledger below. A share under 0.1% stays that width; its text button remains the keyboard path.
 
 ## Sub-features
 
-- Block: click a colored segment on `Today's timeline`. A dialog titled `Site details` shows that site. Close is `Close details`.
-- Gray block: a segment drawn with the neutral gray still opens its own domain, not the word `Other`.
-- Legend: the top sites are buttons. `Other` is not a button.
-- Filter: with `Filtered to <domain>` showing, a block click opens details and leaves that status in place.
-- Blank track: the empty part of the timeline does not open a dialog.
-- Reading: each segment is a button in the screen-reader list. The canvas graphic stays out of the tab order.
+- Segment or label: activate a named site. A dialog titled `Site details` shows that site. Close is `Close details`.
+- Other: the button says `View all sites`. It does not open a dialog and it does not create a site named Other.
+- Filter: with `Filtered to <domain>` showing, activating that site opens details and leaves the status in place. The chart still shows `Other sites` and `Share of all sites`.
+- Keyboard: the text button is in the tab order. The color segment is not. Enter on the text button opens the same dialog.
 
 ## How to get to it (user POV)
 
-Overview, range is a single local day that still has session rows (today, or a recent day), chart tab `Today's timeline`. The blocks sit on the timeline above the legend. This is not the 24 hour-bar chart.
+Overview, any range with active time, chart tab `Site share`. The bar is one horizontal row. The names sit under it.
 
 ## Driving it with Playwright
 
 Language is English. Viewport 1280×800.
 
 1. Assert `[data-status="ready"]`. If the status is `empty`, stop. Do not insert a host.
-2. If the date trigger is `Date range: Today`, the selected tab is `Today's timeline` and the graphic label starts `Today's active browsing timeline`. If the range is another single day, the selected tab is `Timeline` and the graphic label does not start with `Today's`. If the chart is the hour bars instead, this day is past detail retention; stop. The hour-bar heading is `Timeline` when that day is not today.
-3. Click one color block (the same spot that shows that site's tooltip). Assert `getByRole('dialog')` is titled `Site details` and contains that site's domain.
-4. Close with `Close details`. Click a gray block whose site is not a legend button. The dialog contains that site's real domain. `getByRole('button', { name: 'Other', exact: true })` has count 0, and `.legend-other` is present.
-5. Click `Filter to <domain>`, then click that site's block again. The dialog opens and the status `Filtered to <domain>` is still present. Close the dialog. The status is still present.
-6. Click the empty track between blocks. No dialog opens.
-7. The screen-reader list still mentions the site. Each segment is `button.timeline-segment` inside `.timeline-segments` (class `sr-only` until focused). The timeline graphic has `tabindex="-1"`.
-8. Focus the segment button whose name contains the gray site, then press Enter. The dialog opens that site. Close it. Focus another segment button and press Space. That site's dialog opens. With `Filtered to <domain>` showing, Enter on that site's segment button opens the dialog and leaves the status in place.
+2. The selected tab is `Site share`. `.primary-timeline` is absent.
+3. Activate one named site from `.share-list`. Assert `getByRole('dialog')` is titled `Site details` and contains that site's domain. Close with `Close details`. The filter chip is absent.
+4. If `Other` is present, activate it. No dialog opens. `#site-ledger` is the focused region or contains the focused search field.
+5. Click `Filter to <domain>`, then activate that site in the share list again. The dialog opens and the status `Filtered to <domain>` is still present. The share caption includes `Share of all sites`. Close the dialog. The status is still present.
+6. Focus the share text button whose name contains the site, then press Enter. The dialog opens that site.
 
 ## Gotchas
 
-- A fresh preview stays on `[data-status="empty"]` and has no blocks. That is a failed precondition. Do not write `pagetime-preview` or IndexedDB to force this journey.
-- A visit of a few seconds is a one-pixel block (`Math.max(1, width)`). It uses the same dataIndex as the tooltip. A screenshot of a wide block needs a span that already lasts minutes.
-- `Other` is the legend label. The block's target is the grouped site key (`site || domain`), such as `gray.example` for a stored host `www.gray.example`.
-- Do not click `Delete this site's records`. Do not treat the block as the ranking filter (`Filter to`).
-- Hovering a block sets the chart canvas cursor to `pointer`. The empty track does not.
-- The canvas is not the keyboard target. Focus `button.timeline-segment`, including a gray site that has no legend button. `Other` stays plain text. Enter and Space both open the same site detail as a click. The focused label is drawn over the timeline and does not shift the legend or the rankings.
+- An empty preview has no segments. Report the ready steps as not run.
+- Do not seed the production preview. Day totals already in the ledger are enough; the bar does not need session rows.
+- Do not click `Clear data` or the delete confirms.

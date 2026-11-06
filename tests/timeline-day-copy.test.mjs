@@ -106,19 +106,9 @@ test('every locale names another day without saying today, and keeps today’s s
   }
 });
 
-test('the chart title follows the selected day, and hour bars do not add a second empty line', () => {
+test('the primary chart is site share and does not fall back to hour bars', () => {
   const overview = readFileSync(new URL('../src/overview.jsx', import.meta.url), 'utf8');
-  const charts = readFileSync(new URL('../src/charts.jsx', import.meta.url), 'utf8');
-  const timeline = charts.slice(charts.indexOf('export function Timeline'), charts.indexOf('export function Breakdown'));
-  const hours = overview.slice(overview.indexOf('hoursMode ? ('), overview.indexOf(': (showTimeline'));
-  assert.match(overview, /const copy = timelineCopy\(chartDay, today\)/);
-  assert.match(overview, /const timelineTitle = t\(copy\.titleKey\)/);
-  assert.match(overview, /<h2(?: className="sr-only")?>\{chart === 'timeline' \? timelineTitle : trendTitle\}<\/h2>/);
-  assert.match(overview, /showEmpty labelKey=\{copy\.labelKey\} emptyKey=\{copy\.emptyKey\} date=\{timelineDate\}/);
-  assert.doesNotMatch(overview, /t\('timeline\.title'\)|midnight\(chartDay\) === midnight\(today\)/);
-  assert.doesNotMatch(hours, /<Timeline|timeline-empty/);
-  assert.match(hours, /<DayHourChart /);
-  assert.match(timeline, /label=\{t\(labelKey,\{count:today\.length,date\}\)\}/);
-  assert.match(timeline, /\{showEmpty&&!today\.length&&<p className="timeline-empty">\{t\(emptyKey,\{date\}\)\}<\/p>\}/);
-  assert.doesNotMatch(timeline, /t\('timeline\.label'|t\('timeline\.empty'/);
+  assert.match(overview, /SiteShareChart /);
+  assert.match(overview, /t\('share\.title'\)/);
+  assert.doesNotMatch(overview, /DayHourChart|primary-timeline|hoursMode|timelineCopy/);
 });

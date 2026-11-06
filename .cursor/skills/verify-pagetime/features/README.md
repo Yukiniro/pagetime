@@ -8,14 +8,15 @@ Drive one file per journey. Selectors assume English (`pagetime-language` = `en`
 | 官网内容、FAQ 与中英产品图 | [website-content.md](website-content.md) | Preview at `/home.html`. Ten page locales and Chinese/English text-bearing artwork. |
 | PageTime 品牌图标 | [brand-mark.md](brand-mark.md) | Preview and extension. Empty ledger is sufficient. |
 | 一页账本概览与日期范围 | [overview-range.md](overview-range.md) | Preview or extension. KPI, chart, and heatmap need a non-empty ledger. |
+| 当前范围的站点占比 | [site-share.md](site-share.md) | Preview or extension. The share bar needs day totals. An empty preview has no bar. |
 | 站点占比账本 | [site-ledger.md](site-ledger.md) | Preview or extension. Search, sort, share, and expand need a non-empty ledger. An empty preview has no rows. |
 | 概览顶栏、阅读顺序与可中断过渡 | [overview-shell.md](overview-shell.md) | Preview or extension. An empty ledger still shows the top bar and the date control. |
 | 自定义日期不能早于记录开始日 | [custom-range-since.md](custom-range-since.md) | Preview or extension. An empty ledger's `since` is today. |
-| 日期范围前后翻页与单日时间线 | [range-shift.md](range-shift.md) | Preview or extension. Chart steps need a non-empty ledger. |
-| 单日时间线文案跟着所选那一天 | [timeline-day-copy.md](timeline-day-copy.md) | Preview or extension. Chart steps need a non-empty ledger. |
+| 日期范围前后翻页与单日占比 | [range-shift.md](range-shift.md) | Preview or extension. Chart steps need a non-empty ledger. |
+| 每个范围都先看站点占比 | [timeline-day-copy.md](timeline-day-copy.md) | Preview or extension. A past day still needs its day totals. |
 | 站点详情抽屉与点选过滤 | [site-detail.md](site-detail.md) | Extension after a real visit. An empty preview has no rank row. A single day shows that day's sessions and its 7-day trend. A multi-day range leaves the session list out. |
 | 站点过滤时活跃时段跟着过滤 | [heatmap-site-filter.md](heatmap-site-filter.md) | Preview or extension with hour rows. An empty preview has no rank row. |
-| 时间线色块打开站点详情 | [timeline-click.md](timeline-click.md) | Preview or extension with a single-day segment timeline. Keyboard uses each segment button. An empty ledger has no blocks. |
+| 占比色块或文字打开站点详情 | [timeline-click.md](timeline-click.md) | Preview or extension with day totals. The text button is the keyboard path. An empty ledger has no segments. |
 | 点趋势柱跳到那一天 | [trend-day-click.md](trend-day-click.md) | Preview or extension with a multi-day trend. An empty ledger has no bars. |
 | 详情抽屉按日趋势点柱跳到那一天 | [detail-trend-day-click.md](detail-trend-day-click.md) | Preview or extension with a site detail drawer. An empty ledger has no rank row. |
 | 单日详情点时段柱过滤活跃时段 | [detail-hour-filter.md](detail-hour-filter.md) | Preview or extension with a single-day site detail drawer. An empty ledger has no rank row. An empty hour is the full column and a keyboard button. Multi-day and past-retention days leave the hour chart unclickable. |

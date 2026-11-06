@@ -82,9 +82,9 @@ export function activeRange(range, today) {
   return presetRange(preset, today);
 }
 
-// A single local day opens that day's timeline. Every longer interval opens its daily trend.
-export function defaultChart(range) {
-  return dayCount(range.start, range.end) === 1 ? 'timeline' : 'trend';
+// Every range opens on site share. The other tab stays the daily trend.
+export function defaultChart() {
+  return 'share';
 }
 
 // The other tab of a single day is the 7 local days ending on that day. Today keeps the same window it had before.

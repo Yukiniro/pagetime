@@ -21,7 +21,7 @@
   "loading": "ローカルの記録を読み込み中…",
   "empty": {
     "title": "閲覧を始めると、ここに表示されます",
-    "description": "ウェブページを開くと、アクティブ時間、タイムライン、サイト順位がこのページに表示されます。"
+    "description": "ウェブページを開くと、アクティブ時間、サイトの割合、サイト順位がこのページに表示されます。"
   },
   "active": "アクティブ {{duration}}",
   "badge": {
@@ -57,6 +57,13 @@
     "emptyRankingDescription": "{{domain}} の記録はこの範囲にありません。"
   },
   "chart": { "label": "メインのグラフ" },
+  "share": {
+    "title": "サイトの割合",
+    "ofAll": "全サイトに占める割合",
+    "rest": "その他のサイト",
+    "empty": "この範囲にアクティブ時間はありません",
+    "viewAllLabel": "すべてのサイトを見る"
+  },
   "trend": { "label": "日別のアクティブな閲覧時間。{{days}}", "separator": "、", "hours_other": "{{count}} 時間" },
   "timeline": {
     "title": "今日のタイムライン",

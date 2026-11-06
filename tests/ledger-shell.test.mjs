@@ -205,7 +205,7 @@ describe('overview shell', () => {
       today,
       now,
       rangeLabel: 'Today',
-      chartMode: 'timeline',
+      chartMode: 'share',
       trendLabel: 'Last 7 days',
       filterSite: 'github.com',
       onFilter() {},
@@ -243,7 +243,7 @@ describe('overview shell', () => {
       list.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
       list.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
     });
-    assert.equal(view.host.querySelector('[role="tab"][aria-selected="true"]')?.id, 'chart-tab-timeline');
+    assert.equal(view.host.querySelector('[role="tab"][aria-selected="true"]')?.id, 'chart-tab-share');
     const played = animated.length;
     await React.act(async () => {
       view.root.render(React.createElement(TooltipProvider, null, React.createElement(Overview, overviewProps({ end: addDays(today, 2), chartMode: 'trend' }))));

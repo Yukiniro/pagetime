@@ -1,6 +1,6 @@
 import { formatDate } from './i18n.js';
 import { addDays } from './model.mjs';
-import { dayCount, defaultChart, trendWindow } from './range.mjs';
+import { dayCount, trendWindow } from './range.mjs';
 
 export function presetLabel(t, preset) {
   if (preset === '7d') return t('range.last7');
@@ -23,7 +23,7 @@ export function rangeChip(t, range) {
 export function trendLabel(t, range, today) {
   const window = trendWindow(range, today);
   const days = dayCount(window.start, window.end);
-  if (defaultChart(range) === 'timeline' || range.preset === '7d') return t('range.last7');
+  if (dayCount(range.start, range.end) === 1 || range.preset === '7d') return t('range.last7');
   if (range.preset === '30d') return t('range.last30');
   if (days === 1) return formatDate(window.start, { month: 'short', day: 'numeric' });
   if (range.preset === 'custom') return rangeChip(t, range);

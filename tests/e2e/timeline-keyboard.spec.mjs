@@ -6,15 +6,15 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const extensionPath = path.join(root, '.output/chrome-mv3');
-const shotDir = '/tmp/pagetime-verify-evidence/timeline-keyboard';
+const shotDir = '/tmp/pagetime-verify-evidence/site-share-keyboard';
 
 test.beforeAll(() => {
   if (!fs.existsSync(path.join(extensionPath, 'manifest.json'))) throw new Error('run npm run build before test:e2e');
   fs.mkdirSync(shotDir, { recursive: true });
 });
 
-test('keyboard activates every timeline segment, including a gray site with no legend button', async () => {
-  const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pagetime-timeline-key-'));
+test('keyboard opens a named site and moves other to the ledger', async () => {
+  const userDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'pagetime-share-key-'));
   const context = await chromium.launchPersistentContext(userDataDir, {
     headless: false,
     viewport: { width: 1280, height: 800 },
@@ -34,7 +34,7 @@ test('keyboard activates every timeline segment, including a gray site with no l
       const request = indexedDB.open('pagetime-ledger');
       request.onupgradeneeded = () => request.transaction.abort();
       request.onsuccess = () => {
-        const ok = request.result.objectStoreNames.contains('spans');
+        const ok = request.result.objectStoreNames.contains('days');
         request.result.close();
         resolve(ok);
       };
@@ -81,67 +81,58 @@ test('keyboard activates every timeline segment, including a gray site with no l
     });
 
     const dashboard = await context.newPage();
-    await dashboard.emulateMedia({ colorScheme: 'light' });
+    await dashboard.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });
     await dashboard.goto(new URL('/dashboard.html', sw.url()).href);
     await dashboard.evaluate(() => localStorage.setItem('pagetime-language', 'en'));
     await dashboard.reload();
     await expect(dashboard.locator('[data-status="ready"]')).toBeVisible();
-    await expect(dashboard.getByRole('tab', { name: "Today's timeline", selected: true })).toBeVisible();
-    const chart = dashboard.locator('.primary-timeline');
-    await expect(chart).toHaveAttribute('role', 'img');
-    await expect(chart).toHaveAttribute('tabindex', '-1');
-    await expect(dashboard.locator('.legend-other')).toBeVisible();
-    await expect(dashboard.getByRole('button', { name: 'Other', exact: true })).toHaveCount(0);
+    await expect(dashboard.getByRole('tab', { name: 'Site share', selected: true })).toBeVisible();
+    const share = dashboard.locator('.share-list');
+    await expect(share.getByRole('button')).toHaveCount(6);
+    await expect(dashboard.locator('.share-segment')).toHaveCount(6);
 
-    const segments = dashboard.locator('.timeline-segments');
-    await expect(segments.getByRole('button')).toHaveCount(7);
-    const gray = segments.getByRole('button', { name: /gray\.example/ });
-    const github = segments.getByRole('button', { name: /github\.com/ });
-    await expect(gray).toBeVisible();
-    const hidden = await gray.boundingBox();
-    expect(hidden?.width ?? 0).toBeLessThanOrEqual(2);
-
-    await gray.focus();
-    await expect(gray).toBeFocused();
-    const shown = await gray.boundingBox();
-    expect(shown.height).toBeGreaterThan(10);
-    await dashboard.screenshot({ path: path.join(shotDir, 'segment-focused.png') });
+    const github = share.getByRole('button', { name: /github\.com/ });
+    await github.focus();
+    await expect(github).toBeFocused();
+    await dashboard.screenshot({ path: path.join(shotDir, 'share-focused.png') });
     await dashboard.keyboard.press('Enter');
     const dialog = dashboard.getByRole('dialog');
     await expect(dialog.getByRole('heading', { name: 'Site details' })).toBeVisible();
-    await expect(dialog).toContainText('gray.example');
-    await expect(dialog).not.toContainText('www.gray.example');
-    await expect(dialog).not.toContainText('Other');
-    await dashboard.screenshot({ path: path.join(shotDir, 'gray-opened.png') });
-    await dashboard.getByRole('button', { name: 'Close details' }).click();
-    await expect(dialog).toBeHidden();
-
-    await github.focus();
-    await expect(github).toBeFocused();
-    await dashboard.keyboard.press('Space');
     await expect(dialog).toContainText('github.com');
     await dashboard.getByRole('button', { name: 'Close details' }).click();
     await expect(dialog).toBeHidden();
 
-    await dashboard.getByRole('button', { name: 'Filter to github.com' }).first().click();
+    const other = share.getByRole('button', { name: /View all sites/ });
+    await other.focus();
+    await dashboard.keyboard.press('Enter');
+    await expect(dialog).toHaveCount(0);
+    await expect(dashboard.locator('#site-ledger input')).toBeFocused();
+    const gray = dashboard.locator('#site-ledger').getByRole('button', { name: 'Details for gray.example' });
+    await gray.focus();
+    await dashboard.keyboard.press('Enter');
+    await expect(dialog).toContainText('gray.example');
+    await expect(dialog).not.toContainText('www.gray.example');
+    await dashboard.screenshot({ path: path.join(shotDir, 'gray-opened.png') });
+    await dashboard.getByRole('button', { name: 'Close details' }).click();
+
+    await dashboard.locator('#site-ledger').getByRole('button', { name: 'Filter to github.com' }).click();
     await expect(dashboard.getByRole('status').filter({ hasText: 'Filtered to github.com' })).toBeVisible();
-    await expect(segments.getByRole('button')).toHaveCount(1);
-    await segments.getByRole('button', { name: /github\.com/ }).focus();
+    await expect(share.getByRole('button', { name: /Other sites/ })).toBeVisible();
+    await share.getByRole('button', { name: /github\.com/ }).focus();
     await dashboard.keyboard.press('Enter');
     await expect(dialog).toContainText('github.com');
     await expect(dashboard.locator('.filter-bar')).toContainText('Filtered to github.com');
     await dashboard.screenshot({ path: path.join(shotDir, 'filtered-keyboard.png') });
     await dashboard.getByRole('button', { name: 'Close details' }).click();
     await expect(dashboard.getByRole('status').filter({ hasText: 'Filtered to github.com' })).toBeVisible();
-    await expect(chart).toHaveAttribute('tabindex', '-1');
     fs.writeFileSync(path.join(shotDir, 'result.txt'), [
       'status ready',
-      'canvas role=img tabindex=-1',
-      '7 segment buttons before filter',
-      'Enter on gray.example opened Site details',
-      'Space on github.com opened Site details',
+      'Site share selected under reduced motion',
+      '6 share buttons: five sites and Other',
+      'Enter on github.com opened Site details',
+      'Enter on Other focused the ledger search',
+      'Enter on Details for gray.example opened the grouped site',
       'Enter while filtered left Filtered to github.com',
-      'Other is not a button',
     ].join('\n'));
   } finally {
     await context.close().catch(() => {});

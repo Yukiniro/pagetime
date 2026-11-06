@@ -21,7 +21,7 @@
   "loading": "Cargando registros locales…",
   "empty": {
     "title": "Aparecerá aquí cuando empieces a navegar",
-    "description": "Después de visitar una página, el tiempo activo, la línea de tiempo y el ranking de sitios se muestran en esta página."
+    "description": "Después de visitar una página, el tiempo activo, la proporción de sitios y el ranking de sitios se muestran en esta página."
   },
   "active": "Activo {{duration}}",
   "badge": {
@@ -57,6 +57,13 @@
     "emptyRankingDescription": "{{domain}} no tiene registros en este periodo."
   },
   "chart": { "label": "Gráfico principal" },
+  "share": {
+    "title": "Proporción",
+    "ofAll": "Parte del tiempo de todos los sitios",
+    "rest": "Resto de sitios",
+    "empty": "No hay tiempo activo en este intervalo",
+    "viewAllLabel": "Ver todos los sitios"
+  },
   "trend": { "label": "Tiempo diario de navegación activa. {{days}}", "separator": "; ", "hours_one": "{{count}} h", "hours_many": "{{count}} h", "hours_other": "{{count}} h" },
   "timeline": {
     "title": "Cronología de hoy",

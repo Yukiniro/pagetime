@@ -21,7 +21,7 @@
   "loading": "로컬 기록을 불러오는 중…",
   "empty": {
     "title": "탐색을 시작하면 여기에 표시됩니다",
-    "description": "웹페이지를 방문하면 활성 시간, 타임라인, 사이트 순위가 이 페이지에 나타납니다."
+    "description": "웹페이지를 방문하면 활성 시간, 사이트 비율, 사이트 순위가 이 페이지에 나타납니다."
   },
   "active": "활성 {{duration}}",
   "badge": {
@@ -57,6 +57,13 @@
     "emptyRankingDescription": "{{domain}}의 기록이 이 범위에 없습니다."
   },
   "chart": { "label": "기본 차트" },
+  "share": {
+    "title": "사이트 비율",
+    "ofAll": "전체 사이트 대비",
+    "rest": "나머지 사이트",
+    "empty": "이 범위에는 활성 시간이 없습니다",
+    "viewAllLabel": "모든 사이트 보기"
+  },
   "trend": { "label": "일별 활성 브라우징 시간. {{days}}", "separator": ", ", "hours_other": "{{count}}시간" },
   "timeline": {
     "title": "오늘의 타임라인",
